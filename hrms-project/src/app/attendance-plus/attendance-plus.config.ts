@@ -12,7 +12,7 @@ const STATUS_TAGS = { present: 'green', absent: 'red', half_day: 'orange', leave
 
 
 export const RULE_PAGE: PageConfig = {
-  title: 'Attendance Rules', itemName: 'Rule', endpoint: AP_API + 'rules/', model: 'attendance',
+  title: 'Attendance rules', itemName: 'Rule', endpoint: AP_API + 'rules/', model: 'attendance',
   intro: 'Grace period, tolerances, minimum / maximum hours, overtime, night and cross-midnight shifts, breaks, rounding, absence marking, '
     + 'allowed punch methods and corrections. The most specific active rule wins: employee > category > department > branch > whole company '
     + '(priority breaks a tie). Values set on a shift in the shift planner (grace, minimum hours, OT start) win over the rule.',
@@ -110,7 +110,7 @@ export const IP_PAGE: PageConfig = {
 };
 
 export const DEVICE_PAGE: PageConfig = {
-  title: 'Attendance Devices', itemName: 'Device', endpoint: AP_API + 'devices/', model: 'attendance',
+  title: 'Attendance devices', itemName: 'Device', endpoint: AP_API + 'devices/', model: 'attendance',
   intro: 'ZKTeco devices push punches to <server>/iclock/cdata (ADMS / cloud server setting: server address and port only). '
     + 'Other devices post JSON to /attendance-plus/api/device/push/?schema=<company> with the header X-Device-Key. '
     + 'The device user number (PIN) is matched to the employee through Employee machine mapping, else the employee code. Repeated pushes never duplicate punches.',
@@ -187,7 +187,7 @@ const dayColumns = [
 ];
 
 export const DAY_PAGE: PageConfig = {
-  title: 'Daily Attendance', itemName: 'Day', endpoint: AP_API + 'days/', model: 'attendance',
+  title: 'Daily attendance', itemName: 'Day', endpoint: AP_API + 'days/', model: 'attendance',
   intro: 'The daily result of every employee: status from the shift and the attendance rules, in / out, worked hours after breaks, late, early and overtime. '
     + 'It is recalculated on every punch and correction, and every night for the day before.',
   defaultParams: { from: new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10) },
@@ -203,13 +203,13 @@ export const DAY_PAGE: PageConfig = {
 };
 
 export const MISSING_PAGE: PageConfig = {
-  ...DAY_PAGE, title: 'Missing Punches', endpoint: AP_API + 'days/', defaultParams: { missing: 'true' },
+  ...DAY_PAGE, title: 'Missing punches', endpoint: AP_API + 'days/', defaultParams: { missing: 'true' },
   intro: 'Days with a clock-in but no clock-out after the shift end plus the hours set in the rule. The employee is notified to request a correction; HR can also add the missing punch under Punches.',
   toolbarActions: [],
 };
 
 export const CORRECTION_PAGE: PageConfig = {
-  title: 'Attendance Corrections', itemName: 'Correction request', endpoint: AP_API + 'corrections/',
+  title: 'Attendance corrections', itemName: 'Correction request', endpoint: AP_API + 'corrections/',
   intro: 'Employees ask to correct a missing or wrong punch. The reporting manager approves first, then HR gives the final approval; the punches are then written '
     + '(old ones kept as history) and the day is recalculated.',
   multipart: true,

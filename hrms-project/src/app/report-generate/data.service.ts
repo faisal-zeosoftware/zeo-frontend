@@ -20,7 +20,7 @@ interface FieldResponse {
 })
 export class DataService {
   // private apiUrl = 'http://127.0.0.1:8000/employee/api/emp-report/select_filter_fields/'; 
-  baseUrl = 'http://127.0.0.1:8000/employee/api/emp-report/';
+  baseUrl = `${environment.apiBaseUrl}/employee/api/emp-report/`;
     private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
   
 
@@ -106,7 +106,7 @@ export class DataService {
   }
   
   getHtmlContentFromAPI(): Observable<SafeHtml> {
-    return this.http.get('http://127.0.0.1:8000/employee/api/emp-report/select_filter_fields/', { responseType: 'text' })
+    return this.http.get(`${environment.apiBaseUrl}/employee/api/emp-report/select_filter_fields/`, { responseType: 'text' })
       .pipe(
         map((response: string) => this.sanitizer.bypassSecurityTrustHtml(response))
       );

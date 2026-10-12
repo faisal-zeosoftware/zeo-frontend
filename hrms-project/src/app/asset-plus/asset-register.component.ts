@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
 import { ASSET_BASE, AssetApiService, STATUS_CLASS, STATUS_LABEL, money } from './asset-api.service';
 import { AssetFormComponent } from './asset-form.component';
 
@@ -9,7 +10,7 @@ import { AssetFormComponent } from './asset-form.component';
 @Component({
   selector: 'app-asset-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, AssetFormComponent],
+  imports: [CommonModule, FormsModule, AssetFormComponent, ZListDirective],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="container">
@@ -42,23 +43,25 @@ import { AssetFormComponent } from './asset-form.component';
     <div class="com_list mt-4">
       <p class="ex-msg" *ngIf="msg" [class.err]="msgErr">{{ msg }}</p>
       <p class="ex-muted" *ngIf="loading">Loading…</p>
-      <div class="ex-rows" *ngIf="!loading">
-        <div class="ex-row click" *ngFor="let a of rows" (click)="open(a.id)">
-          <div class="ex-thumb">{{ (a.asset_type_name || '?').slice(0, 3).toUpperCase() }}</div>
-          <div class="main">
-            <div class="t">{{ a.name }} <span class="ap-code">{{ a.code }}</span></div>
-            <div class="s">{{ a.asset_type_name }} · SN {{ a.serial_number }}<span *ngIf="a.branch_name"> · {{ a.branch_name }}</span>
-              <span *ngIf="a.holder"> · {{ a.holder.type === 'employee' ? 'With' : 'At' }} {{ a.holder.name }}</span>
-              <span *ngIf="a.warranty_days_left !== null && a.warranty_days_left >= 0 && a.warranty_days_left <= 30"> · warranty ends in {{ a.warranty_days_left }} day(s)</span></div>
-          </div>
-          <div class="r">
-            <div class="money" *ngIf="a.book_value !== undefined">{{ m(a.book_value, a.currency) }}</div>
-            <span class="ex-tag" [ngClass]="cls(a.status)">{{ a.status_label }}</span>
-            <span class="ex-flag warn" *ngIf="a.condition !== 'healthy'">{{ a.condition === 'minor_damage' ? 'Minor damage' : 'Major damage' }}</span>
-          </div>
-        </div>
-        <p class="ex-muted" *ngIf="!rows.length">No assets match. Change the filters or add an asset.</p>
-      </div>
+      <!-- v1.16.0: a table, so the list tools (search, filters, group by, columns, saved views, exports) work here too -->
+      <table class="table ap-reg" *ngIf="!loading && rows.length">
+        <thead><tr><th>Code</th><th>Asset</th><th>Type</th><th>Serial number</th><th>Branch</th><th>Held by</th><th>Warranty ends</th><th>Book value</th><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let a of rows" class="click" (click)="open(a.id)">
+            <td><span class="ap-code">{{ a.code }}</span></td>
+            <td><b>{{ a.name }}</b></td>
+            <td>{{ a.asset_type_name }}</td>
+            <td>{{ a.serial_number }}</td>
+            <td>{{ a.branch_name }}</td>
+            <td>{{ a.holder ? a.holder.name : '' }}</td>
+            <td>{{ a.warranty_end ? (a.warranty_end | date:'dd MMM yyyy') : '' }}</td>
+            <td class="money">{{ a.book_value !== undefined && a.book_value !== null ? m(a.book_value, a.currency) : '' }}</td>
+            <td><span class="ex-tag" [ngClass]="cls(a.status)">{{ a.status_label }}</span></td>
+            <td>{{ a.condition === 'healthy' ? 'Healthy' : a.condition === 'minor_damage' ? 'Minor damage' : a.condition === 'major_damage' ? 'Major damage' : a.condition }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="ex-muted" *ngIf="!loading && !rows.length">No assets match. Change the filters or add an asset.</p>
     </div>
   </div>
 </div>
@@ -114,7 +117,7 @@ export class AssetRegisterComponent implements OnInit {
   }
 
   open(id: number): void { this.router.navigate([ASSET_BASE, 'register', id]); }
-  m(v: any, c?: string): string { return money(v, c || 'AED'); }
+  m(v: any, c?: string): string { return money(v, c || undefined); }   // v1.14.0: else company currency
   lbl(s: string): string { return STATUS_LABEL[s] || s; }
   cls(s: string): string { return STATUS_CLASS[s] || ''; }
 

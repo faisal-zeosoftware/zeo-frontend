@@ -1,13 +1,13 @@
 <div mat-dialog-content class="">
     <div class="cpm-sec"  >
         <!-- 
-        <h1>Create Employee Family</h1><hr> -->
+        <h1>Create employee family</h1><hr> -->
 
         <form>
             <div class="row">
                 <div class="col-md-6">
 
-                    <label> Feild Name</label>
+                    <label> Feild name</label>
                     <input type="text" class="form-control" required [(ngModel)]="field_name"
                         placeholder="Enter Field Name" [ngModelOptions]="{standalone: true}"
                         [ngClass]="{'error-field': registerButtonClicked && !field_name}">
@@ -19,7 +19,7 @@
            
 
                 <div class="col-md-6">
-                    <label>Data Type</label>
+                    <label>Data type</label>
                     <div class="custom-sel">
                    
                         <select class="form-control"  id="data_type" required [(ngModel)]="data_type"
@@ -36,13 +36,13 @@
 
 
                 <div class="col-md-6">
-                    <label>Dropdown Values</label>
+                    <label>Dropdown values</label>
                     <input type="text" class="form-control" required [(ngModel)]="dropdown_values"
                         placeholder="Enter Dropdown Values (comma separated)" [ngModelOptions]="{standalone: true}">
                 </div>
                 <div class="col-md-6">
 
-                    <label> Radio Values</label>
+                    <label> Radio values</label>
                     <input type="text" class="form-control" required [(ngModel)]="radio_values"
                         placeholder="Enter Radio values (comma separated)" [ngModelOptions]="{standalone: true}"
                       >

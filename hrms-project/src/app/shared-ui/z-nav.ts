@@ -15,5 +15,6 @@ export function reportLink(d: any): [string, Record<string, string>] {
   Object.entries(d?.f || {}).forEach(([k, v]) => { q['f_' + k] = String(v); });
   if (d?.from) { q['from'] = d.from; }
   if (d?.to) { q['to'] = d.to; }
+  if (d?.nz) { q['nz'] = d.nz; }   // v1.16.0: only the rows where this column is not zero (e.g. one salary component)
   return [`${MS}report-options/r/${d.report}`, q];
 }

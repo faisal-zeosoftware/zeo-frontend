@@ -9,15 +9,17 @@ const STATES: [string, string][] = [['in', 'In now'], ['out', 'Clocked out'], ['
   ['not_marked', 'Not in yet'], ['half_day', 'Half day'], ['leave', 'On leave'], ['weekly_off', 'Off'], ['holiday', 'Holiday']];
 
 /** HR / manager daily board (v1.12.0): who is in, out, late, absent, on leave or has a missing punch on a day. */
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on this list
+
 @Component({
   selector: 'app-attendance-board',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
   <div class="ap-head">
-    <div><h1>Daily Attendance Board</h1>
+    <div><h1>Daily attendance board</h1>
       <p class="ap-desc">Who is in, out, late, absent or missing a punch. Managers see their team; HR sees their branches. Click a tile to filter.</p></div>
     <div class="ap-tools">
       <input class="ap-input" type="date" [(ngModel)]="day" (change)="load()" aria-label="Day">
@@ -32,7 +34,6 @@ const STATES: [string, string][] = [['in', 'In now'], ['out', 'Clocked out'], ['
   </div>
   <p class="ap-muted" *ngIf="loading">Loading…</p>
   <div class="ap-card" *ngIf="data">
-    <input class="ap-input" placeholder="Search name or code" [(ngModel)]="q" style="margin-bottom:8px;width:240px">
     <div class="ap-scroll">
       <table class="ap-table">
         <tr><th>Employee</th><th>Shift</th><th>Status</th><th>In</th><th>Out</th><th>Worked</th><th>Late</th><th>Early</th><th>OT</th><th>Method</th></tr>

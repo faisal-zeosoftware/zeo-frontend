@@ -11,7 +11,14 @@ import { combineLatest } from 'rxjs';
 import { LeaveService } from '../leave-master/leave.service';
 import { forkJoin } from 'rxjs';
 
-import { Chart, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+import { HttpClient } from '@angular/common/http';   // v1.16.0
+import { firstValueFrom } from 'rxjs';
+import { ZRecordService } from '../shared-ui/z-record.service';
+import { recordUrl } from '../shared-ui/z-nav';
+import { DashPeriod, DashPeriods, periodQuery, resolvePeriod } from '../shared-ui/z-dash-period';
+import { i18nT } from '../shared-ui/i18n.service';
 Chart.register(...registerables);
 
 
@@ -21,7 +28,13 @@ Chart.register(...registerables);
   templateUrl: './dashboard-contents.component.html',
   styleUrl: './dashboard-contents.component.css'
 })
-export class DashboardContentsComponent implements OnInit, OnDestroy {
+export class DashboardContentsComponent implements OnInit, OnDestroy {
+  statusLabel = statusLabel;   // v1.15.1: readable status ("In progress", not "In_progress")
+  /** v1.16.0: period of the attendance chart (its own, default today) and the figures behind its bars */
+  chartPeriod: DashPeriod | null = null;
+  private chartLinks: (string | null)[] = [];
+  private chartSchema = '';
+  private chartBranches: number[] = [];
 
 
   @ViewChild('attendanceChart') attendanceChartCanvas!: ElementRef;
@@ -72,6 +85,8 @@ approvalFilter: string = '';
    private sessionService: SessionService,
       private leaveService: LeaveService,
       private cdr: ChangeDetectorRef,
+   private http: HttpClient,   // v1.16.0
+   private zrec: ZRecordService,
    private DepartmentServiceService: DepartmentServiceService ,
    ) { this.navSub = this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
@@ -95,16 +110,6 @@ approvalFilter: string = '';
   }
 
    ngOnInit(): void {
-    // #region agent log
-    requestAnimationFrame(() => {
-      const el = document.querySelector('app-dashboard-contents .comapny_section, app-dashboard-contents .container') as HTMLElement | null;
-      const sidebar = document.getElementById('sidebarMenu');
-      const cr = el?.getBoundingClientRect();
-      const sr = sidebar?.getBoundingClientRect();
-      const cs = el ? getComputedStyle(el) : null;
-      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'C',location:'dashboard-contents.component.ts:ngOnInit',message:'dashboard-contents layout',data:{cls:(el?.className||'').toString().slice(0,80),contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,marginTop:cs?.marginTop,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
-    });
-    // #endregion
 
       this.dataSubscription = combineLatest([
     this.EmployeeService.selectedSchema$,
@@ -347,7 +352,7 @@ goToApproval(item: any) {
 
   switch (item.type) {
     case 'general':
-      route = '/main-sidebar/sub-sidebar/approvals';
+      route = '/main-sidebar/general-sidebar/approvals';   // v1.15.1: was sub-sidebar/approvals (no such page)
       break;
 
     case 'resignation':
@@ -375,11 +380,11 @@ goToApproval(item: any) {
       break;
 
     case 'document':
-      route = '/main-sidebar/settings/document-request-approval';
+      route = '/main-sidebar/general-sidebar/document-request-approval';   // v1.15.1: was under settings (no such page)
       break;
 
     default:
-      route = '/main-sidebar/sub-sidebar/approvals';
+      route = '/main-sidebar/general-sidebar/approvals';   // v1.15.1: was sub-sidebar/approvals (no such page)
   }
 
   this.router.navigate([route]);
@@ -520,45 +525,44 @@ scrollToApprovals(): void {
 
   
   filterAttendanceChartToday(schema: string, branchIds: number[]): void {
-    if (!schema || !branchIds || branchIds.length === 0) {
-      return;
-    }
-
+    // v1.16.0: the same figures as the Attendance card (both attendance sources) for the chart's period; every bar opens its list
+    this.chartSchema = schema; this.chartBranches = branchIds || [];
+    if (!schema) { return; }
+    const per = this.chartPeriod || resolvePeriod({ preset: 'today' });
+    const br = this.chartBranches.length ? `&branch=${this.chartBranches.join(',')}` : '';
     this.isLoading = true;
-    this.cdr.detectChanges(); // Ensure loader state immediately renders
-
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = ('0' + (now.getMonth() + 1)).slice(-2);
-    const day = ('0' + now.getDate()).slice(-2);
-    const todayStr = `${year}-${month}-${day}`;
-
-    const requests = branchIds.map(id => 
-      this.EmployeeService.getAttendanceCalendarAllemployee(schema, id, todayStr, todayStr)
-    );
-
-    forkJoin(requests).subscribe({
-      next: (responses: any[]) => {
-        let aggregatedCalendarDays: any[] = [];
-        responses.forEach(res => {
-          if (res && res.employees) {
-            aggregatedCalendarDays.push(res); 
-          }
-        });
-
-        this.isLoading = false;
-        // 🌟 Force Angular to render the canvas element wrap out of hidden state
-        this.cdr.detectChanges(); 
-        
-        this.processChartData(aggregatedCalendarDays);
-      },
-      error: (err: any) => {
-        console.error('Error fetching today\'s live attendance metrics:', err);
+    this.cdr.detectChanges();
+    firstValueFrom(this.http.get<any>(`${this.zrec.api}/dashboard/api/overview/?schema=${encodeURIComponent(schema)}&card=attendance${br}${periodQuery(per)}`))
+      .then(d => {
+        const card = (d?.cards || []).find((c: any) => c.key === 'attendance');
+        const k = (card?.kpis || []).slice(0, 3);
+        this.chartLinks = k.map((x: any) => x.link || null);
+        this.chartLabels = k.map((x: any) => i18nT(x.label));
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
-    });
+        this.renderAttendanceBarChart(k[0]?.value || 0, k[1]?.value || 0, k[2]?.value || 0);
+      })
+      .catch(() => { this.isLoading = false; this.cdr.detectChanges(); });
   }
+
+  private chartLabels: string[] = ['Present', 'Absent', 'On Leave'];
+
+  /** v1.16.0: periods from the dashboard designer – the chart follows its own (default today) or the dashboard one. */
+  onPeriods(p: DashPeriods): void {
+    const next = p.cards['attendance-chart'] || p.dash;
+    if (this.chartPeriod && this.chartPeriod.from === next.from && this.chartPeriod.to === next.to) { return; }
+    this.chartPeriod = next;
+    if (this.chartSchema) { this.filterAttendanceChartToday(this.chartSchema, this.chartBranches); }
+  }
+
+  openRecord(model: string, id: any, ev?: Event): void {
+    ev?.preventDefault(); ev?.stopPropagation();
+    if (id) { this.router.navigateByUrl(recordUrl(model, id)); }
+  }
+
+  openHolidays(): void { this.router.navigateByUrl('/main-sidebar/settings/holiday-calendar'); }
+
+  openPolicies(): void { this.router.navigateByUrl('/main-sidebar/my-policies'); }
 
   processChartData(calendarData: any[]): void {
     const counts: { [key: string]: number } = {
@@ -610,7 +614,7 @@ scrollToApprovals(): void {
     this.attendanceChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Present', 'Absent', 'On Leave'],
+        labels: this.chartLabels,
         datasets: [{
           label: 'Employee Count',
           data: [present, absent, leave],
@@ -633,6 +637,9 @@ scrollToApprovals(): void {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        // v1.16.0: a bar opens the attendance list behind it
+        onClick: (_e: any, els: any[]) => { const l = els?.length ? this.chartLinks[els[0].index] : null; if (l) { this.router.navigateByUrl(l); } },
+        onHover: (e: any, els: any[]) => { const t = e?.native?.target as HTMLElement | undefined; if (t) { t.style.cursor = els?.length ? 'pointer' : 'default'; } },
         plugins: {
           legend: {
             display: false              // Hide legend because labels are self-explanatory

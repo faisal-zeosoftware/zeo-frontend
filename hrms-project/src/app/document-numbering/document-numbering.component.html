@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col-md-4">
-          <h1> Document Numbering</h1>
+          <h1> Document numbering</h1>
         </div>
         <div class="col-md-3">
 
@@ -43,12 +43,12 @@
       <div class="col-md-2">
 
         <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
+          (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
         <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedDocNum()">Delete
-          Selected </button>
+          selected </button>
 
       </div>
     </div>
@@ -59,7 +59,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2> Create Document Numbering</h2>
+            <h2> Create document numbering</h2>
           </div>
  <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -126,7 +126,7 @@
 
 
               <div class="custom-sel">
-                <label>Select Branches
+                <label>Select branches
                      <span class="required-star">*</span>
                 </label>
                 <select class="form-control" id="branch_id" required [(ngModel)]="branch_id"
@@ -145,7 +145,7 @@
 
             <div class="col-md-3">
 
-              <label>Current Number
+              <label>Current number
                    <span class="required-star">*</span>
               </label>
               <input type="number" class="form-control" required [(ngModel)]="current_number"
@@ -168,7 +168,7 @@
 
             <div class="col-md-3">
 
-              <label>Start Date
+              <label>Start date
               </label>
               <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter start date"
                 [ngModelOptions]="{standalone: true}">
@@ -177,7 +177,7 @@
 
             <div class="col-md-3">
 
-              <label>End Date
+              <label>End date
               </label>
               <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter end date"
                 [ngModelOptions]="{standalone: true}">
@@ -250,7 +250,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Document Numbering</h2>
+            <h2>Edit document numbering</h2>
           </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -312,7 +312,7 @@
 
 
               <div class="custom-sel">
-                <label>Select Branches</label>
+                <label>Select branches</label>
                 <select class="form-control" id="branch_id" required [(ngModel)]="editAsset.branch_id"
                   [ngModelOptions]="{standalone: true}"
                   [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
@@ -338,7 +338,7 @@
 
             <div class="col-md-3">
 
-              <label>Current Number</label>
+              <label>Current number</label>
               <input type="number" class="form-control" required [(ngModel)]="editAsset.current_number"
                 placeholder="Enter current number" [ngModelOptions]="{standalone: true}"
                 [ngClass]="{'error-field': registerButtonClicked && !current_number}">
@@ -361,7 +361,7 @@
 
             <div class="col-md-3">
 
-              <label>Start Date</label>
+              <label>Start date</label>
               <input type="date" class="form-control" required [(ngModel)]="editAsset.start_date" placeholder="Enter start date"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
 
@@ -370,7 +370,7 @@
 
             <div class="col-md-3">
 
-              <label>End Date</label>
+              <label>End date</label>
               <input type="date" class="form-control" required [(ngModel)]="editAsset.end_date" placeholder="Enter end date"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
 
@@ -443,13 +443,13 @@
             <th class="sticky-left">No</th>
             <th>Prefix</th>
             <th>Suffix</th>
-            <th>Current No</th>
+            <th>Current no</th>
             <th>Branch</th>
             <th>Type</th>
-            <th>Total Length</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Auto Numbering</th>
+            <th>Total length</th>
+            <th>Start date</th>
+            <th>End date</th>
+            <th>Auto numbering</th>
             <th class="sticky-right">Action</th>
           </tr>
         </thead>
@@ -460,7 +460,7 @@
             <td data-label="Suffix">{{ docs.suffix }}</td>
             <td data-label="Current No">{{ docs.current_number }}</td>
             <td data-label="Branch">{{ docs.branch_id }}</td>
-            <td data-label="Type">{{ docs.type }}</td>
+            <td data-label="Type">{{ zLabel(docs.type) }}</td>
             <td data-label="Total Length">{{ docs.total_length }}</td>
             <td data-label="Start Date">{{ docs.start_date }}</td>
             <td data-label="End Date">{{ docs.end_date }}</td>
@@ -499,7 +499,7 @@
     <div *ngIf="isDocumentnumbereditModalOpen" class="modal">
       <div class="modal-content">
         <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
-        <h2>Edit Document Number</h2>
+        <h2>Edit document number</h2>
         <form (ngSubmit)="updateDocumentNumber()">
 
           <div class="row">
@@ -519,7 +519,7 @@
         </div> -->
 
             <div class="col-md-4">
-              <label>Current Number</label>
+              <label>Current number</label>
               <input type="number" class="form-control" [(ngModel)]="selectedDoc.current_number" name="current_number"
                 required>
             </div>
@@ -538,7 +538,7 @@
 
             <div class="col-md-3">
 
-              <label>Start Date</label>
+              <label>Start date</label>
               <input type="date" class="form-control" required [(ngModel)]="selectedDoc.start_date"
                 placeholder="Enter start date" [ngModelOptions]="{standalone: true}"
                 [ngClass]="{'error-field': registerButtonClicked && !start_date}">
@@ -548,7 +548,7 @@
 
             <div class="col-md-3">
 
-              <label>End Date</label>
+              <label>End date</label>
               <input type="date" class="form-control" required [(ngModel)]="selectedDoc.end_date"
                 placeholder="Enter end date" [ngModelOptions]="{standalone: true}"
                 [ngClass]="{'error-field': registerButtonClicked && !end_date}">
@@ -566,7 +566,7 @@
             </div>
 
             <!-- <div class="col-md-4">
-          <label class="mt-4">proper-Autonumbering</label>
+          <label class="mt-4">Proper-Autonumbering</label>
           <mat-checkbox [(ngModel)]="selectedDoc.automatic_numbering" name="automatic_numbering"></mat-checkbox>
         </div> -->
 

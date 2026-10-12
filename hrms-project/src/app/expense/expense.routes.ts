@@ -16,7 +16,7 @@ export const EXPENSE_MENU: ModuleMenuItem[] = [
   { path: 'analytics', label: 'Analytics & Export', icon: 'insights', model: 'expensereport' },
   { path: 'categories', label: 'Categories', icon: 'category', model: 'expensecategory' },
   { path: 'policies', label: 'Policies', icon: 'policy', model: 'expensepolicy' },
-  { path: 'cost-centers', label: 'Cost Centres', icon: 'account_tree', model: 'costcenter' },
+  { path: 'cost-centers', label: 'Cost centres', icon: 'account_tree', model: 'costcenter' },
 ];
 
 const page = (path: string, config: any) => ({ path, component: CrudPageComponent, data: { config } });
@@ -26,7 +26,7 @@ export const EXPENSE_ROUTES: Routes = [
   {
     path: 'expense-options',
     component: ModuleOptionsComponent,
-    data: { title: 'Expense Options', base: '/main-sidebar/expense-options', menu: EXPENSE_MENU },
+    data: { title: 'Expense options', base: '/main-sidebar/expense-options', menu: EXPENSE_MENU },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: ExpenseHomeComponent },

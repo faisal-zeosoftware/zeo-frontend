@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AssetApiService } from './asset-api.service';
 
 /** Asset settings (v1.12.0): code prefix and numbering per asset type, default depreciation, reminders, acknowledgement, exit clearance. */
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on this list
+
 @Component({
   selector: 'app-asset-setup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="container">
@@ -26,6 +28,7 @@ import { AssetApiService } from './asset-api.service';
           <label>Digits in the asset number<input type="number" min="1" max="8" [(ngModel)]="s.code_padding" name="p"></label>
           <label>Warranty / insurance reminder (days before)<input type="number" min="0" max="365" [(ngModel)]="s.warranty_reminder_days" name="w"></label>
           <label>Most instalments for a recovery<input type="number" min="1" max="60" [(ngModel)]="s.max_instalments" name="m"></label>
+          <label>Verify every asset every … days (0 = off)<input type="number" min="0" max="1095" [(ngModel)]="s.verification_days" name="vd"></label>
           <label class="ck"><input type="checkbox" [(ngModel)]="s.require_acknowledgement" name="a"> Employees confirm receipt in self-service</label>
           <label class="ck"><input type="checkbox" [(ngModel)]="s.block_final_settlement" name="b"> Block the final settlement while assets are open</label>
         </div>

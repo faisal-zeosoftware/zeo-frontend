@@ -4,22 +4,28 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { employeeUrl, recordUrl } from '../../shared-ui/z-nav';
 import { DashboardService, DrillColumn, DrillRequest } from './dashboard.service';
+import { COUNTRY_PACK_UI } from '../../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * Right-hand drawer used by both dashboards.
  * Level 1: the rows behind a tile / bar (search, CSV).  Level 2: one employee across all modules.
  * Rows with a module emit (navigate) so the host can open the request / approval screen.
  */
+import { I18N_UI } from '../../shared-ui/i18n.service';
+import { ZStatusPipe } from '../../shared-ui/status-label';
 @Component({
   selector: 'z-drill-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, ...I18N_UI, ZStatusPipe, CommonModule, FormsModule],   // v1.17.0: t / zdate / zstatus
   templateUrl: './drill-panel.component.html',
   styleUrls: ['./dashboards.css'],
 })
 export class DrillPanelComponent implements OnChanges {
   @Input() request: DrillRequest | null = null;
   @Input() canOpenEmployee = true;
+  /** v1.17.0 (audit M12): open one person's 360 view directly (a manager's team link), and whether the full employee record may be opened */
+  @Input() personId: number | null = null;
+  @Input() employeePageLink = true;
   @Output() closed = new EventEmitter<void>();
   @Output() navigate = new EventEmitter<{ module: string; kind: 'request' | 'approval' }>();
 
@@ -34,7 +40,9 @@ export class DrillPanelComponent implements OnChanges {
 
   constructor(private svc: DashboardService, private router: Router) {}
 
-  ngOnChanges(): void {
+  ngOnChanges(ch?: any): void {
+    if (ch?.personId && this.personId) { this.request = null; this.loadPerson(this.personId); return; }
+    if (ch && !ch.request && !ch.personId) { return; }
     this.person = null;
     this.q = '';
     if (!this.request) { return; }
@@ -49,7 +57,7 @@ export class DrillPanelComponent implements OnChanges {
 
   @HostListener('document:keydown.escape')
   esc(): void {
-    if (this.person) { this.person = null; } else if (this.request) { this.closed.emit(); }
+    if (this.person && this.request) { this.person = null; } else if (this.request || this.personId) { this.closed.emit(); }
   }
 
   get filtered(): any[] {
@@ -58,13 +66,17 @@ export class DrillPanelComponent implements OnChanges {
     return this.rows.filter(r => this.columns.some(c => String(r[c.key] ?? '').toLowerCase().includes(q)));
   }
 
+  private loadPerson(id: number): void {
+    this.personLoading = true; this.error = '';
+    this.svc.employee(id).subscribe({
+      next: p => { this.person = p; this.personLoading = false; },
+      error: e => { this.error = e?.error?.detail || 'You cannot open this employee.'; this.personLoading = false; },
+    });
+  }
+
   rowClick(r: any): void {
     if (r.employee_id && this.canOpenEmployee) {
-      this.personLoading = true;
-      this.svc.employee(r.employee_id).subscribe({
-        next: p => { this.person = p; this.personLoading = false; },
-        error: e => { this.error = e?.error?.detail || 'You cannot open this employee.'; this.personLoading = false; },
-      });
+      this.loadPerson(r.employee_id);
     } else if (r._m) {
       this.record(r);
     } else if (r.module) {

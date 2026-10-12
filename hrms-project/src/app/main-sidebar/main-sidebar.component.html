@@ -14,25 +14,30 @@
 >
   <div class="sidebar-wrapper">
     <div class="zm-top">
-      <span class="sidebar-brand-title" *ngIf="isMenuOpen">HRMS PORTAL</span>
+      <span class="sidebar-brand-title" *ngIf="isMenuOpen">{{ suiteName | t }}</span>
       <button type="button" class="zm-fold" (click)="toggleFold()" [attr.aria-expanded]="isMenuOpen"
-              [attr.aria-label]="isMenuOpen ? 'Fold the menu' : 'Unfold the menu'" [title]="isMenuOpen ? 'Fold the menu' : 'Unfold the menu'">
+              [attr.aria-label]="(isMenuOpen ? 'Fold the menu' : 'Unfold the menu') | t" [title]="(isMenuOpen ? 'Fold the menu' : 'Unfold the menu') | t">
         <mat-icon>{{ isMenuOpen ? 'menu_open' : 'menu' }}</mat-icon>
       </button>
     </div>
 
       <div class="nav-menu-list">
       <ng-container *ngFor="let g of menuGroups; let first = first">
-        <div class="zm-group" *ngIf="isMenuOpen && !first">{{ g.title }}</div>
+        <div class="zm-group" *ngIf="isMenuOpen && !first">{{ g.title | t }}</div>
         <div class="zm-group-rule" *ngIf="!isMenuOpen && !first"></div>
+        <!-- v1.15.1: every icon has its name – aria-label for screen readers, a tooltip on mouse hover and keyboard focus
+             while the menu is folded (shown beside the menu, on the left in Arabic) -->
         <a *ngFor="let a of g.apps"
            class="nav-item-link"
            [class.active-link]="a.app.key === currentAppKey"
-           [routerLink]="a.link"
-           [attr.title]="a.app.label" [attr.aria-label]="a.app.label"
+           [routerLink]="appLink(a)"
+           [attr.aria-label]="a.app.label | t"
+           [attr.aria-current]="a.app.key === currentAppKey ? 'page' : null"
+           (mouseenter)="showTip($event, a.app.label)" (mouseleave)="hideTip()"
+           (focus)="showTip($event, a.app.label)" (blur)="hideTip()"
            (click)="a.app.key !== 'home' && modulePicked()">
-          <mat-icon class="nav-icon">{{ a.app.icon }}</mat-icon>
-          <span class="sidenav-opt">{{ a.app.label }}</span>
+          <mat-icon class="nav-icon" aria-hidden="true">{{ iconOf(a.app) }}</mat-icon>
+          <span class="sidenav-opt">{{ a.app.label | t }}</span>
         </a>
       </ng-container>
     </div>
@@ -40,12 +45,15 @@
     <div class="sidebar-footer" *ngIf="isMenuOpen">
       <button type="button" (click)="logout()" class="btn btn-logout w-100">
         <mat-icon class="logout-btn-icon">logout</mat-icon>
-        <span>Logout</span>
+        <span>{{ 'Logout' | t }}</span>
       </button>
-      <div class="zm-version" title="Installed update">Version {{ appVersion }}</div>
+      <div class="zm-version" [title]="'Installed update' | t">{{ 'Version {0}' | t:appVersion }}</div>
     </div>
   </div>
 </nav>
+<!-- v1.15.1: name of the hovered / focused icon of the folded main menu -->
+<div class="zm-tip" role="tooltip" *ngIf="tip && !isMenuOpen" [style.top.px]="tip.top"
+     [style.left.px]="tip.left" [style.right.px]="tip.right" [class.zm-tip-rtl]="tip.right !== null">{{ tip.text | t }}</div>
 
 <!-- Navbar -->
 <nav id="main-navbar" class="navbar navbar-expand-lg hrms-navbar fixed-top">
@@ -67,10 +75,11 @@
     <ul class="navbar-nav d-flex flex-row align-items-center gap-3 m-0 p-0">
       <!-- Notification Dropdown (Desktop) -->
       <!-- v1.9.0: Ask ZEO AI – questions about the data in plain language -->
+      <li class="nav-item"><z-app-launcher></z-app-launcher></li>   <!-- v1.20.0 HRMS / Projects / Settings -->
       <li class="nav-item"><z-ask></z-ask></li>
       <!-- v1.7.0: activities planned for me on any record -->
       <li class="nav-item" *ngIf="todo$ | async as t">
-        <button type="button" class="zr-todo-btn" routerLink="/main-sidebar/todo" [attr.aria-label]="'My To-do: ' + (t.overdue + t.today) + ' due'" title="My To-do">
+        <button type="button" class="zr-todo-btn" routerLink="/main-sidebar/todo" [attr.aria-label]="'My To-do: {0} due' | t:(t.overdue + t.today)" [title]="'My To-do' | t">
           <mat-icon>task_alt</mat-icon>
           <span class="zr-badge" *ngIf="t.overdue">{{ t.overdue }}</span>
           <span class="zr-badge soft" *ngIf="!t.overdue && t.today">{{ t.today }}</span>
@@ -111,7 +120,7 @@
                 </svg>
               </div>
               <div>
-                <strong class="notification-title">Notifications</strong>
+                <strong class="notification-title">{{ 'Notifications' | t }}</strong>
                 <div class="notification-subtitle" *ngIf="notificationCount > 0">
                   You have {{ notificationCount }} unread message{{ notificationCount > 1 ? 's' : '' }}
                 </div>
@@ -227,7 +236,7 @@
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                   </svg>
                 </div>
-                <p>No new notifications</p>
+                <p>{{ 'No new notifications' | t }}</p>
               </div>
             </li>
           </ng-template>
@@ -243,7 +252,7 @@
         >
           <div class="cmp_drop">
             <mat-icon class="cmp-icon">business</mat-icon>
-            <h1>{{ selectedSchemaNameDisplay || "Select Company" }}</h1>
+            <h1>{{ selectedSchemaNameDisplay || ("Select Company" | t) }}</h1>
             <mat-icon
               class="chevron-arrow"
               [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'"
@@ -263,7 +272,7 @@
 
             <div class="menu-header">
               <mat-icon style="color:blue">checklist</mat-icon>
-              <span>Select Branches</span>
+              <span>{{ 'Select Branches' | t }}</span>
             </div>
 
             <div class="scrollable-content">
@@ -332,11 +341,14 @@
         </div>
       </li>
 
+      <!-- v1.15.0: language picker next to the user menu -->
+      <li class="nav-item"><z-lang-picker variant="menu"></z-lang-picker></li>
+
       <!-- Logout Button -->
       <li class="nav-item">
         <button type="button" (click)="logout()" class="btn btn-logout m-0">
           <mat-icon class="logout-btn-icon">logout</mat-icon>
-          <span>Logout</span>
+          <span>{{ 'Logout' | t }}</span>
         </button>
       </li>
     </ul>
@@ -366,10 +378,12 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
+        <z-app-launcher></z-app-launcher>   <!-- v1.20.0 -->
         <!-- v1.9.0: Ask ZEO AI on phones -->
         <z-ask></z-ask>
+        <z-lang-picker variant="menu"></z-lang-picker>   <!-- v1.15.0 -->
         <!-- ADD THIS: Mobile Logout Icon -->
-        <button type="button" (click)="logout()" class="btn-logout-mobile">
+        <button type="button" (click)="logout()" class="btn-logout-mobile" [attr.aria-label]="'Logout' | t">
           <mat-icon>logout</mat-icon>
         </button>
         <!-- Mobile Notifications (FIXED) -->
@@ -408,7 +422,7 @@
                   </svg>
                 </div>
                 <div>
-                  <strong class="notification-title">Notifications</strong>
+                  <strong class="notification-title">{{ 'Notifications' | t }}</strong>
                   <div class="notification-subtitle" *ngIf="notificationCount > 0">
                     You have {{ notificationCount }} unread message{{ notificationCount > 1 ? 's' : '' }}
                   </div>
@@ -524,7 +538,7 @@
                       <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
                   </div>
-                  <p>No new notifications</p>
+                  <p>{{ 'No new notifications' | t }}</p>
                 </div>
               </li>
             </ng-template>
@@ -556,7 +570,7 @@
 
             <div class="menu-header">
               <mat-icon style="color:blue">checklist</mat-icon>
-              <span>Select Branches</span>
+              <span>{{ 'Select Branches' | t }}</span>
             </div>
 
             <div class="scrollable-content">

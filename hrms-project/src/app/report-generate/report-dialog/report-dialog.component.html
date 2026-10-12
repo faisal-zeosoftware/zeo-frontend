@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Generated Report</h1>
+<h1 mat-dialog-title>Generated report</h1>
 <div mat-dialog-content class="report-common-box table-outer-new">
   <div mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="onNoClick()">Close</button>
@@ -9,7 +9,7 @@
     <div class="grouping-options">
       <div class="row">
         <div class="col-md-6">
-          <label for="groupFields">Group by Fields:</label>
+          <label for="groupFields">Group by fields:</label>
           <mat-select multiple [(ngModel)]="selectedGroupFields" style="background: whitesmoke; padding: 10px;">
             <mat-option *ngFor="let field of tableHeaders" [value]="field">
               
@@ -24,7 +24,7 @@
       </div>
     </div>
     
-    <button mat-raised-button color="primary" class="mt-2" style="margin-right: 30px;" (click)="groupData()">Group Data</button>
+    <button mat-raised-button color="primary" class="mt-2" style="margin-right: 30px;" (click)="groupData()">Group data</button>
     <button mat-raised-button color="accent" class="mt-2" (click)="downloadGroupedData()">Download Excel</button>
     
     <div *ngIf="groupedData.length > 0">
@@ -63,7 +63,7 @@
         <button mat-raised-button color="warn" class="pull-right"    (click)="onNoClick()">Cancel</button>
         <span class="button-space"></span>
 
-        <button mat-raised-button color="primary" class="pull-right" (click)="postSelectedFields()" style="margin-right: 30px;" *ngIf="displaygroup">Apply Filter</button>
+        <button mat-raised-button color="primary" class="pull-right" (click)="postSelectedFields()" style="margin-right: 30px;" *ngIf="displaygroup">Apply filter</button>
 
       </div>
     </div>

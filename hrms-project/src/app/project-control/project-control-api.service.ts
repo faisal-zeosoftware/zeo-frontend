@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** Base path of the pages (registered as children of 'project-options'). */
 export const PC_BASE = '/main-sidebar/project-options';
@@ -48,7 +49,7 @@ export const hrs = (v: any): string => {
   const n = Number(v || 0);
   return n ? (Math.round(n * 100) / 100).toString() : '0';
 };
-export const money = (v: any, cur = 'AED'): string =>
+export const money = (v: any, cur = cpPack().currency.code): string =>   // v1.14.0: company currency by default
   cur + ' ' + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const isoDate = (d: Date): string =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

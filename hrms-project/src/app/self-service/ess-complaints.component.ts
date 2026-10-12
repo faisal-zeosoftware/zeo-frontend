@@ -41,7 +41,7 @@ const NEXT_LABEL: Record<string, string> = {
         <div class="es-h">Your anonymous complaint token</div>
         <p class="es-muted">Copy it now and keep it safe. It is the only way to follow your anonymous complaint – it is not shown again and HR cannot see who you are.</p>
         <div class="es-token">{{ token }}</div>
-        <div class="es-actions" style="margin-top:8px"><button type="button" class="es-btn sm" (click)="copy(token)">Copy token</button><button type="button" class="es-btn sm" (click)="token = ''">I have saved it</button></div>
+        <div class="es-actions" style="margin-top:8px"><button type="button" class="es-btn sm" (click)="copy(token)">Copy token</button><button type="button" class="es-btn sm" (click)="token = ''">I have saved IT</button></div>
       </div>
 
       <div class="es-tabs" *ngIf="handler">
@@ -132,7 +132,7 @@ const NEXT_LABEL: Record<string, string> = {
     <p class="es-msg err" *ngIf="ferr">{{ ferr }}</p>
     <div class="es-form">
       <div><label>Category</label><select [(ngModel)]="f.category"><option *ngFor="let c of cats" [ngValue]="c.value">{{ c.label }}</option></select></div>
-      <div><label>Date it happened (optional)</label><input type="date" [(ngModel)]="f.incident_date"></div>
+      <div><label>Date IT happened (optional)</label><input type="date" [(ngModel)]="f.incident_date"></div>
       <div class="wide"><label>Subject</label><input [(ngModel)]="f.subject" maxlength="200"></div>
       <div class="wide"><label>What happened</label><textarea [(ngModel)]="f.description" rows="5"></textarea></div>
       <div class="wide"><label>Person or area concerned (optional)</label><input [(ngModel)]="f.against"></div>

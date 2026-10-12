@@ -145,7 +145,7 @@ this.dataSubscription = combineLatest([
                  this.hasExportPermission = this.checkGroupPermission('export_designtn_report', groupPermissions);
                  console.log('Has export permission:', this.hasExportPermission);
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -223,7 +223,7 @@ this.dataSubscription = combineLatest([
 
   try {
     const worksheetData: any[][] = [];
-    const title = 'Designation Report';
+    const title = 'Designation report';
 
     const headers = Object.keys(this.displayNames).map(key => this.displayNames[key]);
 

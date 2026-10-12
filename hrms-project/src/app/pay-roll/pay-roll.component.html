@@ -10,7 +10,7 @@
           <div class="tab_boddy">
 
 
-            <!-- <h2>Payroll Run</h2><hr> -->
+            <!-- <h2>Payroll run</h2><hr> -->
 
 
             <form (ngSubmit)="requestPayRoll()" enctype="multipart/form-data">
@@ -25,7 +25,7 @@
 
 
                 <!-- <div class="col-md-6">
-                  <label>Document Number</label>
+                  <label>Document number</label>
                   <input type="text" class="form-control" [(ngModel)]="document_number"
                     placeholder="Enter document number" [disabled]="automaticNumbering"
                     [ngModelOptions]="{standalone: true}" [required]="!automaticNumbering">
@@ -497,7 +497,7 @@
               <div class="row">
                 <div class="col-md-9"></div>
                 <div class="col-md-3" *ngIf="hasAddPermission">
-                  <button type="submit" class="btn btn-success btn-full mt-4">Run Payroll</button>
+                  <button type="submit" class="btn btn-success btn-full mt-4">Run payroll</button>
 
                 </div>
               </div>
@@ -519,8 +519,8 @@
         <th>Name</th>
         <th>Year</th>
         <th>Month</th>
-        <th>Payment Date</th>
-        <!-- <th>Document Number</th> -->
+        <th>Payment date</th>
+        <!-- <th>Document number</th> -->
         <th>Branch</th>
         <th>Department</th>
         <th>Designation</th>
@@ -598,15 +598,56 @@
             [ngClass]="{
               'status-success': payroll.status === 'Completed' || payroll.status === 'Success',
               'status-pending': payroll.status === 'Pending',
-              'status-failed': payroll.status === 'Failed'
+              'status-failed': payroll.status === 'Failed',
+              'status-run-processed': payroll.status === 'processed',
+              'status-run-approved': payroll.status === 'approved',
+              'status-run-paid': payroll.status === 'paid'
             }">
-            {{ payroll.status }}
+            {{ runStatusLabel(payroll.status) }}
           </span>
+          <!-- v1.18.0: who prepared / approved / paid the run, and the WPS / cut-off checks -->
+          <div class="run-ctl" *ngIf="payroll.control">
+            <div *ngIf="payroll.control.prepared_by">Prepared: {{ payroll.control.prepared_by }}</div>
+            <div *ngIf="payroll.control.approved_by">Approved: {{ payroll.control.approved_by }}</div>
+            <div *ngIf="payroll.control.paid_by">Paid: {{ payroll.control.paid_by }}</div>
+            <div *ngFor="let w of payroll.control.warnings" class="run-warn" [attr.data-l]="w.level" [title]="w.text">
+              {{ w.level === 'error' ? 'WPS deadline' : w.code === 'cutoff' ? 'Cut-off ' + (payroll.attendance_start_date | date:'dd/MM') + ' – ' + (payroll.attendance_end_date | date:'dd/MM') : w.code === 'no_payment_date' ? 'No payment date' : 'Paid before cut-off' }}
+            </div>
+          </div>
         </td>
 
         <td class="sticky-right" data-label="Actions">
+          <!-- v1.16.0 (D16): approve / close the run (the API refuses while payslips wait for approval) -->
           <button
-            *ngIf="hasDeletePermission"
+            *ngIf="canApproveRun(payroll)"
+            type="button"
+            class="payroll-run-btn"
+            [disabled]="runBusyId === payroll.id"
+            (click)="setRunStatus(payroll, 'approved')"
+            title="Approve the run when every payslip is approved or rejected">
+            <i class="fa-solid fa-check"></i> Approve run
+          </button>
+          <button
+            *ngIf="canPayRun(payroll)"
+            type="button"
+            class="payroll-run-btn paid"
+            [disabled]="runBusyId === payroll.id"
+            (click)="setRunStatus(payroll, 'paid')"
+            title="Mark the run as paid and close it after the salaries were transferred">
+            <i class="fa-solid fa-money-check-dollar"></i> Mark paid and close
+          </button>
+          <!-- v1.16.0 (D16): take an approval back while the run is not paid (e.g. a payslip must be corrected) -->
+          <button
+            *ngIf="canPayRun(payroll)"
+            type="button"
+            class="payroll-run-btn undo"
+            [disabled]="runBusyId === payroll.id"
+            (click)="setRunStatus(payroll, 'processed')"
+            title="Set the run back to processed so payslips can be corrected">
+            <i class="fa-solid fa-rotate-left"></i> Undo approval
+          </button>
+          <button
+            *ngIf="hasDeletePermission && payroll.status !== 'paid'"
             type="button"
             class="payroll-delete-btn"
             (click)="deletePayroll(payroll.id)"
@@ -867,17 +908,17 @@
                       <mat-checkbox [(ngModel)]="masterSelected" (change)="selectAllRows()"></mat-checkbox>
                     </th>
                     <th class="text-table-header">No</th>
-                    <th class="text-table-header">Employee Code</th>
-                    <th class="text-table-header">Payroll Name</th>
+                    <th class="text-table-header">Employee code</th>
+                    <th class="text-table-header">Payroll name</th>
                     <th class="text-table-header">Year</th>
                     <th class="text-table-header">Month</th>
-                    <th class="text-table-header">Gross Salary</th>
-                    <th class="text-table-header">Total Additions</th>
-                    <th class="text-table-header">Total Deductions</th>
-                    <th class="text-table-header">Net Salary</th>
-                    <th class="text-table-header">Pro Rata Adjustment</th>
-                    <th class="text-table-header">Working Days</th>
-                    <th class="text-table-header">Days Worked</th>
+                    <th class="text-table-header">Gross salary</th>
+                    <th class="text-table-header">Total additions</th>
+                    <th class="text-table-header">Total deductions</th>
+                    <th class="text-table-header">Net salary</th>
+                    <th class="text-table-header">Pro rata adjustment</th>
+                    <th class="text-table-header">Working days</th>
+                    <th class="text-table-header">Days worked</th>
                     <th class="text-table-header">Status</th>
                     <th class="text-table-header">Components</th>
                   </tr>
@@ -1222,17 +1263,17 @@
                   <thead>
                     <tr>
                       <th class="text-table-header">No</th>
-                      <th class="text-table-header">Employee Code</th>
-                      <th class="text-table-header">Payroll Name</th>
+                      <th class="text-table-header">Employee code</th>
+                      <th class="text-table-header">Payroll name</th>
                       <th class="text-table-header">Year</th>
                       <th class="text-table-header">Month</th>
-                      <th class="text-table-header">Gross Salary</th>
-                      <th class="text-table-header">Total Additions</th>
-                      <th class="text-table-header">Total Deductions</th>
-                      <th class="text-table-header">Net Salary</th>
-                      <th class="text-table-header">Pro Rata Adjustment</th>
-                      <th class="text-table-header">Working Days</th>
-                      <th class="text-table-header">Days Worked</th>
+                      <th class="text-table-header">Gross salary</th>
+                      <th class="text-table-header">Total additions</th>
+                      <th class="text-table-header">Total deductions</th>
+                      <th class="text-table-header">Net salary</th>
+                      <th class="text-table-header">Pro rata adjustment</th>
+                      <th class="text-table-header">Working days</th>
+                      <th class="text-table-header">Days worked</th>
                       <th class="text-table-header">Status</th>
                 
                       <!-- ✅ Dynamic component columns -->

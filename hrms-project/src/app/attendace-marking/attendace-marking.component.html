@@ -4,7 +4,7 @@
     <div class="header_section">
       <div class="row">
         <div class="col-md-3">
-          <h1>Attendance Marking</h1>
+          <h1>Attendance marking</h1>
         </div>
 
         <div class="col-md-4"></div>
@@ -28,7 +28,7 @@
               <div class="col-md-4">
                 <div class="custom-sel">
                   <div class="form-control-wrapper">
-                    <label>Select Employee</label>
+                    <label>Select employee</label>
                     <mat-form-field appearance="outline" style="width:100%">
                       <mat-select
                         placeholder="Select"
@@ -56,11 +56,11 @@
               <div class="col-md-6"></div>
 
               <div class="col-md-3" *ngIf="hasAddPermission">
-                <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerCheckIn()">Check In</button>
+                <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerCheckIn()">Check in</button>
               </div>
 
               <div class="col-md-3" *ngIf="hasAddPermission">
-                <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="registerCheckOut()">Check Out</button>
+                <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="registerCheckOut()">Check out</button>
               </div>
             </div>
           </form>
@@ -71,7 +71,7 @@
 
             <div class="row">
               <div class="col-md-8">
-                <h2>Attendance Bulk Upload & Download Details</h2>
+                <h2>Attendance bulk upload & download details</h2>
               </div>
               <div class="col-md-4 text-right">
                 <span class="close-btn" (click)="closeBulkuploadModal()">&times;</span>
@@ -103,7 +103,7 @@
               <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
                 <div class="row">
                   <div class="col-md-12">
-                    <label for="emp_profile_pic">Upload department Details:</label>
+                    <label for="emp_profile_pic">Upload department details:</label>
                     <input type="file" name="files" id="file" class="form-control" (change)="onFileSelected($event);">
                   </div>
                 </div>
@@ -112,7 +112,7 @@
                   <div class="col-md-8"></div>
                   <div class="col-md-2 col-6">
                     <button type="button" mat-raised-button color="warn" class="pull-right btn-danger btn-full" (click)="closeUploadForm()">
-                      close
+                      Close
                     </button>
                   </div>
                   <div class="col-md-2 col-6">
@@ -143,9 +143,9 @@
                 <th>Employee</th>
                 <th>Shift</th>
                 <th>Date</th>
-                <th>Total Hours</th>
-                <th>First In</th>
-                <th>Last Out</th>
+                <th>Total hours</th>
+                <th>First in</th>
+                <th>Last out</th>
               </tr>
             </thead>
             <ng-container *ngFor="let docs of Punching; let i = index">
@@ -176,8 +176,8 @@
                           <tr>
                             <th>Type</th>
                             <th>Time</th>
-                            <th>Location / Device</th>
-                            <th>Face Verified</th>
+                            <th>Location / device</th>
+                            <th>Face verified</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -232,7 +232,7 @@
                     </p>
                   </div>
                   <div class="photo-box ml-3">
-                    <label class="small d-block text-muted">Check-In Photo</label>
+                    <label class="small d-block text-muted">Check-In photo</label>
                     <img [src]="selectedAttendance.check_in_image || 'assets/no-image.png'"
                          class="img-thumbnail thumb-lg">
                   </div>
@@ -254,7 +254,7 @@
                     </p>
                   </div>
                   <div class="photo-box ml-3">
-                    <label class="small d-block text-muted">Check-Out Photo</label>
+                    <label class="small d-block text-muted">Check-Out photo</label>
                     <img [src]="selectedAttendance.check_out_image || 'assets/no-image.png'"
                          class="img-thumbnail thumb-lg">
                   </div>

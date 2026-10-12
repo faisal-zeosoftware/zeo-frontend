@@ -4,7 +4,7 @@
 <div class="header_section">
     <div class="row align-items-center">
       <div class="col-md-7">
-        <h1>Employee Details</h1>
+        <h1>Employee details</h1>
       </div>
 
       <div class="col-md-5">
@@ -50,7 +50,7 @@
           
                     <!-- Profile Pic File Upload in Edit Mode -->
                     <div *ngIf="isEditMode" class="mt-2 text-start px-3">
-                      <label class="form-label text-muted small mb-1">Change Profile Picture</label>
+                      <label class="form-label text-muted small mb-1">Change profile picture</label>
                       <input type="file" class="form-control form-control-sm" (change)="onFileSelected($event)" accept="image/*">
                     </div>
           
@@ -88,7 +88,7 @@
           <h3 *ngIf="!isEditMode">{{ employee.is_ess ? 'Yes' : 'No' }}</h3>
           <div *ngIf="isEditMode" class="form-check mt-1">
             <input type="checkbox" class="form-check-input" id="is_ess_check" [(ngModel)]="employee.is_ess">
-            <label class="form-check-label" for="is_ess_check">Enable ESS User</label>
+            <label class="form-check-label" for="is_ess_check">Enable ESS user</label>
           </div>
         </div>
   
@@ -188,7 +188,7 @@
                                     </div>
                               
                                     <div class="col-md-3"><!-- v1.13.0 -->
-                                      <label class="emp-label">Middle Name</label>
+                                      <label class="emp-label">Middle name</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_middle_name || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_middle_name" placeholder="Enter middle name">
                                     </div>
@@ -233,7 +233,7 @@
                                     </div>
                               
                                     <div *ngIf="!hid('isEmailNameFieldHidden')" class="col-md-3">
-                                      <label class="emp-label">Personal Email</label>
+                                      <label class="emp-label">Personal email</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_personal_email || '-' }}</p>
                                       <input *ngIf="isEditMode" type="email" class="form-control" [(ngModel)]="employee.emp_personal_email">
                                     </div>
@@ -248,13 +248,13 @@
                                   <!-- Row 3: Visa, Location & Background -->
                                   <div class="row g-3 mt-1">
                                     <div *ngIf="!hid('isLocationFieldHidden')" class="col-md-3">
-                                      <label class="emp-label">Work Location</label>
+                                      <label class="emp-label">Work location</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.work_location || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.work_location">
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <label class="emp-label">Visa Location</label>
+                                      <label class="emp-label">Visa location</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.visa_location || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.visa_location">
                                     </div>
@@ -300,7 +300,7 @@
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <label class="emp-label">Joining Date</label>
+                                      <label class="emp-label">Joining date</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_joined_date || '-' }}</p>
                                       <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_joined_date">
                                     </div>
@@ -312,19 +312,19 @@
                                     </div>
 
                                     <div class="col-md-3">
-                                      <label class="emp-label">Father Name</label>
+                                      <label class="emp-label">Father name</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_father_name || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_father_name">
                                     </div>
 
                                     <div class="col-md-3">
-                                      <label class="emp-label">Mother Name</label>
+                                      <label class="emp-label">Mother name</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_mother_name || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_mother_name">
                                     </div>
 
                                     <div class="col-md-3">
-                                      <label class="emp-label">Attendance Source</label>
+                                      <label class="emp-label">Attendance source</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.attendance_source === 'biometric' ? 'Biometric' : employee.attendance_source === 'manual' ? 'Manual' : '-' }}</p>
                                       <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.attendance_source">
                                         <option value="manual">Manual</option>
@@ -333,7 +333,7 @@
                                     </div>
 
                                     <div class="col-md-3">
-                                      <label class="emp-label">Attendance Card / Barcode</label>
+                                      <label class="emp-label">Attendance card / barcode</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.barcode_number || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.barcode_number">
                                     </div>
@@ -348,13 +348,13 @@
                                   <!-- Row 5: Manager & OT Settings (RESTORED) -->
                                   <div class="row g-3 mt-1">
                                     <div class="col-md-3">
-                                      <label class="emp-label">Reporting Manager</label>
+                                      <label class="emp-label">Reporting manager</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_reporting_manager || '-' }}</p>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_reporting_manager">
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <label class="emp-label">OT Applicable</label>
+                                      <label class="emp-label">OT applicable</label>
                                       <p *ngIf="!isEditMode" class="emp-value">
                                         <span class="badge" [ngClass]="employee.emp_ot_applicable ? 'bg-success' : 'bg-secondary'">
                                           {{ employee.emp_ot_applicable ? 'Yes' : 'No' }}
@@ -392,7 +392,7 @@
                                 </div>
                               </mat-tab>
                               <!-- v1.13.0: employee master extras (EmployeeProfile) -->
-                              <mat-tab label="UAE identity">
+                              <mat-tab [label]="'UAE identity' | zc">
                                 <div class="tab_content mt-3">
                                   <z-emp-completeness [employeeId]="employee?.id"></z-emp-completeness>
                                   <z-emp-identity [employeeId]="employee?.id"></z-emp-identity>
@@ -408,25 +408,25 @@
                                 <div class="tab_content mt-3" *ngFor="let member of emp_family_details; let i = index">        
                                     <div class="row">
                                     <div class="col-md-3">
-                                      <h2>Employee Member Name</h2>
+                                      <h2>Employee member name</h2>
                                       <h3 *ngIf="!isEditMode">{{ member.ef_member_name }}</h3>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.ef_member_name">
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <h2>Date Of Birth</h2>
+                                      <h2>Date of birth</h2>
                                       <h3 *ngIf="!isEditMode">{{ member.ef_date_of_birth }}</h3>
                                       <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="member.ef_date_of_birth">
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <h2>Employee Relation</h2>
+                                      <h2>Employee relation</h2>
                                       <h3 *ngIf="!isEditMode">{{ member.emp_relation }}</h3>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.emp_relation">
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <h2>Company Expense</h2>
+                                      <h2>Company expense</h2>
                                       <h3 *ngIf="!isEditMode">{{ member.ef_company_expence }}</h3>
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.ef_company_expence">
                                     </div>
@@ -441,7 +441,7 @@
                                 </div>
                               
                                 <div class="mt-5" *ngIf="!isEditMode">
-                                  <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('family')">Add Family</button>
+                                  <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('family')">Add family</button>
                                 </div>
                                 <!-- v1.13.0: dependant passport / Emirates ID / visa / insurance -->
                                 <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="dependents" [employeeId]="employee?.id" [refresh]="emp_family_details.length"></z-emp-extras></div>
@@ -453,7 +453,7 @@
     <div class="tab_content mt-3" *ngFor="let Qualification of Qualifications; let i = index">
         <div class="row">
             <div class="col-md-3">
-                <h2>Employee Qualification</h2>
+                <h2>Employee qualification</h2>
                 <h3 *ngIf="!isEditMode">{{ Qualification.emp_qualification }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Qualification.emp_qualification">
             </div>
@@ -481,7 +481,7 @@
         </div>
     </div>
     <div class="mt-5" *ngIf="!isEditMode">
-        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('qualification')">Add Qualification</button>
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('qualification')">Add qualification</button>
     </div>
     <!-- v1.13.0: attestation -->
     <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="qualifications" [employeeId]="employee?.id" [refresh]="Qualifications?.length || 0"></z-emp-extras></div>
@@ -493,32 +493,32 @@
     <div class="tab_content mt-3" *ngFor="let member of emp_bank_details; let i = index">
         <div class="row">
             <div class="col-md-3">
-                <h2>Bank Name</h2>
+                <h2>Bank name</h2>
                 <h3 *ngIf="!isEditMode">{{ member.bank_name }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.bank_name">
             </div>
             <div class="col-md-3">
-                <h2>Branch Name</h2>
+                <h2>Branch name</h2>
                 <h3 *ngIf="!isEditMode">{{ member.branch_name }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.branch_name">
             </div>
             <div class="col-md-3">
-                <h2>Account Number</h2>
+                <h2>Account number</h2>
                 <h3 *ngIf="!isEditMode">{{ member.account_number }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.account_number">
             </div>
             <div class="col-md-3">
-                <h2>Bank Address</h2>
+                <h2>Bank address</h2>
                 <h3 *ngIf="!isEditMode">{{ member.bank_address }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.bank_address">
             </div>
             <div class="col-md-3">
-                <h2>Route Code</h2>
+                <h2>Route code</h2>
                 <h3 *ngIf="!isEditMode">{{ member.route_code }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.route_code">
             </div>
             <div class="col-md-3">
-                <h2>Iban Number</h2>
+                <h2>IBAN number</h2>
                 <h3 *ngIf="!isEditMode">{{ member.iban_number }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.iban_number">
             </div>
@@ -529,7 +529,7 @@
         </div>
     </div>
     <div class="mt-5" *ngIf="!isEditMode">
-        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('bank')">Add Bank</button>
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('bank')">Add bank</button>
     </div>
     <!-- v1.13.0: WPS agent / payment mode and the IBAN check -->
     <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="bank" [employeeId]="employee?.id" [refresh]="emp_bank_details?.length || 0"></z-emp-extras></div>
@@ -554,7 +554,7 @@
     <div class="tab_content mt-3" *ngFor="let Jobhistory of Jobhistorys; let i = index">
         <div class="row">
             <div class="col-md-3">
-                <h2>Company Name</h2>
+                <h2>Company name</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_company_name }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_company_name">
             </div>
@@ -564,27 +564,27 @@
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_designation">
             </div>
             <div class="col-md-3">
-                <h2>From Date</h2>
+                <h2>From date</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_from_date }}</h3>
                 <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="Jobhistory.emp_jh_from_date">
             </div>
             <div class="col-md-3">
-                <h2>End Date</h2>
+                <h2>End date</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_end_date }}</h3>
                 <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="Jobhistory.emp_jh_end_date">
             </div>
             <div class="col-md-3">
-                <h2>Last Leaving Salary Per Month</h2>
+                <h2>Last leaving salary per month</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_leaving_salary_permonth }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_leaving_salary_permonth">
             </div>
             <div class="col-md-3">
-                <h2>Leaving Reason</h2>
+                <h2>Leaving reason</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_reason }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_reason">
             </div>
             <div class="col-md-3">
-                <h2>Total Experience</h2>
+                <h2>Total experience</h2>
                 <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_years_experiance }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_years_experiance">
             </div>
@@ -597,18 +597,18 @@
         </div>
     </div>
     <div class="mt-5" *ngIf="!isEditMode">
-        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('jobhistory')">Add Job History</button>
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('jobhistory')">Add job history</button>
     </div>
 </mat-tab>
                             <!-- <mat-tab label="Leave Request">
                         <div class="tab_content  mt-3"  *ngFor="let Leavereq of LeaveRequests">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <h2>Start Date</h2>
+                                    <h2>Start date</h2>
                                     <h3>{{ Leavereq.start_date }}</h3>
                                 </div>
                                 <div class="col-md-3" >
-                                    <h2>End Date</h2>
+                                    <h2>End date</h2>
                                     <h3>{{ Leavereq.end_date }} </h3>
                                 </div>
                              
@@ -639,19 +639,19 @@
         <div class="row mt-3" *ngFor="let document of employeeDocuments; let i = index">
 
             <div class="col-md-3">
-                <h2>Document Number</h2>
+                <h2>Document number</h2>
                 <h3 *ngIf="!isEditMode">{{ document.emp_doc_number }}</h3>
                 <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="document.emp_doc_number">
             </div>
 
             <div class="col-md-2">
-                <h2>Issue Date</h2>
+                <h2>Issue date</h2>
                 <h3 *ngIf="!isEditMode">{{ document.emp_doc_issued_date }}</h3>
                 <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="document.emp_doc_issued_date">
             </div>
 
             <div class="col-md-2">
-                <h2>Expiry Date</h2>
+                <h2>Expiry date</h2>
                 <h3 *ngIf="!isEditMode">{{ document.emp_doc_expiry_date }}</h3>
                 <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="document.emp_doc_expiry_date">
             </div>
@@ -671,12 +671,13 @@
             </div>
 
             <div class="col-md-3">
-                <h2>Employee Document</h2>
+                <h2>Employee document</h2>
                 <div *ngIf="document.emp_doc_document">
                     <a [href]="document.emp_doc_document" target="_blank" rel="noopener" class="btn btn-primary btn-sm">View Document</a>
                 </div>
                 <div *ngIf="!document.emp_doc_document">No Document Available</div>
                 <input *ngIf="isEditMode" type="file" class="form-control mt-2" (change)="onDocFileSelected($event, document)">
+                <button *ngIf="isEditMode && document._newFile" type="button" class="btn btn-outline-primary btn-sm mt-2" (click)="fillDocFromFile(document)" title="Read the number and dates from the new file – you check them before saving">Fill from document</button>
             </div>
 
             <div class="col-md-12"><z-emp-fields [fields]="document.doc_custom_fields" valueKey="field_value" [editable]="isEditMode" [minWidth]="200"></z-emp-fields></div>
@@ -688,7 +689,7 @@
     </div>
 
     <div class="mt-5">
-        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('documents')">Add Document</button>
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('documents')">Add document</button>
     </div>
     <div *ngIf="!employeeDocuments.length">No employee documents available.</div>
 </mat-tab>
@@ -727,9 +728,9 @@
                                 
                                                 <tr>
                                                     <th width="8%">No</th>
-                                                    <th>Salary Component</th>
-                                                    <th>Component Type</th>
-                                                    <th>Payroll Category</th>
+                                                    <th>Salary component</th>
+                                                    <th>Component type</th>
+                                                    <th>Payroll category</th>
                                                     <th class="text-end">Amount</th>
                                                 </tr>
                                 
@@ -766,7 +767,7 @@
                                                 <tr>
                                 
                                                     <th colspan="4" class="text-end">
-                                                        Gross Salary
+                                                        Gross salary
                                                     </th>
                                 
                                                     <th class="text-end">
@@ -778,7 +779,7 @@
                                                 <tr>
                                 
                                                     <th colspan="4" class="text-end">
-                                                        Net Salary
+                                                        Net salary
                                                     </th>
                                 
                                                     <th class="text-end">
@@ -798,7 +799,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3"
      *ngIf="showSalaryRevisions">
 
-    <h4 class="mb-0">Salary Revision History</h4>
+    <h4 class="mb-0">Salary revision history</h4>
 
     <button class="btn btn-primary btn-sm"
             (click)="isRevisionTableVisible = !isRevisionTableVisible">
@@ -818,10 +819,10 @@
             <tr>
                 <th>No</th>
                 <th>Component</th>
-                <th>Old Amount</th>
-                <th>New Amount</th>
-                <th>Effective Period</th>
-                <th>Revised On</th>
+                <th>Old amount</th>
+                <th>New amount</th>
+                <th>Effective period</th>
+                <th>Revised on</th>
                 <th>Remarks</th>
             </tr>
         </thead>
@@ -837,7 +838,7 @@
                     <td data-label="Old Amount">{{ revision.old_amount }}</td>
                     <td data-label="New Amount">{{ revision.new_amount }}</td>
                     <td data-label="Effective Period">{{ revision.effective_period || '-' }}</td>
-                    <td data-label="Revised On">{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
+                    <td data-label="Revised On">{{ revision.revised_on | date:'dd MMM yyyy' }}</td>
                     <td data-label="Remarks">{{ revision.remarks || '-' }}</td>
 
                 </tr>
@@ -868,12 +869,12 @@
                         <th class="text-table-header" style="width: 0;">No</th>
                         <!-- <th class="text-table-header">Employee</th> -->
                         <th class="text-table-header">Name</th>
-                        <th class="text-table-header">Start Date</th>
-                        <th class="text-table-header">End Date</th>
-                        <th class="text-table-header">Gross Salary</th>
-                        <th class="text-table-header">Net Salary</th>
+                        <th class="text-table-header">Start date</th>
+                        <th class="text-table-header">End date</th>
+                        <th class="text-table-header">Gross salary</th>
+                        <th class="text-table-header">Net salary</th>
                         <th class="text-table-header">Status</th>
-                        <!-- <th class="text-table-header">Payslip Component</th> -->
+                        <!-- <th class="text-table-header">Payslip component</th> -->
                       </tr>
                     </thead>
                     <tbody class="text-table-body">
@@ -903,7 +904,7 @@
                   </table>
                                 </div>
                                 <!-- <div class=" mt-5" >
-                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
+                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add language</button>
                         </div> -->
                             </mat-tab>
 
@@ -937,7 +938,7 @@
                                         
                                             </div>
                                             <div class="col-md-2 mt-3">
-                                                <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
+                                                <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate report</button>
                                               </div>
                                         </div>
                                         
@@ -958,11 +959,11 @@
       <table class="table table-bordered table-hover mt-3 text-center">
         <thead>
           <tr>
-            <th>Employee Name</th>
+            <th>Employee name</th>
             <th *ngFor="let day of daysArray">Day {{ day }}</th>
-            <!-- <th>Total Days</th> -->
-            <th>Present Days</th>
-            <th>Absent Days</th>
+            <!-- <th>Total days</th> -->
+            <th>Present days</th>
+            <th>Absent days</th>
           </tr>
         </thead>
         <tbody>
@@ -983,7 +984,7 @@
                 
                                 </div>
                                 <!-- <div class=" mt-5" >
-                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
+                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add language</button>
                         </div> -->
                             </mat-tab>
 
@@ -1039,7 +1040,7 @@
                 
                                 </div>
                                 <!-- <div class=" mt-5" >
-                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
+                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add language</button>
                         </div> -->
                             </mat-tab>
 
@@ -1151,7 +1152,7 @@
                                             <div class="col-md-4">
 
                                                 <section class="card red">
-                                                    <h2 class="card_title">Programming Language</h2>
+                                                    <h2 class="card_title">Programming language</h2>
                                                     <hr>
 
                                                     <div class="skill_Sec" *ngFor="let program of EmpPrgmSkills">
@@ -1246,7 +1247,7 @@
 
                                 </div>
                                 <!-- <div class=" mt-5" >
-                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
+                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add language</button>
                         </div> -->
                             </mat-tab>
 
@@ -1256,20 +1257,20 @@
                                 <div class="tab_content  mt-3" *ngFor="let member of emp_asset_details">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <h2>Asset Name</h2>
+                                            <h2>Asset name</h2>
                                             <h3>{{ member.asset }} </h3>
                                         </div>
                                         <div class="col-md-3">
-                                            <h2>Assigned Date</h2>
+                                            <h2>Assigned date</h2>
                                             <h3>{{ member.assigned_date }} </h3>
                                         </div>
 
                                         <div class="col-md-3">
-                                            <h2>Return Condition</h2>
+                                            <h2>Return condition</h2>
                                             <h3>{{ member.return_condition }} </h3>
                                         </div>
                                         <div class="col-md-3">
-                                            <h2>Return Date</h2>
+                                            <h2>Return date</h2>
                                             <h3>{{ member.returned_date }} </h3>
                                         </div>
 
@@ -1296,21 +1297,21 @@
                                         </div>
 
                                         <div class="col-md-3">
-                                            <h2>EMI Amount</h2>
+                                            <h2>EMI amount</h2>
                                             <h3>{{ member.emi_amount }} </h3>
                                         </div>
 
                                         <div class="col-md-3">
-                                            <h2>Loan Type </h2>
+                                            <h2>Loan type </h2>
                                             <h3>{{ member.loan_type }} </h3>
                                         </div>
                                         <div class="col-md-3">
-                                            <h2>Repayment Period </h2>
+                                            <h2>Repayment period </h2>
                                             <h3>{{ member.repayment_period }} </h3>
                                         </div>
 
                                         <div class="col-md-3">
-                                            <h2>Remaining Balance</h2>
+                                            <h2>Remaining balance</h2>
                                             <h3>{{ member.remaining_balance }} </h3>
                                         </div>
                                         <div class="col-md-3">
@@ -1319,7 +1320,7 @@
                                         </div>
 
                                         <div class="col-md-3">
-                                            <h2>applied on</h2>
+                                            <h2>Applied on</h2>
                                             <h3>{{ member.applied_on }} </h3>
                                         </div>
                                         <div class="col-md-3">
@@ -1424,7 +1425,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Add Leave Balance Openings</h2>
+                  <h2>Add leave balance openings</h2>
                   <hr>
                 </div>
                 <div class="col-md-2">
@@ -1435,11 +1436,11 @@
               <form>
                 <div class="row mb-3">
                   <div class="col-md-6">
-                    <label>Leave Type ID:</label>
+                    <label>Leave type ID:</label>
                     <input type="text" class="form-control" [value]="selectedLeaveBalanceId" readonly>
                   </div>
                   <div class="col-md-6">
-                    <label>Opening Balance:</label>
+                    <label>Opening balance:</label>
                     <input type="number" class="form-control" [(ngModel)]="openingBalance" name="openingBalance">
                   </div>
                 </div>
@@ -1459,7 +1460,7 @@
             <div class="modal-content">
                 <div class="row">
                     <div class="col-md-10">
-                        <h2>Add Programming Langauge</h2>
+                        <h2>Add programming langauge</h2>
                         <hr>
                     </div>
                     <div class="col-md-2">
@@ -1477,7 +1478,7 @@
 
 
                             <div class="custom-sel">
-                                <label>Select Employee Langauge</label>
+                                <label>Select employee langauge</label>
                                 <select class="form-control" id="program_skill" required [(ngModel)]="program_skill"
                                     [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked && !program_skill}">
@@ -1539,7 +1540,7 @@
             <div class="modal-content">
                 <div class="row">
                     <div class="col-md-10">
-                        <h2>Add Programming Langauge</h2>
+                        <h2>Add programming langauge</h2>
                         <hr>
                     </div>
                     <div class="col-md-2">
@@ -1557,7 +1558,7 @@
 
 
                             <div class="custom-sel">
-                                <label>Select Employee Langauge</label>
+                                <label>Select employee langauge</label>
                                 <select class="form-control" id="marketing_skill" required [(ngModel)]="marketing_skill"
                                     [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked && !marketing_skill}">

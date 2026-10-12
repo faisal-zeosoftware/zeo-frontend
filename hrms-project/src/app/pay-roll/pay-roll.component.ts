@@ -333,7 +333,7 @@ if (this.userId !== null) {
 
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -1269,11 +1269,81 @@ loadEmp(callback?: Function): void {
           },
           (error) => {
             console.error('Failed to delete payroll', error);
+            alert(this.runError(error, 'delete'));   // v1.16.0: e.g. a paid run is closed and cannot be deleted
           }
         );
       }
     }
     
+    // v1.16.0 (D16): approve / close a payroll run from the screen (it could only be done through the API). Same rules as
+    // the API: processed → approved (no payslip waiting for approval) → paid (= closed); an approval can be undone
+    // (approved → processed) while the run is not paid.
+    runBusyId: number | null = null;
+
+    runStatusLabel(status: any): string {
+      const s = String(status || '').toLowerCase();
+      return ({ pending: 'Pending', processed: 'Processed', approved: 'Approved', paid: 'Paid (closed)' } as any)[s] || String(status || '-');
+    }
+
+    canApproveRun(run: any): boolean {
+      return this.hasEditPermission && String(run?.status || '').toLowerCase() === 'processed';
+    }
+
+    canPayRun(run: any): boolean {
+      return this.hasEditPermission && String(run?.status || '').toLowerCase() === 'approved';
+    }
+
+    setRunStatus(run: any, status: 'approved' | 'paid' | 'processed'): void {
+      const question = status === 'approved'
+        ? 'Approve this payroll run? Every payslip must be approved or rejected first.'
+        : status === 'paid'
+          ? 'Mark this payroll run as paid and close it? Do this after the salaries were transferred (WPS). A closed run cannot be changed or deleted.'
+          : 'Undo the approval of this payroll run? It goes back to processed so payslips can be corrected.';
+      if (!confirm(question)) return;
+      const body: any = { status };
+      if (status === 'paid') {   // v1.18.0: the bank / WPS reference of the salary transfer is kept with the run
+        const ref = prompt('Payment reference (bank transfer / WPS file)', '');
+        if (ref === null) return;
+        body.payment_ref = ref;
+      }
+      const schema = this.authService.getSelectedSchema();
+      if (!schema) { alert('No schema selected.'); return; }
+      const url = `${environment.apiBaseUrl}/payroll/api/PayrollRun/${run.id}/?schema=${encodeURIComponent(schema)}`;
+      this.runBusyId = run.id;
+      this.http.patch<any>(url, body).subscribe({
+        next: (res: any) => {
+          this.runBusyId = null;
+          run.status = res?.status || status;
+          if (res?.control) { run.control = res.control; }
+          alert(status === 'approved' ? 'The payroll run is approved.'
+            : status === 'paid' ? 'The payroll run is marked as paid and closed.' : 'The approval is undone. The payroll run is processed again.');
+        },
+        error: (err: any) => {
+          this.runBusyId = null;
+          alert(this.runError(err, status));
+        }
+      });
+    }
+
+    private runError(err: any, status: string): string {
+      if (err?.status === 403 && err?.error?.detail && /segregation/i.test(err.error.detail)) {   // v1.18.0
+        return err.error.detail;
+      }
+      if (err?.status === 403) {
+        return status === 'delete'
+          ? 'You do not have the right to delete payroll runs. Ask your administrator for the "Can delete payroll run" right.'
+          : 'You do not have the right to change payroll runs. Ask your administrator for the "Can change payroll run" right.';
+      }
+      const e = err?.error;
+      const pick = (v: any): string => Array.isArray(v) ? v.join(' ') : (typeof v === 'string' ? v : '');
+      const text = e && typeof e === 'object'
+        ? (pick(e.status) || pick(e.detail) || pick(e.non_field_errors) || pick(e.error) || '')
+        : (typeof e === 'string' && e.length < 300 ? e : '');
+      return text || ({ approved: 'The payroll run could not be approved. Try again.', paid: 'The payroll run could not be marked as paid. Try again.',
+        processed: 'The approval could not be undone. Try again.', delete: 'The payroll run could not be deleted. Try again.' } as any)[status]
+        || 'The payroll run could not be changed. Try again.';
+    }
+
     // LoadPayrollSettings(selectedSchema: string) {
     //   this.leaveService.getPayrollSettings(selectedSchema).subscribe(
     //     (data: any) => {

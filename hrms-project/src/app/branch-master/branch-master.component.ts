@@ -16,83 +16,50 @@ import { EmployeeService } from '../employee-master/employee.service';
   template: ` <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
 
-      <!-- ============ YOUR ORIGINAL HEADER SECTION — UNCHANGED ============ -->
       <div class="header_section mt-4">
           <div class="row">
-              <div class="col-md-3">
-                  <h1 title="change Branch"> Branch details</h1>
+              <div class="col-md-6">
+                  <h1>Branches</h1>
               </div>
-              <div class="col-md-4">
-                     <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search by branch or code" [(ngModel)]="searchQuery" (input)="filterEmployees()">
-                        <button class="search-btn">
-                          <i class="fa fa-search"></i>
-                        </button>
-                      </div>
-                </div>
-              <div class="col-md-5">
+              <div class="col-md-6">
                   <div class="button-group pull-right">
                       <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle</mat-icon></span> Create</button>
-                      <span *ngIf="!hasAddPermission"></span>
-                      <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon"><mat-icon>draw</mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                      <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                      <span class="header-btn-icon"><mat-icon>delete</mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                     <span *ngIf="!hasDeletePermission"></span>
                   </div>
               </div>
           </div>
       </div>
-      <!-- ============ END HEADER — UNCHANGED ============ -->
 
-      <div class="row">
-          <div class="col-md-2">
-              <button class="mt-3 btn-danger btn" style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-          </div>
-          <div class="col-md-3">
-              <button class="mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete Selected</button>
-          </div>
-      </div>
-
-      <!-- ============ NEW: CARD GRID INSTEAD OF TABLE/STACKED LIST ============ -->
-      <div class="branch-grid mt-4">
-       <div class="branch-card"
-     *ngFor="let branchsec of filteredEmployees"
-     [ngClass]="{ 'selected-card': branchsec.selected }">
-
-  <mat-checkbox *ngIf="Delete" class="card-checkbox"
-                [(ngModel)]="branchsec.selected"
-                (change)="onCheckboxChange(branchsec.id)"></mat-checkbox>
-
-  <button mat-fab class="card-edit-btn" *ngIf="showEditBtn" (click)="openEditPopuss(branchsec.id)">
-    <mat-icon>draw</mat-icon>
-  </button>
-
-  <div class="card-top">
-    <div class="branch-avatar">{{ branchsec.branch_name?.charAt(0) }}</div>
-    <div class="card-code">{{ branchsec.branch_code }}</div>
-  </div>
-
-  <h2 class="card-branch-name">{{ branchsec.branch_name }}</h2>
-  <p class="card-city"><mat-icon>location_on</mat-icon> {{ branchsec.br_city || '-' }}</p>
-
-  <div class="card-divider"></div>
-
-  <div class="card-detail-row">
-    <mat-icon>mail</mat-icon>
-    <span>{{ branchsec.br_branch_mail || '-' }}</span>
-  </div>
-  <div class="card-detail-row">
-    <mat-icon>call</mat-icon>
-    <span>{{ branchsec.br_branch_nmbr_1 || '-' }}</span>
-  </div>
-  <div class="card-detail-row address-row">
-    <mat-icon>home_pin</mat-icon>
-    <span class="address-text">{{ branchsec.branch_address || '-' }}</span>
-  </div>
-
-</div>
+      <!-- v1.20.1: branches as a standard list (search, filters, export from the list bar) -->
+      <div class="mt-3">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Branch</th>
+              <th>Code</th>
+              <th>City</th>
+              <th>E-mail</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th style="width:110px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let b of filteredEmployees">
+              <td><span class="bm-av">{{ b.branch_name?.charAt(0) }}</span> <b>{{ b.branch_name }}</b></td>
+              <td>{{ b.branch_code }}</td>
+              <td>{{ b.br_city || '' }}</td>
+              <td>{{ b.br_branch_mail || '' }}</td>
+              <td>{{ b.br_branch_nmbr_1 || '' }}</td>
+              <td>{{ b.branch_address || '' }}</td>
+              <td class="text-end bm-acts">
+                <z-translate *ngIf="hasEditPermission" endpoint="/organisation/api/Branch/" [recordId]="b.id" [small]="true" [iconOnly]="true"></z-translate>
+                <button type="button" class="bm-act" title="Edit" *ngIf="hasEditPermission" (click)="openEditPopuss(b.id)"><mat-icon>edit</mat-icon></button>
+                <button type="button" class="bm-act bm-del" title="Delete" *ngIf="hasDeletePermission" (click)="deleteOne(b)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </tr>
+            <tr *ngIf="!filteredEmployees.length"><td colspan="7" class="text-center text-muted py-4">No branches yet</td></tr>
+          </tbody>
+        </table>
       </div>
 
   </div>
@@ -125,6 +92,7 @@ export class BranchMasterComponent {
   selectedSchema: string | null = null;
 
   filteredEmployees: any[] = [];
+  deleteOne(b: any): void { this.branches.forEach((x: any) => x.selected = x === b); this.deleteSelectedEmployees(); }
   searchQuery: string = '';
 
   constructor(private BrachRegistrationService: BrachRegistrationService ,
@@ -213,7 +181,7 @@ if (this.userId !== null) {
                 this.hasEditPermission = this.checkGroupPermission('change_brnch_mstr', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);

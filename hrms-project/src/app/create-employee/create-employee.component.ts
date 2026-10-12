@@ -15,12 +15,16 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EmployeeService } from '../employee-master/employee.service';
 import { EmployeeFamilyComponent } from '../employee-family/employee-family.component';
 import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
+import { zToast } from '../shared-ui/z-toast';   // v1.19.0
+import { i18nT } from '../shared-ui/i18n-core';
+import { ErService, erPage } from '../employee-record/er.service';   // v1.19.0
 import { throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmployeeAddMoreFieldComponent } from '../employee-add-more-field/employee-add-more-field.component';
 import { environment } from '../../environments/environment';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { cpText } from '../shared-ui/country-pack.service';   // v1.14.0
 
 @Component({
   selector: 'app-create-employee',
@@ -302,7 +306,48 @@ export class CreateEmployeeComponent implements OnInit {
     private authService: AuthenticationService,
     private userService: UserMasterService,
     private DepartmentServiceService: DepartmentServiceService,
-    private ref: MatDialogRef<CreateEmployeeComponent>) { }
+    private ref: MatDialogRef<CreateEmployeeComponent>,
+    private er: ErService) { }
+
+  // ------------------------------------------------------------ v1.19.0: save choices, error banner, duplicate check
+  afterSave: 'open' | 'another' = 'open';
+  t = i18nT;
+  attention: { label: string; id?: string; section?: string }[] = [];
+  dupes: { kind: string; label: string; matches: any[] }[] = [];
+  private dupLabels: Record<string, string> = { mobile: 'mobile number', company_email: 'company e-mail', personal_email: 'personal e-mail',
+    emirates_id: 'Emirates ID', passport_no: 'passport number' };
+  async dupCheck(kind: string, value: any): Promise<void> {
+    this.dupes = this.dupes.filter(d => d.kind !== kind);
+    if (!value || String(value).trim().length < 4) { return; }
+    try {
+      const r: any = await this.er.get('employee-profile/api/duplicates/', { [kind]: String(value).trim() });
+      if (r?.matches?.length) { this.dupes.push({ kind, label: this.dupLabels[kind] || kind, matches: r.matches }); }
+    } catch { /* the check is only a hint */ }
+  }
+  openDupe(m: any): void { this.ref.close(); this.router.navigate([erPage(m.employee_id)]); }
+  jump(a: { id?: string; section?: string }): void {
+    if (a.section === 'basic') { this.basicSectionOpen = true; }
+    if (a.section === 'personal') { this.personalSectionOpen = true; }
+    setTimeout(() => {
+      const el = a.id ? document.getElementById(a.id) : null;
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); (el as HTMLElement).focus(); el.classList.add('shake-error'); }
+    }, 200);
+  }
+  private needs(list: { label: string; id?: string; section?: string }[]): void {
+    this.attention = list;
+    if (list.length) { this.jump(list[0]); setTimeout(() => document.getElementById('ce-attention')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0); }
+  }
+  private created(id: number, code: string, pending: Promise<any>[]): void {
+    zToast(i18nT('Employee {0} added', [code || '']), 'ok');
+    Promise.all(pending.map(p => p.catch(() => null))).then(() => {
+      this.ref.close({ id });
+      if (this.afterSave === 'another') {
+        this.dialog.open(CreateEmployeeComponent, { width: 'min(1180px, 96vw)', maxWidth: '96vw', height: '90vh', panelClass: 'er-create-dialog' });
+      } else {
+        this.router.navigate([erPage(id)]);
+      }
+    });
+  }
 
 
   //  onFileSelected(event: any): void {
@@ -852,20 +897,10 @@ export class CreateEmployeeComponent implements OnInit {
     // custom fields ticked "Mandatory" in the form designer
     // v1.12.0: only fields shown on this form (show on / show only if); the server checks them again
     const missingCustom = ZEmpFieldsComponent.missing(this.custom_fields, 'field_value', 'create');
-    if (missingCustom.length) {
-      alert('Please fill: ' + missingCustom.join(', '));
-      return;
-    }
     const badCustom = ZEmpFieldsComponent.problems(this.custom_fields, 'field_value', 'create');
-    if (badCustom.length) {
-      alert('Please correct: ' + badCustom.join(' '));
-      return;
-    }
     const orgMissing = this.orgFields?.problems() || [];   // v1.12.0 required organisation fields
-    if (orgMissing.length) {
-      alert('Please fill: ' + orgMissing.join(' '));
-      return;
-    }
+    const extra = [...missingCustom.map((m: string) => ({ label: m + ' is required' })), ...badCustom.map((m: string) => ({ label: m })),
+                   ...orgMissing.map((m: string) => ({ label: m }))];   // v1.19.0 one banner instead of alerts
 
     // ================================
     // REQUIRED FIELD VALIDATION
@@ -941,48 +976,11 @@ export class CreateEmployeeComponent implements OnInit {
     // VALIDATION + AUTO OPEN ACCORDION
     // ================================
 
-    for (const item of requiredFields) {
-
-      if (!item.field || item.field === '' || item.field === null) {
-
-        // OPEN REQUIRED ACCORDION
-        if (item.section === 'basic') {
-          this.basicSectionOpen = true;
-        }
-
-        if (item.section === 'personal') {
-          this.personalSectionOpen = true;
-        }
-
-        // WAIT FOR DOM RENDER
-        setTimeout(() => {
-
-          const element = document.getElementById(item.elementId);
-
-          if (element) {
-
-            // SCROLL TO FIELD
-            element.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center'
-            });
-
-            // FOCUS FIELD
-            element.focus();
-
-            // RED BORDER
-            element.classList.add('shake-error');
-
-          }
-
-        }, 200);
-
-        alert(`${item.fieldName} is required`);
-
-        return;
-      }
-    }
-
+    // v1.19.0: every missing field in one red banner ("N fields need attention"); the first one is opened and focused
+    const missing = requiredFields.filter(item => !item.field || item.field === '' || item.field === null)
+      .map(item => ({ label: i18nT('{0} is required', [i18nT(item.fieldName.charAt(0) + item.fieldName.slice(1).toLowerCase())]), id: item.elementId, section: item.section }));
+    if (missing.length || extra.length) { this.needs([...missing, ...extra]); return; }
+    this.attention = [];
 
     // ================================
     // FORM DATA
@@ -1192,34 +1190,19 @@ formData.append(
 
           // custom field values were saved with the employee (v1.12.0)
 
-          // v1.12.0: organisation fields (saved once the employee exists)
-          this.orgFields?.save(createdEmployeeId).then(problem => {
-            if (problem) { alert('The employee was saved, but not the organisation details: ' + problem + ' Correct them on the employee.'); }
+          // v1.12.0: organisation fields; v1.13.0: title / name in Arabic / preferred name (saved once the employee exists)
+          const pending: Promise<any>[] = [];
+          const org = this.orgFields?.save(createdEmployeeId).then(problem => {
+            if (problem) { zToast('The employee was saved, but not the organisation details: ' + problem + ' Correct them on the employee.', 'err'); }
           });
-          // v1.13.0: title / name in Arabic / preferred name
-          this.profileFields?.save(createdEmployeeId).then(problem => {
-            if (problem) { alert('The employee was saved, but not the name in Arabic / title: ' + problem + ' Correct it on the UAE identity tab.'); }
+          const prof = this.profileFields?.save(createdEmployeeId).then(problem => {
+            if (problem) { zToast('The employee was saved, but not the name in Arabic / title: ' + problem + cpText(' Correct it on the UAE documents section.'), 'err'); }
           });
+          if (org) { pending.push(org); }
+          if (prof) { pending.push(prof); }
           if (response?.emp_code && !this.emp_code) { this.emp_code = response.emp_code; }
-
-          // SUCCESS MODAL
-          const dialogRef = this.dialog.open(
-            SuccesModalComponent,
-            {
-              width: '300px',
-              data: {
-                message: 'Employee created successfully!',
-                emp_id: createdEmployeeId
-              }
-            }
-          );
-
-          dialogRef.afterClosed().subscribe(() => {
-
-            console.log('Success modal closed');
-
-          });
-
+          // v1.19.0: toast, then open the new employee (or a fresh form) instead of the success pop-up
+          this.created(createdEmployeeId, response?.emp_code || this.emp_code, pending);
         },
 
         (error: HttpErrorResponse) => {
@@ -1260,7 +1243,12 @@ formData.append(
 
           }
 
-          alert(`Registration failed!\n\n${errorMessage}`);
+          // v1.19.0: the problems in the banner, each under its field name
+          const fe = ErService.fieldErrors(error);
+          const list = Object.keys(fe).length ? Object.entries(fe).map(([k, v]) => ({ label: `${k.replace(/^emp_|_id$/g, '').replace(/_/g, ' ')}: ${v}`, id: k }))
+                                              : [{ label: errorMessage }];
+          this.needs(list);
+          zToast('The employee was not saved. ' + (list.length === 1 ? list[0].label : `${list.length} fields need attention.`), 'err');
 
         }
 

@@ -8,7 +8,7 @@
     </span>
   </div>
 
-        <h1>Create Leave Type</h1><hr>
+        <h1>Create leave type</h1><hr>
 
     
         <form (ngSubmit)="registerleaveType()" enctype="multipart/form-data">
@@ -32,7 +32,7 @@
               </div>
           
               <div class="col-md-4">
-                <label>Leave Type
+                <label>Leave type
                     <span class="required-star">*</span>
                 </label>
                 <div class="custom-sel">
@@ -66,7 +66,7 @@
               </div>
               
               <div class="col-md-4">
-                <label>Leave Unit
+                <label>Leave unit
                     <span class="required-star">*</span>
                 </label>
                 <div class="custom-sel">
@@ -79,13 +79,13 @@
               </div>
           
               <div class="col-md-4">
-                <label>Valid From</label>
+                <label>Valid from</label>
                 <input type="date" class="form-control" required [(ngModel)]="valid_from" placeholder="Enter valid from"
                        [ngModelOptions]="{standalone: true}" >
               </div>
            
               <div class="col-md-4">
-                <label>Valid To</label>
+                <label>Valid to</label>
                 <input type="date" class="form-control" required [(ngModel)]="valid_to" placeholder="Enter valid to"
                        [ngModelOptions]="{standalone: true}" >
               </div>
@@ -105,7 +105,7 @@
 
               
               <!-- <div class="col-md-4">
-                <label for="image">Leave Type Image</label>
+                <label for="image">Leave type image</label>
                 <input type="file" class="form-control" id="image" name="image" (change)="onFileSelected($event)">
               </div> -->
           
@@ -191,7 +191,7 @@
                 <button (click)="ClosePopup()"  type="button" class="btn btn-danger btn-full mt-4">Cancel</button>
               </div>
               <div class="col-md-2">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+                <button type="submit" class="btn btn-success btn-full mt-4">Add leave type</button>
               </div>
             </div>
           </form>

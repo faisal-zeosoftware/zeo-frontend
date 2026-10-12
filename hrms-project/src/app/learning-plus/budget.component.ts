@@ -4,17 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { LpApi } from './lp-api';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** Training budget vs actual by department (actual = per-head cost of confirmed participants + session cost lines + online courses). */
 @Component({
   selector: 'app-learning-budget',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['./learning-plus.css'],
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Budget vs Actual</h1><p class="lp-desc">Actual = cost per head × confirmed participants + session cost lines (shared per participant) + completed self-paced online courses, by the participant's department.</p></div>
+    <div><h1>Budget vs actual</h1><p class="lp-desc">Actual = cost per head × confirmed participants + session cost lines (shared per participant) + completed self-paced online courses, by the participant's department.</p></div>
     <div class="lp-tools">
       <select [(ngModel)]="year" (ngModelChange)="load()" aria-label="Year"><option *ngFor="let y of years" [ngValue]="y">{{ y }}</option></select>
     </div>
@@ -30,7 +31,7 @@ import { LpApi } from './lp-api';
       <div class="lp-tile"><div class="k">Cost / participant</div><div class="v">{{ d.cost_per_participant === null ? '–' : (d.cost_per_participant | number:'1.0-0') }}</div></div>
     </div>
     <div class="lp-card">
-      <h2>By department <span class="lp-muted" style="font-weight:400">(AED)</span></h2>
+      <h2>By department <span class="lp-muted" style="font-weight:400">({{ 'AED' | zc }})</span></h2>
       <div class="lp-legend"><span><span class="lp-tag" style="background:#c9c4f7;color:#1f1d3a">budget</span></span><span><span class="lp-tag" style="background:#5b4fe0;color:#fff">actual</span></span><span><span class="lp-tag red">over budget</span></span></div>
       <p class="lp-muted" *ngIf="!d.rows.length">No budget or training cost for {{ d.year }}.</p>
       <div class="lp-brow" *ngFor="let r of d.rows">
@@ -45,8 +46,8 @@ import { LpApi } from './lp-api';
           <span>per head {{ r.per_head | number:'1.0-0' }} · sessions {{ r.session_costs | number:'1.0-0' }} · online {{ r.online | number:'1.0-0' }}</span>
         </div>
       </div>
-      <p class="lp-muted" *ngIf="d.unallocated">Session costs without participants (not allocated): AED {{ d.unallocated | number:'1.0-0' }}</p>
-      <p class="lp-muted" *ngIf="d.company_budget !== null">Company-wide budget: AED {{ d.company_budget | number:'1.0-0' }} (department budgets add up to {{ d.department_budgets | number:'1.0-0' }}).</p>
+      <p class="lp-muted" *ngIf="d.unallocated">Session costs without participants (not allocated): {{ d.unallocated | zmoney:'1.0-0' }}</p>
+      <p class="lp-muted" *ngIf="d.company_budget !== null">Company-wide budget: {{ d.company_budget | zmoney:'1.0-0' }} (department budgets add up to {{ d.department_budgets | number:'1.0-0' }}).</p>
     </div>
   </ng-container>
 </div>`,

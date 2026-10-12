@@ -3,7 +3,7 @@
     <div class="header_section">
       <div class="row">
         <div class="col-md-4">
-          <h1>Salary Component</h1>
+          <h1>Salary component</h1>
         </div>
 
         <div class="col-md-3"></div>
@@ -59,7 +59,7 @@
           *ngIf="Delete"
           (click)="toggleSelectAllEmployees()"
         >
-          Select All
+          Select all
         </button>
       </div>
       <div class="col-md-3">
@@ -69,7 +69,7 @@
           *ngIf="Delete"
           (click)="deleteSelectedAssetMaster()"
         >
-          Delete Selected
+          Delete selected
         </button>
       </div>
     </div>
@@ -78,7 +78,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Create Salary Component</h2>
+            <h2>Create salary component</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -91,7 +91,7 @@
           <div class="row">
             <div class="col-md-6">
               <label>
-                Component Name
+                Component name
                 <span class="required-star">*</span>
               </label>
               <input
@@ -109,7 +109,7 @@
             </div>
             <div class="col-md-6">
               <label
-                >Component Type
+                >Component type
                 <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
@@ -137,7 +137,7 @@
             </div>
             <div class="col-md-6">
               <label>
-                Payroll Category
+                Payroll category
                 <span class="required-star">*</span>
               </label>
 
@@ -155,7 +155,7 @@
                     *ngFor="let category of payrollCategories"
                     [value]="category.value"
                   >
-                    {{ category.label }}
+                    {{ category.label | zc }}
                   </option>
                 </select>
               </div>
@@ -181,7 +181,7 @@
             </div>
             <div class="col-md-6">
               <label>
-                Component value Type
+                Component value type
                 <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
@@ -221,7 +221,7 @@
             </div>
             <div class="col-md-6">
               <label
-                >Select Branch
+                >Select branch
                 <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
@@ -307,7 +307,7 @@
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
                   <mat-checkbox [(ngModel)]="is_gratuity" [ngModelOptions]="{standalone: true}">
-                    Is Gratuity</mat-checkbox>
+                    {{ 'Is Gratuity' | zc }}</mat-checkbox>
                 </div>
 
               </div>
@@ -361,7 +361,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Formulae Writer</h2>
+                  <h2>Formulae writer</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closemarketModal()"
@@ -592,7 +592,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Salary Component</h2>
+            <h2>Edit salary component</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -604,7 +604,7 @@
         <form>
           <div class="row">
             <div class="col-md-6">
-              <label> Component Name</label>
+              <label> Component name</label>
               <input
                 type="text"
                 class="form-control"
@@ -619,7 +619,7 @@
               </div>
             </div>
             <div class="col-md-6">
-              <label>Component Type</label>
+              <label>Component type</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -637,7 +637,7 @@
 
             <div class="col-md-6">
               <label>
-                Payroll Category
+                Payroll category
                 <span class="required-star">*</span>
               </label>
 
@@ -651,7 +651,7 @@
     *ngFor="let category of payrollCategories"
     [value]="category.value">
 
-    {{ category.label }}
+    {{ category.label | zc }}
   </option>
 
 </select>
@@ -682,7 +682,7 @@
             </div>
 
             <div class="col-md-6">
-              <label>Component Value Type</label>
+              <label>Component value type</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -704,7 +704,7 @@
 </button>
             </div>
             <div class="col-md-6">
-              <label>Select Branch</label>
+              <label>Select branch</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -782,7 +782,7 @@
                     [(ngModel)]="editAsset.is_gratuity"
                     [ngModelOptions]="{ standalone: true }"
                   >
-                    Is Gratuity</mat-checkbox
+                    {{ 'Is Gratuity' | zc }}</mat-checkbox
                   >
                 </div>
               </div>
@@ -835,7 +835,7 @@
               <div class="modal-content">
                 <div class="row">
                   <div class="col-md-10">
-                    <h2>Formulae Writer</h2>
+                    <h2>Formulae writer</h2>
                   </div>
                   <div class="col-md-2">
                     <span class="close pull-right" (click)="closemarketModal()"
@@ -1029,7 +1029,7 @@
                           class="btn btn-danger btn-full pull-right mt-2"
                           (click)="closemarketModal()"
                         >
-                          close
+                          Close
                         </button>
                       </div>
                       <div class="col-md-3">
@@ -1080,14 +1080,14 @@
             <tr>
               <th class="sticky-left">No</th>
               <th>Name</th>
-              <th>Component Type</th>
-              <th>Payroll Category</th>
+              <th>Component type</th>
+              <th>Payroll category</th>
               <th>Code</th>
               <th>Branch</th>
-              <th>Value Type</th>
+              <th>Value type</th>
               <th>Formula</th>
-              <th>Deduct Leave</th>
-              <th>Show In Payslip</th>
+              <th>Deduct leave</th>
+              <th>Show in payslip</th>
               <th>Description</th>
               <th class="sticky-right">Actions</th>
             </tr>
@@ -1175,6 +1175,7 @@
                 >
                   <mat-icon style="color: white">draw</mat-icon>
                 </button>
+                <z-translate *ngIf="showEditBtn" endpoint="/payroll/api/salarycomponent/" [recordId]="docs.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
                 <mat-checkbox
                   *ngIf="Delete"
                   [(ngModel)]="docs.selected"

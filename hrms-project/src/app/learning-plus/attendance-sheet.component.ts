@@ -14,7 +14,7 @@ import { LpApi } from './lp-api';
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Attendance Sheet</h1><p class="lp-desc">Tick who attended each day. Attendance % on the result = days present ÷ training days; below 80% is not passed.</p></div>
+    <div><h1>Attendance sheet</h1><p class="lp-desc">Tick who attended each day. Attendance % on the result = days present ÷ training days; below 80% is not passed.</p></div>
     <div class="lp-tools">
       <select [(ngModel)]="session" (ngModelChange)="load()" aria-label="Session" style="max-width:300px">
         <option [ngValue]="null">Pick a session</option>

@@ -1,3 +1,4 @@
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
@@ -32,6 +33,12 @@ interface FieldSetting {
 
 
 export class LeaveReportComponent {
+  /** v1.15.1: a report cell – '-' when empty, stored codes like "first_half" / "minor_damage" as words */
+  zCell(v: any): string {
+    if (v === null || v === undefined || v === '') { return '-'; }
+    return typeof v === 'string' && /^[a-z]+(_[a-z]+)+$/.test(v) ? statusLabel(v) : v;
+  }
+
   
   private dataSubscription?: Subscription;
   
@@ -182,7 +189,7 @@ ngOnInit(): void {
                  console.log('Has view permission:', this.hasExportPermission);
 
                 } else {
-                  console.error('No groups found in data or groups array is empty.', firstItem);
+                  console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                 }
               } else {
                 console.error('Permissions data is not an array or is empty.', permissionsData);

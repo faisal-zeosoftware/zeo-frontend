@@ -11,7 +11,7 @@
     </header>
 
     <!-- one filter row scopes everything below -->
-    <div class="filters" *ngIf="d.is_admin">
+    <div class="filters" *ngIf="d.is_admin && !teamOnly">
       <div class="seg" role="group" aria-label="Who to show">
         <button type="button" [class.on]="scope === 'team'" (click)="setScope('team')">My team</button>
         <button type="button" [class.on]="scope === 'company'" (click)="setScope('company')">Whole company</button>
@@ -24,13 +24,16 @@
       </label>
     </div>
 
+    <!-- v1.16.0: period of the dashboard, drag & drop, sizes and a period per card -->
+    <z-dash-designer [name]="layoutName" [scope]="'#' + boardId" (periods)="onPeriods($event)"></z-dash-designer>
     <div [class.refetch]="loading">
       <p class="muted" *ngIf="!d.headcount">Nobody reports to you yet. Team numbers appear here once employees have you as their reporting manager.</p>
+      <div class="zdd-board" [id]="boardId">
 
       <!-- today -->
-      <section class="today big" *ngIf="d.headcount">
+      <section class="today big" *ngIf="d.headcount" data-widget="m-today" data-widget-title="Today" data-widget-size="f" data-widget-timed="0" data-widget-now="Who is in today – always today.">
         <button type="button" class="t-item" (click)="drill('present_today', 'Present today')">
-          <span class="t-k">Present</span><b>{{ d.today_status.present }}<small> of {{ d.headcount }}</small></b>
+          <span class="t-k">Present</span><b>{{ d.today_status.present }}<small> {{ 'of {0}' | t:d.headcount }}</small></b>
           <span class="t-bar"><i [style.width.%]="pctOf(d.today_status.present)"></i></span>
         </button>
         <button type="button" class="t-item" (click)="drill('late_today', 'Late today')">
@@ -49,22 +52,24 @@
         </button>
       </section>
 
-      <div class="grid g-2 wide-left">
+      <div class="grid g-2 wide-left zdd-contents">
         <!-- approvals inbox (signature element) -->
-        <section class="card inbox">
+        <section class="card inbox" data-widget="m-inbox" data-widget-title="Waiting for my approval" data-widget-timed="0" data-widget-now="Requests waiting for you now.">
           <div class="card-h">
             <h2>Waiting for my approval</h2>
             <button type="button" class="zbtn link" (click)="drill('approvals', 'Waiting for my approval')" *ngIf="d.approvals.total">Open all</button>
           </div>
           <div class="inbox-top">
-            <p class="hero">{{ d.approvals.total }}</p>
-            <p class="muted" *ngIf="d.approvals.total">requests · oldest <b>{{ d.approvals.oldest_days ? 'waiting ' + d.approvals.oldest_days + (d.approvals.oldest_days === 1 ? ' day' : ' days') : 'raised today' }}</b></p>
+            <!-- v1.17.0 (audit L1): the big number opens the list too -->
+            <p class="hero" [class.zgo]="d.approvals.total" [attr.role]="d.approvals.total ? 'link' : null" [attr.tabindex]="d.approvals.total ? 0 : null"
+               (click)="d.approvals.total && drill('approvals', 'Waiting for my approval')" (keydown.enter)="d.approvals.total && drill('approvals', 'Waiting for my approval')">{{ d.approvals.total }}</p>
+            <p class="muted" *ngIf="d.approvals.total">{{ 'requests' | t }} · <b>{{ d.approvals.oldest_days ? ((d.approvals.oldest_days === 1 ? 'oldest waiting {0} day' : 'oldest waiting {0} days') | t:d.approvals.oldest_days) : ('raised today' | t) }}</b></p>
             <p class="muted" *ngIf="!d.approvals.total">Nothing waiting. New requests from your team appear here.</p>
           </div>
           <ul class="bars">
             <li *ngFor="let m of d.approvals.by_module">
               <button type="button" (click)="drill('approvals', m.label, {module: m.module})">
-                <span class="b-l">{{ m.label }}</span>
+                <span class="b-l">{{ m.label | t }}</span>
                 <span class="b-track"><i [style.width.%]="m.count * 100 / apprMax"></i></span>
                 <b>{{ m.count }}</b>
               </button>
@@ -73,35 +78,66 @@
         </section>
 
         <!-- attendance trend -->
-        <section class="card">
-          <div class="card-h"><h2>Attendance, last 14 working days</h2><span class="muted small">% of people present · select a day</span></div>
+        <section class="card" data-widget="m-trend" data-widget-title="Attendance by working day" data-widget-timed="1" data-widget-size="w">
+          <div class="card-h"><h2>Attendance by working day</h2><span class="muted small">{{ '% of people present · select a day' | t }}</span></div>
+          <p class="muted small" *ngIf="!trendLabels.length">No working days in this period yet.</p>
           <z-chart type="bar" [labels]="trendLabels" [values]="trendValues" [max]="100" suffix="% present" [tooltipExtra]="trendExtra" [height]="230"
                    ariaLabel="Share of the team present per working day" (pick)="pickDay($event)"></z-chart>
         </section>
       </div>
 
-      <div class="grid g-3">
+      <div class="grid g-3 zdd-contents">
         <!-- who is out -->
-        <section class="card">
-          <div class="card-h"><h2>Who is out, next 14 days</h2><button type="button" class="zbtn link" (click)="drill('out_next', 'Leave – next 30 days', {days: 30})">30 days</button></div>
+        <section class="card" data-widget="m-out" data-widget-title="Who is out" data-widget-timed="1">
+          <div class="card-h"><h2>Who is out</h2><button type="button" class="zbtn link" (click)="drill('out_next', 'Leave in the period', {}, 'm-out')">{{ 'All {0}' | t:(d.out_count || 0) }}</button></div>
           <p class="muted small" *ngIf="!d.out_next_14.length">Everyone is in.</p>
           <ul class="rlist">
-            <li *ngFor="let o of d.out_next_14" (click)="drill('out_next', 'Leave – next 30 days', {days: 30})" tabindex="0">
-              <div><b>{{ o.employee }}</b><p class="small muted">{{ o.type }} · {{ o.days }} d</p></div>
-              <div class="r-end"><small>{{ o.from | date:'d MMM' }}<span *ngIf="o.to !== o.from"> – {{ o.to | date:'d MMM' }}</span></small><span [class]="o.status === 'approved' ? 'pill good' : 'pill warn'">{{ o.status }}</span></div>
+            <li *ngFor="let o of d.out_next_14" (click)="openRec(o)" (keydown.enter)="openRec(o)" tabindex="0" role="link">
+              <div><b data-no-translate>{{ o.employee }}</b><p class="small muted"><span data-no-translate>{{ o.type }}</span> · {{ (o.days === 1 ? '{0} day' : '{0} days') | t:o.days }}</p></div>
+              <div class="r-end"><small>{{ o.from | zdate }}<span *ngIf="o.to !== o.from">&nbsp;– {{ o.to | zdate }}</span></small><span [class]="o.status === 'approved' ? 'pill good' : 'pill warn'">{{ o.status | zstatus | t }}</span></div>
             </li>
           </ul>
         </section>
 
+        <!-- v1.17.0: team leave planner – the next 14 days; a day opens who is out that day -->
+        <section class="card" *ngIf="d.planner?.length" data-widget="m-plan" data-widget-title="Team leave planner" data-widget-timed="0" data-widget-size="w"
+                 data-widget-now="The next 14 days from today.">
+          <div class="card-h"><h2>Team leave planner</h2><span class="muted small">next 14 days · select a day</span></div>
+          <div class="planner" role="list">
+            <button type="button" role="listitem" *ngFor="let p of d.planner" class="pl-day" [class.off]="!p.working" [class.has]="p.out" [attr.data-out]="p.out"
+                    (click)="planDay(p)" [attr.aria-label]="('{0} out on {1}' | t:p.out:(p.date | zdate))" [title]="p.date | zdate">
+              <span class="pl-n">{{ p.out }}</span>
+              <span class="pl-bar"><i [style.height.%]="p.out * 100 / planMax"></i></span>
+              <span class="pl-d">{{ dm(p.date) }}</span>
+            </button>
+          </div>
+          <p class="muted small">Grey days are weekends. Pending requests are included.</p>
+        </section>
+
+        <!-- v1.17.0: probations of the team ending – decisions due -->
+        <section class="card" *ngIf="d.probation" data-widget="m-prob" data-widget-title="Probation ending" data-widget-timed="0" data-widget-now="Open probations as of today.">
+          <div class="card-h"><h2>Probation ending</h2><button type="button" class="zbtn link" (click)="drill('probation', 'Probation ending')">All</button></div>
+          <button type="button" class="watch" (click)="drill('probation', 'Probation overdue', {state: 'overdue'})"><span>Overdue</span><b [class.bad-text]="d.probation.overdue">{{ d.probation.overdue }}</b></button>
+          <button type="button" class="watch" (click)="drill('probation', 'Probation ending in 30 days', {state: 'due_30'})"><span>Ending in 30 days</span><b [class.warn-text]="d.probation.due_30">{{ d.probation.due_30 }}</b></button>
+          <button type="button" class="watch" (click)="drill('probation', 'Probation ending in 31–90 days', {state: 'due_90'})"><span>In 31–90 days</span><b>{{ d.probation.due_90 }}</b></button>
+          <ul class="rlist" *ngIf="d.probation.next?.length">
+            <li *ngFor="let r of d.probation.next" (click)="openEmp(r.employee_id)" (keydown.enter)="openEmp(r.employee_id)" tabindex="0" role="link">
+              <div><b data-no-translate>{{ r.name }}</b><p class="small muted">{{ r.state_label | t }}</p></div>
+              <div class="r-end"><span class="daychip" [title]="r.end | zdate">{{ dm(r.end) }}</span></div>
+            </li>
+          </ul>
+          <p class="muted small" *ngIf="!d.probation.next?.length">No probation ends in the next 90 days.</p>
+        </section>
+
         <!-- composition -->
-        <section class="card">
+        <section class="card" data-widget="m-comp" data-widget-title="People by group" data-widget-timed="0" data-widget-now="Active people now.">
           <div class="card-h"><h2>{{ d.composition.by === 'department' ? 'People by department' : 'People by role' }}</h2></div>
           <z-chart type="bar" [horizontal]="true" [labels]="compLabels" [values]="compValues" suffix=" people" [height]="40 + compLabels.length * 34"
                    ariaLabel="Headcount by group" (pick)="pickComp($event)"></z-chart>
         </section>
 
         <!-- watch list -->
-        <section class="card">
+        <section class="card" data-widget="m-watch" data-widget-title="Needs attention" data-widget-timed="0" data-widget-now="Open items as of today.">
           <div class="card-h"><h2>Needs attention</h2></div>
           <button type="button" class="watch" (click)="drill('documents', 'Expired documents', {state: 'expired'})"><span>Expired documents</span><b [class.bad-text]="d.documents.expired">{{ d.documents.expired }}</b></button>
           <button type="button" class="watch" (click)="drill('documents', 'Documents expiring in 60 days', {state: 'expiring'})"><span>Documents expiring in 60 days</span><b [class.warn-text]="d.documents.expiring">{{ d.documents.expiring }}</b></button>
@@ -110,17 +146,22 @@
           <button type="button" class="watch" *ngIf="d.learning" (click)="drill('trainings', 'Upcoming trainings')"><span>Upcoming trainings</span><b>{{ d.learning.upcoming_trainings }}</b></button>
           <button type="button" class="watch" (click)="drill('assets', 'Assets with the team')"><span>Company assets with the team</span><b>{{ d.assets_assigned }}</b></button>
           <button type="button" class="watch" *ngIf="d.recruitment" (click)="drill('recruitment', 'Open requisitions')"><span>Open requisitions · jobs</span><b>{{ d.recruitment.open_requisitions }} · {{ d.recruitment.open_jobs }}</b></button>
+          <!-- v1.17.1: team members who have not acknowledged the current company policies; open shifts nobody has taken yet -->
+          <button type="button" class="watch" *ngIf="d.policies" data-team="policies" [disabled]="!d.policies.people" (click)="drill('team_policies', 'Policies not acknowledged')">
+            <span>Policies not acknowledged<small class="bad-text" *ngIf="d.policies.overdue_people"> · {{ '{0} overdue' | t:d.policies.overdue_people }}</small></span><b [class.warn-text]="d.policies.people">{{ d.policies.people }}</b></button>
+          <button type="button" class="watch" *ngIf="d.open_shifts" data-team="open-shifts" [disabled]="!d.open_shifts.count" (click)="drill('open_shifts', 'Open shifts not taken')">
+            <span>Open shifts not taken</span><b [class.warn-text]="d.open_shifts.count">{{ d.open_shifts.count }}</b></button>
         </section>
       </div>
 
-      <div class="grid g-2">
+      <div class="grid g-2 zdd-contents">
         <!-- appraisal pipeline -->
-        <section class="card" *ngIf="d.performance">
-          <div class="card-h"><h2>Appraisal – {{ d.performance.cycle }}</h2><span class="muted small">goal sheets by stage</span></div>
+        <section class="card" *ngIf="d.performance" data-widget="m-perf" data-widget-title="Appraisal" data-widget-timed="0" data-widget-now="The active appraisal cycle.">
+          <div class="card-h"><h2>{{ 'Appraisal' | t }} – <span data-no-translate>{{ d.performance.cycle }}</span></h2><span class="muted small">{{ 'goal sheets by stage' | t }}</span></div>
           <ul class="bars stage">
             <li *ngFor="let r of perfRows; let i = index">
               <button type="button" (click)="drill('goal_status', r.label, {cycle: d.performance.cycle_id, status: r.key})" [disabled]="!r.count">
-                <span class="b-l">{{ r.label }}</span>
+                <span class="b-l">{{ r.label | t }}</span>
                 <span class="b-track"><i [style.width.%]="r.count * 100 / perfMax" [style.opacity]="0.45 + i * 0.09"></i></span>
                 <b>{{ r.count }}</b>
               </button>
@@ -129,33 +170,33 @@
         </section>
 
         <!-- celebrations -->
-        <section class="card">
-          <div class="card-h"><h2>This month</h2><span class="muted small">birthdays and work anniversaries</span></div>
-          <p class="muted small" *ngIf="!d.celebrations.length">No birthdays or anniversaries this month.</p>
+        <section class="card" data-widget="m-celeb" data-widget-title="Birthdays and anniversaries" data-widget-timed="1">
+          <div class="card-h"><h2>Birthdays and anniversaries</h2><button type="button" class="zbtn link" (click)="drill('celebrations', 'Birthdays & anniversaries', {}, 'm-celeb')">All</button></div>
+          <p class="muted small" *ngIf="!d.celebrations.length">No birthdays or anniversaries in this period.</p>
           <ul class="rlist">
-            <li *ngFor="let c of d.celebrations" (click)="drill('celebrations', 'Birthdays & anniversaries')" tabindex="0">
-              <div><b>{{ c.employee }}</b><p class="small muted">{{ c.kind }}</p></div>
-              <div class="r-end"><span class="daychip">{{ c.day }}</span></div>
+            <li *ngFor="let c of d.celebrations" (click)="openEmp(c.employee_id)" (keydown.enter)="openEmp(c.employee_id)" tabindex="0" role="link">
+              <div><b data-no-translate>{{ c.employee }}</b><p class="small muted">{{ c.kind | t }}</p></div>
+              <div class="r-end"><span class="daychip">{{ dm(c.date) }}</span></div>
             </li>
           </ul>
           <h3 class="sub" *ngIf="d.holidays?.length">Holidays</h3>
-          <p class="small" *ngFor="let h of d.holidays">{{ h.name }} <span class="muted">· {{ h.from | date:'EEE d MMM' }}</span></p>
+          <p class="small zgo" *ngFor="let h of d.holidays" role="link" tabindex="0" (click)="goUrl('/main-sidebar/unified-calendar')" (keydown.enter)="goUrl('/main-sidebar/unified-calendar')"><span data-no-translate>{{ h.name }}</span> <span class="muted">&nbsp;· {{ h.from | zdate }}</span></p>
         </section>
       </div>
 
       <!-- overtime, goals, ratings -->
-      <div class="grid g-3">
-        <section class="card" *ngIf="d.overtime">
-          <div class="card-h"><h2>Overtime · {{ d.overtime.month_label }}</h2><button type="button" class="zbtn link" (click)="drill('team_overtime', 'Overtime this month')" *ngIf="d.overtime.hours">All entries</button></div>
-          <button type="button" class="kpi-btn" (click)="drill('team_overtime', 'Overtime this month')">
-            <span class="big">{{ d.overtime.hours | number:'1.0-1' }} <small>hours · {{ d.overtime.people }} {{ d.overtime.people === 1 ? 'person' : 'people' }}</small></span>
+      <div class="grid g-3 zdd-contents">
+        <section class="card" *ngIf="d.overtime" data-widget="m-ot" data-widget-title="Overtime" data-widget-timed="1">
+          <div class="card-h"><h2>Overtime</h2><button type="button" class="zbtn link" (click)="drill('team_overtime', 'Overtime', {}, 'm-ot')" *ngIf="d.overtime.hours">All entries</button></div>
+          <button type="button" class="kpi-btn" (click)="drill('team_overtime', 'Overtime', {}, 'm-ot')">
+            <span class="big">{{ d.overtime.hours | number:'1.0-1' }} <small>{{ (d.overtime.people === 1 ? 'hours · {0} person' : 'hours · {0} people') | t:d.overtime.people }}</small></span>
           </button>
-          <p class="muted small" *ngIf="d.overtime.hours">{{ d.overtime.approved | number:'1.0-1' }} h approved · <span [class.warn-text]="d.overtime.pending">{{ d.overtime.pending | number:'1.0-1' }} h waiting</span></p>
-          <p class="muted small" *ngIf="!d.overtime.hours">No overtime booked this month.</p>
+          <p class="muted small" *ngIf="d.overtime.hours">{{ '{0} h approved' | t:(d.overtime.approved | number:'1.0-1') }} · <span [class.warn-text]="d.overtime.pending">{{ '{0} h waiting' | t:(d.overtime.pending | number:'1.0-1') }}</span></p>
+          <p class="muted small" *ngIf="!d.overtime.hours">No overtime booked in this period.</p>
           <ul class="bars">
             <li *ngFor="let t of d.overtime.top">
-              <button type="button" (click)="drill('team_overtime', 'Overtime – ' + t.employee, {employee: t.employee_id})">
-                <span class="b-l">{{ t.employee }}</span>
+              <button type="button" (click)="drill('team_overtime', 'Overtime – ' + t.employee, {employee: t.employee_id}, 'm-ot')">
+                <span class="b-l" data-no-translate>{{ t.employee }}</span>
                 <span class="b-track"><i [style.width.%]="t.hours * 100 / otMax"></i></span>
                 <b>{{ t.hours | number:'1.0-1' }}</b>
               </button>
@@ -163,16 +204,16 @@
           </ul>
         </section>
 
-        <section class="card" *ngIf="d.goals">
+        <section class="card" *ngIf="d.goals" data-widget="m-goals" data-widget-title="Goal progress" data-widget-timed="0" data-widget-now="The active appraisal cycle.">
           <div class="card-h"><h2>Goal progress</h2><button type="button" class="zbtn link" (click)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})">Everyone</button></div>
-          <p class="muted small">{{ d.goals.cycle }} · {{ d.goals.sheets }} goal sheets</p>
-          <div class="m-top"><span>Average achievement (weighted)</span><b>{{ d.goals.avg_progress | number:'1.0-0' }}%</b></div>
+          <p class="muted small"><span data-no-translate>{{ d.goals.cycle }}</span> · {{ '{0} goal sheets' | t:d.goals.sheets }}</p>
+          <div class="m-top zgo" role="link" tabindex="0" (click)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})" (keydown.enter)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})"><span>Average achievement (weighted)</span><b>{{ d.goals.avg_progress | number:'1.0-0' }}%</b></div>
           <div class="m-track"><div class="m-fill" [style.width.%]="d.goals.avg_progress"></div></div>
-          <p class="muted small">{{ d.goals.completed_goals }} of {{ d.goals.total_goals }} goals done · <span [class.warn-text]="d.goals.at_risk">{{ d.goals.at_risk }} at risk</span></p>
+          <p class="muted small">{{ '{0} of {1} goals done' | t:d.goals.completed_goals:d.goals.total_goals }} · <span [class.warn-text]="d.goals.at_risk">{{ '{0} at risk' | t:d.goals.at_risk }}</span></p>
           <ul class="bars">
             <li *ngFor="let g of d.goals.rows.slice(0, 5)">
-              <button type="button" (click)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})">
-                <span class="b-l">{{ g.employee }}</span>
+              <button type="button" (click)="g.sheet_id ? openRec({_m: 'PerformanceManagement.GoalSheet', _id: g.sheet_id}) : drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})">
+                <span class="b-l" data-no-translate>{{ g.employee }}</span>
                 <span class="b-track"><i [style.width.%]="g.progress"></i></span>
                 <b>{{ g.progress | number:'1.0-0' }}%</b>
               </button>
@@ -180,15 +221,15 @@
           </ul>
         </section>
 
-        <section class="card" *ngIf="d.ratings">
+        <section class="card" *ngIf="d.ratings" data-widget="m-ratings" data-widget-title="Performance ratings" data-widget-timed="0" data-widget-now="The latest cycle with ratings.">
           <div class="card-h"><h2>Performance ratings</h2><span class="muted small" *ngIf="d.ratings.cycle">{{ d.ratings.cycle }}</span></div>
           <p class="muted small" *ngIf="!d.ratings.rated">No ratings yet.</p>
           <ng-container *ngIf="d.ratings.rated">
-            <p class="small">{{ d.ratings.rated }} rated · average <b>{{ d.ratings.avg | number:'1.1-2' }}</b> of 5</p>
+            <p class="small zgo" role="link" tabindex="0" (click)="drill('rating_dist', 'Performance ratings', {cycle: d.ratings.cycle_id})" (keydown.enter)="drill('rating_dist', 'Performance ratings', {cycle: d.ratings.cycle_id})">{{ '{0} rated · average {1} of 5' | t:d.ratings.rated:(d.ratings.avg | number:'1.1-2') }}</p>
             <div class="rdist" role="list" aria-label="Rating distribution">
               <button type="button" role="listitem" class="rcol" *ngFor="let r of d.ratings.rows" [disabled]="!r.count"
                       (click)="drill('rating_dist', 'Rated ' + r.rating, {cycle: d.ratings.cycle_id, rating: r.rating})"
-                      [attr.aria-label]="r.count + ' rated ' + r.rating">
+                      [attr.aria-label]="'{0} rated {1}' | t:r.count:r.rating">
                 <span class="rv">{{ r.count }}</span>
                 <span class="rbar"><i [style.height.%]="r.count * 100 / ratingMax"></i></span>
                 <span class="rk">{{ r.rating }}</span>
@@ -200,20 +241,22 @@
       </div>
 
       <!-- HR only -->
-      <div class="grid g-2" *ngIf="d.payroll">
-        <section class="card">
-          <div class="card-h"><h2>Net payroll, last runs</h2><span class="muted small">AED · select a month for payslips</span></div>
-          <z-chart type="bar" [labels]="payLabels" [values]="payValues" suffix=" AED net" [tooltipExtra]="payExtra" [height]="220"
+      <div class="grid g-2 zdd-contents" *ngIf="d.payroll && !teamOnly">
+        <section class="card" data-widget="m-pay" data-widget-title="Net payroll" data-widget-timed="1" data-widget-size="w">
+          <div class="card-h"><h2>Net payroll</h2><span class="muted small">{{ 'AED' | zc }} · processed runs of the period · select a month for payslips</span></div>
+          <z-chart *ngIf="d.payroll.length; else noRuns" type="bar" [labels]="payLabels" [values]="payValues" [suffix]="' ' + ('AED' | zc) + ' net'" [tooltipExtra]="payExtra" [height]="220"
                    ariaLabel="Net payroll per run" (pick)="pickPay($event)"></z-chart>
+          <ng-template #noRuns><p class="muted">No payroll run has been processed for this period.</p></ng-template>
         </section>
-        <section class="card">
+        <section class="card" data-widget="m-loans" data-widget-title="Money owed by employees" data-widget-timed="0" data-widget-now="Balances as of today.">
           <div class="card-h"><h2>Money owed by employees</h2></div>
-          <button type="button" class="watch" (click)="drill('loans', 'Loans outstanding')"><span>Loans outstanding</span><b>AED {{ d.loans_outstanding | number:'1.0-0' }}</b></button>
+          <button type="button" class="watch" (click)="drill('loans', 'Loans outstanding')"><span>Loans outstanding</span><b>{{ d.loans_outstanding | zmoney:'1.0-0' }}</b></button>
           <p class="muted small">Loan EMIs and salary advances are deducted automatically in each payroll run.</p>
         </section>
+      </div>
       </div>
     </div>
   </ng-container>
 
-  <z-drill-panel [request]="drillReq" (closed)="drillReq = null" (navigate)="go($event)"></z-drill-panel>
+  <z-drill-panel [request]="drillReq" [personId]="personId" [employeePageLink]="!teamOnly || d?.is_admin" (closed)="drillReq = null; personId = null" (navigate)="go($event)"></z-drill-panel>
 </div>

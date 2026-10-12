@@ -6,7 +6,7 @@ import { ZRecordPanelComponent } from './z-record-panel.component';
 import { appForUrl } from './menu-config';
 
 /** Form containers the screens use: Angular Material dialogs, the screens' own pop-ups and the HR module dialogs. */
-const CONTAINERS = 'mat-dialog-container, .modal-content, .hr-modal-box, .modal-dialog-custom';
+const CONTAINERS = 'mat-dialog-container, .modal-content, .hr-modal-box, .modal-dialog-custom, .ex-modal';   // v1.22.0: + .ex-modal (add-on apps, Expenses)
 const FOOTERS = '.modal-footer, .modal-footer-custom, mat-dialog-actions, [mat-dialog-actions], .mat-mdc-dialog-actions, .hr-modal-foot, .dialog-actions, .form-actions, .button-group, .btn-group-footer';
 const SKIP = '.zl-modal, .zd-modal, z-record-panel, .cdk-overlay-pane .mat-mdc-select-panel, .swal2-container, [data-zr-off]';
 
@@ -79,12 +79,16 @@ export class ZRecordInjector {
   }
 
   /** A page whose address ends in a record id (e.g. employee details): panel at the end of the page. */
-  private page(): void {
+  private page(attempt = 0): void {
     // …/employee-details/12 or …/employee-details/12/details
     const m = /\/(\d+)(\/[a-z-]+)?\/?$/i.exec(location.pathname);
     if (!m) { return; }
     const ctx: RecordCtx | null = this.rec.forId(m[1]);
-    if (!ctx) { return; }
+    if (!ctx) {
+      // v1.22.0: add-on record pages load their record a little later
+      if (attempt < 3 && /\/zeo-[a-z]+\//.test(location.pathname)) { this.pageTimer = setTimeout(() => this.page(attempt + 1), 1500); }
+      return;
+    }
     const outlet = document.querySelector('.sub-content-area router-outlet, main router-outlet, router-outlet');
     let host = outlet?.nextElementSibling as HTMLElement | null;
     // the deepest routed component that holds the page
@@ -99,10 +103,11 @@ export class ZRecordInjector {
       const host = document.createElement('z-record-panel');
       host.className = 'zr-host';
       host.setAttribute('data-record', `${endpoint}#${id ?? 'new'}`);
-      const footer = append ? null : this.footerOf(box);
+      const exBody = !append && box.matches('.ex-modal') ? box.querySelector(':scope > .body') as HTMLElement | null : null;   // v1.22.0
+      const footer = append || exBody ? null : this.footerOf(box);
       if (footer && footer.parentElement) { footer.parentElement.insertBefore(host, footer); }
       else {
-        const body = append ? box : (box.querySelector('.modal-body, .modal-body-custom, mat-dialog-content, .mat-mdc-dialog-content, .hr-modal-body, form') as HTMLElement | null) || box;
+        const body = append ? box : exBody || (box.querySelector('.modal-body, .modal-body-custom, mat-dialog-content, .mat-mdc-dialog-content, .hr-modal-body, form') as HTMLElement | null) || box;
         body.appendChild(host);
       }
       const ref = createComponent(ZRecordPanelComponent, { environmentInjector: this.env, hostElement: host });

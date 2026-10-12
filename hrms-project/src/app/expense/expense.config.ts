@@ -11,7 +11,8 @@ const CATEGORY_LOOKUP = { endpoint: API + 'categories/', label: 'name', params: 
 const STATUS_COLORS = { draft: 'grey', submitted: 'orange', approved: 'green', rejected: 'red', closed: 'blue', requested: 'grey', paid: 'cyan', settled: 'blue' };
 
 export const EXPENSE_CATEGORY_PAGE: PageConfig = {
-  title: 'Expense Categories',
+  fixedCurrency: 'AED',   // v1.14.0: ExpenseManagement converts every expense to AED
+  title: 'Expense categories',
   itemName: 'Category',
   endpoint: API + 'categories/',
   model: 'expensecategory',
@@ -40,7 +41,8 @@ export const EXPENSE_CATEGORY_PAGE: PageConfig = {
 };
 
 export const EXPENSE_POLICY_PAGE: PageConfig = {
-  title: 'Expense Policies',
+  fixedCurrency: 'AED',   // v1.14.0: ExpenseManagement converts every expense to AED
+  title: 'Expense policies',
   itemName: 'Policy',
   endpoint: API + 'policies/',
   model: 'expensepolicy',
@@ -92,8 +94,9 @@ export const EXPENSE_POLICY_PAGE: PageConfig = {
 };
 
 export const COST_CENTER_PAGE: PageConfig = {
-  title: 'Cost Centres',
-  itemName: 'Cost Centre',
+  fixedCurrency: 'AED',   // v1.14.0: ExpenseManagement converts every expense to AED
+  title: 'Cost centres',
+  itemName: 'Cost centre',
   endpoint: API + 'cost-centers/',
   model: 'costcenter',
   columns: [
@@ -114,6 +117,7 @@ export const COST_CENTER_PAGE: PageConfig = {
 
 /** Self-service: no `model`, so every employee can raise trips / advances (the API keeps them to their own rows). */
 export const TRIP_PAGE: PageConfig = {
+  fixedCurrency: 'AED',   // v1.14.0: ExpenseManagement converts every expense to AED
   title: 'Trips',
   itemName: 'Trip',
   endpoint: API + 'trips/',
@@ -163,6 +167,7 @@ export const TRIP_PAGE: PageConfig = {
 };
 
 export const ADVANCE_PAGE: PageConfig = {
+  fixedCurrency: 'AED',   // v1.14.0: ExpenseManagement converts every expense to AED
   title: 'Advances',
   itemName: 'Advance',
   endpoint: API + 'advances/',

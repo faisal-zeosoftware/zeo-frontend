@@ -153,7 +153,7 @@ private sessionService: SessionService,
     
     
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -342,7 +342,7 @@ private sessionService: SessionService,
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.branches.length === 1) {
-            this.branch = this.branches[0].id;
+            this.branch = [this.branches[0].id];   // v1.15.1: the branch picker is a multi-select (needs a list)
           }
   
           console.log('Filtered branches for selection:', this.branches);

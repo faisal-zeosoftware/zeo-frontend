@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Document Request Type</h1>
+                <h1>Document request type</h1>
             </div>
                            <div class="col-md-3">
                     
@@ -54,11 +54,11 @@
     <div class="row">
       <div class="col-md-2">
           
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedDocumentReqType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedDocumentReqType()">Delete selected </button>
 
       </div>
   </div>
@@ -69,7 +69,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Document Request Type</h2>
+              <h2> Create document request type</h2>
             </div>
 <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -84,7 +84,7 @@
             <div class="row">
                 <div class="col-md-6" >
                    
-          <label>Type Name
+          <label>Type name
              <span class="required-star">*</span>
           </label>
          <input type="text"  class="form-control" required  [(ngModel)]="type_name"  placeholder="Enter type Name"
@@ -96,7 +96,7 @@
 
                <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches
+                    <label>Select branches
                        <span class="required-star">*</span>
                     </label>
                      <div class="form-control-wrapper">
@@ -181,7 +181,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit Document Request Type</h2>
+    <h2>Edit document request type</h2>
   </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -196,7 +196,7 @@
   <div class="row">
     <div class="col-md-6" >
        
-<label>Type Name</label>
+<label>Type name</label>
 <input type="text"  class="form-control" required  [(ngModel)]="editDocReqtype.type_name"  placeholder="Enter type Name"
 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
 
@@ -205,7 +205,7 @@
 
                <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select branches</label>
                      <div class="form-control-wrapper">
 
               <mat-form-field>
@@ -293,7 +293,7 @@
     <thead>
       <tr>
         <th>No</th>
-        <th>Employee Document Type</th>
+        <th>Employee document type</th>
         <th>Branch</th>
         <th>Description</th>
         <th>Action</th>
@@ -362,7 +362,7 @@
 <!-- <div *ngIf="isDocumentnumbereditModalOpen" class="modal">
   <div class="modal-content">
     <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
-    <h2>Edit Document Number</h2>
+    <h2>Edit document number</h2>
     <form (ngSubmit)="updateDocumentNumber()">
 
       <div class="row">
@@ -370,7 +370,7 @@
 
         <div class="col-md-6" >
                
-          <label>Type Name</label>
+          <label>Type name</label>
          <input type="text"  class="form-control" required  [(ngModel)]="selectedDoc.type_name"  placeholder="Enter type Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
          

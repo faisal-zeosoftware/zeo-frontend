@@ -79,14 +79,14 @@
                     <div class="emp_additional_details">
                         <div class="row">
                             <div class="col-md-3">
-                                <h2>Emp Code</h2>
+                                <h2>Emp code</h2>
                                 <h3>{{ employeesec.emp_code }}</h3>
                             </div>
 
                             <div class="col-md-4">
-                                <h2>Employee Status</h2>
+                                <h2>Employee status</h2>
                                 <h3>{{employeesec.emp_status}}</h3>
-                                <!-- <h2>Employee Ess User</h2>
+                                <!-- <h2>Employee ESS user</h2>
                                 <h3>{{employee.is_ess}}</h3> -->
                             </div>
 
@@ -124,7 +124,7 @@
                             </div> -->
 
                             <div class="col-md-5">
-                                <h2>Posting Location</h2>
+                                <h2>Posting location</h2>
                                 <h3>{{employeesec.emp_posting_location}}</h3>
                             </div>
                           
@@ -146,12 +146,12 @@
                         <div class="tab_content  mt-3">
                             <div class="row">
                                 <div class="col-md-3" >
-                                    <h2>First Name</h2>
+                                    <h2>First name</h2>
                                     <h3>{{ employeesec.emp_first_name }} </h3>
                                 </div>
 
                                 <div class="col-md-3">
-                                    <h2>Last Name</h2>
+                                    <h2>Last name</h2>
                                     <h3>{{ employeesec.emp_last_name }} </h3>
                                 </div>
 
@@ -199,11 +199,11 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <h2>Permenent Address</h2>
+                                    <h2>Permenent address</h2>
                                     <h3> {{employeesec.emp_permenent_address}}</h3>
                                 </div>
                                 <div class="col-md-3">
-                                    <h2>Present Address</h2>
+                                    <h2>Present address</h2>
                                     <h3>{{employeesec.emp_present_address}}</h3>
                                 </div>
                             </div>
@@ -216,12 +216,12 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <h2>Blood Group</h2>
+                                    <h2>Blood group</h2>
                                     <h3>{{employeesec.emp_blood_group}}</h3>
                                 </div>
 
                                 <div class="col-md-3">
-                                    <h2>Marital Status </h2>
+                                    <h2>Marital status </h2>
                                     <h3>{{employeesec.emp_marital_status}}</h3>
                                 </div>
 
@@ -231,7 +231,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <h2>Active Date </h2>
+                                    <h2>Active date </h2>
                                     <h3>{{employeesec.emp_active_date}}</h3>
                                 </div>
                                 
@@ -248,20 +248,20 @@
                         <div class="tab_content  mt-3" *ngFor="let familyMember of employeesec.emp_family">
                             <div class="row">
                                 <div class="col-md-3" >
-                                    <h2>Employee Member Name</h2>
+                                    <h2>Employee member name</h2>
                                     <h3>{{ familyMember.ef_member_name }} </h3>
                                 </div>
                                 <div class="col-md-3" >
-                                    <h2>Date Of Birth</h2>
+                                    <h2>Date of birth</h2>
                                     <h3>{{ familyMember.ef_date_of_birth }} </h3>
                                 </div>
 
                                 <div class="col-md-3" >
-                                    <h2>Employee Relation</h2>
+                                    <h2>Employee relation</h2>
                                     <h3>{{ familyMember.emp_relation }} </h3>
                                 </div>x
                                 <div class="col-md-3" >
-                                    <h2>Employee Family Company Expense</h2>
+                                    <h2>Employee family company expense</h2>
                                     <h3>{{ familyMember.ef_company_expence }} </h3>
                                 </div>
 
@@ -282,7 +282,7 @@
                         <div class="tab_content  mt-3"  *ngFor="let Qualification of employeesec.emp_qualification">
                             <div class="row">
                                 <div class="col-md-3" >
-                                    <h2>Employee Qualification</h2>
+                                    <h2>Employee qualification</h2>
                                     <h3>{{ Qualification.emp_qualification }} </h3>
                                 </div>
                                 <div class="col-md-3" >
@@ -312,7 +312,7 @@
                         <div class="tab_content  mt-3"  *ngFor="let Jobhistory of employeesec.emp_job_history">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <h2>Company Name</h2>
+                                    <h2>Company name</h2>
                                     <h3>{{ Jobhistory.emp_jh_company_name }}</h3>
                                 </div>
                                 <div class="col-md-3" >
@@ -321,25 +321,25 @@
                                 </div>
                              
                                 <div class="col-md-3" >
-                                    <h2>From Date</h2>
+                                    <h2>From date</h2>
                                     <h3>{{ Jobhistory.emp_jh_from_date }} </h3>
                                 </div>
                                 <div class="col-md-3" >
-                                    <h2>End Date</h2>
+                                    <h2>End date</h2>
                                     <h3>{{ Jobhistory.emp_jh_end_date }} </h3>
                                 </div>
 
                                 <div class="col-md-3" >
-                                    <h2>Last Leaving Salary Per Month</h2>
+                                    <h2>Last leaving salary per month</h2>
                                     <h3>{{ Jobhistory.emp_jh_leaving_salary_permonth }} </h3>
                                 </div>
                                 <div class="col-md-3" >
-                                    <h2> Leaving Reason</h2>
+                                    <h2> Leaving reason</h2>
                                     <h3>{{ Jobhistory.emp_jh_reason }} </h3>
                                 </div>
 
                                 <div class="col-md-3" >
-                                    <h2> Total Experiance</h2>
+                                    <h2> Total experiance</h2>
                                     <h3>{{ Jobhistory.emp_jh_years_experiance }} </h3>
                                 </div>
                              
@@ -361,13 +361,13 @@
                                     <h3>{{ document.emp_doc_number }}</h3>
                                 </div>
                                 <div class="col-md-2" >
-                                    <h2>issue Date</h2>
+                                    <h2>Issue date</h2>
                                     <h3> {{ document.emp_doc_issued_date }}</h3>
                                 </div>
                              
                              
                                 <div class="col-md-2" >
-                                    <h2>expired date</h2>
+                                    <h2>Expired date</h2>
                                     <h3>{{ document.emp_doc_expiry_date }} </h3>
                                 </div>
 
@@ -384,7 +384,7 @@
                                 
 
                                 <div class="col-md-3">
-                                    <h2>Employee Document</h2>
+                                    <h2>Employee document</h2>
 
                                     <div *ngIf="document.emp_doc_document">
                                         <a [href]="document.emp_doc_document" target="_blank" *ngIf="isPDF(document.emp_doc_document)">View Document</a>
@@ -396,7 +396,7 @@
 
 
                                 <!-- <div class="col-md-3" >
-                                    <h2>employee document</h2>
+                                    <h2>Employee document</h2>
                                     <img src="{{ document.emp_doc_document }}"  alt="Employee Document">
                                 </div> -->
 
@@ -432,7 +432,7 @@
             <div class="col-md-7"></div>
             <div class="col-md-5">
                 <div class="holiday_sec" >
-                    <h4>holidays</h4><hr>
+                    <h4>Holidays</h4><hr>
                     <div *ngFor="let Empholiday of employeesec.holidays">
                     <div class="row" >
                         <div class="col-md-4">

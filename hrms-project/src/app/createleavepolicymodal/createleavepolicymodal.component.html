@@ -24,7 +24,7 @@
                             [ngModelOptions]="{standalone:true}">
 
                         <label for="fixed">
-                            💳 Fixed Entitlement
+                            💳 Fixed entitlement
                         </label>
 
                     </div>
@@ -35,7 +35,7 @@
                             [(ngModel)]="selectedPolicy" [ngModelOptions]="{standalone:true}">
 
                         <label for="variable">
-                            🅿️ Variable Entitlement
+                            🅿️ Variable entitlement
                         </label>
 
                     </div>
@@ -168,7 +168,7 @@
                               <div class="row">
                                 <!-- Leave Type -->
                                 <div class="col-md-4">
-                                  <label>Leave Type</label>
+                                  <label>Leave type</label>
                                   <div class="custom-sel">
                                     <select class="form-control" [(ngModel)]="row.leave_type" [ngModelOptions]="{ standalone: true }"
                                       (change)="onLeaveTypeChange(row)" [disabled]="isEditMode && row.id">
@@ -215,7 +215,7 @@
                           
                                 <!-- Select Branches -->
                                 <div class="col-md-4">
-                                  <label>Select Branches</label>
+                                  <label>Select branches</label>
                                   <div class="custom-sel">
                                     <div class="form-control-wrapper">
                                       <mat-form-field appearance="fill">
@@ -410,7 +410,7 @@
                           
                                   <div class="row mt-2">
                                     <div class="col-md-4">
-                                      <label>Opening Balance</label>
+                                      <label>Opening balance</label>
                                       <div class="custom-sel">
                                         <input type="number" class="form-control" [(ngModel)]="row.opening_balance"
                                           [ngModelOptions]="{ standalone: true }" />
@@ -424,7 +424,7 @@
                             <!-- Action Buttons -->
                             <div *ngIf="hasAddPermission" class="mt-3">
                               <button type="button" class="btn btn-primary" (click)="addEntitlementRow()">
-                                + Add Entitlement
+                                + Add entitlement
                               </button>
                             </div>
                           
@@ -437,11 +437,11 @@
                               </div>
                               <div class="col-md-3">
                                 <button *ngIf="!isEditMode" type="submit" class="btn btn-success btn-full mt-4">
-                                  Save & Next
+                                  Save & next
                                 </button>
                           
                                 <button *ngIf="isEditMode" type="button" class="btn btn-primary btn-full mt-4" (click)="updateEntitlement()">
-                                  Update Entitlement
+                                  Update entitlement
                                 </button>
                               </div>
                             </div>
@@ -942,7 +942,7 @@
                               type="button"
                               class="btn btn-primary"
                               (click)="addPayRuleRow()">
-                              + Add Pay Rule
+                              + Add pay rule
                             </button>
                           </div>
                       
@@ -955,14 +955,14 @@
                                   *ngIf="!isEditMode"
                                   class="btn btn-success btn-full"
                                   (click)="submitPayRuleFixed()">
-                                  Save Pay Rule
+                                  Save pay rule
                                 </button>
                       
                                 <button
                                   *ngIf="isEditMode"
                                   class="btn btn-primary btn-full"
                                   (click)="updatePayRule()">
-                                  Update Pay Rule
+                                  Update pay rule
                                 </button>
                               </div>
                             </div>
@@ -1104,7 +1104,7 @@
 
 
                                 <!-- <div class="col-md-4">
-                                    <label>Leave Type</label>
+                                    <label>Leave type</label>
                                     <div class="custom-sel">
                                         <select
                                         class="form-control"
@@ -1126,7 +1126,7 @@
 
                                 <div class="col-md-4" *ngIf="i === 0">
 
-                                    <label>Leave Type</label>
+                                    <label>Leave type</label>
                                 
                                     <div class="custom-sel">
                                 
@@ -1188,7 +1188,7 @@
 
 
                                 <div class="col-md-4">
-                                    <label>Select Branches</label>
+                                    <label>Select branches</label>
                                     <div class="custom-sel">
                                         <div class="form-control-wrapper">
 
@@ -1689,7 +1689,7 @@
                                     <div class="row">
 
                                         <div class="col-md-4">
-                                            <label>Opening Balance</label>
+                                            <label>Opening balance</label>
                                             <div class="custom-sel">
                                                 <input type="number" class="form-control" [(ngModel)]="row.opening_balance"
                                                     [ngModelOptions]="{standalone: true}">
@@ -1711,7 +1711,7 @@
                                   class="btn btn-primary"
                                   (click)="addEntitlementRow()">
                               
-                                  + Add Entitlement
+                                  + Add entitlement
                               
                                 </button>
                               
@@ -1730,7 +1730,7 @@
                                     type="submit"
                                     class="btn btn-success btn-full mt-4">
                                   
-                                    Save & Next
+                                    Save & next
                                   
                                   </button>
                                   
@@ -1740,7 +1740,7 @@
                                     class="btn btn-primary btn-full mt-4"
                                     (click)="updateEntitlement()">
                                   
-                                    Update Entitlement
+                                    Update entitlement
                                   
                                   </button>
 
@@ -2247,7 +2247,7 @@
                               type="button"
                               class="btn btn-primary"
                               (click)="addPayRuleRow()">
-                              + Add Pay Rule
+                              + Add pay rule
                             </button>
                           </div>
                       
@@ -2260,14 +2260,14 @@
                                   *ngIf="!isEditMode"
                                   class="btn btn-success btn-full"
                                   (click)="submitPayRule()">
-                                  Save Pay Rule
+                                  Save pay rule
                                 </button>
                       
                                 <button
                                   *ngIf="isEditMode"
                                   class="btn btn-primary btn-full"
                                   (click)="updatePayRule()">
-                                  Update Pay Rule
+                                  Update pay rule
                                 </button>
                               </div>
                             </div>

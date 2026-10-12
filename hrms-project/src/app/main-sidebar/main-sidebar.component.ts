@@ -9,7 +9,9 @@ import { environment } from '../../environments/environment';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { ZListService } from '../shared-ui/z-list.service';
 
-import { visibleGroups } from '../shared-ui/z-module-menu.component';
+import { visibleGroups, suiteForUrl } from '../shared-ui/z-module-menu.component';
+import { AppSuite, ZSuiteService } from '../shared-ui/z-suite.service';   // v1.20.0
+import { SUITES } from '../shared-ui/menu-config';
 import { appForUrl } from '../shared-ui/menu-config';
 import { APP_VERSION } from '../shared-ui/version';
 import { ZRecordService } from '../shared-ui/z-record.service';
@@ -72,7 +74,24 @@ export class MainSidebarComponent implements OnDestroy {
     private companyservice: CompanyRegistrationService,
     private zlist: ZListService,
     private zrec: ZRecordService,
-  ) { }
+    private suites: ZSuiteService,
+  ) {
+    // v1.20.0: the main menu shows the modules of one app (HRMS, Projects or Settings)
+    this.suites.suite$.subscribe(s => { this.suite = s; this.buildMenu(); });
+    // v1.21.0: only the apps active in the company (Settings → Apps); an app switched off moves the user to an active one
+    this.suites.active$.subscribe(a => { if (a) { this.keepActiveSuite(); } });
+  }
+
+  private keepActiveSuite(): void {
+    if (this.suites.isActive(this.suite)) { return; }
+    const next = SUITES.find(x => x.key !== 'settings' && this.suites.isActive(x.key))?.key || 'settings';
+    this.suites.set(next);
+    const g = visibleGroups(this.menuAccess, false, next)[0];
+    const link = next === 'settings' ? '/main-sidebar/settings/home' : g?.apps[0]?.link;
+    if (link && suiteForUrl(this.router.url) !== next) { this.router.navigateByUrl(link); }
+  }
+  suite: AppSuite = 'hrms';
+  get suiteName(): string { return SUITES.find(x => x.key === this.suite)?.label || 'HRMS'; }
 
   // ---------- main menu (shared config, grouped, by user rights) ----------
   private menuAccess: { admin: boolean; codes: Set<string> } | null = null;
@@ -82,52 +101,84 @@ export class MainSidebarComponent implements OnDestroy {
   appVersion = APP_VERSION;
 
   buildMenu(): void {
-    this.menuGroups = visibleGroups(this.menuAccess, this.hideButton);
+    this.menuGroups = visibleGroups(this.menuAccess, this.hideButton, this.suite);
     this.markApp();
   }
 
   private markApp(): void {
     this.currentAppKey = appForUrl(this.router.url)?.key || (this.router.url.includes('dashboard-contents') ? 'home' : this.router.url.includes('manager-dashboard') ? 'mgr' : '');
+    // v1.20.0: a page of another app switches the menu to that app; shared pages (Calendar, My To-do) keep it
+    const s = suiteForUrl(this.router.url);
+    if (s && this.suites && s !== this.suites.suite) { this.suites.set(s); }
+    if (this.suites && this.currentAppKey) { this.suites.touch(this.currentAppKey); }
+    if (this.suites) { this.suites.loadActive(); if (this.suites.active$.value) { this.keepActiveSuite(); } }
   }
 
   // ============================================================
   // SIDEBAR TOGGLE (FIXED FOR MOBILE)
   // ============================================================
   // v1.7.0: the main menu starts folded (icons only); the fold / unfold button keeps the user's choice
+  // v1.15.1: the choice is remembered per user (key zeo-main-menu:<user id>); folded icons show their name in a tooltip.
   isMenuOpen: boolean = window.innerWidth > 991.98 && (() => { try { return localStorage.getItem('zeo-main-menu') === 'open'; } catch { return false; } })();
+
+  private foldKey(): string {
+    let uid: number | null = null;
+    try { uid = this.sessionService.getUserId(); } catch { uid = null; }
+    return uid ? `zeo-main-menu:${uid}` : 'zeo-main-menu';
+  }
+
+  private restoreFold(): void {
+    if (window.innerWidth <= 991.98) { return; }
+    try {
+      const v = localStorage.getItem(this.foldKey()) ?? localStorage.getItem('zeo-main-menu');
+      this.isMenuOpen = v === 'open';
+    } catch { /* storage off: keep the default (folded) */ }
+  }
 
   toggleFold(): void {
     this.isMenuOpen = !this.isMenuOpen;
-    try { localStorage.setItem('zeo-main-menu', this.isMenuOpen ? 'open' : 'folded'); } catch { /* storage off */ }
-    this.syncSidebarOffset();
-    // #region agent log
-    requestAnimationFrame(() => this.debugSidebarAlign('toggleFold', 'E'));
-    // #endregion
+    this.hideTip();
+    try { localStorage.setItem(this.foldKey(), this.isMenuOpen ? 'open' : 'folded'); } catch { /* storage off */ }
   }
 
-  /** Keep page content flush with the real main-sidebar width (open 235px, folded 35px, overlay 0). */
-  private syncSidebarOffset(): void {
-    const w = window.innerWidth <= 991.98 ? '0px' : (this.isMenuOpen ? '235px' : '35px');
-    document.documentElement.style.setProperty('--zm-sidebar-w', w);
-  }
-
-  // #region agent log
-  private debugSidebarAlign(from: string, hypothesisId: string): void {
-    const sidebar = document.getElementById('sidebarMenu');
-    const el = document.querySelector('.zdash, .ceo, .uc, .zt, .comapny_section') as HTMLElement | null;
-    const sr = sidebar?.getBoundingClientRect();
-    const cr = el?.getBoundingClientRect();
-    const cs = el ? getComputedStyle(el) : null;
-    const scs = sidebar ? getComputedStyle(sidebar) : null;
-    const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim();
-    fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId,location:'main-sidebar.component.ts:'+from,message:'sidebar vs content alignment',data:{from,url:this.router.url,isMenuOpen:this.isMenuOpen,cssVar,sidebarClass:sidebar?.className,sidebarW:sr?.width,sidebarRight:sr?.right,sidebarComputedW:scs?.width,contentTag:el?.tagName,contentClass:(el?.className||'').toString().slice(0,120),contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,paddingTop:cs?.paddingTop,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,vw:innerWidth},timestamp:Date.now()})}).catch(()=>{});
-  }
-  // #endregion
-
-  /** A module was picked: its own menu opens, so the main menu folds (mobile: the drawer closes). */
+  /** A module was picked: its own menu opens, so the main menu folds (mobile: the drawer closes).
+   *  v1.15.1: folding here is not saved – the user's fold / unfold choice stays for the next visit. */
   modulePicked(): void {
+    this.hideTip();
     if (this.isMenuOpen) { this.isMenuOpen = false; this.unlockBodyScroll(); }
-    this.syncSidebarOffset();
+  }
+
+  // ---------- v1.15.1: name tooltip for the folded (icons only) menu – mouse and keyboard ----------
+  tip: { text: string; top: number; left: number | null; right: number | null } | null = null;
+
+  showTip(ev: Event, text: string): void {
+    if (this.isMenuOpen) { this.tip = null; return; }
+    const el = ev.currentTarget as HTMLElement | null;
+    if (!el) { return; }
+    const r = el.getBoundingClientRect();
+    const rtl = (document.documentElement.getAttribute('dir') || document.dir || '').toLowerCase() === 'rtl';
+    // left-to-right: the menu is on the left, the tip opens to its right; right-to-left (Arabic): the opposite side
+    this.tip = { text, top: Math.round(r.top + r.height / 2), left: rtl ? null : Math.round(r.right + 10), right: rtl ? Math.round(window.innerWidth - r.left + 10) : null };
+  }
+
+  hideTip(): void { this.tip = null; }
+
+  @HostListener('document:keydown.escape') escTip(): void { this.hideTip(); }
+
+  /** v1.15.1: distinct icons – Organisation and Projects both used account_tree; 'monitoring' is not in the Material Icons font. */
+  private static readonly ICON_FIX: Record<string, Record<string, string>> = {
+    orgstructure: { account_tree: 'corporate_fare' },
+    projects: { account_tree: 'view_kanban' },
+    ceo: { monitoring: 'analytics' },
+  };
+
+  iconOf(app: { key: string; icon: string }): string {
+    return MainSidebarComponent.ICON_FIX[app.key]?.[app.icon] || app.icon;
+  }
+
+  /** v1.15.1: the Settings app opens the Settings home page (not the first settings screen, Location Master). */
+  appLink(a: { app: { key: string }; link: string }): string {
+    return a.app.key === 'settings' ? '/main-sidebar/settings/home' : a.link;
   }
 
   toggleSidebarMenu(): void {
@@ -145,7 +196,6 @@ export class MainSidebarComponent implements OnDestroy {
     // Close any open mobile dropdowns when toggling sidebar
     this.isMobileNotificationOpen = false;
     this.isMobileCompanyDropdownOpen = false;
-    this.syncSidebarOffset();
   }
 
   onToolbarMenuToggle() {
@@ -157,7 +207,6 @@ export class MainSidebarComponent implements OnDestroy {
       this.isMenuOpen = false;
       this.unlockBodyScroll();
     }
-    this.syncSidebarOffset();
   }
 
   // ============================================================
@@ -219,7 +268,6 @@ export class MainSidebarComponent implements OnDestroy {
       this.isMobileCompanyDropdownOpen = false;
       this.unlockBodyScroll();
     }
-    this.syncSidebarOffset();
   }
 
   // ============================================================
@@ -234,7 +282,7 @@ export class MainSidebarComponent implements OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
-    this.syncSidebarOffset();
+    this.restoreFold();   // v1.15.1: per-user fold / unfold choice
     this.zlist.permissions().subscribe(a => { this.menuAccess = a; this.buildMenu(); });
     this.selectedBranchIds = JSON.parse(
       localStorage.getItem('selectedBranchIds') || '[]'
@@ -265,14 +313,8 @@ export class MainSidebarComponent implements OnDestroy {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.markApp();
-        // #region agent log
-        requestAnimationFrame(() => this.debugSidebarAlign('NavigationEnd', 'A'));
-        // #endregion
       }
     });
-    // #region agent log
-    requestAnimationFrame(() => this.debugSidebarAlign('ngOnInit', 'A'));
-    // #endregion
 
     const selectedSchema = this.authService.getSelectedSchema();
     const selectedSchemaId = this.authService.getSelectedSchemaId();
@@ -643,13 +685,13 @@ export class MainSidebarComponent implements OnDestroy {
         this.router.navigate(['/main-sidebar/sub-sidebar/resignation-request']);
         break;
       case 'airticketrequest':
-        this.router.navigate(['/main-sidebar/asset-options/airticket-approvals']);
+        this.router.navigate(['/main-sidebar/air-ticket-options/airticket-approvals']);   // v1.15.1: was under asset-options (no such page)
         break;
       case 'generalrequest':
         this.router.navigate(['/main-sidebar/general-sidebar/approvals']);
         break;
       case 'docrequest':
-        this.router.navigate(['/main-sidebar/settings/document-request-approval']);
+        this.router.navigate(['/main-sidebar/general-sidebar/document-request-approval']);   // v1.15.1: was under settings (no such page)
         break;
       case 'loanrequest':
         this.router.navigate(['/main-sidebar/loan-sidebar/loan-approval']);

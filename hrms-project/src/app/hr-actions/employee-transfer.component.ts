@@ -169,7 +169,7 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
         <tbody>
           <tr *ngFor="let r of shown()">
             <td data-label="Employee"><a href="" (click)="$event.preventDefault(); openEmp(r)">{{ r.employee }}</a></td>
-            <td data-label="Effective date">{{ r.effective_date | date:'dd/MM/yyyy' }}</td>
+            <td data-label="Effective date">{{ r.effective_date | date:'dd MMM yyyy' }}</td>
             <td data-label="Branch move" class="ha-move"><ng-container *ngIf="r.to_branch && r.to_branch !== r.from_branch; else same">{{ r.from_branch || '–' }}<span class="arr">→</span>{{ r.to_branch }}</ng-container><ng-template #same>{{ r.from_branch || '–' }}</ng-template></td>
             <td data-label="Department move" class="ha-move"><ng-container *ngIf="r.to_department && r.to_department !== r.from_department; else same2">{{ r.from_department || '–' }}<span class="arr">→</span>{{ r.to_department }}</ng-container><ng-template #same2>{{ r.from_department || '–' }}</ng-template></td>
             <td data-label="Other changes" class="ha-move">{{ others(r) || '–' }}</td>
@@ -195,20 +195,20 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
       <button type="button" class="lp-x" (click)="detail = null" aria-label="Close" style="color:#6b7185">×</button></header>
     <div class="body">
       <div class="ha-facts">
-        <div><span>Effective</span>{{ detail.effective_date | date:'dd/MM/yyyy' }}</div>
+        <div><span>Effective</span>{{ detail.effective_date | date:'dd MMM yyyy' }}</div>
         <div><span>Branch</span>{{ detail.from_branch || '–' }}<ng-container *ngIf="detail.to_branch"> → {{ detail.to_branch }}</ng-container></div>
         <div><span>Department</span>{{ detail.from_department || '–' }}<ng-container *ngIf="detail.to_department"> → {{ detail.to_department }}</ng-container></div>
         <div *ngIf="detail.to_designation"><span>New designation</span>{{ detail.to_designation }}</div>
         <div *ngIf="detail.to_category"><span>New category</span>{{ detail.to_category }}</div>
         <div *ngIf="detail.to_manager"><span>New manager</span>{{ detail.to_manager }}</div>
-        <div *ngIf="detail.done_at"><span>Carried out</span>{{ detail.done_at | date:'dd/MM/yyyy HH:mm' }}</div>
+        <div *ngIf="detail.done_at"><span>Carried out</span>{{ detail.done_at | date:'dd MMM yyyy, HH:mm' }}</div>
       </div>
       <p *ngIf="detail.reason" style="font-size:13px;margin:6px 0"><b>Reason:</b> {{ detail.reason }}</p>
       <div class="ha-card changes" *ngIf="detail.done?.length">
         <h3>What was moved</h3>
         <ul><li *ngFor="let l of detail.done">{{ l }}</li></ul>
       </div>
-      <p class="lp-muted" *ngIf="detail.status === 'Scheduled'">Scheduled – it is carried out on {{ detail.effective_date | date:'dd/MM/yyyy' }}, or now with “Carry out now”. The full list of what moves is worked out on that day.</p>
+      <p class="lp-muted" *ngIf="detail.status === 'Scheduled'">Scheduled – it is carried out on {{ detail.effective_date | date:'dd MMM yyyy' }}, or now with “Carry out now”. The full list of what moves is worked out on that day.</p>
       <p class="lp-muted" *ngIf="detail.status === 'Cancelled'">This transfer was cancelled – nothing was changed.</p>
     </div>
     <footer>

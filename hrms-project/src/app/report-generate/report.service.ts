@@ -11,7 +11,7 @@ export class ReportService {
   // if (!selectedSchema) {
   //   console.error('No schema selected.');
   // }
-  private baseUrl = 'http://127.0.0.1:8000/employee/api/emp-report/';
+  private baseUrl = `${environment.apiBaseUrl}/employee/api/emp-report/`;
   // private apiUrl = 'http://127.0.0.1:8000/employee/api/emp-report/std_report/';
   // private apiUrl: string = '';
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local

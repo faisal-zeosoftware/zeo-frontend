@@ -164,7 +164,7 @@ export class ProjectFinanceComponent implements OnInit {
   constructor(private api: ProjectControlApiService, private cd: ChangeDetectorRef) {}
 
   n(v: any): number { return Number(v || 0); }
-  m(v: any): string { return money(v, this.d?.finance?.currency || 'AED'); }
+  m(v: any): string { return money(v, this.d?.finance?.currency || undefined); }   // v1.14.0: else company currency
   w(p: any): number { return p === null || p === undefined ? 0 : Math.max(0, Math.min(100, Number(p))); }
   cls(p: any): string { const n = Number(p); return p === null || p === undefined ? '' : n > 100 ? 'over' : n > 85 ? 'warn' : ''; }
 

@@ -1,14 +1,21 @@
 <div class="container">
     <div class="comapny_section" *ngIf="hasViewPermission">
-        <div class="com_list " >
+        <!-- v1.14.0: the SIF file is a UAE file – other countries see why the page is empty -->
+        <div class="com_list" *zCountry="'!wps_sif'">
+          <h2>{{ 'wps_file' | zc }}</h2>
+          <hr>
+          <p>The WPS SIF salary file is used only by UAE companies. Your company's country does not use it.
+             An administrator can turn it on under Settings → Country settings.</p>
+        </div>
+        <div class="com_list " *zCountry="'wps_sif'">
 
-                <h2>Wps</h2>
+                <h2>WPS</h2>
                 <hr>
                 
         
                 <div class="row ">
                   <div class="col-md-6">
-                    <label>Select Payroll</label>
+                    <label>Select payroll</label>
                     <div class="custom-sel">
                       <select class="form-control" [(ngModel)]="selectedPayrollId" [ngModelOptions]="{ standalone: true }">
                         <option *ngFor="let payroll of Payrolls" [value]="payroll.id">
@@ -34,7 +41,7 @@
                 <div *ngIf="sifData">
                   <div class="row mt-4">
                     <div class="col-md-6">
-                      <h4 class="mt-3">Unified SIF Table</h4>
+                      <h4 class="mt-3">Unified SIF table</h4>
                     </div>
                     <div class="col-md-6 text-right" *ngIf="hasExportPermission">
                       <button type="button" class="btn btn-info mt-2 mr-2" (click)="downloadSIFStyledExcel()">
@@ -50,14 +57,12 @@
   <table class="styled-table mt-2">
     <thead>
       <tr>
-        <th>Type</th>
         <th *ngFor="let key of getUnifiedSIFKeys()">{{ key }}</th>
       </tr>
     </thead>
     <tbody>
       <!-- HDR Row -->
       <tr>
-        <td data-label="Type">HDR</td>
         <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
           {{ sifData.hdr[key] || '-' }}
         </td>
@@ -65,7 +70,6 @@
 
       <!-- EDR Rows -->
       <tr *ngFor="let edrItem of sifData.edr">
-        <td data-label="Type">EDR</td>
         <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
           {{ edrItem[key] || '-' }}
         </td>
@@ -73,7 +77,6 @@
 
       <!-- SCR Row -->
       <tr>
-        <td data-label="Type">SCR</td>
         <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
           {{ sifData.scr[key] || '-' }}
         </td>

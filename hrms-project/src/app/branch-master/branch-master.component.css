@@ -420,3 +420,11 @@ margin-right: 10px;
   -webkit-box-orient: vertical;
   overflow: hidden !important;
 }
+/* 1.20.1 – branches as a standard list */
+.bm-av { display:inline-flex; width:28px; height:28px; border-radius:50%; background:#eef2ff; color:#4f46e5; font-weight:600; align-items:center; justify-content:center; font-size:13px; margin-inline-end:8px; }
+.bm-acts { white-space: nowrap; }
+.bm-act { border:0; background:transparent; color:#64748b; padding:4px; border-radius:6px; vertical-align: middle; }
+.bm-act:hover { background:#f1f5f9; color:#4338ca; }
+.bm-act mat-icon { font-size:18px; width:18px; height:18px; }
+.bm-act.bm-del:hover { background:#fef2f2; color:#dc2626; }
+.bm-act mat-icon { color: inherit !important; }

@@ -198,7 +198,7 @@ this.loadDeparmentBranch();
 
 
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -282,7 +282,10 @@ const formData = new FormData();
   formData.append('start_date', this.start_date);
   formData.append('end_date', this.end_date);
   formData.append('reason', this.reason);
-  formData.append('status', this.status);
+  // v1.16.0 (D18): status is decided by the approval workflow – only sent when the form really set one
+  if (this.status) formData.append('status', this.status);
+  // v1.16.0 (D18): supporting document (sick / maternity / parental / bereavement / study leave need one)
+  if (this.leaveDocument) formData.append('lv_document', this.leaveDocument, this.leaveDocument.name);
   formData.append('dis_half_day', this.dis_half_day.toString());
   formData.append('half_day_period', this.half_day_period);
   formData.append('number_of_days', this.totalDays.toString()); // ✅ ALWAYS FULL DAYS
@@ -602,6 +605,7 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any) {
 
   this.editAsset = { ...asset };
+  this.editLeaveDocument = null;   // v1.16.0 (D18)
 
   this.mapBranchesNameToId();
 
@@ -683,7 +687,10 @@ updateAssetType(): void {
 
   console.log('UPDATE PAYLOAD:', payload);
 
-  this.employeeService.updateLeaveRequest(this.editAsset.id, payload).subscribe(
+  // v1.16.0 (D18): with a new supporting document the change is sent as form data (lv_document), otherwise as before
+  const request$ = this.editLeaveDocument ? this.updateLeaveWithDocument(this.editAsset.id, payload, this.editLeaveDocument)
+    : this.employeeService.updateLeaveRequest(this.editAsset.id, payload);
+  request$.subscribe(
     () => {
       alert('Updated successfully!');
       this.closeEditModal();
@@ -691,11 +698,31 @@ updateAssetType(): void {
     },
     (error) => {
       console.error(error);
-      alert(error?.error?.request_type?.[0] || 'Update failed');
+      alert(error?.error?.request_type?.[0] || error?.error?.lv_document?.[0] || error?.error?.detail
+        || (Array.isArray(error?.error?.non_field_errors) ? error.error.non_field_errors.join(' ') : '') || 'Update failed');
     }
   );
 }
 editTotalDays = 0;
+
+// v1.16.0 (D18): supporting document on the HR leave request (create + change), same API field as My leave (lv_document)
+leaveDocument: File | null = null;
+editLeaveDocument: File | null = null;
+
+pickLeaveDocument(ev: any, edit = false): void {
+  const file: File | null = ev?.target?.files?.[0] || null;
+  if (edit) { this.editLeaveDocument = file; } else { this.leaveDocument = file; }
+}
+
+private updateLeaveWithDocument(id: number, payload: any, file: File) {
+  const fd = new FormData();
+  Object.entries(payload).forEach(([k, v]) => {
+    if (v !== null && v !== undefined && !(typeof v === 'number' && isNaN(v))) fd.append(k, String(v));
+  });
+  fd.append('lv_document', file, file.name);
+  const schema = localStorage.getItem('selectedSchema');
+  return this.http.patch(`${this.apiUrl}/calendars/api/emp-leave-request/${id}/?schema=${schema}`, fd);
+}
 
 
 

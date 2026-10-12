@@ -5,7 +5,7 @@
   <div class="hover-content">
     <div class="side_sec" (click)="openAddFieldsModal()" >
    <h6 class="text-center"> <mat-icon>dataset</mat-icon></h6>
-    <h2 class="text-center">Choose Branch</h2>
+    <h2 class="text-center">Choose branch</h2>
     </div>
   </div>
 </div> -->
@@ -23,7 +23,7 @@
     <div class="modal-content">
       <span class="close pull-right" (click)="closemarketModal()">&times;</span>
    
-      <label>Choose Branch</label>
+      <label>Choose branch</label>
         <div class="custom-sel">
           <select class=" form-control" [(ngModel)]="selectedBranchIdhol" (change)="onBranchChange($event)">
             <option value="" disabled selected>Select Branch</option>
@@ -59,7 +59,18 @@
                               </div>
         </div>
             
-        <div class="card-list" data-widget="counts" data-widget-title="Company counts">  
+
+        
+    </div>
+
+
+
+    <div class="content_sec_last">
+      <!-- v1.7.0: dashboard designer + every module on the dashboard -->
+      <!-- v1.16.0: one board – every card can be moved, resized, hidden and given its own period (z-dash-designer) -->
+      <z-dash-designer name="main" scope="app-dashboard-contents .zdd-board" (periods)="onPeriods($event); ov.setPeriods($event)"></z-dash-designer>
+      <div class="zdd-board">
+        <div class="card-list" data-widget="counts" data-widget-title="Company counts" data-widget-size="f" data-widget-timed="0" data-widget-now="Masters as of today.">  
 
             <div class="row">
                 <div class="col-md-3 col-12">
@@ -80,7 +91,7 @@
                     </div>
                 </div>
                 <div class="col-md-3 col-12">
-                    <div class="card orange"  routerLink="/main-sidebar/sub-sidebar/catogary-master">
+                    <div class="card orange"  routerLink="/main-sidebar/sub-sidebar/category-master">
                         <div class="title">Categories <span class="pull-right"> <mat-icon>category</mat-icon></span></div>
                         <i class="zmdi zmdi-download"></i>
                         <div class="value">{{categoriesCount}}</div>
@@ -97,29 +108,19 @@
                 </div>
             </div>
         </div>
+        <z-dash-overview #ov class="zdd-contents" [waitForPeriods]="true"></z-dash-overview>
 
-        
-    </div>
-
-
-
-    <div class="content_sec_last">
-      <!-- v1.7.0: dashboard designer + every module on the dashboard -->
-      <z-dash-designer name="main" scope="app-dashboard-contents"></z-dash-designer>
-      <z-dash-overview></z-dash-overview>
 
 
 
      
 
 
-    <div class="row mt-5">
-        <div class="col-md-4">
 
                                    
 
 
-    <div class="approval-main-card" data-widget="approvals" data-widget-title="Pending approvals">
+    <div class="approval-main-card" data-widget="approvals" data-widget-title="Pending approvals" data-widget-timed="0" data-widget-now="Requests waiting for approval now.">
 
       <!-- 🔹 Header (Clickable) -->
       <div class="d-flex justify-content-between align-items-center"
@@ -198,7 +199,7 @@
     </div>
 
 
-            <div class="dash_holidays" data-widget="holidays" data-widget-title="Holidays">
+            <div class="dash_holidays" data-widget="holidays" data-widget-title="Holidays" data-widget-timed="0" data-widget-now="The next holidays of the branch.">
               <div class="row">
                 <div class="col-md-5">
                   <h6>Holidays</h6>
@@ -221,7 +222,7 @@
                 <p>No holidays available for the selected branch.</p>
               </div>
           
-              <div *ngFor="let holiday of selectedBranchHolidays"  class="row mt-3">
+              <div *ngFor="let holiday of selectedBranchHolidays"  class="row mt-3 zdo-go" role="link" tabindex="0" (click)="openHolidays()" (keydown.enter)="openHolidays()" title="Open the holiday calendar">
                 <div class="col-md-3">
                   <div class="holi_date_sec">
                     <h2>{{ getDate(holiday.start_date) }} <br><span>{{ getMonth(holiday.start_date) }}</span></h2>
@@ -234,7 +235,7 @@
               </div>
             </div>
 
-            <div class="dash_announcements mt-4" data-widget="announcements" data-widget-title="Announcements">
+            <div class="dash_announcements mt-4" data-widget="announcements" data-widget-title="Announcements" data-widget-timed="0" data-widget-now="Announcements that are live now.">
               <div class="row align-items-center mb-3">
                 <div class="col-md-12">
                   <h6> Announcements</h6>
@@ -257,7 +258,7 @@
                 class="empty-img"
               />
             
-              <h4 class="mt-1">No Announcements</h4>
+              <h4 class="mt-1">No announcements</h4>
             
               <p>
                 There are no announcements available for this branch right now.
@@ -267,7 +268,7 @@
         
               <div class="row">
                 <div class="col-md-12 mb-4" *ngFor="let announcement of selectedBranchAnnouncement">
-                  <div class="announcement-card">
+                  <div class="announcement-card zdo-go" role="link" tabindex="0" (click)="openRecord('OrganisationManager.Announcement', announcement.id, $event)" (keydown.enter)="openRecord('OrganisationManager.Announcement', announcement.id, $event)">
                     <div class="announcement-header">
                       <mat-icon class="announce-icon">campaign</mat-icon>
                       <h5>{{ announcement.title }}</h5>
@@ -297,16 +298,10 @@
 
 
             
-          </div>
 
 
-          
-
-          <div class="col-md-8">
-
-
-            <div class="dash_holidays mb-4" data-widget="attendance-chart" data-widget-title="Today's attendance chart">
-              <h6>Today's Attendance Metrics</h6>
+            <div class="dash_holidays mb-4" data-widget="attendance-chart" data-widget-title="Attendance chart" data-widget-timed="1" data-widget-period="today" data-widget-size="w">
+              <h6>Attendance <small class="text-muted">· {{ chartPeriod?.label || 'Today' }} · select a bar for the list</small></h6>
               <div *ngIf="isLoading" class="d-flex flex-column align-items-center justify-content-center py-5" style="min-height: 320px;">
                 <div class="spinner-border text-success" role="status" style="width: 2.5rem; height: 2.5rem;">
                   <span class="visually-hidden">Syncing active dashboard...</span>
@@ -319,7 +314,7 @@
               </div>
               </div>
 
-            <div class="dash_projects " data-widget="projects" data-widget-title="Projects">
+            <div class="dash_projects " data-widget="projects" data-widget-title="Projects" data-widget-timed="0" data-widget-size="w" data-widget-now="Active projects of the branch now.">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6> Projects</h6>
               </div>
@@ -339,7 +334,7 @@
          alt="No Projects">
   </div>
 
-  <h4>No Active Projects</h4>
+  <h4>No active projects</h4>
 
   <p>
     There are currently no active projects available
@@ -352,21 +347,21 @@
                 <div class="col-md-6 col-lg-6 mb-4" *ngFor="let project of selectedBranchProjects">
                   <div class="project-card">
                     <div class="project-header">
-                      <h4>{{ project.title }}</h4>
+                      <h4 class="zdo-go" role="link" tabindex="0" (click)="openRecord('ProjectManagement.Project', project.id, $event)" (keydown.enter)="openRecord('ProjectManagement.Project', project.id, $event)" title="Open the project">{{ project.title }}</h4>
                       <span class="status-badge" [ngClass]="{
                         'status-new': project.status === 'new',
                         'status-active': project.status === 'active',
                         'status-in_progress': project.status === 'in_progress',
                         'status-completed': project.status === 'completed'
-                      }">{{ project.status | titlecase }}</span>
+                      }">{{ statusLabel(project.status) }}</span>
                     </div>
         
                     <div class="project-body">
                       <p>{{ project.description }}</p>
         
                       <div class="project-dates mb-2">
-                        <span><strong>Start:</strong> {{ project.start_date | date:'mediumDate' }}</span>
-                        <span><strong>End:</strong> {{ project.end_date | date:'mediumDate' }}</span>
+                        <span><strong>Start:</strong> {{ project.start_date | date:'dd MMM yyyy' }}</span>
+                        <span><strong>End:</strong> {{ project.end_date | date:'dd MMM yyyy' }}</span>
                       </div>
         
                       <div *ngIf="project.document" class="mt-2 mb-3">
@@ -463,7 +458,7 @@
             'done': task.status === 'done'
           }"
         >
-          {{ task.status | titlecase }}
+          {{ statusLabel(task.status) }}
         </span>
 
         <mat-icon class="toggle-icon">
@@ -478,10 +473,11 @@
       *ngIf="expandedTaskId === task.id"
     >
       <p>{{ task.description }}</p>
+      <a class="zr-link" href="" (click)="openRecord('ProjectManagement.Task', task.id, $event)">Open the task</a>
 
       <div class="task-dates">
-        <span><strong>Start:</strong> {{ task.start_date | date:'mediumDate' }}</span>
-        <span><strong>End:</strong> {{ task.end_date | date:'mediumDate' }}</span>
+        <span><strong>Start:</strong> {{ task.start_date | date:'dd MMM yyyy' }}</span>
+        <span><strong>End:</strong> {{ task.end_date | date:'dd MMM yyyy' }}</span>
       </div>
 
       <!-- 👤 Task Managers -->
@@ -517,7 +513,7 @@
 
 
 
-            <div class="dash_holidays mt-4" data-widget="policies" data-widget-title="Company policies">
+            <div class="dash_holidays mt-4" data-widget="policies" data-widget-title="Company policies" data-widget-timed="0" data-widget-size="w" data-widget-now="Policies that apply now.">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="fw-bold">🏢 Company Policies</h6>
                 <span class="text-muted small"
@@ -534,7 +530,7 @@
                   <div class="policy-card p-4 shadow-sm rounded-4 h-100">
                     <!-- Header -->
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                      <h5 class="fw-semibold text-primary">{{ policy.title }}</h5>
+                      <h5 class="fw-semibold text-primary zdo-go" role="link" tabindex="0" (click)="openPolicies()" (keydown.enter)="openPolicies()" title="Open my policies">{{ policy.title }}</h5>
                       <!-- <span
                         class="badge bg-success"
                         *ngIf="policy.branch"
@@ -565,7 +561,7 @@
                     >
                       <small class="text-secondary">
                         <mat-icon style="font-size: 14px;" class="me-1">calendar_today</mat-icon>
-                        {{ policy.created_at | date: 'mediumDate' }}
+                        {{ policy.created_at | date:'dd MMM yyyy' }}
                       </small>
             
                       <div *ngIf="policy.policy_file">
@@ -592,7 +588,7 @@
                   alt="No Policies">
            </div>
          
-           <h4>No Company Policies</h4>
+           <h4>No company policies</h4>
          
            <p>
              No policies are currently assigned
@@ -604,15 +600,15 @@
             
 
            
-          </div>
-          
-    </div>
 
 
 
 
 
 
+
+
+      </div>
 
 <!-- 🌟 Projects Section -->
 <div class="row mt-5">

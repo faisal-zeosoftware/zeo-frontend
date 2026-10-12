@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ZFieldInputComponent } from './z-field-input.component';
 import { DesignField, bySection, checkValue, showIfOk, visibleOn } from './field-types';
 import { ZListService } from './z-list.service';
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * Custom fields of the employee screens (create, edit dialog, details page), from the employee form designer:
@@ -152,7 +153,7 @@ export class ZEmpFieldsComponent implements OnInit {
     if (v === null || v === undefined || v === '') { return '-'; }
     if (f.data_type === 'checkbox') { return v === true || /^(yes|true|1)$/i.test(String(v)) ? 'Yes' : 'No'; }
     if (f.data_type === 'rating') { return '★'.repeat(Number(v) || 0) || '-'; }
-    if (f.data_type === 'currency') { const n = Number(String(v).replace(/,/g, '')); return 'AED ' + (isNaN(n) ? v : n.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); }
+    if (f.data_type === 'currency') { const n = Number(String(v).replace(/,/g, '')); return cpPack().currency.code + ' ' + (isNaN(n) ? v : n.toLocaleString('en-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); }
     if (f.data_type === 'percent') { return v + ' %'; }
     if (f.data_type === 'datetime') { return String(v).replace('T', ' ').slice(0, 16); }
     return String(v);

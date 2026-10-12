@@ -9,14 +9,14 @@
     </span>
   </div>
 
-        <h1>Edit Department</h1><hr>
+        <h1>Edit department</h1><hr>
 
         <form (submit)="updateCategory()">
         <div class="row" >
 
             <div class="col-md-6" >
                
-                <label>Department Name</label>
+                <label>Department name</label>
                <input type="text"  class="form-control" required id="dept_name" name="dept_name"  [(ngModel)]="department.dept_name"  placeholder="Enter department name "
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_name}">
                

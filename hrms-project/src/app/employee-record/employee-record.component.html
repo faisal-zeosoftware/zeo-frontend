@@ -1,0 +1,393 @@
+<div class="er-page er-rec">
+  <div class="er-card" *ngIf="loading && !d"><span class="z-skel" style="width:40%"></span><br><span class="z-skel" style="width:70%"></span><br><span class="z-skel"></span></div>
+  <div class="er-card z-empty" *ngIf="err && !d">{{ err }} · <button type="button" (click)="back()">Back to employees</button></div>
+
+  <ng-container *ngIf="d as r">
+    <!-- ================================================================ compact header -->
+    <header class="er-head">
+      <button type="button" class="er-back" (click)="back()" aria-label="Back to employees">‹ Employees</button>
+      <div class="er-head-main">
+        <label class="er-av lg" [style.background]="r.header.photo ? 'transparent' : colour(r.header.code)" [class.can]="r.can_edit" [title]="r.can_edit ? 'Change photo' : ''">
+          <img *ngIf="r.header.photo" [src]="r.header.photo" alt="">
+          <ng-container *ngIf="!r.header.photo">{{ r.header.initials }}</ng-container>
+          <input *ngIf="r.can_edit" type="file" accept="image/*" (change)="photo($event)" hidden>
+        </label>
+        <div class="er-id">
+          <h1>{{ r.header.name }} <span class="er-ar" *ngIf="r.header.arabic_name" dir="rtl" lang="ar">{{ r.header.arabic_name }}</span></h1>
+          <p class="er-line">{{ r.header.code }}<ng-container *ngIf="r.header.designation"> · {{ r.header.designation }}</ng-container><ng-container *ngIf="r.header.department"> · {{ r.header.department }}</ng-container><ng-container *ngIf="r.header.branch"> · {{ r.header.branch }}</ng-container></p>
+          <div class="er-chips"><span class="z-chip" *ngFor="let c of r.header.chips" [ngClass]="c.level">{{ c.label }}</span></div>
+        </div>
+        <dl class="er-facts">
+          <div><dt>Joined</dt><dd>{{ dmy(r.header.facts.joined) }}</dd></div>
+          <div><dt>Reporting to</dt><dd>{{ r.header.facts.manager || '–' }}</dd></div>
+          <div><dt>Nationality</dt><dd>{{ r.header.facts.nationality || '–' }}</dd></div>
+          <div><dt>Next expiry</dt><dd>
+            <ng-container *ngIf="r.header.facts.next_expiry as x"><button type="button" class="z-chip" [ngClass]="badgeClass(x)" (click)="go('documents')">{{ t(x.document) }} · {{ x.level === 'valid' ? dmy(x.date) : x.label }}</button></ng-container>
+            <ng-container *ngIf="!r.header.facts.next_expiry">–</ng-container></dd></div>
+        </dl>
+        <div class="er-head-side">
+          <div class="er-menu-wrap">
+            <button type="button" class="er-ring" (click)="showMissing = !showMissing; menu = ''; $event.stopPropagation()" [attr.aria-label]="'Profile ' + r.header.completeness.score + '% complete'" [attr.aria-expanded]="showMissing">
+              <svg viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="25" class="bg"/><circle cx="28" cy="28" r="25" class="fg" [attr.stroke-dasharray]="ringDash(r.header.completeness.score)" [class.full]="r.header.completeness.score === 100"/></svg>
+              <span>{{ r.header.completeness.score }}%</span>
+            </button>
+            <div class="er-menu right er-missing" *ngIf="showMissing" (click)="$event.stopPropagation()">
+              <p><b>{{ r.header.completeness.filled }} of {{ r.header.completeness.total }}</b> items filled</p>
+              <p *ngIf="!r.header.completeness.missing.length" class="er-muted">Nothing is missing.</p>
+              <button type="button" *ngFor="let m of r.header.completeness.missing" (click)="missingClick(m)">+ {{ m }}</button>
+            </div>
+          </div>
+          <div class="er-menu-wrap">
+            <button type="button" class="er-btn" (click)="menu = menu === 'act' ? '' : 'act'; showMissing = false; $event.stopPropagation()" aria-haspopup="menu">Actions ▾</button>
+            <div class="er-menu right" *ngIf="menu === 'act'" role="menu" (click)="$event.stopPropagation()">
+              <button type="button" (click)="action('transfer')">Transfer</button>
+              <button type="button" (click)="action('salary')">Salary revision</button>
+              <button type="button" (click)="action('letter')">Issue HR letter</button>
+              <button type="button" (click)="action('probation')" *ngIf="r.employment?.can_decide">Extend or confirm probation</button>
+              <button type="button" (click)="action('exit')">Start exit</button>
+              <button type="button" (click)="action('print')">Print profile</button>
+              <button type="button" (click)="action('classic')">Classic view</button>
+              <button type="button" class="danger" *ngIf="r.can_edit" (click)="action('deactivate')">{{ r.header.is_active ? 'Deactivate' : 'Activate' }}</button>
+            </div>
+          </div>
+          <div class="er-seg">
+            <button type="button" [disabled]="!prevId" (click)="step(prevId)" aria-label="Previous employee">‹</button>
+            <button type="button" [disabled]="!nextId" (click)="step(nextId)" aria-label="Next employee">›</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="er-body">
+      <!-- ================================================================ six groups -->
+      <nav class="er-nav" aria-label="Employee sections">
+        <button type="button" *ngFor="let g of groups" [class.on]="group === g.key" (click)="go(g.key)" [attr.aria-current]="group === g.key ? 'page' : null">
+          <span class="ic" aria-hidden="true">{{ g.icon }}</span><span data-no-translate>{{ tk(g.label, g.key === 'pay' ? 'Pay (employee section)' : g.label) }}</span></button>
+      </nav>
+
+      <main class="er-main">
+        <!-- reusable single card -->
+        <ng-template #single let-key="key" let-title="title" let-fields="fields">
+          <section class="er-card er-sec" [id]="'card-' + key" [class.editing]="editing === key">
+            <div class="er-sec-h"><h2>{{ title }}</h2>
+              <button type="button" class="er-icon pen" *ngIf="r.can_edit && editing !== key" (click)="edit(key)" [attr.aria-label]="'Edit ' + title">✎</button></div>
+            <dl class="er-kv" *ngIf="editing !== key">
+              <div *ngFor="let f of fields"><dt>{{ f.label }}</dt><dd [attr.dir]="cardValues(key)?.[f.key] ? (f.dir || null) : null">{{ show(f, cardValues(key)) }}</dd></div>
+            </dl>
+            <form *ngIf="editing === key" class="er-form" (ngSubmit)="saveCard(key)">
+              <ng-container *ngFor="let f of fields"><ng-container *ngTemplateOutlet="field; context: { f: f, v: draft, err: draftErr, dup: true }"></ng-container></ng-container>
+              <div class="er-form-act"><button type="button" class="er-btn" (click)="cancel()">Cancel</button><button type="submit" class="er-btn primary" [disabled]="saving">{{ saving ? 'Saving…' : 'Save' }}</button></div>
+            </form>
+          </section>
+        </ng-template>
+
+        <!-- one field (label above, error under) -->
+        <ng-template #field let-f="f" let-v="v" let-err="err" let-dup="dup" let-e="e">
+          <div class="er-f" [class.wide]="f.type === 'text' && (f.key.includes('address') || f.key === 'note')" [class.bad]="err?.[f.key]">
+            <label *ngIf="f.type !== 'bool'" [attr.for]="'f-' + f.key">{{ f.label }}</label>
+            <ng-container [ngSwitch]="f.type">
+              <select *ngSwitchCase="'select'" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true"><option [ngValue]="null">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+              <select *ngSwitchCase="'fk'" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true"><option [ngValue]="null">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+              <select *ngSwitchCase="'look'" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true"><option [ngValue]="null">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+              <input *ngSwitchCase="'date'" type="date" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true">
+              <input *ngSwitchCase="'number'" type="number" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true">
+              <label *ngSwitchCase="'bool'" class="er-check"><input type="checkbox" [(ngModel)]="v[f.key]" [name]="f.key" (ngModelChange)="dirty = true"> {{ f.label }}</label>
+              <textarea *ngSwitchCase="'textarea'" [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" rows="2" (ngModelChange)="dirty = true"></textarea>
+              <input *ngSwitchCase="'file'" type="file" [id]="'f-' + f.key" (change)="e && fileFor(e, $event)">
+              <input *ngSwitchDefault [id]="'f-' + f.key" [(ngModel)]="v[f.key]" [name]="f.key" [placeholder]="f.placeholder || ''" [attr.dir]="f.dir || null"
+                     (input)="e ? maskIn(f, e) : touch(f)" (blur)="dup && dupCheck(f.key, v[f.key])">
+            </ng-container>
+            <small class="er-err" *ngIf="err?.[f.key]">{{ err[f.key] }}</small>
+            <small class="er-dup" *ngIf="dup && dupes[f.key]?.length">Already used by <a *ngFor="let m of dupes[f.key]" (click)="openEmp(m.employee_id)">{{ m.employee }} ({{ m.code }})</a></small>
+          </div>
+        </ng-template>
+
+        <!-- reusable table -->
+        <ng-template #tbl let-tk="tk" let-cols="cols">
+          <section class="er-card er-sec" [id]="'card-' + tk">
+            <div class="er-sec-h"><h2>{{ T[tk].title }} <span class="er-count">{{ rows(tk).length }}</span></h2>
+              <span class="er-sum" *ngIf="tk === 'experience' && r.experience_total">{{ r.experience_total.text }} across {{ r.experience_total.employers }} employer{{ r.experience_total.employers === 1 ? '' : 's' }}</span>
+              <button type="button" class="er-btn sm" *ngIf="r.can_edit" (click)="openPanel(tk)">+ Add</button></div>
+            <div class="er-table-wrap" *ngIf="rows(tk).length">
+              <table class="er-table">
+                <thead><tr><th *ngFor="let c of cols" [class.num]="c.num">{{ c.label }}</th><th class="act" *ngIf="r.can_edit || tk === 'files'"></th></tr></thead>
+                <tbody>
+                  <tr *ngFor="let x of rows(tk)" class="er-row">
+                    <td *ngFor="let c of cols" [class.num]="c.num" [ngSwitch]="c.kind">
+                      <ng-container *ngSwitchCase="'date'">{{ dmy(x[c.key]) }}</ng-container>
+                      <ng-container *ngSwitchCase="'badge'"><span class="z-chip" *ngIf="x[c.key]" [ngClass]="badgeClass(x[c.key])">{{ x[c.key].level === 'valid' ? dmy(x[c.key].date) : x[c.key].label }}</span><span *ngIf="!x[c.key]" class="er-muted">–</span></ng-container>
+                      <ng-container *ngSwitchCase="'yes'">{{ x[c.key] ? 'Yes' : 'No' }}</ng-container>
+                      <ng-container *ngSwitchCase="'dob'">{{ dmy(x.ef_date_of_birth) }}<small class="er-muted" *ngIf="x.age !== null"> ({{ x.age }})</small></ng-container>
+                      <ng-container *ngSwitchCase="'iban'"><span class="er-mono">{{ x.iban_last4 ? '•••• ' + x.iban_last4 : '–' }}</span>
+                        <span class="z-chip ok" *ngIf="x.iban_ok === true">IBAN checked</span><span class="z-chip bad" *ngIf="x.iban_ok === false">IBAN not valid</span></ng-container>
+                      <ng-container *ngSwitchCase="'bankname'"><b>{{ x.bank_name }}</b> <span class="z-chip info" *ngIf="x.is_primary || x.is_primary_auto">Salary account</span><span class="z-chip" *ngIf="!x.is_active">Inactive</span></ng-container>
+                      <ng-container *ngSwitchCase="'contact'"><b>{{ x.name }}</b> <span class="z-chip info" *ngIf="x.is_primary">Primary</span></ng-container>
+                      <ng-container *ngSwitchCase="'attest'"><span class="z-chip" [ngClass]="x.attested ? 'ok' : 'warn'">{{ x.attested ? 'Attested' : 'Not attested' }}</span></ng-container>
+                      <ng-container *ngSwitchCase="'file'"><a *ngIf="x.file" [href]="x.file" target="_blank" rel="noopener">{{ x.file_name || 'View' }}</a><span *ngIf="!x.file" class="er-muted">No file</span></ng-container>
+                      <ng-container *ngSwitchCase="'mode'">{{ payMode(x[c.key]) }}</ng-container>
+                      <ng-container *ngSwitchCase="'money'">{{ money(x[c.key]) }}</ng-container>
+                      <ng-container *ngSwitchDefault>{{ x[c.key] ?? '–' }}</ng-container>
+                    </td>
+                    <td class="act" *ngIf="r.can_edit || tk === 'files'">
+                      <span class="er-hover">
+                        <a *ngIf="tk === 'files' && x.file" class="er-icon" [href]="x.file" download aria-label="Download">⇩</a>
+                        <button type="button" class="er-icon" *ngIf="r.can_edit" (click)="openPanel(tk, x)" [attr.aria-label]="'Edit ' + rowLabel(tk, x)">✎</button>
+                        <button type="button" class="er-icon danger" *ngIf="r.can_edit" (click)="removeRow(tk, x)" [attr.aria-label]="'Remove ' + rowLabel(tk, x)">🗑</button>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="z-empty" *ngIf="!rows(tk).length">{{ T[tk].empty }}<ng-container *ngIf="r.can_edit"> · <button type="button" (click)="openPanel(tk)">{{ T[tk].add }}</button></ng-container></p>
+          </section>
+        </ng-template>
+
+        <!-- ============================================================ Overview -->
+        <ng-container *ngIf="group === 'overview'">
+          <section class="er-card er-sec er-next" *ngIf="r.can_edit && hasOpenSteps(r)">
+            <div class="er-sec-h"><h2>Next steps</h2></div>
+            <div class="er-steps">
+              <button type="button" *ngFor="let s of r.next_steps" [class.done]="s.done" (click)="stepClick(s)"><span aria-hidden="true">{{ s.done ? '✓' : '+' }}</span>{{ s.label }}</button>
+            </div>
+          </section>
+          <div class="er-grid2">
+            <section class="er-card er-sec">
+              <div class="er-sec-h"><h2>Job</h2><button type="button" class="er-link" (click)="go('job')"><span data-no-translate>{{ tk('Open', 'Open (link)') }}</span></button></div>
+              <dl class="er-kv">
+                <div><dt>Designation</dt><dd>{{ r.job.designation || '–' }}</dd></div><div><dt>Department</dt><dd>{{ r.job.department || '–' }}</dd></div>
+                <div><dt>Branch</dt><dd>{{ r.job.branch || '–' }}</dd></div><div><dt>Category</dt><dd>{{ r.job.category || '–' }}</dd></div>
+                <div><dt>Reporting to</dt><dd>{{ r.job.manager || '–' }}</dd></div><div><dt>Employment</dt><dd>{{ r.employment?.status_label }} · {{ r.employment?.probation_status_label }}</dd></div>
+              </dl>
+            </section>
+            <section class="er-card er-sec">
+              <div class="er-sec-h"><h2>Contact</h2><button type="button" class="er-link" (click)="go('personal', 'contact')"><span data-no-translate>{{ tk('Open', 'Open (link)') }}</span></button></div>
+              <dl class="er-kv"><div *ngFor="let f of fieldsOf('contact')"><dt>{{ f.label }}</dt><dd>{{ show(f, r.contact) }}</dd></div></dl>
+            </section>
+            <section class="er-card er-sec">
+              <div class="er-sec-h"><h2>UAE documents</h2><button type="button" class="er-link" (click)="go('documents')"><span data-no-translate>{{ tk('Open', 'Open (link)') }}</span></button></div>
+              <ul class="er-doclist">
+                <li *ngFor="let x of r.documents"><span>{{ x.label }}</span>
+                  <span class="z-chip" *ngIf="x.badge" [ngClass]="badgeClass(x.badge)">{{ x.badge.level === 'valid' ? 'Valid' : x.badge.label }}</span>
+                  <span class="er-muted" *ngIf="!x.badge">{{ x.number ? x.number : 'Not added' }}</span></li>
+              </ul>
+            </section>
+            <section class="er-card er-sec">
+              <div class="er-sec-h"><h2 data-no-translate>{{ tk('Pay', 'Pay (employee section)') }}</h2><button type="button" class="er-link" (click)="go('pay')"><span data-no-translate>{{ tk('Open', 'Open (link)') }}</span></button></div>
+              <dl class="er-kv"><div><dt>Gross</dt><dd class="num">{{ money(r.pay.gross) }}</dd></div><div><dt>Net</dt><dd class="num">{{ money(r.pay.net) }}</dd></div></dl>
+              <p class="er-wps"><b>{{ t('WPS') }}</b><span *ngFor="let w of r.pay.wps" [class.ok]="w.ok">{{ w.label }} {{ w.ok ? '✓' : '✗' }}</span></p>
+            </section>
+          </div>
+          <section class="er-card er-sec" *ngIf="r.history?.length">
+            <div class="er-sec-h"><h2>Recent changes</h2><button type="button" class="er-link" (click)="go('job', 'history')">All history</button></div>
+            <ul class="er-tl"><li *ngFor="let h of r.history"><b>{{ t(h.title) }}</b><span class="er-muted"> · {{ dmy(h.date || h.at) }}<ng-container *ngIf="h.by"> · {{ h.by }}</ng-container></span><div *ngIf="h.detail" class="er-muted">{{ h.detail }}</div></li></ul>
+          </section>
+        </ng-container>
+
+        <!-- ============================================================ Personal -->
+        <ng-container *ngIf="group === 'personal'">
+          <ng-container *ngTemplateOutlet="single; context: { key: 'personal', title: 'Personal details', fields: fieldsOf('personal') }"></ng-container>
+          <div class="er-grid2">
+            <ng-container *ngTemplateOutlet="single; context: { key: 'contact', title: 'Contact', fields: fieldsOf('contact') }"></ng-container>
+            <ng-container *ngTemplateOutlet="single; context: { key: 'address', title: 'Address', fields: fieldsOf('address') }"></ng-container>
+          </div>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'emergency', cols: [{key:'name',label:'Name',kind:'contact'},{key:'relation',label:'Relation'},{key:'mobile',label:'Mobile'},{key:'alt_phone',label:'Other phone'},{key:'email',label:'E-mail'}] }"></ng-container>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'family', cols: [{key:'ef_member_name',label:'Name'},{key:'emp_relation',label:'Relation'},{key:'ef_date_of_birth',label:'Date of birth (age)',kind:'dob'},{key:'visa_badge',label:'Visa expiry',kind:'badge'},{key:'eid_badge',label:'Emirates ID expiry',kind:'badge'},{key:'insured',label:'Insured',kind:'yes'},{key:'ef_company_expence',label:'Company expense',num:true,kind:'money'}] }"></ng-container>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'qualifications', cols: [{key:'emp_qualification',label:'Qualification'},{key:'emp_qf_subject',label:'Subject'},{key:'emp_qf_instituition',label:'Institution'},{key:'emp_qf_year',label:'Year'},{key:'grade',label:'Grade'},{key:'attested',label:'Attestation',kind:'attest'}] }"></ng-container>
+          <section class="er-card er-sec" id="card-skills">
+            <div class="er-sec-h"><h2>Languages and skills <span class="er-count">{{ r.skills.length }}</span></h2><button type="button" class="er-link" *ngIf="r.can_edit" (click)="action('classic')">Edit in classic view</button></div>
+            <div class="er-table-wrap" *ngIf="r.skills.length"><table class="er-table"><thead><tr><th>Type</th><th>Skill</th><th>Level</th></tr></thead>
+              <tbody><tr *ngFor="let s of r.skills"><td>{{ s.type }}</td><td>{{ s.skill }}</td><td><span class="er-bar"><i [style.width.%]="+s.level || 0"></i></span> {{ s.level }}{{ isNum(s.level) ? '%' : '' }}</td></tr></tbody></table></div>
+            <p class="z-empty" *ngIf="!r.skills.length">No languages or skills yet</p>
+          </section>
+        </ng-container>
+
+        <!-- ============================================================ Job -->
+        <ng-container *ngIf="group === 'job'">
+          <ng-container *ngTemplateOutlet="single; context: { key: 'job', title: 'Job', fields: JOB_FIELDS }"></ng-container>
+          <section class="er-card er-sec" id="card-employment" *ngIf="r.employment as em">
+            <div class="er-sec-h"><h2>Employment and probation</h2></div>
+            <dl class="er-kv">
+              <div><dt>Status</dt><dd>{{ em.status_label }}</dd></div><div><dt>Probation</dt><dd>{{ em.probation_status_label }}</dd></div>
+              <div><dt>Probation ends</dt><dd>{{ dmy(em.probation_end_date) }}<span class="er-muted" *ngIf="em.days_left !== null"> · {{ t('{0} days left', [em.days_left]) }}</span></dd></div>
+              <div><dt>Confirmed on</dt><dd>{{ dmy(em.confirmed_on) }}</dd></div><div><dt>Leaving date</dt><dd>{{ dmy(em.date_of_leaving) }}</dd></div>
+              <div *ngIf="em.decided_by_name"><dt>Decided by</dt><dd>{{ em.decided_by_name }}</dd></div>
+              <div><dt>{{ t('Unpaid days before go-live') }}</dt><dd>{{ +em.unpaid_days_before_golive || 0 }}
+                <button type="button" class="er-link" *ngIf="r.can_edit && unpaidEdit === null" (click)="unpaidEdit = +em.unpaid_days_before_golive || 0" [attr.aria-label]="t('Change')">✎</button></dd></div>
+            </dl>
+            <!-- v1.20.2: unpaid leave / absence from the systems used before ZEO – not service for the gratuity -->
+            <form class="er-form" *ngIf="unpaidEdit !== null" (ngSubmit)="unpaidSave()">
+              <div class="er-f"><label for="up-d">{{ t('Unpaid days before ZEO go-live') }}</label><input id="up-d" type="number" min="0" step="0.5" [(ngModel)]="unpaidEdit" name="unpaid"></div>
+              <div class="er-f wide er-muted">{{ t('Unpaid leave and absence from earlier systems – not counted as service for the gratuity.') }}</div>
+              <div class="er-form-act"><button type="button" class="er-btn" (click)="unpaidEdit = null">{{ t('Cancel') }}</button>
+                <button type="submit" class="er-btn primary">{{ t('Save') }}</button></div>
+            </form>
+            <div class="er-form-act left" *ngIf="r.can_edit && em.can_decide && !probation">
+              <button type="button" class="er-btn primary" (click)="probation = { act: 'confirm', date: today(), note: '' }">Confirm</button>
+              <button type="button" class="er-btn" (click)="probation = { act: 'extend', to_date: '', reason: '' }">Extend</button>
+              <button type="button" class="er-btn danger" (click)="probation = { act: 'fail', last_day: '', reason: '' }">End employment</button>
+            </div>
+            <form class="er-form" *ngIf="probation" (ngSubmit)="probationDo()">
+              <div class="er-f" *ngIf="probation.act === 'confirm'"><label for="pb-d">Confirmation date</label><input id="pb-d" type="date" [(ngModel)]="probation.date" name="date" required></div>
+              <div class="er-f" *ngIf="probation.act === 'extend'"><label for="pb-t">Extend to <i class="req">*</i></label><input id="pb-t" type="date" [(ngModel)]="probation.to_date" name="to_date" required></div>
+              <div class="er-f" *ngIf="probation.act === 'fail'"><label for="pb-l">Last working day <i class="req">*</i></label><input id="pb-l" type="date" [(ngModel)]="probation.last_day" name="last_day" required></div>
+              <div class="er-f wide"><label for="pb-r">{{ probation.act === 'confirm' ? 'Note' : 'Reason' }}<i class="req" *ngIf="probation.act !== 'confirm'"> *</i></label>
+                <input id="pb-r" *ngIf="probation.act === 'confirm'" [(ngModel)]="probation.note" name="note"><input id="pb-r" *ngIf="probation.act !== 'confirm'" [(ngModel)]="probation.reason" name="reason" required></div>
+              <div class="er-form-act"><button type="button" class="er-btn" (click)="probation = null">Cancel</button>
+                <button type="submit" class="er-btn" [class.primary]="probation.act !== 'fail'" [class.danger]="probation.act === 'fail'">{{ probation.act === 'confirm' ? 'Confirm probation' : probation.act === 'extend' ? 'Extend probation' : 'End employment' }}</button></div>
+            </form>
+          </section>
+          <section class="er-card er-sec" *ngIf="r.org?.fields?.length">
+            <div class="er-sec-h"><h2>Organisation</h2></div>
+            <dl class="er-kv"><div *ngFor="let f of r.org.fields"><dt>{{ f.label }}</dt><dd>{{ r.org[f.key + '__label'] || r.org[f.key] || '–' }}</dd></div></dl>
+          </section>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'experience', cols: [{key:'emp_jh_company_name',label:'Company'},{key:'emp_jh_designation',label:'Designation'},{key:'emp_jh_from_date',label:'From',kind:'date'},{key:'emp_jh_end_date',label:'To',kind:'date'},{key:'duration',label:'Duration'},{key:'emp_jh_leaving_salary_permonth',label:'Last salary',num:true,kind:'money'}] }"></ng-container>
+          <section class="er-card er-sec" id="card-history">
+            <div class="er-sec-h"><h2>History</h2></div>
+            <div *ngIf="history === null"><span class="z-skel"></span></div>
+            <ul class="er-tl" *ngIf="history?.length"><li *ngFor="let h of history"><b>{{ t(h.title) }}</b><span class="er-muted"> · {{ dmy(h.date || h.at) }}<ng-container *ngIf="h.by"> · {{ h.by }}</ng-container></span><div *ngIf="h.detail" class="er-muted">{{ h.detail }}</div></li></ul>
+            <p class="z-empty" *ngIf="history && !history.length">No changes recorded yet</p>
+          </section>
+        </ng-container>
+
+        <!-- ============================================================ UAE documents -->
+        <ng-container *ngIf="group === 'documents'">
+          <ng-container *ngTemplateOutlet="single; context: { key: 'names', title: 'Names on documents', fields: cardFields('names') }"></ng-container>
+          <div class="er-docs">
+            <section class="er-card er-doc" *ngFor="let x of r.documents" [id]="'card-' + x.key" [class.editing]="editing === x.key" [ngClass]="x.badge ? 'lv-' + x.badge.level : 'lv-none'">
+              <div class="er-sec-h"><h2>{{ x.label }}</h2>
+                <span class="z-chip" *ngIf="x.badge" [ngClass]="badgeClass(x.badge)">{{ x.badge.label }}</span>
+                <span class="z-chip" *ngIf="!x.badge && !x.number">Not added</span></div>
+              <ng-container *ngIf="editing !== x.key">
+                <p class="er-docno er-mono">{{ x.number || '–' }}</p>
+                <dl class="er-kv tight">
+                  <div *ngIf="x.issue_date !== undefined && x.fields.length"><dt>Issued</dt><dd>{{ dmy(x.issue_date) }}</dd></div>
+                  <div *ngIf="x.fields.length"><dt>Expires</dt><dd>{{ dmy(x.expiry_date) }}</dd></div>
+                </dl>
+                <div class="er-form-act left" *ngIf="r.can_edit && x.fields.length">
+                  <button type="button" class="er-btn sm" (click)="edit(x.key)">{{ x.number ? 'Edit' : 'Add' }}</button>
+                  <button type="button" class="er-btn sm" *ngIf="x.number" (click)="renew(x)">Renew</button>
+                </div>
+                <p class="er-muted small" *ngIf="x.key === 'person_id'">Edit on the Job card.</p>
+              </ng-container>
+              <form *ngIf="editing === x.key" class="er-form one" (ngSubmit)="saveCard(x.key)">
+                <ng-container *ngFor="let f of cardFields(x.key)"><ng-container *ngTemplateOutlet="field; context: { f: f, v: draft, err: draftErr, dup: true }"></ng-container></ng-container>
+                <div class="er-form-act"><button type="button" class="er-btn" (click)="cancel()">Cancel</button><button type="submit" class="er-btn primary" [disabled]="saving">Save</button></div>
+              </form>
+            </section>
+          </div>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'files', cols: [{key:'type',label:'Document'},{key:'emp_doc_number',label:'Number'},{key:'emp_doc_issued_date',label:'Issued',kind:'date'},{key:'badge',label:'Expiry',kind:'badge'},{key:'file',label:'File',kind:'file'}] }"></ng-container>
+        </ng-container>
+
+        <!-- ============================================================ Pay -->
+        <ng-container *ngIf="group === 'pay'">
+          <section class="er-card er-sec" id="card-salary">
+            <div class="er-sec-h"><h2>Salary</h2><button type="button" class="er-link" (click)="action('salary')">Revise salary</button></div>
+            <div class="er-stats"><div><span>Gross</span><b>{{ money(r.pay.gross) }}</b></div><div><span>Fixed deductions</span><b>{{ money(r.pay.deductions) }}</b></div><div><span>Net</span><b>{{ money(r.pay.net) }}</b></div></div>
+            <div class="er-table-wrap" *ngIf="fixedComps(r).length"><table class="er-table"><thead><tr><th>Component</th><th>Type</th><th class="num">Amount a month</th></tr></thead>
+              <tbody><tr *ngFor="let c of fixedComps(r)"><td>{{ c.component }}</td><td>{{ c.type === 'addition' ? 'Earning' : c.type === 'deduction' ? 'Deduction' : c.type }}</td><td class="num">{{ money(c.amount) }}</td></tr></tbody></table></div>
+            <details class="er-calc" *ngIf="calcComps(r).length"><summary>{{ t('{0} calculated each month', [calcComps(r).length]) }}</summary>
+              <ul><li *ngFor="let c of calcComps(r)" [title]="c.formula">{{ c.component }}</li></ul></details>
+            <p class="z-empty" *ngIf="!r.pay.components.length">No salary yet · <button type="button" (click)="action('salary')">Add salary</button></p>
+            <ng-container *ngIf="revisions(r).length"><h3>Revisions</h3>
+              <ul class="er-tl"><li *ngFor="let v of revisions(r)"><b>{{ v.component }}</b> {{ money(v.old) }} → {{ money(v.new) }}<span class="er-muted"> · {{ dmy(v.date) }}<ng-container *ngIf="v.reason"> · {{ v.reason }}</ng-container></span></li></ul></ng-container>
+          </section>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'bank', cols: [{key:'bank_name',label:'Bank',kind:'bankname'},{key:'iban_number',label:'IBAN',kind:'iban'},{key:'route_code',label:'Routing code'},{key:'account_number',label:'Account'},{key:'payment_mode',label:'Paid by',kind:'mode'}] }"></ng-container>
+          <section class="er-card er-sec er-wpsline" [class.ok]="r.pay.wps_ready">
+            <b>WPS readiness</b><span *ngFor="let w of r.pay.wps" [class.ok]="w.ok">{{ w.label }} {{ w.ok ? '✓' : '✗' }}</span>
+            <span class="z-chip" [ngClass]="r.pay.wps_ready ? 'ok' : 'warn'">{{ r.pay.wps_ready ? 'Ready for WPS' : 'Not ready for WPS' }}</span>
+          </section>
+          <section class="er-card er-sec">
+            <div class="er-sec-h"><h2>Payslips <span class="er-count">{{ r.pay.payslips.length }}</span></h2></div>
+            <div class="er-table-wrap" *ngIf="r.pay.payslips.length"><table class="er-table"><thead><tr><th>Month</th><th>Run</th><th class="num">Gross</th><th class="num">Net</th><th>Status</th><th class="act"></th></tr></thead>
+              <tbody><tr *ngFor="let p of r.pay.payslips"><td>{{ monthOf(p.month) }}</td><td>{{ p.run }}</td><td class="num">{{ money(p.gross) }}</td><td class="num">{{ money(p.net) }}</td><td><span class="z-chip">{{ p.status || p.run_status }}</span></td>
+                <td class="act"><button type="button" class="er-link" *ngIf="p.pdf" (click)="pdf(p)">PDF</button></td></tr></tbody></table></div>
+            <p class="z-empty" *ngIf="!r.pay.payslips.length">No payslips yet</p>
+          </section>
+          <section class="er-card er-sec">
+            <div class="er-sec-h"><h2>Loans and advances <span class="er-count">{{ r.pay.loans.length }}</span></h2></div>
+            <div class="er-table-wrap" *ngIf="r.pay.loans.length"><table class="er-table"><thead><tr><th>Type</th><th class="num">Amount</th><th class="num">Instalment</th><th class="num">Balance</th><th>Repaid</th><th>Status</th></tr></thead>
+              <tbody><tr *ngFor="let l of r.pay.loans"><td>{{ l.type }}</td><td class="num">{{ money(l.amount) }}</td><td class="num">{{ money(l.emi) }}</td><td class="num">{{ money(l.balance) }}</td>
+                <td><span class="er-bar"><i [style.width.%]="l.progress"></i></span> {{ l.progress }}%</td><td><span class="z-chip">{{ l.status }}</span></td></tr></tbody></table></div>
+            <p class="z-empty" *ngIf="!r.pay.loans.length">No loans or advances</p>
+          </section>
+        </ng-container>
+
+        <!-- ============================================================ Time & assets -->
+        <ng-container *ngIf="group === 'time'">
+          <section class="er-card er-sec">
+            <div class="er-sec-h"><h2>Leave balances</h2></div>
+            <div class="er-leaves" *ngIf="r.time.leaves.length">
+              <div *ngFor="let l of r.time.leaves" class="er-leave"><div class="er-leave-h"><b>{{ l.type }}</b><span>{{ t('{0} days left', [l.balance]) }}</span></div>
+                <span class="er-bar wide"><i [style.width.%]="leaveBar(l)"></i></span>
+                <small class="er-muted">{{ t('{0} taken', [l.taken]) }}<ng-container *ngIf="l.pending"> · {{ t('{0} pending', [l.pending]) }}</ng-container><ng-container *ngIf="l.entitlement"> · {{ t('{0} a year', [l.entitlement]) }}</ng-container></small></div>
+            </div>
+            <p class="z-empty" *ngIf="!r.time.leaves.length">No leave balances yet</p>
+          </section>
+          <section class="er-card er-sec">
+            <div class="er-sec-h"><h2>{{ t('Attendance') }} · {{ monthLabel() }}</h2>
+              <span class="er-seg"><button type="button" (click)="monthShift(-1)" aria-label="Previous month">‹</button><button type="button" (click)="monthShift(1)" aria-label="Next month">›</button></span></div>
+            <div *ngIf="!att"><span class="z-skel"></span></div>
+            <ng-container *ngIf="att">
+              <div class="er-cal">
+                <span class="dow" *ngFor="let w of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']">{{ w }}</span>
+                <span *ngFor="let x of lead()"></span>
+                <span *ngFor="let x of att.days" class="day" [ngClass]="'s-' + x.status" [class.late]="x.late" [title]="attLabel[x.status] + (x.late ? ' · late' : '') + (x.worked ? ' · ' + x.worked + ' h' : '')">
+                  <b>{{ dayNum(x.date) }}</b><small>{{ t(attLabel[x.status]) }}</small></span>
+              </div>
+              <p class="er-legend"><span *ngFor="let k of attKeys()" [ngClass]="'s-' + k"><i></i>{{ t(attLabel[k]) }} <b>{{ att.totals[k] }}</b></span></p>
+            </ng-container>
+          </section>
+          <section class="er-card er-sec">
+            <div class="er-sec-h"><h2>Assets <span class="er-count">{{ r.time.assets.length }}</span></h2></div>
+            <div class="er-table-wrap" *ngIf="r.time.assets.length"><table class="er-table"><thead><tr><th>Asset</th><th>Serial</th><th>Issued</th><th>Returned</th><th>Status</th></tr></thead>
+              <tbody><tr *ngFor="let a of r.time.assets"><td>{{ a.asset }}</td><td>{{ a.serial || '–' }}</td><td>{{ dmy(a.issued) }}</td><td>{{ dmy(a.returned) }}</td><td><span class="z-chip" [ngClass]="a.returned ? '' : 'info'">{{ a.status }}</span></td></tr></tbody></table></div>
+            <p class="z-empty" *ngIf="!r.time.assets.length">No assets issued</p>
+          </section>
+        </ng-container>
+      </main>
+    </div>
+
+    <!-- ================================================================ side panel -->
+    <div #panelHost class="er-panel-host" *ngIf="panel">
+    <div class="er-scrim" (click)="closePanel()"></div>
+    <aside class="er-panel" data-zr-off role="dialog" aria-modal="true" [attr.aria-label]="panel.title">
+      <div class="er-panel-h"><h2>{{ panel.title }}</h2><button type="button" class="er-icon" (click)="closePanel()" aria-label="Close">✕</button></div>
+      <div class="er-panel-b">
+        <div class="er-entry" *ngFor="let e of panel.entries; let i = index" [class.open]="e.open">
+          <button type="button" class="er-entry-h" *ngIf="panel.entries.length > 1" (click)="e.open = !e.open">{{ entryTitle(e, i) }}<span>{{ e.open ? '–' : '+' }}</span></button>
+          <div class="er-form two" *ngIf="e.open || panel.entries.length === 1">
+            <ng-container *ngFor="let f of panel.fields">
+              <div class="er-f" [class.bad]="e.errors[f.key]" [class.wide]="f.type === 'textarea' || f.type === 'file'">
+                <label *ngIf="f.type !== 'bool'" [attr.for]="'p' + i + f.key">{{ f.label }}<i class="req" *ngIf="required(panel.table).includes(f.key)"> *</i></label>
+                <ng-container [ngSwitch]="f.type">
+                  <select *ngSwitchCase="'select'" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]"><option [ngValue]="''">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+                  <select *ngSwitchCase="'fk'" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]"><option [ngValue]="''">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+                  <select *ngSwitchCase="'look'" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]"><option [ngValue]="''">–</option><option *ngFor="let o of optionsOf(f)" [ngValue]="o.value">{{ o.label }}</option></select>
+                  <input *ngSwitchCase="'date'" type="date" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]">
+                  <input *ngSwitchCase="'number'" type="number" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]">
+                  <label *ngSwitchCase="'bool'" class="er-check"><input type="checkbox" [(ngModel)]="e.values[f.key]"> {{ f.label }}</label>
+                  <textarea *ngSwitchCase="'textarea'" [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]" rows="2"></textarea>
+                  <input *ngSwitchCase="'file'" type="file" [id]="'p' + i + f.key" (change)="fileFor(e, $event)">
+                  <input *ngSwitchDefault [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]" [placeholder]="f.placeholder || ''" (input)="maskIn(f, e)">
+                </ng-container>
+                <small class="er-err" *ngIf="e.errors[f.key]">{{ e.errors[f.key] }}</small>
+              </div>
+            </ng-container>
+            <div class="er-f wide" *ngIf="panel.table.key === 'files' && !hasFileField(panel)"><label [attr.for]="'pf' + i">File</label><input type="file" [id]="'pf' + i" (change)="fileFor(e, $event)"></div>
+            <p class="er-computed" *ngIf="computed(panel.table, e.values)">{{ computed(panel.table, e.values) }}</p>
+            <button type="button" class="er-link danger" *ngIf="panel.entries.length > 1" (click)="removeEntry(i)">{{ t(panel.table.remove) }}</button>
+          </div>
+        </div>
+        <button type="button" class="er-link" *ngIf="panel.adding" (click)="addEntry()">{{ t(panel.table.another) }}</button>
+      </div>
+      <div class="er-panel-f">
+        <button type="button" class="er-btn" (click)="closePanel()">Cancel</button>
+        <span class="er-spacer"></span>
+        <button type="button" class="er-btn" *ngIf="panel.adding" [disabled]="saving || !canSave()" (click)="savePanel(true)">Save and add another</button>
+        <button type="button" class="er-btn primary" [disabled]="saving || !canSave()" (click)="savePanel()">{{ saving ? 'Saving…' : 'Save' }}</button>
+      </div>
+    </aside>
+    </div>
+  </ng-container>
+</div>

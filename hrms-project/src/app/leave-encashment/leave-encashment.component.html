@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Leave Encashment</h1>
+                    <h1>Leave encashment</h1>
                 </div>
 
                      <div class="col-md-3">
@@ -63,11 +63,11 @@
         <div class="row">
           <div class="col-md-2">
               
-              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
   
           </div>
           <div class="col-md-3">
-              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeavebalance()">Delete Selected </button>
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeavebalance()">Delete selected </button>
   
           </div>
       </div>
@@ -77,7 +77,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-8">
-                  <h2> Add Leave Encashment </h2>
+                  <h2> Add leave encashment </h2>
                 </div>
 
     <div class="col-md-4 text-right">
@@ -95,7 +95,7 @@
                     <div class="row">
 
         <div class="col-md-6" >
-        <label>Leave Type
+        <label>Leave type
           <span class="required-star">*</span>
         </label>
         <div class="custom-sel">
@@ -210,7 +210,7 @@
       [ngModelOptions]="{ standalone: true }"
       (change)="onFormulaCheckboxChange()" />
     <label class="form-check-label" for="useCustomFormula">
-      Use Custom Encashment Formula
+      Use custom encashment formula
     </label>
   </div>
 
@@ -223,7 +223,7 @@
   <div *ngIf="useCustomFormula" class="mt-2">
 
     <label>
-      Encashment Formula
+      Encashment formula
       <i class="fa fa-question-circle text-muted ms-1"
          style="cursor: pointer;"
          (click)="toggleFormulaHelper()"
@@ -342,7 +342,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit Leave Encashment </h2>
+        <h2>Edit leave encashment </h2>
       </div>
 
   <div class="col-md-2 text-right">
@@ -359,7 +359,7 @@
 
 
         <div class="col-md-6" >
-<label>Leave Type</label>
+<label>Leave type</label>
 <div class="custom-sel">
 <select
 class="form-control"
@@ -479,9 +479,10 @@ name="leave_type"
       <thead>
         <tr>
           <th>No</th>
-          <th>Leave Type</th>
+          <th>Leave type</th>
           <th>Employee</th>
           <th>Encashment days</th>
+          <th>Amount (AED)</th>
           <th>Formula</th>
           <th>Status</th>
           <th>Remarks</th>
@@ -492,17 +493,18 @@ name="leave_type"
     
         <tr *ngFor="let docs of pagedLeaveBalances; let i = index">
           <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-          <td data-label="Leave type">{{ docs.leave_type }}</td>
-          <td data-label="Employee">{{ docs.employee }}</td>
+          <td data-label="Leave type">{{ docs.leave_type_name || docs.leave_type }}</td>
+          <td data-label="Employee">{{ docs.employee_code ? (docs.employee_code + ' – ' + (docs.employee_name || '')) : docs.employee }}</td>
           <td data-label="Encashment Days">{{ docs.encashment_days }}</td>
+          <td data-label="Amount (AED)">{{ docs.encashment_amount }}</td>
     
           <!-- ✅ Formula column -->
           <td data-label="Formula">
             <span
               class="formula-preview"
-              [title]="docs.formula"
+              [title]="docs.formula_used || docs.formula"
               (click)="viewFormula(docs)">
-              {{ getFormulaPreview(docs.formula) }}
+              {{ getFormulaPreview(docs.formula_used || docs.formula) }}
             </span>
           </td>
     
@@ -532,7 +534,7 @@ name="leave_type"
       <div class="modal-content" style="max-width: 500px;">
         <div class="row">
           <div class="col-md-8">
-            <h2>Encashment Formula</h2>
+            <h2>Encashment formula</h2>
           </div>
           <div class="col-md-4 text-right">
             <span class="close-btn" (click)="closeFormulaView()">×</span>

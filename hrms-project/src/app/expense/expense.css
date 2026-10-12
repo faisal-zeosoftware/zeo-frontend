@@ -135,3 +135,8 @@
   .ex-row { gap: 8px; }
   .ex-thumb { width: 34px; height: 34px; }
 }
+/* v1.16.0: expense lists as tables (list tools) */
+table.ex-table tr.click { cursor: pointer; }
+table.ex-table tr.on > td { background: #f3f1ff !important; }
+table.ex-table td.money { text-align: right; font-weight: 700; color: #1b1640; white-space: nowrap; }
+table.ex-table .ex-thumb { width: 36px; height: 36px; }

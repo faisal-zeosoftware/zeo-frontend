@@ -30,7 +30,7 @@
             class="sub-sidebar-title"
             *ngIf="isMenuOpen"
           >
-            Document Folders
+            Document folders
           </span>
 
           <button
@@ -73,7 +73,7 @@
                 type="button"
                 class="nav-item-link add-folder-link"
                 (click)="openPopus()"
-                [title]="!isMenuOpen ? 'Add Folder' : ''"
+                [title]="!isMenuOpen ? 'Add folder' : ''"
               >
 
                 <mat-icon class="nav-icon">
@@ -84,7 +84,7 @@
                   class="sidenav-opt"
                   *ngIf="isMenuOpen"
                 >
-                  Add Folder
+                  Add folder
                 </span>
 
               </button>
@@ -150,7 +150,7 @@
                         $event
                       )
                     "
-                    title="Add Subfolder"
+                    title="Add subfolder"
                   >
 
                     <mat-icon>
@@ -255,6 +255,12 @@
 
 
       <router-outlet></router-outlet>
+      <div class="df-empty" *ngIf="noFolderOpen">
+        <mat-icon>folder_open</mat-icon>
+        <h2>{{ Documentfolders?.length ? 'Open a folder' : 'No folders yet' }}</h2>
+        <p>{{ Documentfolders?.length ? 'Pick a folder on the left, then a subfolder, to see its files.' : 'Folders keep company documents in one place – policies, licences, contracts.' }}</p>
+        <button type="button" class="btn btn-primary" *ngIf="hasAddPermissionDocumentFolder" (click)="openPopus()"><mat-icon>add</mat-icon> Add folder</button>
+      </div>
 
     </main>
 
@@ -286,7 +292,7 @@
 
           <div>
             <h3>
-              Create Folder
+              Create folder
             </h3>
 
             <p>
@@ -324,7 +330,7 @@
               class="form-label"
               for="folderName"
             >
-              Folder Name
+              Folder name
             </label>
 
             <input
@@ -361,7 +367,7 @@
                 add
               </mat-icon>
 
-              Add Folder
+              Add folder
             </button>
 
           </div>
@@ -399,7 +405,7 @@
 
           <div>
             <h3>
-              Create Subfolder
+              Create subfolder
             </h3>
 
             <p>
@@ -437,7 +443,7 @@
               class="form-label"
               for="subFolderName"
             >
-              Subfolder Name
+              Subfolder name
             </label>
 
             <input

@@ -2,9 +2,11 @@ import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService, eidProblem } from './employee-profile.service';
+import { CountryPackService, cpLocalize } from '../shared-ui/country-pack.service';   // v1.14.0
 
-interface F { key: string; label: string; type?: 'text' | 'date' | 'select' | 'country'; options?: { v: string; l: string }[]; rtl?: boolean; hint?: string; ph?: string; }
-interface Sec { title: string; fields: F[]; doc?: string; }
+interface F { key: string; label: string; type?: 'text' | 'date' | 'select' | 'country'; options?: { v: string; l: string }[]; rtl?: boolean; hint?: string; ph?: string; country?: string; }
+/** v1.14.0: `country` = CountryPackService.allows condition; captions follow the company's country (cpLocalize) */
+interface Sec { title: string; fields: F[]; doc?: string; country?: string; }
 
 const SECTIONS: Sec[] = [
   { title: 'Names', fields: [
@@ -15,7 +17,7 @@ const SECTIONS: Sec[] = [
     { key: 'passport_no', label: 'Passport number', hint: '6 to 12 letters and digits' },
     { key: 'passport_issue_date', label: 'Issue date', type: 'date' }, { key: 'passport_expiry_date', label: 'Expiry date', type: 'date' },
     { key: 'passport_place_of_issue', label: 'Place of issue' }, { key: 'passport_country_id', label: 'Issuing country', type: 'country' }] },
-  { title: 'Residence visa', doc: 'visa', fields: [
+  { title: 'Residence visa', doc: 'visa', country: 'residence_visa', fields: [
     { key: 'visa_type', label: 'Visa type', type: 'select', options: [
       { v: 'employment', l: 'Employment visa' }, { v: 'residence', l: 'Residence (family sponsored)' }, { v: 'investor', l: 'Investor / partner' },
       { v: 'golden', l: 'Golden visa' }, { v: 'green', l: 'Green visa' }, { v: 'freelance', l: 'Freelance permit' }, { v: 'mission', l: 'Mission / work permit' },
@@ -23,20 +25,21 @@ const SECTIONS: Sec[] = [
     { key: 'visa_number', label: 'Visa / residence number' }, { key: 'visa_uid', label: 'UID number', hint: 'Digits only' },
     { key: 'visa_file_no', label: 'File number', ph: '201/2024/1234567' }, { key: 'visa_issue_date', label: 'Issue date', type: 'date' },
     { key: 'visa_expiry_date', label: 'Expiry date', type: 'date' }, { key: 'visa_sponsor', label: 'Sponsor' }] },
-  { title: 'Emirates ID', doc: 'emirates_id', fields: [
+  { title: 'Emirates ID', doc: 'emirates_id', country: 'national_id', fields: [
     { key: 'emirates_id', label: 'Emirates ID number', ph: '784-YYYY-NNNNNNN-N' },
     { key: 'emirates_id_issue_date', label: 'Issue date', type: 'date' }, { key: 'emirates_id_expiry_date', label: 'Expiry date', type: 'date' }] },
-  { title: 'Labour (MOHRE)', doc: 'labour_card', fields: [
+  { title: 'Labour (MOHRE)', doc: 'labour_card', country: 'work_permit', fields: [
     { key: 'labour_card_no', label: 'Labour card number' }, { key: 'labour_card_issue_date', label: 'Labour card issue date', type: 'date' },
     { key: 'labour_card_expiry_date', label: 'Labour card expiry date', type: 'date' },
-    { key: 'work_permit_no', label: 'Work permit number' }, { key: 'work_permit_expiry_date', label: 'Work permit expiry date', type: 'date' },
-    { key: 'mohre_contract_type', label: 'Contract type', type: 'select', options: [{ v: 'limited', l: 'Limited (fixed term)' }, { v: 'unlimited', l: 'Unlimited' }] },
-    { key: 'mohre_contract_no', label: 'MOHRE contract number' }, { key: 'mohre_contract_start', label: 'Contract start', type: 'date' },
-    { key: 'mohre_contract_end', label: 'Contract end', type: 'date' }] },
+    // UAE: a separate (mission) work permit; elsewhere the labour card fields above already are the work permit
+    { key: 'work_permit_no', label: 'Work permit number', country: 'pack:AE' }, { key: 'work_permit_expiry_date', label: 'Work permit expiry date', type: 'date', country: 'pack:AE' },
+    { key: 'mohre_contract_type', label: 'Contract type', type: 'select', options: [{ v: 'limited', l: 'Limited (fixed term)' }, { v: 'unlimited', l: 'Unlimited' }], country: 'labour_contract' },
+    { key: 'mohre_contract_no', label: 'MOHRE contract number', country: 'labour_contract' }, { key: 'mohre_contract_start', label: 'Contract start', type: 'date', country: 'labour_contract' },
+    { key: 'mohre_contract_end', label: 'Contract end', type: 'date', country: 'labour_contract' }] },
   { title: 'Driving licence', doc: 'driving_licence', fields: [
     { key: 'driving_licence_no', label: 'Licence number' },
     { key: 'driving_licence_issue_date', label: 'Issue date', type: 'date' }, { key: 'driving_licence_expiry_date', label: 'Expiry date', type: 'date' },
-    { key: 'driving_licence_emirate', label: 'Issued in', type: 'select', options: [
+    { key: 'driving_licence_emirate', label: 'Issued in', type: 'select', country: 'pack:AE', options: [   // v1.14.0: UAE emirates list
       { v: 'abu_dhabi', l: 'Abu Dhabi' }, { v: 'dubai', l: 'Dubai' }, { v: 'sharjah', l: 'Sharjah' }, { v: 'ajman', l: 'Ajman' },
       { v: 'umm_al_quwain', l: 'Umm Al Quwain' }, { v: 'ras_al_khaimah', l: 'Ras Al Khaimah' }, { v: 'fujairah', l: 'Fujairah' }, { v: 'other', l: 'Other' }] },
     { key: 'driving_licence_categories', label: 'Categories', ph: 'Light vehicle, Motorcycle' }] },
@@ -113,7 +116,7 @@ export class ZEmpIdentityComponent implements OnChanges {
   @Input() employeeId: number | string | null | undefined = null;
   @Input() readonly = false;
 
-  sections = SECTIONS;
+  sections: Sec[] = SECTIONS;   // v1.14.0: localised copy for the company's country (see constructor)
   data: any = {};
   v: any = {};
   countries: { id: number; name: string }[] = [];
@@ -127,7 +130,16 @@ export class ZEmpIdentityComponent implements OnChanges {
   problems: string[] = [];
   fieldErr: Record<string, string> = {};
 
-  constructor(private svc: EmployeeProfileService, private cd: ChangeDetectorRef) {}
+  constructor(private svc: EmployeeProfileService, private cd: ChangeDetectorRef, private cp: CountryPackService) {
+    // v1.14.0: a Saudi (or any non-UAE) company does not see Emirates ID / MOHRE / emirates – also in self-service (readonly)
+    this.cp.pack$.subscribe(() => {
+      this.sections = cpLocalize(SECTIONS, this.cp);
+      if (!this.cp.allows('pack:AE')) {   // UAE number formats as examples only for UAE companies
+        this.sections.forEach(s => s.fields.forEach(f => { if (f.key === 'emirates_id' || f.key === 'visa_file_no') { f.ph = ''; } }));
+      }
+      this.cd.markForCheck();
+    });
+  }
 
   ngOnChanges(ch: SimpleChanges): void { if (ch['employeeId'] && this.employeeId) { this.load(); } }
 
@@ -158,7 +170,8 @@ export class ZEmpIdentityComponent implements OnChanges {
 
   cancel(): void { this.editing = false; this.fieldErr = {}; this.error = ''; }
 
-  eidMsg(): string { return eidProblem(this.v['emirates_id'] || ''); }
+  /** the 784-… Emirates ID check applies to UAE companies only */
+  eidMsg(): string { return this.cp.allows('pack:AE') ? eidProblem(this.v['emirates_id'] || '') : ''; }
 
   async save(): Promise<void> {
     const body: any = {};

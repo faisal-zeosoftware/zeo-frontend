@@ -29,6 +29,12 @@ import { EmployeeService } from '../employee-master/employee.service';
 
 
 export class UserGroupingMasterComponent {
+  /** v1.21.0: the app a permission group belongs to – role groups are named "<App> – <role>"; other groups are HRMS / Settings. */
+  appOf(name: string): string {
+    const m = /^(Projects|CRM|Property|Maintenance|HSE) – /.exec(name || '');
+    return m ? m[1] : 'HRMS';
+  }
+
 
   private dataSubscription?: Subscription;
 
@@ -192,7 +198,7 @@ if (this.userId !== null) {
               this.hasEditPermission = this.checkGroupPermission('change_group', groupPermissions);
              console.log('Has edit permission:', this.hasEditPermission);
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -219,7 +225,7 @@ if (this.userId !== null) {
         }
 
         // // Extract group permissions from user details
-        // const groupPermissions = this.userDetails.groups.map((group: { permissions: any; }) => group.permissions).flat();
+        // const groupPermissions = (this.userDetails.groups || []).map((group: { permissions: any; }) => group.permissions).flat();
         // console.log('Group Permissions:', groupPermissions);
 
         // // Check permissions for various actions

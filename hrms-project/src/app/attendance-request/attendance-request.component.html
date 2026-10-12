@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Latein Earlyout Request</h1>
+                <h1>Latein earlyout request</h1>
             </div>
 
      <div class="col-md-3">
@@ -55,11 +55,11 @@
     <div class="row">
         <div class="col-md-2">
             
-            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
         </div>
         <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete selected </button>
 
         </div>
     </div>
@@ -71,7 +71,7 @@
         <div class="modal-content">  
           <div class="row">
             <div class="col-md-10">
-              <h2>Create Late In Early Out Request</h2>
+              <h2>Create late in early out request</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -89,7 +89,7 @@
             <div class="col-md-6">
               <div class="custom-sel">
                 <label
-                  >Select Branches
+                  >Select branches
                   <span class="required-star">*</span>
                 </label>
                 <select
@@ -167,7 +167,7 @@
 </div>
 
             <div class="col-md-6">
-              <label>Document Number</label>
+              <label>Document number</label>
               <input
                 type="text"
                 class="form-control"
@@ -193,7 +193,7 @@
               </div>
 
            <div class="col-md-6">
-                <label>Request Type
+                <label>Request type
                   <span class="required-star">*</span>
                 </label>
                 <div class="custom-sel">
@@ -260,7 +260,7 @@
 <div class="modal-content">
   <div class="row">
     <div class="col-md-10">
-      <h2>Edit Late In Early Out Request </h2>
+      <h2>Edit late in early out request </h2>
     </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -277,7 +277,7 @@
 
    <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches
+                    <label>Select branches
                       <span class="required-star">*</span>
                     </label>
                     <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange()" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
@@ -337,7 +337,7 @@
 
 
 <div class="col-md-6">
-  <label>Document Number</label>
+  <label>Document number</label>
   <input 
     type="text" 
     class="form-control" 
@@ -361,7 +361,7 @@
               </div>
 
            <div class="col-md-6">
-                <label>Request Type</label>
+                <label>Request type</label>
                 <div class="custom-sel">
                   <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
                     <option  value="LATE_IN">Late Check In</option>
@@ -419,7 +419,7 @@
             <tr>
               <th>No</th>
               <th>Date</th>
-              <th>Request Type</th>
+              <th>Request type</th>
               <th>Employee</th>
               <th>Document number</th>
               <th>Branch</th>

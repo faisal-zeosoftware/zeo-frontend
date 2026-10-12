@@ -4,7 +4,7 @@
         <div class="com_list mt-4 " >
           <div class="cpm-sec p-3 shadow-sm bg-white rounded border">
             <div class="d-flex justify-content-between align-items-center">
-              <h2 class="h4">Attendance Report Employee</h2>
+              <h2 class="h4">Attendance report employee</h2>
               <div class="exportdownload" *ngIf="hasExportPermission">
               <button class="btn btn-success" *ngIf="filteredRecords.length > 0" (click) ="exportToExcel()">
                 <i class="fas fa-file-excel mr-2"></i> Export to Excel
@@ -15,11 +15,11 @@
           
             <div class="row mb-3 bg-light p-3 mx-0 rounded">
               <div class="col-md-4">
-                <label class="small font-weight-bold">Start Date</label>
+                <label class="small font-weight-bold">Start date</label>
                 <input type="date" class="form-control" [(ngModel)]="start_date" />
               </div>
               <div class="col-md-4">
-                <label class="small font-weight-bold">End Date</label>
+                <label class="small font-weight-bold">End date</label>
                 <input type="date" class="form-control" [(ngModel)]="end_date" />
               </div>
               <div class="col-md-4 mt-4" *ngIf="hasAddPermission">
@@ -65,7 +65,7 @@
                 </select>
               </div>
               <div class="col-md-3">
-                <label class="small font-weight-bold">Search Employee</label>
+                <label class="small font-weight-bold">Search employee</label>
                 <input type="text" class="form-control" placeholder="Search by name..." 
                        [(ngModel)]="searchText" (input)="applyLocalFilters()">
               </div>
@@ -76,7 +76,7 @@
                 <thead class="bg-dark text-white">
                   <tr>
                     <th>Employee</th>
-                    <th>Branch/Dept</th>
+                    <th>Branch/dept</th>
                     <th>Date</th>
                     <th>Status</th>
                   </tr>
@@ -86,7 +86,7 @@
                     <tr *ngFor="let day of emp.attendance.summary_data">
                       <td data-label="Employee"><strong>{{ emp.employee_name }}</strong></td>
                       <td data-label="Branch/Dept"><small>{{ emp.branch }} / {{ emp.department || 'N/A' }}</small></td>
-                      <td data-label="Date">{{ day.date | date:'dd-MM-yyyy' }}</td>
+                      <td data-label="Date">{{ day.date | date:'dd MMM yyyy' }}</td>
                       <td data-label="Status">
                         <span [class.text-success]="day.status === 'Present'" 
                               [class.text-danger]="day.status === 'Absent'">

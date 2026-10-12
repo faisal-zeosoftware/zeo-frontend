@@ -13,7 +13,7 @@ import { LpApi } from './lp-api';
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>My Learning</h1><p class="lp-desc">Your training sessions, online courses and certificates.</p></div>
+    <div><h1>My learning</h1><p class="lp-desc">Your training sessions, online courses and certificates.</p></div>
   </div>
   <p class="lp-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <p class="lp-muted" *ngIf="loading">Loading…</p>
@@ -79,7 +79,7 @@ import { LpApi } from './lp-api';
         <h2>My certificates</h2>
         <p class="lp-muted" *ngIf="!data.certificates.length">No certificates yet.</p>
         <div class="lp-mod" *ngFor="let c of data.certificates">
-          <span class="t">{{ c.title }}<div class="lp-muted">{{ c.number || '' }} · issued {{ c.issued_on | date:'dd/MM/yyyy' }}<span *ngIf="c.expiry_date"> · expires {{ c.expiry_date | date:'dd/MM/yyyy' }}</span></div></span>
+          <span class="t">{{ c.title }}<div class="lp-muted">{{ c.number || '' }} · issued {{ c.issued_on | date:'dd MMM yyyy' }}<span *ngIf="c.expiry_date"> · expires {{ c.expiry_date | date:'dd MMM yyyy' }}</span></div></span>
           <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ c.status }}</span>
           <button type="button" class="lp-btn small" (click)="pdf(c.id, c.number)">PDF</button>
         </div>

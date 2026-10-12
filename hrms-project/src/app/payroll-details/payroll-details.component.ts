@@ -15,6 +15,12 @@ import { EmployeeService } from '../employee-master/employee.service';
   styleUrls: ['./payroll-details.component.css']
 })
 export class PayrollDetailsComponent {
+  /** v1.15.1: branch / department / category of the run are lists of {id, name} – show the names, not [object Object] */
+  names(v: any): string {
+    const a = Array.isArray(v) ? v : (v === null || v === undefined || v === '' ? [] : [v]);
+    return a.map((x: any) => (x && typeof x === 'object') ? (x.name || x.branch_name || x.dept_name || x.ctgry_name || x.id || '') : x).filter((x: any) => x !== '' && x !== null && x !== undefined).join(', ') || '–';
+  }
+
 
   @ViewChild('payslipContent') payslipContent!: ElementRef;
 
@@ -37,6 +43,13 @@ export class PayrollDetailsComponent {
   companyAddress: string = '';
   companyEmail: string = '';
   companyTrn: string = '';
+  employerId: string = '';      // v1.20.2: MoHRE employer ID (WPS), not a tax number
+  employeeCode: string = '';
+  personId: string = '';
+  ibanIsCard = false;
+  /** v1.20.2: only the lines with an amount (a payslip lists what was paid / deducted, not every component at 0.00) */
+  get shownEarnings(): any[] { return this.earnings.filter(c => Math.abs(parseFloat(c.amount || '0')) > 0.004); }
+  get shownDeductions(): any[] { return this.deductions.filter(c => Math.abs(parseFloat(c.amount || '0')) > 0.004); }
 
   // Employee computed fields
   employeeFullName: string = '';
@@ -107,7 +120,9 @@ export class PayrollDetailsComponent {
           
           this.companyAddress = addrParts.join(', ');
           this.companyEmail = currentCompany.email || ''; // if API has email field
-          this.companyTrn = currentCompany.tax_details?.trn || currentCompany.employer_unique_id || '';
+          this.companyName = currentCompany.name || this.companyName;   // v1.20.2: the company name, not the schema
+          this.companyTrn = currentCompany.tax_details?.trn || '';
+          this.employerId = currentCompany.employer_unique_id || '';
           
           // If company API doesn't have email, you might need another endpoint
           // For now, fallback to employee's company email if company API has no email
@@ -134,12 +149,16 @@ export class PayrollDetailsComponent {
       .join(' ')
       .trim() || data.employee;
 
-    // Emirates ID
-    this.emiratesId = emp?.person_id || '-';
+    // v1.20.2: Emirates ID from the identity record; the MoHRE person ID separately; designation of the employee
+    this.employeeCode = emp?.emp_code || '';
+    this.emiratesId = emp?.emirates_id || '';
+    this.personId = emp?.person_id || '';
+    this.designationName = emp?.designation || data.payroll_run?.designation || '';
 
-    // IBAN from first active bank
+    // IBAN from first active bank (a salary card has its card number instead)
     const activeBank = emp?.emp_bank?.find((b: any) => b.is_active) || emp?.emp_bank?.[0];
-    this.ibanNumber = activeBank?.iban_number || '-';
+    this.ibanIsCard = !!activeBank && !activeBank.iban_number && !!activeBank.account_number;
+    this.ibanNumber = activeBank?.iban_number || activeBank?.account_number || '-';
 
     // Month Name
     this.monthName = this.getMonthName(data.payroll_run?.month);

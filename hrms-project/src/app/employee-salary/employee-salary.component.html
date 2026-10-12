@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col-md-6">
-          <h1>Assign Salary component for employee</h1>
+          <h1>Assign salary component for employee</h1>
         </div>
        
         <div class="col-md-6">
@@ -44,12 +44,12 @@
       <div class="col-md-2">
 
         <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
+          (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
         <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedEmpsalary()">Delete
-          Selected </button>
+          selected </button>
 
       </div>
     </div>
@@ -77,7 +77,7 @@
     <div class="row">
 
         <div class="col-md-6">
-          <label>Salary Component
+          <label>Salary component
             <span class="required-star">*</span>
           </label>
           <div class="custom-sel">
@@ -160,7 +160,7 @@ placeholder="Enter amount"
                 <div class="modal-content">
                   <div class="row">
                     <div class="col-md-10">
-                      <h2>Edit Pay Structure</h2>
+                      <h2>Edit pay structure</h2>
                     </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -175,7 +175,7 @@ placeholder="Enter amount"
                     <div class="row">
 
                         <div class="col-md-6">
-                          <label>Salary Component</label>
+                          <label>Salary component</label>
                           <div class="custom-sel">
                             <select class="form-control" id="component" name="component" [(ngModel)]="editAsset.component"
                               [ngModelOptions]="{standalone: true}" (change)="onComponentChange()">
@@ -249,7 +249,7 @@ placeholder="Enter amount"
 
         <div class="row">
             <div class="col-md-8">
-                <h2>Salary Bulk Upload & Download Details</h2> 
+                <h2>Salary bulk upload & download details</h2> 
             </div>
 <div class="col-md-4 text-right">
     <!-- Styled Square Close Button -->
@@ -286,7 +286,7 @@ placeholder="Enter amount"
     <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
       <div class="row">
         <div class="col-md-12">
-          <label for="emp_profile_pic">Upload Salary Details:</label>
+          <label for="emp_profile_pic">Upload salary details:</label>
           <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event);">
         </div>
       </div>
@@ -295,7 +295,7 @@ placeholder="Enter amount"
         <div class="col-md-8"></div>
         <div class="col-md-2 col-6">
             <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
-              close
+              Close
             </button>
           </div>
         
@@ -471,8 +471,8 @@ placeholder="Enter amount"
                   <thead class="bg-dark text-white sticky-top headers-z-index">
                     <tr>
                       <th class="text-center" style="width: 50px;">No</th>
-                      <th>Emp Code</th>
-                      <th>Employee Name</th>
+                      <th>Emp code</th>
+                      <th>Employee name</th>
                       <th>Department</th>
                       <th>Designation</th>
                       
@@ -483,7 +483,7 @@ placeholder="Enter amount"
                       
                       <!-- Placeholder when no category is selected -->
                       <th class="text-muted text-center italic-placeholder" *ngIf="selectedPayrollCategories.length === 0">
-                        No Columns Selected
+                        No columns selected
                       </th>
           
                       <th class="sticky-col-right bg-dark text-center" style="width: 70px;">Actions</th>

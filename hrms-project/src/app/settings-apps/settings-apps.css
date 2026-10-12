@@ -1,0 +1,50 @@
+/* v1.21.0 Settings → Apps */
+.sa-wrap { padding: 20px 0 40px; }
+.sa-wrap .lp-msg { margin: 14px 24px 0; }
+.sa-company { display: flex; align-items: center; gap: 12px; margin: 18px 24px 0; padding: 12px 16px; border: 1px solid #e3e5ee; border-radius: 10px; background: #f7f7fc; }
+.sa-company > mat-icon { color: #5b4ff5; }
+.sa-company > span { flex: 1; font-size: 14px; color: #1b1640; }
+.sa-company small { display: block; color: #6b7185; font-size: 12.5px; margin-top: 2px; }
+.sa-note { margin: 10px 24px 0; color: #6b7185; font-size: 13px; }
+.sa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; padding: 18px 24px 0; }
+.sa-card { display: flex; flex-direction: column; border: 1px solid #e3e5ee; border-radius: 12px; background: #fff; padding: 16px; }
+.sa-card.on { border-color: #c9c4fb; box-shadow: inset 4px 0 0 #5b4ff5; }
+.sa-card.off { opacity: .6; }
+.sa-top { display: flex; align-items: flex-start; gap: 12px; }
+.sa-icon mat-icon { color: inherit !important; }
+.sa-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px; background: #eeedfd; color: #5b4ff5; }
+.sa-card:not(.on) .sa-icon { background: #f1f3f9; color: #6b7185; }
+.sa-name { flex: 1; min-width: 0; }
+.sa-name h2 { margin: 0; font-size: 16px; font-weight: 600; color: #1b1640; }
+.sa-name p { margin: 3px 0 0; font-size: 13px; color: #6b7185; line-height: 1.4; }
+.sa-state { flex: none; font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 12px; background: #f1f3f9; color: #4a4f63; }
+.sa-state.on { background: #e5f6ec; color: #17663a; }
+.sa-facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 0 0; }
+.sa-facts dt { font-size: 12px; font-weight: 400; color: #6b7185; }
+.sa-facts dd { margin: 2px 0 0; font-size: 14px; color: #1b1640; }
+.sa-facts small { display: block; font-size: 12px; color: #6b7185; }
+.sa-facts a { color: #4338ca; }
+.sa-links { margin-top: 14px; border-top: 1px solid #eef0f5; padding-top: 10px; }
+.sa-links h3 { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: #1b1640; }
+.sa-links ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sa-links li { display: flex; gap: 8px; font-size: 13px; color: #4a4f63; }
+.sa-links li mat-icon { flex: none; font-size: 18px; width: 18px; height: 18px; color: #9aa0b4; margin-top: 1px; }
+.sa-links li.on mat-icon { color: #17663a; }
+.sa-links li.on b { color: #17663a; }
+.sa-links small { display: block; color: #6b7185; font-size: 12px; line-height: 1.4; margin-top: 2px; }
+.sa-ask { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: #f7f7fc; border: 1px solid #dcd9fb; }
+.sa-ask.warn { background: #fff8f1; border-color: #f4d9b8; }
+.sa-q { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #1b1640; }
+.sa-opt { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 8px; font-size: 13.5px; color: #1b1640; cursor: pointer; }
+.sa-opt input { margin-top: 3px; accent-color: #5b4ff5; }
+.sa-opt small { display: block; color: #6b7185; font-size: 12px; }
+.sa-pick { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 8px 24px; font-size: 12.5px; color: #6b7185; }
+.sa-pick select { height: 36px; border: 1px solid #dfe1ea; border-radius: 8px; padding: 0 10px; font-size: 14px; color: #1b1640; background: #fff; max-width: 320px; }
+.sa-hint { margin: 4px 0 8px; font-size: 12.5px; color: #6b7185; }
+.sa-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.sa-foot { display: flex; gap: 8px; margin-top: auto; padding-top: 14px; flex-wrap: wrap; }
+.sa-wrap :focus-visible { outline: 2px solid #5b4ff5; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .sa-grid { grid-template-columns: 1fr; padding: 14px 16px 0; }
+  .sa-company { margin: 14px 16px 0; flex-wrap: wrap; }
+}

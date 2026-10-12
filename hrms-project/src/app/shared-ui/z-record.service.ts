@@ -28,6 +28,7 @@ const SKIP_RE = /\/(chatter|tools|dashboard)\/api\/|\/permissions\/|notification
 @Injectable({ providedIn: 'root' })
 export class ZRecordService {
   private ctxs: RecordCtx[] = [];
+  private bg: RecordCtx[] = [];   // v1.22.0: detail calls of add-on record pages opened without a click
   private lastAction = 0;
   private pending = new Map<number, PendingForm>();
   private seq = 0;
@@ -52,6 +53,11 @@ export class ZRecordService {
     const recent = Date.now() - this.lastAction < 3000;
     if (m && ok && (recent || method !== 'GET') && !/\/users\/api\/user\/|\/api\/company\//i.test(path)) {
       this.push({ endpoint: m[1], id: m[2], at: Date.now(), source: 'detail' });
+    }
+    // v1.22.0: a record page of an add-on app opened by its address (bookmark, refresh, link) – remember its detail call too
+    if (m && ok && method === 'GET' && !recent && /^\/zeo-[a-z]+\/api\//.test(m[1])) {
+      this.bg.push({ endpoint: m[1], id: m[2], at: Date.now(), source: 'detail' });
+      if (this.bg.length > 20) { this.bg.splice(0, this.bg.length - 20); }
     }
     if (method === 'POST' && ok && body && typeof body === 'object' && !Array.isArray(body) && body.id !== undefined && !m) {
       this.push({ endpoint: path.endsWith('/') ? path : path + '/', id: String(body.id), at: Date.now(), source: 'saved' });
@@ -83,7 +89,10 @@ export class ZRecordService {
   /** Context for a page whose URL ends in an id (e.g. employee details). */
   forId(id: string): RecordCtx | null {
     const c = [...this.ctxs].reverse().find(x => x.id === id && (x.source === 'detail' || x.source === 'row'));
-    return c || null;
+    if (c) { return c; }
+    // v1.22.0: …/zeo-crm/r/opportunity/16 → the detail call /zeo-crm/api/r/opportunity/16/ of the same app
+    const app = /\/(zeo-[a-z]+)\//.exec(location.pathname)?.[1];
+    return (app && [...this.bg].reverse().find(x => x.id === id && x.endpoint.startsWith('/' + app + '/api/') && Date.now() - x.at < 30000)) || null;
   }
 
   private onClick = (ev: MouseEvent) => {

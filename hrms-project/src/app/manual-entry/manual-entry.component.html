@@ -6,7 +6,7 @@
 
         <div class="row">
           <div class="col-md-3">
-            <h1>Manual Entry</h1>
+            <h1>Manual entry</h1>
           </div>
   
           <div class="col-md-4">
@@ -57,7 +57,7 @@
   <div class="custom-sel">
             <div class="form-control-wrapper">
 
-      <label>Select Employee
+      <label>Select employee
         <span class="required-star">*</span>
       </label>
        <mat-form-field appearance="outline" style="width:100%">
@@ -112,7 +112,7 @@
 
         <div class="col-md-4" >
                    
-                    <label>Total Hours</label>
+                    <label>Total hours</label>
                    <input type="text"  class="form-control" required  [(ngModel)]="total_hours"  placeholder="Enter Total Hours"
                     [ngModelOptions]="{standalone: true}">
                    
@@ -143,7 +143,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <h2>Attendance Bulk Upload & Download Details</h2> 
+                <h2>Attendance bulk upload & download details</h2> 
             </div>
 <div class="col-md-4 text-right">
     <!-- Styled Square Close Button -->
@@ -180,7 +180,7 @@
     <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
       <div class="row">
         <div class="col-md-12">
-          <label for="emp_profile_pic">Upload department Details:</label>
+          <label for="emp_profile_pic">Upload department details:</label>
           <input type="file" name="files" id="file" class="form-control" (change)="onFileSelected($event);">
         </div>
       </div>
@@ -189,7 +189,7 @@
         <div class="col-md-8"></div>
         <div class="col-md-2 col-6">
             <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
-              close
+              Close
             </button>
           </div>
         
@@ -225,9 +225,9 @@
       <th>Employee</th>
       <th>Shift</th>
       <th>Date</th>
-      <th>Total Hours</th>
-      <th>First In</th>
-      <th>Last Out</th>
+      <th>Total hours</th>
+      <th>First in</th>
+      <th>Last out</th>
     </tr>
   </thead>
 
@@ -286,8 +286,8 @@
                 <tr>
                   <th>Type</th>
                   <th>Time</th>
-                  <th>Location / Device</th>
-                  <th>Face Verified</th>
+                  <th>Location / device</th>
+                  <th>Face verified</th>
                 </tr>
               </thead>
 

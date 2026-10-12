@@ -11,8 +11,8 @@ const SOURCE = opt([['appraisal', 'Appraisal'], ['pip', 'PIP'], ['manager', 'Man
 const COURSES = { endpoint: API + 'courses/', label: (r: any) => `${r.code} - ${r.title}`, params: { active: 'true' } };
 
 export const NEEDS_PAGE: PageConfig = {
-  title: 'Training Needs',
-  itemName: 'Training Need',
+  title: 'Training needs',
+  itemName: 'Training need',
   endpoint: API + 'needs/',
   model: 'trainingneed',
   intro: 'Needs come from appraisals (development needs), PIPs, new joiners, expiring certificates and manager / self requests.',
@@ -43,7 +43,7 @@ export const NEEDS_PAGE: PageConfig = {
 };
 
 export const COURSE_PAGE: PageConfig = {
-  title: 'Course Catalog',
+  title: 'Course catalog',
   itemName: 'Course',
   endpoint: API + 'courses/',
   model: 'course',
@@ -91,8 +91,8 @@ const RESULT_COLUMNS = [
 ];
 
 export const SESSION_PAGE: PageConfig = {
-  title: 'Training Calendar',
-  itemName: 'Training Session',
+  title: 'Training calendar',
+  itemName: 'Training session',
   endpoint: API + 'sessions/',
   model: 'trainingsession',
   intro: 'Schedule sessions of catalog courses. Publish opens nominations; Close issues certificates to participants who passed.',
@@ -243,8 +243,8 @@ export const CERTIFICATE_PAGE: PageConfig = {
 const BOND_STATUS = { pending: 'orange', active: 'blue', completed: 'green', recovered: 'cyan', waived: 'grey' };
 
 export const BOND_PAGE: PageConfig = {
-  title: 'Training Bonds',
-  itemName: 'Training Bond',
+  title: 'Training bonds',
+  itemName: 'Training bond',
   endpoint: API + 'bonds/',
   model: 'trainingbond',
   intro: 'Created when L&D approves a nomination above the bond threshold. If the employee leaves early, the recoverable amount is deducted in the final settlement.',
@@ -274,7 +274,7 @@ export const BOND_PAGE: PageConfig = {
 };
 
 export const LEARNING_REPORT_PAGE: PageConfig = {
-  title: 'Learning Reports',
+  title: 'Learning reports',
   itemName: 'Session',
   endpoint: API + 'sessions/',
   model: 'trainingsession',

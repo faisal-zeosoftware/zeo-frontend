@@ -12,13 +12,13 @@
     </span>
   </div>  
     
-        <h1>Create  Branch</h1><hr>
+        <h1>Create  branch</h1><hr>
         
         <form >
         <div class="row">
             <div class="col-md-6" >
                
-                <label>Branch Name
+                <label>Branch name
                      <span class="required-star">*</span>
                 </label>
                <input type="text"  class="form-control" required  [(ngModel)]="branch_name"  placeholder="Enter Branch Name" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_name}">
@@ -29,7 +29,7 @@
     
     <div class="col-md-6" >
                
-        <label>Branch Code
+        <label>Branch code
              <span class="required-star">*</span>
         </label>
        <input type="text"  class="form-control" required  [(ngModel)]="branch_code"  placeholder="Enter Branch Code" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_code}">
@@ -74,7 +74,7 @@
           <div class="col-md-6">
                          
                   
-              <label>pincode
+              <label>Pincode
               </label>
               <input type="text" [(ngModel)]="br_pincode" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Branch pincode">
     
@@ -114,7 +114,7 @@
     
     
         <div class="custom-sel">
-            <label>Select User</label>
+            <label>Select user</label>
             <select class="form-control" id="branch_users" name="branch_users" required multiple [(ngModel)]="branch_users"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_users}" >
                 <option value="" >Select</option>
                 <option *ngFor="let branch_users of companies" [value]="branch_users.id">{{ branch_users.username }}</option>
@@ -132,7 +132,7 @@
      </div>
     
     <div class="col-md-6"> 
-        <label for="branch_logo">Branch Logo :</label>
+        <label for="branch_logo">Branch logo :</label>
         <input type="file" class="form-control" id="branch_logo" name="branch_logo" (change)="onFileSelected($event)">
         <!-- <div *ngIf="registerButtonClicked && !branch_logo" class="error-message">
           No file was selected for the Branch Logo.
@@ -181,7 +181,7 @@
     
             <div class="row">
                 <div class="col-md-10">
-                    <h1>Branch Details</h1>
+                    <h1>Branch details</h1>
                 </div>
     
                 <div class="col-md-2">
@@ -198,7 +198,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="custom-sec">
-                                    <label>Select Branch</label>
+                                    <label>Select branch</label>
                                     <select class="form-control" id="branchsec" [(ngModel)]="selectedBranchsecId"  [ngModelOptions]="{standalone: true}" >
                                       
                                         <option *ngFor="let branchsec of branches" [value]="branchsec.id">{{ branchsec.branch_name }}</option>

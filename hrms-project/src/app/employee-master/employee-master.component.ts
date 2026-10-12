@@ -20,6 +20,7 @@ import { environment } from '../../environments/environment';
 import {combineLatest, Subscription } from 'rxjs';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { ZSavedViewsService } from '../shared-ui/z-saved-views';   // v1.16.0
 
 @Component({
   selector: 'app-employee-master',
@@ -174,7 +175,11 @@ export class EmployeeMasterComponent {
   selectedBranchIds: number[] = [];
 
     ngOnInit(): void {
-
+      // v1.16.0: a user with a default saved view of the employee list opens straight in the list (table) view
+      this.savedViews.list(location.pathname + '|0').subscribe({
+        next: r => { if (r?.default_id && this.isTableView) { this.isTableView = false; } },
+        error: () => { /* cards as usual */ },
+      });
 
       // combineLatest waits for both Schema and Branches to have a value
     this.dataSubscription = combineLatest([
@@ -322,7 +327,7 @@ if (this.userId !== null) {
             console.log('Has import permission:', this.hasImportPermission);
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -342,7 +347,7 @@ if (this.userId !== null) {
         
 
         // // Extract group permissions from user details
-        // const groupPermissions = this.userDetails.groups.map((group: { permissions: any; }) => group.permissions).flat();
+        // const groupPermissions = (this.userDetails.groups || []).map((group: { permissions: any; }) => group.permissions).flat();
         // console.log('Group Permissions:', groupPermissions);
 
         // // Check permissions for various actions
@@ -451,6 +456,7 @@ ngOnDestroy(): void {
 
 
 isTableView = true; // default: table view with the shared list bar (cards still one click away)
+private savedViews = inject(ZSavedViewsService);   // v1.16.0
 
 toggleView() {
   this.isTableView = !this.isTableView;

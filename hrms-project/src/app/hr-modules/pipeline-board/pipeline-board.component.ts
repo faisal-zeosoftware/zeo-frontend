@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { LOOKUPS, ModuleApiService } from '../module-api.service';
+import { COUNTRY_PACK_UI } from '../../shared-ui/country-pack.service';   // v1.14.0
 
 const APPS = '/recruitment/api/applications/';
 
@@ -11,7 +12,7 @@ const APPS = '/recruitment/api/applications/';
 @Component({
   selector: 'app-hr-pipeline-board',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, DragDropModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, MatIconModule, DragDropModule],
   templateUrl: './pipeline-board.component.html',
   styleUrls: ['../hr-shared.css', './pipeline-board.component.css'],
 })

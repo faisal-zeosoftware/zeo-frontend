@@ -53,11 +53,11 @@
         <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetMaster()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetMaster()">Delete selected </button>
 
             </div>
         </div>
@@ -69,7 +69,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Asset Create</h2>
+                  <h2>Asset create</h2>
                 </div>
  <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -87,7 +87,7 @@
 
               <div class="col-md-6" >
                
-                <label>Asset Name
+                <label>Asset name
                    <span class="required-star">*</span>
                 </label>
                <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name"
@@ -97,7 +97,7 @@
 
            <div class="col-md-6" >
                
-                <label>Serial No
+                <label>Serial no
                    <span class="required-star">*</span>
                 </label>
                <input type="text"  class="form-control" required  [(ngModel)]="serial_number"  placeholder="Enter Serial no"
@@ -156,7 +156,7 @@
 
 
   <div class="col-md-6" >
-    <label>Select Asset Type
+    <label>Select asset type
       <span class="required-star">*</span>
     </label>
     <div class="custom-sel">
@@ -243,7 +243,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit Asset</h2>
+          <h2>Edit asset</h2>
         </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -261,7 +261,7 @@
 
             <div class="col-md-6" >
              
-              <label>Asset Name</label>
+              <label>Asset name</label>
              <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
               [ngModelOptions]="{standalone: true}" >
              
@@ -269,7 +269,7 @@
 
          <div class="col-md-6" >
              
-              <label>Serial No</label>
+              <label>Serial no</label>
              <input type="text"  class="form-control" required  [(ngModel)]="editAsset.serial_number"  placeholder="Enter Serial no"
               [ngModelOptions]="{standalone: true}" >
              
@@ -326,7 +326,7 @@
 
 
 <div class="col-md-6" >
-  <label>Select Asset Type</label>
+  <label>Select asset type</label>
   <div class="custom-sel">
     <select
       class="form-control"
@@ -436,13 +436,13 @@
           <thead class="thead-dark">
     <tr>
        <th class="sticky-left">No</th>
-      <th>Asset Name</th>
-      <th>Serial No</th>
+      <th>Asset name</th>
+      <th>Serial no</th>
       <th>Model</th>
-      <th>Purchase Date</th>
+      <th>Purchase date</th>
       <th>Status</th>
       <th>Condition</th>
-      <th>Asset Type</th>
+      <th>Asset type</th>
 
       <!-- Dynamic custom field headers -->
       <th *ngFor="let field of customFieldHeaders">

@@ -2,13 +2,13 @@
 
   <div class="cpm-sec" *ngIf="Emp" >
 
-      <h1>Company Details Edit</h1><hr>
+      <h1>Company details edit</h1><hr>
 
       <form (submit)="updateEmp">
          <div class="row">
           <div class="col-md-6" >
                    
-            <label>Company Name</label>
+            <label>Company name</label>
            <input type="text"  class="form-control" required id="cmpny_name" name="cmpny_name"  [(ngModel)]="Emp.cmpny_name"  placeholder="Enter Company Name"
             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !cmpny_name}">
            
@@ -17,7 +17,7 @@
       
       <div class="col-md-6" >
                      
-          <label>Company City Name</label>
+          <label>Company city name</label>
          <input type="text"  class="form-control" required id="cmpny_city" name="cmpny_city"  [(ngModel)]="Emp.cmpny_city"  placeholder="Enter City Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !cmpny_city}">
          

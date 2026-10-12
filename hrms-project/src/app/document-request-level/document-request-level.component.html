@@ -7,7 +7,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Document Approvel Level</h1>
+                <h1>Document approvel level</h1>
             </div>
                <div class="col-md-3">
                     
@@ -55,11 +55,11 @@
     <div class="row">
       <div class="col-md-2">
           
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete selected </button>
 
       </div>
   </div>
@@ -70,7 +70,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Document Request Approvel Level</h2>
+              <h2> Create document request approvel level</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -84,7 +84,7 @@
             <div class="row">
             
               <div class="col-md-4">
-                <label>Request Type
+                <label>Request type
                    <span class="required-star">*</span>
                 </label>
                 <div class="custom-sel">
@@ -161,7 +161,7 @@
 
             <div *ngIf="approval_type === 'multi_approval'" class="col-md-12 mt-3">
 
-              <h4>Approval Levels</h4>
+              <h4>Approval levels</h4>
             
               <div *ngFor="let lvl of levels; let i = index" class="row level-box mb-3">
             
@@ -200,7 +200,7 @@
             
               <!-- Add Button -->
               <button class="btn btn-primary mt-2" (click)="addLevel()">
-                + Add Level
+                + Add level
               </button>
             
             </div>
@@ -236,7 +236,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit Document Approvel Level</h2>
+    <h2>Edit document approvel level</h2>
   </div>
     <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -255,7 +255,7 @@
 
 
     <div class="col-md-4">
-      <label>Request Type</label>
+      <label>Request type</label>
       <div class="custom-sel">
         <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
           <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
@@ -368,7 +368,7 @@
   <button type="button"
           class="btn btn-primary mt-2"
           (click)="addEditLevel()">
-    + Add Level
+    + Add level
   </button>
 
 </div>
@@ -413,8 +413,8 @@
         <th>No</th>
         <th>Level</th>
         <th>Branch</th>
-        <th>Document Type</th>
-        <th>Approver Type</th>
+        <th>Document type</th>
+        <th>Approver type</th>
         <th>Approver</th>
         <th>Actions</th>
       </tr>

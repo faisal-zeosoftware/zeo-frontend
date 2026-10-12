@@ -5,6 +5,7 @@ import { AuthenticationService } from './login/authentication.service';
 import { FormSettingsService } from './shared-ui/form-settings.service';
 import { ZRecordInjector } from './shared-ui/z-record-injector.service';
 import { ZRecordService } from './shared-ui/z-record.service';
+import { FieldHelpService } from './shared-ui/field-help.service';   // v1.16.0
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,10 @@ export class AppComponent {
   title = 'hrms-project';
 
 
-  constructor(private auth: AuthenticationService, router: Router, formSettings: FormSettingsService, injector: ZRecordInjector, rec: ZRecordService) {
+  constructor(private auth: AuthenticationService, router: Router, formSettings: FormSettingsService, injector: ZRecordInjector, rec: ZRecordService,
+              fieldHelp: FieldHelpService) {
+    // v1.16.0: help next to every field the user puts the cursor in (one document listener, lazy catalogue)
+    fieldHelp.start();
     // the company's form designer settings (labels, mandatory, hidden fields) for every user and browser
     router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => formSettings.pull());
     // v1.7.0: notes, activities, files, history and extra fields inside every form; To-do count in the top bar

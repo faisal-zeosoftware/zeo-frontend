@@ -6,7 +6,7 @@
 
             <div class="row">
                 <div class="col-md-3">
-                    <h1> Department Details</h1>
+                    <h1> Department details</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -60,11 +60,11 @@
         <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete selected </button>
 
             </div>
         </div>
@@ -79,8 +79,8 @@
         <thead>
           <tr>
             <th *ngIf="Delete" style="width: 50px;"></th>
-            <th>Department Code</th>
-            <th>Department Name</th>
+            <th>Department code</th>
+            <th>Department name</th>
             <th>Branch</th>
             <th>Description</th>
             <th *ngIf="showEditBtn" style="width: 100px;">Action</th>
@@ -120,6 +120,7 @@
                 <mat-icon style="font-size: 16px; color: #2980b9; vertical-align: middle;">edit</mat-icon>
                 Edit
               </button>
+              <z-translate endpoint="/organisation/api/Department/" [recordId]="departmentsec.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
             </td>
           </tr>
 
@@ -148,7 +149,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <h2>Department Bulk Upload & Download Details</h2> 
+                <h2>Department bulk upload & download details</h2> 
             </div>
 <div class="col-md-4 text-right">
     <!-- Styled Square Close Button -->
@@ -185,7 +186,7 @@
     <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
       <div class="row">
         <div class="col-md-12">
-          <label for="emp_profile_pic">Upload department Details:</label>
+          <label for="emp_profile_pic">Upload department details:</label>
           <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event);">
         </div>
       </div>
@@ -194,7 +195,7 @@
         <div class="col-md-8"></div>
         <div class="col-md-2 col-6">
             <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
-              close
+              Close
             </button>
           </div>
         

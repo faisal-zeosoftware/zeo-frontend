@@ -8,15 +8,18 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpApiService, SpMeta } from './sp-api.service';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 const EMPTY = { name: '', code: '', start_time: '09:00', end_time: '18:00', break_minutes: 60, colour: '#5b4ff5', active: true, grace_in_minutes: 0,
   grace_out_minutes: 0, min_hours: null, max_hours: null, half_day_hours: null, night_auto: true, night_shift: false, ot_after_minutes: 0,
   shift_allowance: 0, night_allowance: 0, branch_ids: [] as number[], notes: '' };
 
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on this list
+
 @Component({
   selector: 'app-sp-shift-master',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -38,7 +41,7 @@ const EMPTY = { name: '', code: '', start_time: '09:00', end_time: '18:00', brea
       <div class="lp-msg" *ngIf="msg" [class.err]="msgErr" role="status" style="white-space:pre-line">{{ msg }}</div>
 
       <div class="lp-scroll" *ngIf="uploadRows.length" style="margin-bottom:14px">
-        <table class="lp-mini"><thead><tr><th>Row</th><th>Shift</th><th>Action</th><th>Result</th></tr></thead>
+        <table class="lp-mini" zPlain><thead><tr><th>Row</th><th>Shift</th><th>Action</th><th>Result</th></tr></thead>
           <tbody><tr *ngFor="let u of uploadRows"><td>{{ u.row }}</td><td>{{ u.name }}</td><td>{{ u.action === 'add' ? 'New' : 'Update' }}</td>
             <td [class.lp-bad]="!u.ok" [class.lp-ok]="u.ok">{{ u.ok ? 'OK' : u.errors.join(' ') }}</td></tr></tbody></table>
         <div class="lp-foot"><button type="button" class="lp-btn" (click)="uploadRows = []">Cancel</button>
@@ -61,8 +64,8 @@ const EMPTY = { name: '', code: '', start_time: '09:00', end_time: '18:00', brea
           <label>Most hours counted in a day<input type="number" min="0" max="24" step="0.25" [(ngModel)]="form.max_hours"><span class="sp-err" *ngIf="err['max_hours']">{{ err['max_hours'] }}</span></label>
           <label>Hours for a half day<input type="number" min="0" max="24" step="0.25" [(ngModel)]="form.half_day_hours"><span class="sp-err" *ngIf="err['half_day_hours']">{{ err['half_day_hours'] }}</span></label>
           <label>Overtime starts after (min past shift end)<input type="number" min="0" [(ngModel)]="form.ot_after_minutes"><span class="sp-err" *ngIf="err['ot_after_minutes']">{{ err['ot_after_minutes'] }}</span></label>
-          <label>Shift allowance per day (AED)<input type="number" min="0" step="0.01" [(ngModel)]="form.shift_allowance"><span class="sp-err" *ngIf="err['shift_allowance']">{{ err['shift_allowance'] }}</span></label>
-          <label>Night allowance per night (AED)<input type="number" min="0" step="0.01" [(ngModel)]="form.night_allowance"><span class="sp-err" *ngIf="err['night_allowance']">{{ err['night_allowance'] }}</span></label>
+          <label>{{ 'Shift allowance per day (AED)' | zc }}<input type="number" min="0" step="0.01" [(ngModel)]="form.shift_allowance"><span class="sp-err" *ngIf="err['shift_allowance']">{{ err['shift_allowance'] }}</span></label>
+          <label>{{ 'Night allowance per night (AED)' | zc }}<input type="number" min="0" step="0.01" [(ngModel)]="form.night_allowance"><span class="sp-err" *ngIf="err['night_allowance']">{{ err['night_allowance'] }}</span></label>
           <label>Night shift
             <select [(ngModel)]="nightMode"><option value="auto">Automatic (from the times)</option><option value="yes">Yes</option><option value="no">No</option></select></label>
           <label>Active<select [(ngModel)]="form.active"><option [ngValue]="true">Yes – can be planned</option><option [ngValue]="false">No – hidden from new plans</option></select></label>

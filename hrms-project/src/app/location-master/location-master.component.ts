@@ -154,7 +154,7 @@ if (this.userId !== null) {
 
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -633,6 +633,8 @@ closeEditModal(): void {
     formData.append('timezone', this.editAsset.timezone || '');
     formData.append('city', this.editAsset.city || '');
      formData.append('pincode',this.editAsset.pincode || '');
+    formData.append('employer_unique_id', this.editAsset.employer_unique_id || '');   // v1.20.2 WPS
+    formData.append('bank_routing_code', this.editAsset.bank_routing_code || '');
 
   
     formData.append('industry_type', this.editAsset.industry_type || '');

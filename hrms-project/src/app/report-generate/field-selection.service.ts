@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';   // v1.15.1
 // field-selection.service.ts 
 import { Injectable } from '@angular/core'; 
 import { HttpClient } from '@angular/common/http'; 
@@ -7,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root' 
 }) 
 export class FieldSelectionService { 
-  private apiUrl = 'http://127.0.0.1:8000/employee/api/emp-report'; // Replace with your actual backend API URL 
+  private apiUrl = `${environment.apiBaseUrl}/employee/api/emp-report`; // Replace with your actual backend API URL 
  
   constructor(private http: HttpClient) {} 
  

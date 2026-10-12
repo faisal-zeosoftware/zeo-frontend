@@ -1,3 +1,4 @@
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -7,7 +8,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CatogaryService } from '../catogary-master/catogary.service';
 
 declare var $: any;
-import 'summernote'; // Ensure you have summernote imported
+// v1.15.1: Summernote + jQuery come once from angular.json \"scripts\" (global $); importing the npm module bundled a second jQuery copy.
 import { EmailTemplateEditComponent } from '../email-template-edit/email-template-edit.component';
 import { MatDialog } from '@angular/material/dialog';
 import { LeaveService } from '../leave-master/leave.service';
@@ -23,6 +24,8 @@ import { MatSelect } from '@angular/material/select';
   styleUrl: './leave-template.component.css'
 })
 export class LeaveTemplateComponent {
+  zLabel = statusLabel;   // v1.15.1: stored values like "request_created" shown as "Request created"
+
 
 
   private dataSubscription?: Subscription;
@@ -203,7 +206,7 @@ export class LeaveTemplateComponent {
 
 
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

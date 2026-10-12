@@ -12,7 +12,7 @@
         <div class="col-md-5">
 
           <h2 class="page-title">
-            General Request Approvals
+            General request approvals
           </h2>
 
         </div>
@@ -21,24 +21,7 @@
         <!-- Search -->
         <div class="col-md-4">
 
-          <div class="search-wrapper">
-
-            <input
-              type="text"
-              class="form-control search-input"
-              placeholder="Search by request, status..."
-              [(ngModel)]="searchText"
-              (ngModelChange)="applyFilters()"
-            />
-
-            <button
-              class="search-btn"
-              type="button"
-            >
-              <i class="fa fa-search"></i>
-            </button>
-
-          </div>
+          
 
         </div>
 
@@ -46,61 +29,7 @@
         <!-- Filter -->
         <div class="col-md-3 text-md-right">
 
-          <div class="filter-container">
-
-            <button
-              type="button"
-              class="btn btn-filter"
-              (click)="toggleFilterMenu()"
-            >
-
-              <i class="fa fa-filter"></i>
-
-              {{ selectedStatus || 'All Statuses' }}
-
-            </button>
-
-
-            <div
-              class="filter-dropdown"
-              *ngIf="showFilterMenu"
-            >
-
-              <button
-                type="button"
-                class="dropdown-item"
-                (click)="filterByStatus('')"
-              >
-                All Statuses
-              </button>
-
-              <button
-                type="button"
-                class="dropdown-item"
-                (click)="filterByStatus('Pending')"
-              >
-                Pending
-              </button>
-
-              <button
-                type="button"
-                class="dropdown-item"
-                (click)="filterByStatus('Approved')"
-              >
-                Approved
-              </button>
-
-              <button
-                type="button"
-                class="dropdown-item"
-                (click)="filterByStatus('Rejected')"
-              >
-                Rejected
-              </button>
-
-            </div>
-
-          </div>
+          
 
         </div>
 
@@ -111,157 +40,38 @@
 
     <!-- ================= APPROVAL CARDS ================= -->
 
-    <div class="approval-list">
+    <div class="approval-list apr-list">
 
-      <div
-        class="approval-card"
-        *ngFor="let apr of filteredApprovals"
-      >
-
-        <!-- ================= CARD HEADER ================= -->
-
-        <div class="card-header-row">
-
-          <div>
-
-            <h5 class="request-title">
-              {{ apr.general_request }}
-            </h5>
-
-            <small>
-              General Employee Request
-            </small>
-
-          </div>
-
-
-          <!-- Status -->
-
-          <div
+      <!-- v1.20.1: approvals as a standard list (search, filters, group by, export from the list bar) -->
+  <table class="table zl-apr-table">
+    <thead>
+      <tr><th>Request</th><th>Level</th><th>Comment</th><th>Approver</th><th>Status</th><th style="width:150px"></th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let apr of filteredApprovals">
+        <td><a class="apr-link" (click)="selectedaprovaldetalis(apr.id)">{{ apr.general_request }}</a></td>
+        <td>{{ apr.level || '—' }}</td>
+        <td>{{ apr.note || '—' }}</td>
+        <td>{{ apr.approver }}</td>
+        <td><span
             class="status-badge"
             [ngClass]="{
               'status-pending': apr.status === 'Pending',
               'status-approved': apr.status === 'Approved',
               'status-rejected': apr.status === 'Rejected'
             }"
-          >
-            {{ apr.status }}
-          </div>
-
-        </div>
-
-
-        <!-- ================= CARD BODY ================= -->
-
-        <div class="card-body-row">
-
-          <!-- General Request -->
-
-          <div class="info-item">
-
-            <span class="label">
-              General Request Number
-            </span>
-
-            <span class="value">
-              {{ apr.general_request || '—' }}
-            </span>
-
-          </div>
-
-
-          <!-- Level -->
-
-          <div class="info-item">
-
-            <span class="label">
-              Level
-            </span>
-
-            <span class="value">
-              {{ apr.level || '—' }}
-            </span>
-
-          </div>
-
-
-          <!-- Comment -->
-
-          <div class="info-item">
-
-            <span class="label">
-              Comment
-            </span>
-
-            <span class="value">
-              {{ apr.note || '—' }}
-            </span>
-
-          </div>
-
-
-          <!-- Approver -->
-
-          <div
-            class="info-item"
-            *ngIf="apr.approver"
-          >
-
-            <span class="label">
-              Approver
-            </span>
-
-            <span class="value">
-              {{ apr.approver }}
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <!-- ================= ACTIONS ================= -->
-
-        <div class="card-actions">
-
-          <button
-            type="button"
-            class="btn btn-view"
-            (click)="selectedaprovaldetalis(apr.id)"
-          >
-
-            <i class="fa fa-eye"></i>
-
-            View
-
-          </button>
-
-
-          <button
-            *ngIf="apr.is_deligate"
-            type="button"
-            class="btn btn-delegate"
-            (click)="apr.showDelegation = !apr.showDelegation"
-          >
-
-            <i class="fa fa-exchange"></i>
-
-            {{
-              apr.showDelegation
-                ? 'Hide Details'
-                : 'Delegation Details'
-            }}
-
-          </button>
-
-        </div>
-
-
-        <!-- ================= DELEGATION DETAILS ================= -->
-
-        <div
+          >{{ apr.status }}</span></td>
+        <td class="text-end apr-acts">
+          <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectedaprovaldetalis(apr.id)">View</button>
+          <button *ngIf="apr.is_deligate" type="button" class="btn btn-sm btn-light" (click)="apr.showDelegation = !apr.showDelegation">{{ apr.showDelegation ? 'Hide delegation' : 'Delegation' }}</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <ng-container *ngFor="let apr of filteredApprovals">
+    <div
           *ngIf="apr.delegation_details && apr.showDelegation"
-          class="delegation-section"
+          class="delegation-section apr-deleg"
         >
 
           <div class="row">
@@ -311,7 +121,7 @@
               <div class="del-item">
 
                 <strong>
-                  Delegate To
+                  Delegate to
                 </strong>
 
                 <p>
@@ -350,7 +160,7 @@
             >
 
               <strong>
-                Send Delegation Response
+                Send delegation response
               </strong>
 
 
@@ -367,7 +177,7 @@
                 class="btn btn-primary btn-sm mt-2"
                 (click)="sendDelegationResponseInline(apr)"
               >
-                Send Response
+                Send response
               </button>
 
             </div>
@@ -375,8 +185,7 @@
           </div>
 
         </div>
-
-      </div>
+  </ng-container>
 
 
       <!-- ================= EMPTY STATE ================= -->
@@ -391,10 +200,6 @@
         <h4>
           {{ getEmptyMessage() }}
         </h4>
-
-        <p *ngIf="searchText || selectedStatus">
-          Try adjusting your search or filter criteria.
-        </p>
 
       </div>
 
@@ -425,14 +230,14 @@
         <div *ngIf="selectedApproval">
 
           <h6>
-            General Request Approvals
+            General request approvals
           </h6>
 
           <hr />
 
 
           <h6>
-            General Request -
+            General request -
             {{ selectedApproval.general_request }}
           </h6>
 
@@ -450,7 +255,7 @@
           <textarea
             class="form-control"
             [(ngModel)]="note"
-            placeholder="Add a Comment here..."
+            placeholder="Add a comment here..."
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
 
@@ -524,7 +329,7 @@
               class="btn btn-danger btn-full"
               (click)="confirmRejection(selectedApproval.id)"
             >
-              Confirm Rejection
+              Confirm rejection
             </button>
 
           </div>
@@ -558,7 +363,7 @@
 
 
         <h5>
-          Send Delegation Response
+          Send delegation response
         </h5>
 
         <hr />
@@ -585,7 +390,7 @@
           class="btn btn-primary mt-2"
           (click)="sendDelegationResponse()"
         >
-          Send Response
+          Send response
         </button>
 
       </div>
@@ -615,7 +420,7 @@
 
 
         <h5>
-          Send Delegation
+          Send delegation
         </h5>
 
         <hr />
@@ -674,7 +479,7 @@
           <div class="col-md-4">
 
             <label>
-              Delegate To
+              Delegate to
             </label>
 
             <select

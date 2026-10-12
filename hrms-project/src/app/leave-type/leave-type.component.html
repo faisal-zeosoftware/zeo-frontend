@@ -2,7 +2,7 @@
     <div class="comapny_section" *ngIf="hasViewPermission">
         <div class="com_list " >
 
-                <h2>Create Leave Type</h2>
+                <h2>Create leave type</h2>
                 <hr>
                 
                 <form (ngSubmit)="registerleaveType()" enctype="multipart/form-data">
@@ -20,7 +20,7 @@
               </div>
           
               <div class="col-md-4">
-                <label>Leave Type</label>
+                <label>Leave type</label>
                 <div class="custom-sel">
                   <select class="form-control" id="type" name="type" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
                     <option>paid</option>
@@ -30,7 +30,7 @@
               </div>
               
               <div class="col-md-4">
-                <label>Leave Unit</label>
+                <label>Leave unit</label>
                 <div class="custom-sel">
                   <select class="form-control" id="unit" name="unit" [(ngModel)]="unit" [ngModelOptions]="{standalone: true}">
                     <option>days</option>
@@ -40,25 +40,25 @@
               </div>
 
                 <!-- <div class="col-md-4">
-                <label for="image">Leave Type Image</label>
+                <label for="image">Leave type image</label>
                 <input type="file" class="form-control" id="image" name="image" (change)="onFileSelected($event)">
               </div> -->
           
               <div class="col-md-4">
-                <label>Valid From</label>
+                <label>Valid from</label>
                 <input type="date" class="form-control" required [(ngModel)]="valid_from" placeholder="Enter valid from"
                        [ngModelOptions]="{standalone: true}" >
               </div>
            
               <div class="col-md-4">
-                <label>Valid To</label>
+                <label>Valid to</label>
                 <input type="date" class="form-control" required [(ngModel)]="valid_to" placeholder="Enter valid to"
                        [ngModelOptions]="{standalone: true}" >
               </div>
 
            <div class="col-md-4">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select branches</label>
                      <div class="form-control-wrapper">
 
               <mat-form-field>
@@ -82,7 +82,7 @@
 
               
               <!-- <div class="col-md-4">
-                <label for="image">Leave Type Image</label>
+                <label for="image">Leave type image</label>
                 <input type="file" class="form-control" id="image" name="image" (change)="onFileSelected($event)">
               </div> -->
           
@@ -142,7 +142,7 @@
                     <div class="row" *ngIf="hasAddPermission">
                       <div class="col-md-9"></div>
                       <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add leave type</button>
                       </div>
                     </div>
                   </form>

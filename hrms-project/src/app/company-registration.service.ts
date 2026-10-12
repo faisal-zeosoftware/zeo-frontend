@@ -14,7 +14,7 @@ export class CompanyRegistrationService {
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
-  private baseUrl = 'http://127.0.0.1:8000/organisation/api'; // Update this URL according to your backend API
+  private baseUrl = `${environment.apiBaseUrl}/organisation/api`; // Update this URL according to your backend API
 
   constructor(private http: HttpClient) {}
 

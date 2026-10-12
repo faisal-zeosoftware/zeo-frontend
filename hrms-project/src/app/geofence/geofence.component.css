@@ -304,7 +304,7 @@ outline: none-webkit-focus-ring-color auto 0px;
 
   /* Fix for Leaflet default marker icons not showing */
 .leaflet-default-icon-path {
-  background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
+  /* v1.15.1: the marker image now comes from the bundled leaflet.css (node_modules) – no unpkg CDN */
 }
 
 #map {

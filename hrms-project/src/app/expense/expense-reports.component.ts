@@ -5,10 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, money } from './expense-api.service';
 
 /** Expense reports: list + detail (lines, policy flags, approval timeline, advance, amount to reimburse) with the actions of the user's role. */
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
+
 @Component({
   selector: 'app-expense-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['./expense.css'],
   template: `
 <div class="container">
@@ -33,17 +35,17 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, money } from './expense-
       <div class="ex-split">
         <div class="ex-panel" *ngIf="!(narrow && cur)">
           <p class="ex-muted" *ngIf="loading">Loading…</p>
-          <div class="ex-rows" *ngIf="!loading">
-            <div class="ex-row click" *ngFor="let r of rows" [class.on]="cur?.id === r.id" (click)="open(r.id)">
-              <div class="main">
-                <div class="t">{{ r.title }}</div>
-                <div class="s">{{ r.number }} · {{ r.employee_name }}</div>
-                <div class="s" *ngIf="r.waiting_for">Waiting for {{ r.waiting_for }}</div>
-              </div>
-              <div class="r"><div class="money">{{ m(r.total) }}</div><span class="ex-tag" [ngClass]="r.status">{{ r.status_label }}</span></div>
-            </div>
-            <p class="ex-muted" *ngIf="!rows.length">No reports here.</p>
-          </div>
+          <!-- v1.16.0: a table, so the list tools (search, filters, group by, columns, saved views, exports) work here too -->
+          <table class="table ex-table" *ngIf="!loading && rows.length">
+            <thead><tr><th>Report</th><th>Number</th><th>Employee</th><th>Waiting for</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of rows" class="click" [class.on]="cur?.id === r.id" (click)="open(r.id)">
+                <td><b>{{ r.title }}</b></td><td>{{ r.number }}</td><td>{{ r.employee_name }}</td><td>{{ r.waiting_for }}</td>
+                <td class="money">{{ m(r.total) }}</td><td><span class="ex-tag" [ngClass]="r.status">{{ r.status_label }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="ex-muted" *ngIf="!loading && !rows.length">No reports here.</p>
         </div>
 
         <div class="ex-panel" *ngIf="cur">
@@ -80,8 +82,8 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, money } from './expense-
               </div>
               <div class="r">
                 <div class="money">{{ m(e.amount_aed) }}</div>
-                <button type="button" class="ex-link" *ngIf="cur.can_edit && cur.is_own" (click)="editLine(e)">edit</button>
-                <button type="button" class="ex-link" *ngIf="cur.can_edit" (click)="removeLine(e)" style="margin-left:6px;color:#b42318">remove</button>
+                <button type="button" class="ex-link" *ngIf="cur.can_edit && cur.is_own" (click)="editLine(e)">Edit</button>
+                <button type="button" class="ex-link" *ngIf="cur.can_edit" (click)="removeLine(e)" style="margin-left:6px;color:#b42318">Remove</button>
               </div>
             </div>
             <p class="ex-muted" *ngIf="!cur.lines.length">No expenses yet – add some before submitting.</p>

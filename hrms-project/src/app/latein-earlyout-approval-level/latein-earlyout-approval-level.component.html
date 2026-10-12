@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Late In Early Out Approval Level </h1>
+                    <h1>Late in early out approval level </h1>
                 </div>
                   <div class="col-md-3">
                     
@@ -54,11 +54,11 @@
         <div class="row">
           <div class="col-md-2">
               
-              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
   
           </div>
           <div class="col-md-3">
-              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLateInEarlyOutAprlvl()">Delete Selected </button>
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLateInEarlyOutAprlvl()">Delete selected </button>
   
           </div>
       </div>
@@ -162,7 +162,7 @@
 
      <div *ngIf="approval_type === 'multi_approval'" class="col-md-12 mt-3">
 
-              <h4>Approval Levels</h4>
+              <h4>Approval levels</h4>
             
               <div *ngFor="let lvl of levels; let i = index" class="row level-box mb-3">
             
@@ -201,7 +201,7 @@
             
               <!-- Add Button -->
               <button class="btn btn-primary mt-2" (click)="addLevel()">
-                + Add Level
+                + Add level
               </button>
             
             </div>
@@ -241,7 +241,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit Approval Level</h2>
+        <h2>Edit approval level</h2>
       </div>
    <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -328,7 +328,7 @@
 
   <div *ngIf="editAsset.approval_type === 'multi_approval'" class="col-md-12 mt-3">
 
-  <h4>Edit Approval Levels</h4>
+  <h4>Edit approval levels</h4>
 
   <div *ngFor="let lvl of editAsset.levels; let i = index" class="row level-box mb-3">
 
@@ -372,7 +372,7 @@
 
   <button type="button" class="btn btn-primary mt-2"
           (click)="addEditLevel()">
-    + Add Level
+    + Add level
   </button>
 
 </div>
@@ -416,10 +416,10 @@
                         <th>Level</th>
                         <th>Role</th>
                         <th>Approver</th>
-                        <th>Approver Type</th>
+                        <th>Approver type</th>
                         <th>Branch</th>
 
-                        <!-- <th>Airticket Type</th> -->
+                        <!-- <th>Airticket type</th> -->
                        
                         <th>Action</th>
 

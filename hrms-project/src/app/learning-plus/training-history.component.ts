@@ -4,17 +4,18 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { LpApi, dots, employeeLabel } from './lp-api';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** Training history per employee: HR / managers pick an employee, ESS sees their own. Timeline + totals. */
 @Component({
   selector: 'app-training-history',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['./learning-plus.css'],
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Training History</h1><p class="lp-desc">Sessions, results, online courses, certificates, hours and cost.</p></div>
+    <div><h1>Training history</h1><p class="lp-desc">Sessions, results, online courses, certificates, hours and cost.</p></div>
     <div class="lp-tools" *ngIf="employees.length > 1">
       <select [(ngModel)]="employee" (ngModelChange)="load()" aria-label="Employee" style="max-width:260px">
         <option [ngValue]="null">Me</option>
@@ -31,7 +32,7 @@ import { LpApi, dots, employeeLabel } from './lp-api';
       <div class="lp-tile"><div class="k">Passed</div><div class="v">{{ h.totals.passed }}/{{ h.totals.completed }}</div></div>
       <div class="lp-tile"><div class="k">Online completed</div><div class="v">{{ h.totals.online_completed }}</div></div>
       <div class="lp-tile"><div class="k">Training hours</div><div class="v">{{ h.totals.hours }}</div></div>
-      <div class="lp-tile"><div class="k">Cost (AED)</div><div class="v">{{ h.totals.cost | number:'1.0-0' }}</div></div>
+      <div class="lp-tile"><div class="k">{{ 'Cost (AED)' | zc }}</div><div class="v">{{ h.totals.cost | number:'1.0-0' }}</div></div>
       <div class="lp-tile"><div class="k">Valid certificates</div><div class="v">{{ h.totals.certificates_valid + h.totals.certificates_expiring }}</div></div>
     </div>
     <div class="lp-grid2">
@@ -51,7 +52,7 @@ import { LpApi, dots, employeeLabel } from './lp-api';
                 <span *ngIf="i.certificate">Certificate {{ i.certificate.status }}</span>
               </ng-container>
               <ng-container *ngIf="i.type === 'online'"><span>{{ i.status }} · {{ i.progress }}%</span><span *ngIf="i.score !== null">Score {{ i.score }}%</span></ng-container>
-              <span *ngIf="i.hours">{{ i.hours }} h</span><span *ngIf="i.cost">AED {{ i.cost | number:'1.0-0' }}</span>
+              <span *ngIf="i.hours">{{ i.hours }} h</span><span *ngIf="i.cost">{{ i.cost | zmoney:'1.0-0' }}</span>
             </div>
           </li>
         </ul>
@@ -61,7 +62,7 @@ import { LpApi, dots, employeeLabel } from './lp-api';
           <h2>Certificates</h2>
           <p class="lp-muted" *ngIf="!h.certificates.length">None.</p>
           <div class="lp-mod" *ngFor="let c of h.certificates">
-            <span class="t">{{ c.title }}<div class="lp-muted">{{ c.issued_on | date:'dd/MM/yyyy' }}<span *ngIf="c.expiry_date"> → {{ c.expiry_date | date:'dd/MM/yyyy' }}</span></div></span>
+            <span class="t">{{ c.title }}<div class="lp-muted">{{ c.issued_on | date:'dd MMM yyyy' }}<span *ngIf="c.expiry_date"> → {{ c.expiry_date | date:'dd MMM yyyy' }}</span></div></span>
             <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ c.status }}</span>
             <button type="button" class="lp-btn small" (click)="pdf(c)">PDF</button>
           </div>

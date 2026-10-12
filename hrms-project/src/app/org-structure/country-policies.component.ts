@@ -121,8 +121,8 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             <label>First year: earned after (months)<input type="number" [(ngModel)]="form.annual_leave.first_year_after_months"></label>
             <label>First year: days a month<input type="number" step="0.5" [(ngModel)]="form.annual_leave.first_year_days_per_month"></label>
             <label>Maternity days<input type="number" [(ngModel)]="form.maternity.days"></label>
-            <label>… at full pay<input type="number" [(ngModel)]="form.maternity.full_pay_days"></label>
-            <label>… at half pay<input type="number" [(ngModel)]="form.maternity.half_pay_days"></label>
+            <label>… At full pay<input type="number" [(ngModel)]="form.maternity.full_pay_days"></label>
+            <label>… At half pay<input type="number" [(ngModel)]="form.maternity.half_pay_days"></label>
             <label>Paternity days<input type="number" [(ngModel)]="form.paternity_days"></label>
           </div>
           <table class="os-slabs" zPlain>
@@ -142,6 +142,9 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             <label>Based on<select [(ngModel)]="form.gratuity.basis"><option value="basic">Basic salary</option><option value="last_wage">Last full wage</option></select></label>
             <label>Minimum service (years)<input type="number" step="0.5" [(ngModel)]="form.gratuity.min_service_years"></label>
             <label>Capped at (years of pay)<input type="number" step="0.5" [(ngModel)]="form.gratuity.cap_years_of_pay"></label>
+            <label>Cap counted on<select [(ngModel)]="form.gratuity.cap_basis"><option [ngValue]="undefined">Basic salary</option><option value="wage">Full monthly wage</option></select></label>
+            <label>Daily wage<select [(ngModel)]="form.gratuity.daily_basis"><option [ngValue]="undefined">Country default</option><option value="365">Basic × 12 ÷ 365</option><option value="30">Basic ÷ 30</option></select></label>
+            <label>Service counted as<select [(ngModel)]="form.gratuity.service_basis"><option [ngValue]="undefined">Whole years by anniversary + days ÷ 365</option><option value="days">All days ÷ 365</option></select></label>
           </div>
           <table class="os-slabs" zPlain>
             <thead><tr><th>From year</th><th>To year (empty = after)</th><th>Days a year</th><th></th></tr></thead>

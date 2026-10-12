@@ -1,5 +1,7 @@
 /**
  * Config-driven pages for Performance, Recruitment and Learning.
+ * v1.14.0: captions are shown in the company's country terms ("Amount (AED)" → "Amount (SAR)", "Emirates ID" → the pack's
+ * caption) and every field / column / action / child / tile / filter may carry `country` (see CountryPackService.allows).
  * One CrudPageComponent renders list + filters + create/edit form + row actions
  * + detail panel with child tables, from a PageConfig.
  */
@@ -36,6 +38,8 @@ export interface FieldConfig {
   showIf?: (model: any) => boolean;
   /** value list for 'chips' fields */
   chipOptions?: string[];
+  /** v1.14.0: country condition (CountryPackService.allows), e.g. 'national_id' or '!wps_sif' – the field is left out when it does not hold */
+  country?: string;
 }
 
 export type ColumnType = 'text' | 'date' | 'datetime' | 'money' | 'number' | 'tag' | 'stars' | 'progress' | 'bool' | 'list' | 'percent';
@@ -49,6 +53,8 @@ export interface ColumnConfig {
   /** read a different key for the tag colour than the label shown */
   colorKey?: string;
   value?: (row: any) => any;
+  /** v1.14.0: country condition – the column is left out when it does not hold */
+  country?: string;
 }
 
 export interface ActionConfig {
@@ -68,6 +74,8 @@ export interface ActionConfig {
   document?: (data: any) => string;
   /** navigate instead of calling the API */
   route?: (row: any) => string;
+  /** v1.14.0: country condition – the button is left out when it does not hold */
+  country?: string;
 }
 
 export interface ChildConfig {
@@ -83,6 +91,8 @@ export interface ChildConfig {
   canEdit?: (parent: any, row: any) => boolean;
   canDelete?: (parent: any, row: any) => boolean;
   rowActions?: ActionConfig[];
+  /** v1.14.0: country condition – the child table is left out when it does not hold */
+  country?: string;
 }
 
 export interface StatTile {
@@ -90,6 +100,7 @@ export interface StatTile {
   label: string;
   color?: string;
   format?: 'number' | 'percent' | 'money' | 'days';
+  country?: string;   // v1.14.0
 }
 
 export interface FilterConfig {
@@ -97,6 +108,7 @@ export interface FilterConfig {
   label: string;
   options?: { value: any; label: string }[];
   lookup?: Lookup;
+  country?: string;   // v1.14.0
 }
 
 export interface PageConfig {
@@ -126,4 +138,6 @@ export interface PageConfig {
   /** use multipart/form-data (file fields) */
   multipart?: boolean;
   emptyText?: string;
+  /** v1.14.0: the server works in this currency for the page (e.g. Expenses: 'AED') – its "AED" captions are kept */
+  fixedCurrency?: string;
 }

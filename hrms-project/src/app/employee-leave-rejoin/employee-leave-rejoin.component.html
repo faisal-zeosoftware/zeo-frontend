@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-5">
-                    <h1>Employee Leave rejoining</h1>
+                    <h1>Employee leave rejoining</h1>
                 </div>
 
                 <div class="col-md-2">
@@ -36,9 +36,9 @@
     <thead class="thead-dark">
         <tr>
                         <th class="sticky-left">No</th>
-                        <th>Rejoining Date</th>
+                        <th>Rejoining date</th>
                         <th>Unpaid leave days </th>
-                        <th>deducted</th>
+                        <th>Deducted</th>
                         <th>Employee</th>
                         <th>Leave request</th>
                         <th>Deduct from leave type</th>
@@ -106,7 +106,7 @@
               </div> -->
           
               <div class="col-md-6">
-                <label>unpaid leave days</label>
+                <label>Unpaid leave days</label>
                 <input type="number" class="form-control" required [(ngModel)]="selectedRejoin.unpaid_leave_days" placeholder="Enter unpaid leave days"
                        [ngModelOptions]="{standalone: true}" >
               </div>
@@ -134,7 +134,7 @@
          
 <!--       
                 <div class="col-md-6" >
-                    <label>Leave Request</label>
+                    <label>Leave request</label>
                     <div class="custom-sel">
                       <select
                         class="form-control"
@@ -151,7 +151,7 @@
                     </div> -->
 
 <div class="col-md-6" >
-<label>Leave Type</label>
+<label>Leave type</label>
 <div class="custom-sel">
   <select
     class="form-control"
@@ -180,7 +180,7 @@
             <div class="row"  *ngIf="hasAddPermission">
               <div class="col-md-8"></div>
               <div class="col-md-4">
-                <button type="submit" class="btn btn-success btn-full mt-4">Deductive Leave Balance</button>
+                <button type="submit" class="btn btn-success btn-full mt-4">Deductive leave balance</button>
               </div>
             </div>
           </form>

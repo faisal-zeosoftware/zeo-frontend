@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Project Stages</h1>
+                    <h1>Project stages</h1>
                 </div>
                   <div class="col-md-3">
                     
@@ -52,11 +52,11 @@
         <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedProjectStages()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedProjectStages()">Delete selected </button>
 
             </div>
         </div>
@@ -68,7 +68,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Project Stages</h2>
+                  <h2>Project stages</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -100,7 +100,7 @@
                  
           <div class="col-md-6" >
                
-            <label>sequence</label>
+            <label>Sequence</label>
            <input type="number"  class="form-control" required  [(ngModel)]="sequence"  placeholder="Enter sequence"
             [ngModelOptions]="{standalone: true}" >
            
@@ -109,7 +109,7 @@
 
 
       <div class="col-md-6" >
-        <label>Select Projects
+        <label>Select projects
            <span class="required-star">*</span>
         </label>
         <div class="custom-sel">
@@ -182,7 +182,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit Project Stages</h2>
+          <h2>Edit project stages</h2>
         </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -209,7 +209,7 @@
                  
           <div class="col-md-6" >
                
-            <label>sequence</label>
+            <label>Sequence</label>
            <input type="number"  class="form-control" required  [(ngModel)]="editProjectStages.sequence"  placeholder="Enter sequence"
             [ngModelOptions]="{standalone: true}" >
            
@@ -218,7 +218,7 @@
 
 
       <div class="col-md-6" >
-        <label>Select Projects</label>
+        <label>Select projects</label>
         <div class="custom-sel">
           <select
             class="form-control"
@@ -289,7 +289,7 @@
               <tr>
                 <th>No</th>
                 <th>Title</th>
-                <th>sequence</th>
+                <th>Sequence</th>
                 <th>Is end stage</th>
                 <th>Project</th>
              

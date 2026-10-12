@@ -9,14 +9,14 @@
     </span>
   </div>
 
-        <h1>Designation Edit</h1><hr>
+        <h1>Designation edit</h1><hr>
 
         <form (submit)="updateDesignation()">
         <div class="row" >
 
             <div class="col-md-6" >
                
-                <label>Job Title</label>
+                <label>Job title</label>
                <input type="text"  class="form-control" required id="desgntn_job_title" name="job_title"  [(ngModel)]="designation.desgntn_job_title"  placeholder="Enter job title"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !desgntn_job_title}">
                
@@ -25,7 +25,7 @@
 
             <div class="col-md-6" >
                
-                <label>Designation Code</label>
+                <label>Designation code</label>
                <input type="text"  class="form-control" required  [(ngModel)]="designation.desgntn_code"  placeholder="Enter Code"
                 [ngModelOptions]="{standalone: true}">
                
@@ -33,7 +33,7 @@
             </div>
             <!-- <div class="col-md-6"  >
               
-      <label>Job Title</label>
+      <label>Job title</label>
       <input type="text" [(ngModel)]="category.catogary_title" [ngModelOptions]="{standalone: true}" >
 
 </div> -->

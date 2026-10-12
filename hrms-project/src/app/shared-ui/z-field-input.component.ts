@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { DesignField } from './field-types';
 import { DirEmp, ZListService } from './z-list.service';
 import { ZRecordService } from './z-record.service';
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 
 let seq = 0;
 
@@ -14,12 +15,13 @@ let seq = 0;
   imports: [CommonModule, MatIconModule],
   encapsulation: ViewEncapsulation.None,
   template: `
-  <div class="zf" [class.zf-wide]="wide">
+  <div class="zf" [class.zf-wide]="wide" [attr.data-help]="field.help_text || null" [attr.data-example]="field.rules?.example || null"
+       [attr.data-ftype]="field.field_type" [attr.data-min]="field.rules?.min ?? null" [attr.data-max]="field.rules?.max ?? null"><!-- v1.16.0: read by the field help -->
     <label class="zf-label" [attr.for]="uid" *ngIf="field.field_type !== 'checkbox'">{{ field.label }}<span class="zf-req" *ngIf="field.required" aria-hidden="true"> *</span></label>
     <ng-container [ngSwitch]="field.field_type">
       <textarea *ngSwitchCase="'textarea'" class="zf-in" rows="3" [id]="uid" [disabled]="disabled" [value]="value ?? ''" [placeholder]="field.placeholder || ''" (input)="set($any($event.target).value)"></textarea>
 
-      <div *ngSwitchCase="'currency'" class="zf-affix"><span>AED</span>
+      <div *ngSwitchCase="'currency'" class="zf-affix"><span>{{ cur() }}</span>
         <input class="zf-in" [id]="uid" inputmode="decimal" [disabled]="disabled" [value]="value ?? ''" [placeholder]="field.placeholder || '0.00'" (input)="set($any($event.target).value)"></div>
       <div *ngSwitchCase="'percent'" class="zf-affix zf-after">
         <input class="zf-in" [id]="uid" inputmode="decimal" [disabled]="disabled" [value]="value ?? ''" [placeholder]="field.placeholder || '0'" (input)="set($any($event.target).value)"><span>%</span></div>
@@ -86,6 +88,9 @@ export class ZFieldInputComponent implements OnInit {
   busy = false;
 
   constructor(private z: ZListService, private rec: ZRecordService) {}
+
+  /** v1.14.0: the company currency for amount fields */
+  cur(): string { return cpPack().currency.code; }
 
   ngOnInit(): void {
     if (this.field.field_type === 'employee') { this.z.directory().subscribe(d => this.emps = d); }

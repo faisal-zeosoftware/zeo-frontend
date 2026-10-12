@@ -112,7 +112,7 @@ private employeeService: EmployeeService,
     if (selectedSchema) {
 
     this.countryService.getholidayCalendarsNew(selectedSchema, savedIds).subscribe(data => {
-      this.calendars = data;
+      this.calendars = this.sortHolidayLists(data);
     });
 
     this.userId = this.sessionService.getUserId();
@@ -187,7 +187,7 @@ if (this.userId !== null) {
 
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -264,6 +264,8 @@ selectCalendar(event: any): void {
       });
     }
   });
+
+  details.sort((a: any, b: any) => a.date.getTime() - b.date.getTime());   // v1.15.1: by date
 
   // ✅ Match WEEK CALENDAR STRUCTURE
   this.selectedCalendar = {
@@ -485,12 +487,23 @@ openEditModal(detail: any): void {
 
     isLoading: boolean = false;
 
+    // v1.15.1: every holiday list by date (the API sorts too; this keeps the screen right with older servers)
+    sortHolidayLists(data: any): any {
+      const rows = Array.isArray(data) ? data : (data?.results || []);
+      rows.forEach((c: any) => {
+        if (Array.isArray(c?.holiday_list)) {
+          c.holiday_list.sort((a: any, b: any) => String(a.start_date || '').localeCompare(String(b.start_date || '')) || (a.id - b.id));
+        }
+      });
+      return data;
+    }
+
     fetchEmployees(schema: string, branchIds: number[]): void {
       this.isLoading = true;
       this.countryService.getholidayCalendarsNew(schema, branchIds).subscribe({
         next: (data: any) => {
           // Filter active employees
-          this.HolidaysCalendar = data;
+          this.HolidaysCalendar = this.sortHolidayLists(data);
   
           this.isLoading = false;
         },

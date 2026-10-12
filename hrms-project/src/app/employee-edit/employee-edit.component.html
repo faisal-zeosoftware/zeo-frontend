@@ -9,7 +9,7 @@
     </span>
   </div>
 
-        <h1>Employee Details</h1><hr>
+        <h1>Employee details</h1><hr>
 
 
 
@@ -24,7 +24,7 @@
       <div class="header-left">
         <span class="section-number">01</span>
         <div>
-          <h3>Employee Basic Details</h3>
+          <h3>Employee basic details</h3>
           <p>Employee official information</p>
         </div>
       </div>
@@ -39,7 +39,7 @@
     <div class="accordion-body" *ngIf="basicSectionOpen">
 
         <div class="col-md-6">
-            <label>Profile Picture</label>
+            <label>Profile picture</label>
 <div class="profile-container">
 
 
@@ -106,7 +106,7 @@
 
     <!-- v1.13.0: middle name, title, name in Arabic, preferred name -->
     <div class="col-md-6">
-        <label for="emp_middle_name">Middle Name</label>
+        <label for="emp_middle_name">Middle name</label>
         <input type="text" class="form-control" id="emp_middle_name" name="emp_middle_name" [(ngModel)]="Emp.emp_middle_name" placeholder="Enter Middle Name" [ngModelOptions]="{standalone: true}">
     </div>
     <z-emp-profile-fields #profileFields [employeeId]="data.employeeId"></z-emp-profile-fields>
@@ -124,7 +124,7 @@
                 <option value="O">Other</option>
             </select>
         </div>
-        <!-- <label>Last Name</label>
+        <!-- <label>Last name</label>
        <input type="radio"  class="form-control" required  [(ngModel)]="emp_gender"  placeholder="Enter Department Name"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_gender}">
        
@@ -238,7 +238,7 @@
 
 
     <div class="col-md-6">
-    <label>Attendance Source</label>
+    <label>Attendance source</label>
 
     <select class="form-control"
             [(ngModel)]="Emp.attendance_source"
@@ -249,7 +249,7 @@
 </div>
 
 <div class="col-md-6">
-    <label>Attendance Card / Barcode</label>
+    <label>Attendance card / barcode</label>
     <input type="text" class="form-control" [(ngModel)]="Emp.barcode_number" [ngModelOptions]="{standalone: true}" placeholder="Card or barcode number used at the attendance device">
 </div>
 
@@ -360,7 +360,7 @@
                 <span class="section-number">02</span>
         
                 <div>
-                  <h3>Employee Personal Details</h3>
+                  <h3>Employee personal details</h3>
                   <p>Employee personal information</p>
                 </div>
         
@@ -380,7 +380,7 @@
               
                     <div class="col-md-6" >
                                    
-                        <label>Personal Email ID</label>
+                        <label>Personal email ID</label>
                        <input type="email"  class="form-control"   [(ngModel)]="Emp.emp_personal_email"  placeholder="Enter Personal email"
                        [ngModelOptions]="{standalone: true}">
                    
@@ -573,7 +573,7 @@
                     
                     
                             <div class="custom-sel">
-                                <label>Select Language</label>
+                                <label>Select language</label>
                                 <select class="form-control" id="country" required [(ngModel)]="Emp.emp_languages" name="languages" multiple
                                 [ngClass]="{'error-field': registerButtonClicked && !emp_languages}">
                                 <option value="">Select</option>
@@ -692,19 +692,19 @@
                      
                 
                         <!-- <div class="col-md-6">
-                            <label>Employee ESS User</label>
+                            <label>Employee ESS user</label>
                             <input type="checkbox" id="emp_active_date"  [(ngModel)]="Emp.is_ess" name="is_ess"   [ngModelOptions]="{standalone: true}"/>
                         </div>
                     
                         
                         <div class="col-md-6">
-                            <label>Employee Status</label>
+                            <label>Employee status</label>
                             <input type="checkbox" id="emp_status" [(ngModel)]="Emp.emp_status" name="emp_status" [ngModelOptions]="{standalone: true}" />
                         </div> -->
                     
                 
                         <!-- <div class="col-md-6">
-                            <label>Profile Picture</label>
+                            <label>Profile picture</label>
                             <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
                         </div>
                        <div class="col-md-6"></div> -->
@@ -715,12 +715,12 @@
                         </div>
                     
                         <!-- <div class="col-md-6">
-                            <label>Profile Picture</label>
+                            <label>Profile picture</label>
                             <input type="file" (change)="onFileSelected($event)" accept="image/*" />
                         </div> -->
                         
                         <!-- <div class="col-md-6">
-                            <label>Profile Picture</label>
+                            <label>Profile picture</label>
                             
                        </div> -->
                         

@@ -9,10 +9,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpApiService, SpMeta, addDays, isoDate, niceDate } from './sp-api.service';
 
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on this list
+
 @Component({
   selector: 'app-sp-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">

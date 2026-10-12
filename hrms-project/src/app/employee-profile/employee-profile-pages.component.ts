@@ -8,12 +8,13 @@ import { environment } from '../../environments/environment';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { readSheet } from '../shared-ui/z-export';
 import { EmployeeProfileService } from './employee-profile.service';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** v1.13.0 – Employee code numbering: one rule per branch (prefix, next number, digits) plus a company default. */
 @Component({
   selector: 'app-emp-code-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="container ep">
@@ -122,7 +123,7 @@ export class EmpCodeSettingsComponent implements OnInit {
 @Component({
   selector: 'app-probation-due',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="container ep">
@@ -131,7 +132,7 @@ export class EmpCodeSettingsComponent implements OnInit {
       <div class="lp-head"><div>
         <h1 class="page-title">Probation ending</h1>
         <p class="lp-desc">Open probations that end within the chosen days, overdue first. Open the employee and use the Employment tab to confirm,
-          extend (UAE maximum 6 months in total) or record that the probation was not passed. A daily reminder goes to the manager and HR.</p>
+          extend<ng-container *zCountry="'pack:AE'"> (UAE maximum 6 months in total)</ng-container> or record that the probation was not passed. A daily reminder goes to the manager and HR.</p>
       </div></div>
     </div>
     <div class="ep-bar">
@@ -171,7 +172,7 @@ export class ProbationDueComponent implements OnInit {
 @Component({
   selector: 'app-identity-import',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="container ep">
@@ -179,7 +180,7 @@ export class ProbationDueComponent implements OnInit {
     <div class="header_section">
       <div class="lp-head"><div>
         <h1 class="page-title">Import identity details</h1>
-        <p class="lp-desc">Passport, visa, Emirates ID, labour card, MOHRE contract and insurance for many employees at once. Download the template,
+        <p class="lp-desc">{{ 'Passport, visa, Emirates ID, labour card, MOHRE contract and insurance for many employees at once.' | zc }} Download the template,
           fill one row per employee (empty cells are left unchanged), then check the file – nothing is saved until you press Save.</p>
       </div></div>
     </div>

@@ -8,8 +8,8 @@ const REQ_STATUS = { draft: 'grey', pending: 'orange', approved: 'green', reject
 const EMPLOYMENT = opt([['full_time', 'Full time'], ['part_time', 'Part time'], ['contract', 'Fixed-term contract'], ['intern', 'Internship']]);
 
 export const APPROVAL_LEVEL_PAGE: PageConfig = {
-  title: 'Requisition Approval Levels',
-  itemName: 'Approval Level',
+  title: 'Requisition approval levels',
+  itemName: 'Approval level',
   endpoint: API + 'approval-levels/',
   model: 'requisitionapprovallevel',
   intro: 'Who approves a manpower requisition, in order. A level with a budget limit is only needed when the maximum salary is above it.',
@@ -27,8 +27,8 @@ export const APPROVAL_LEVEL_PAGE: PageConfig = {
 };
 
 export const REQUISITION_PAGE: PageConfig = {
-  title: 'Manpower Requisitions',
-  itemName: 'Manpower Requisition',
+  title: 'Manpower requisitions',
+  itemName: 'Manpower requisition',
   endpoint: API + 'requisitions/',
   model: 'manpowerrequisition',
   intro: 'Hiring managers raise a request; it goes through the approval levels; an approved request becomes a job opening.',
@@ -38,7 +38,7 @@ export const REQUISITION_PAGE: PageConfig = {
     { key: 'department', label: 'Department' },
     { key: 'headcount', label: 'HC' },
     { key: 'max_salary', label: 'Budget up to (AED)', type: 'money' },
-    { key: 'is_emiratisation', label: 'Nafis', type: 'bool' },
+    { key: 'is_emiratisation', label: 'Nafis', type: 'bool', country: 'pack:AE' },   // v1.14.0: UAE programme
     { key: 'pending_with', label: 'Pending with' },
     { key: 'status', label: 'Status', type: 'tag', tagColors: REQ_STATUS },
   ],
@@ -68,7 +68,7 @@ export const REQUISITION_PAGE: PageConfig = {
     { key: 'work_location', label: 'Work location', type: 'text', width: 4 },
     { key: 'target_joining_date', label: 'Target joining date', type: 'date', width: 4 },
     { key: 'reporting_to', label: 'Reports to', type: 'select', lookup: LOOKUPS.employees, width: 4 },
-    { key: 'is_emiratisation', label: 'Emiratisation', type: 'checkbox', help: 'Nafis / Emiratisation position' },
+    { key: 'is_emiratisation', label: 'Emiratisation', type: 'checkbox', help: 'Nafis / Emiratisation position', country: 'nationals_reports' },
     { key: 'justification', label: 'Justification', type: 'textarea', required: true, width: 12 },
   ],
   canEdit: r => r.status === 'draft' || r.status === 'rejected',
@@ -91,8 +91,8 @@ const JOB_STATUS = { draft: 'grey', published: 'green', interviewing: 'blue', on
 const CHANNELS = ['Careers page', 'LinkedIn', 'Bayt', 'Naukrigulf', 'Indeed', 'Nafis portal', 'Dubizzle Jobs', 'Referral', 'Internal only'];
 
 export const JOB_PAGE: PageConfig = {
-  title: 'Job Openings',
-  itemName: 'Job Opening',
+  title: 'Job openings',
+  itemName: 'Job opening',
   endpoint: API + 'job-openings/',
   model: 'jobopening',
   stats: {
@@ -126,7 +126,7 @@ export const JOB_PAGE: PageConfig = {
     { key: 'closing_date', label: 'Closing date', type: 'date', width: 4 },
     { key: 'min_salary', label: 'Min salary (AED)', type: 'number', width: 4 },
     { key: 'max_salary', label: 'Max salary (AED)', type: 'number', width: 4 },
-    { key: 'is_emiratisation', label: 'Emiratisation', type: 'checkbox', help: 'Nafis position', width: 4 },
+    { key: 'is_emiratisation', label: 'Emiratisation', type: 'checkbox', help: 'Nafis position', width: 4, country: 'nationals_reports' },
     { key: 'channels', label: 'Publish on', type: 'chips', chipOptions: CHANNELS, width: 12, default: () => ['Careers page'] },
     { key: 'description', label: 'Job description', type: 'textarea', required: true, width: 12 },
     { key: 'requirements', label: 'Requirements', type: 'textarea', width: 12 },
@@ -282,7 +282,7 @@ export const offerLetter = (d: any) => `
   </div>`;
 
 export const OFFER_PAGE: PageConfig = {
-  title: 'Offer Letters',
+  title: 'Offer letters',
   itemName: 'Offer',
   endpoint: API + 'offers/',
   model: 'offer',
@@ -334,7 +334,7 @@ export const OFFER_PAGE: PageConfig = {
 
 export const ONBOARDING_PAGE: PageConfig = {
   title: 'Pre-Onboarding & Visa',
-  itemName: 'Onboarding Record',
+  itemName: 'Onboarding record',
   endpoint: API + 'offers/',
   model: 'visastep',
   defaultParams: { status: 'accepted,joined' },

@@ -61,6 +61,11 @@ import { EssApiService } from './ess-api.service';
       <div class="wide"><label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" [(ngModel)]="f.dis_half_day"> Half day</label></div>
       <div *ngIf="f.dis_half_day"><label>Which half</label><select [(ngModel)]="f.half_day_period"><option value="first_half">First half</option><option value="second_half">Second half</option></select></div>
       <div class="wide"><label>Reason</label><textarea [(ngModel)]="f.reason"></textarea></div>
+      <div class="wide">
+        <label>Supporting document</label>
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="pickFile($event)">
+        <div class="es-muted">Attach the medical report or certificate when the leave type needs one (sick, maternity, parental, bereavement, study leave).</div>
+      </div>
     </div>
     <div class="foot">
       <button type="button" class="es-btn" (click)="f = null">Cancel</button>
@@ -72,6 +77,7 @@ import { EssApiService } from './ess-api.service';
 export class EssLeaveComponent implements OnInit {
   empId: number | null = null; empCode = ''; rows: any[] = []; balances: any[] = []; types: any[] = [];
   loading = false; busy = false; msg = ''; ok = ''; ferr = ''; f: any = null;
+  file: File | null = null;   // v1.15.1: supporting document (leave types that need one could not be applied from any screen)
 
   constructor(private api: EssApiService, private route: ActivatedRoute, private cd: ChangeDetectorRef) {}
 
@@ -101,8 +107,19 @@ export class EssLeaveComponent implements OnInit {
     this.loading = false; this.cd.detectChanges();
   }
 
-  openNew(): void { this.ferr = ''; this.f = { leave_type: null, start_date: '', end_date: '', reason: '', dis_half_day: false, half_day_period: 'first_half' }; }
-  openEdit(r: any): void { this.ferr = ''; this.f = { id: r.id, start_date: r.start_date, end_date: r.end_date, reason: r.reason, dis_half_day: r.dis_half_day, half_day_period: r.half_day_period || 'first_half' }; }
+  pickFile(ev: any): void { this.file = ev?.target?.files?.[0] || null; }
+
+  /** JSON, or form data when a document is attached (the API stores it as lv_document). */
+  private body(data: any): any {
+    if (!this.file) return data;
+    const fd = new FormData();
+    Object.entries(data).forEach(([k, v]) => { if (v !== null && v !== undefined) fd.append(k, String(v)); });
+    fd.append('lv_document', this.file, this.file.name);
+    return fd;
+  }
+
+  openNew(): void { this.file = null; this.ferr = ''; this.f = { leave_type: null, start_date: '', end_date: '', reason: '', dis_half_day: false, half_day_period: 'first_half' }; }
+  openEdit(r: any): void { this.file = null; this.ferr = ''; this.f = { id: r.id, start_date: r.start_date, end_date: r.end_date, reason: r.reason, dis_half_day: r.dis_half_day, half_day_period: r.half_day_period || 'first_half' }; }
 
   async save(): Promise<void> {
     const f = this.f;
@@ -113,9 +130,9 @@ export class EssLeaveComponent implements OnInit {
     if (f.dis_half_day) body.half_day_period = f.half_day_period;
     this.busy = true; this.ferr = '';
     try {
-      if (f.id) { await this.api.patch(`/calendars/api/emp-leave-request/${f.id}/`, body); this.ok = 'Your leave request was changed.'; }
-      else { await this.api.post('/calendars/api/emp-leave-request/', { ...body, employee: this.empId, leave_type: f.leave_type }); this.ok = 'Your leave request was sent for approval.'; }
-      this.f = null; await this.load();
+      if (f.id) { await this.api.patch(`/calendars/api/emp-leave-request/${f.id}/`, this.body(body)); this.ok = 'Your leave request was changed.'; }
+      else { await this.api.post('/calendars/api/emp-leave-request/', this.body({ ...body, employee: this.empId, leave_type: f.leave_type })); this.ok = 'Your leave request was sent for approval.'; }
+      this.f = null; this.file = null; await this.load();
     } catch (e: any) { this.ferr = EssApiService.error(e, 'The leave request could not be saved.'); }
     this.busy = false; this.cd.detectChanges();
   }

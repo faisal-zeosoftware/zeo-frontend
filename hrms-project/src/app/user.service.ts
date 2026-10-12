@@ -1,3 +1,4 @@
+import { environment } from '../environments/environment';   // v1.15.1
 import { Injectable } from '@angular/core';
 import { HttpClient , HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -15,7 +16,7 @@ export class UserService {
   // user register
 
   registerNewUser(userData: any): Observable<any> {
-    return this.http.post('http://127.0.0.1:8000/hrms/api/user/' ,userData);
+    return this.http.post(`${environment.apiBaseUrl}/hrms/api/user/` ,userData);
   }
 
 

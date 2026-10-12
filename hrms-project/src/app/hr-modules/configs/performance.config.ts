@@ -39,8 +39,8 @@ export const KPI_PAGE: PageConfig = {
 };
 
 export const TEMPLATE_PAGE: PageConfig = {
-  title: 'Appraisal Templates',
-  itemName: 'Appraisal Template',
+  title: 'Appraisal templates',
+  itemName: 'Appraisal template',
   endpoint: API + 'templates/',
   model: 'appraisaltemplate',
   intro: 'KPI / competency split and the goal count rules used by a cycle.',
@@ -67,8 +67,8 @@ export const TEMPLATE_PAGE: PageConfig = {
 const CYCLE_STATUS = { draft: 'grey', active: 'blue', calibration: 'orange', closed: 'green' };
 
 export const CYCLE_PAGE: PageConfig = {
-  title: 'Appraisal Cycles',
-  itemName: 'Appraisal Cycle',
+  title: 'Appraisal cycles',
+  itemName: 'Appraisal cycle',
   endpoint: API + 'cycles/',
   model: 'appraisalcycle',
   intro: 'Create a cycle, check who is eligible, then Launch to create a goal sheet for every eligible employee.',
@@ -139,8 +139,8 @@ export const CYCLE_PAGE: PageConfig = {
 const OUTCOME_STATUS = { pending: 'orange', approved: 'blue', pushed: 'green', rejected: 'red' };
 
 export const OUTCOME_PAGE: PageConfig = {
-  title: 'Appraisal Outcomes',
-  itemName: 'Appraisal Outcome',
+  title: 'Appraisal outcomes',
+  itemName: 'Appraisal outcome',
   endpoint: API + 'outcomes/',
   model: 'appraisaloutcome',
   intro: 'Generated from calibrated ratings. Approve, then push to payroll: the Basic salary is updated and the change is kept in salary revision history.',
@@ -182,7 +182,7 @@ export const OUTCOME_PAGE: PageConfig = {
 const PIP_STATUS = { active: 'orange', extended: 'orange', completed: 'green', failed: 'red', cancelled: 'grey' };
 
 export const PIP_PAGE: PageConfig = {
-  title: 'Performance Improvement Plans',
+  title: 'Performance improvement plans',
   itemName: 'Improvement Plan (PIP)',
   endpoint: API + 'pips/',
   model: 'performanceimprovementplan',

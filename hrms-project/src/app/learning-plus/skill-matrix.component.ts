@@ -14,7 +14,7 @@ import { LpApi } from './lp-api';
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Skill Matrix</h1><p class="lp-desc">Current level of each skill against the level the designation requires (Role Skills). Red cells are gaps.</p></div>
+    <div><h1>Skill matrix</h1><p class="lp-desc">Current level of each skill against the level the designation requires (Role Skills). Red cells are gaps.</p></div>
     <div class="lp-tools">
       <select [(ngModel)]="department" (ngModelChange)="load()" aria-label="Department"><option [ngValue]="''">All departments</option><option *ngFor="let d of departments" [ngValue]="d.id">{{ d.dept_name }}</option></select>
       <select [(ngModel)]="designation" (ngModelChange)="load()" aria-label="Designation"><option [ngValue]="''">All designations</option><option *ngFor="let d of designations" [ngValue]="d.id">{{ d.desgntn_job_title }}</option></select>

@@ -2,13 +2,13 @@
 <div mat-dialog-content class="">
     <div class="cpm-sec">
 
-        <h1>Create  Company</h1><hr>
+        <h1>Create  company</h1><hr>
 
         <form >
         <div class="row">
             <div class="col-md-6" >
                
-      <label>Company Name</label>
+      <label>Company name</label>
      <input type="text"  class="form-control" required  [(ngModel)]="cmpny_name"  placeholder="Enter Company Name" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !cmpny_name}">
      
      <div *ngIf="registerButtonClicked && !cmpny_name" class="error-message">Company Name is required.</div>
@@ -64,7 +64,7 @@
 <div class="col-md-6">
                
         
-    <label>pincode</label>
+    <label>Pincode</label>
     <input type="text" [(ngModel)]="cmpny_pincode" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Company pincode"
     [ngClass]="{'error-field': registerButtonClicked && !cmpny_pincode}" >
     <div *ngIf="registerButtonClicked && !cmpny_pincode" class="error-message">Please enter your pincode</div>
@@ -146,7 +146,7 @@
 
 
     <!-- <div class="col-md-6">
-        <label for="emp_profile_pic">Employee Profile Picture:</label>
+        <label for="emp_profile_pic">Employee profile picture:</label>
         <input type="file" id="cmpny_logo " name="cmpny_logo" (change)="onFileSelected($event)" >
 
         </div> -->
@@ -177,31 +177,31 @@
 <div class="col-md-6">
                
 
-<label>Company Logo</label>
+<label>Company logo</label>
 <input type="file" class="form-control" placeholder="upload company logo">
 </div>
 
 <div class="col-md-6">
                
-<label>Fax No</label>
+<label>Fax no</label>
 <input type="text" class="form-control" placeholder="Enter Company Fax No">
 
 </div>
 <div class="col-md-6">
                
-<label>GST NO</label>
+<label>Gst no</label>
 <input type="text" class="form-control" placeholder="Enter Company GS no">
 
 </div>
 <div class="col-md-6">
                
-<label>Tax No</label>
+<label>Tax no</label>
 <input type="text" class="form-control" placeholder="Enter Company Tax No">
 
 </div>
 <div class="col-md-6">
                
-<label>Admin User ID</label>
+<label>Admin user ID</label>
 <input type="text" class="form-control" placeholder="Enter Admin User Id">
 
 </div> -->

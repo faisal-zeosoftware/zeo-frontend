@@ -33,7 +33,7 @@ export const ORG_STRUCTURE_MENU: OrgMenuItem[] = [
   { path: 'hierarchy', label: 'Reporting hierarchy', icon: 'lan', model: 'emp_master' },
   { path: 'policy-acknowledgements', label: 'Policy acknowledgements', icon: 'task', model: 'companypolicy' },
   { path: 'country-policies', label: 'Country policies', icon: 'public', model: 'leavepolicy' },
-  { path: 'my-policies', label: 'My policies', icon: 'policy', selfService: true },
+  // v1.15.1: 'My policies' left this sub-menu – it is one page for everybody at /main-sidebar/my-policies (main menu → Overview)
 ];
 
 /** Same sub-sidebar as the other modules; items of switched-off org fields are hidden and named by their label. */

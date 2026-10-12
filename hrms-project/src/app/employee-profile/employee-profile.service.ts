@@ -77,12 +77,16 @@ export function eidProblem(v: string): string {
   return sum % 10 === 0 ? '' : 'This Emirates ID number is not valid (the last digit does not match).';
 }
 
-/** UAE IBAN check (AE + 21 digits, mod-97) */
-export function ibanProblem(v: string): string {
+/** UAE IBAN check (AE + 21 digits, mod-97). v1.14.0: other countries (`country` = company pack) get the general IBAN check. */
+export function ibanProblem(v: string, country = 'AE'): string {
   const s = (v || '').replace(/\s+/g, '').toUpperCase();
   if (!s) { return ''; }
-  if (!s.startsWith('AE')) { return 'Enter a UAE IBAN – it starts with AE.'; }
-  if (s.length !== 23 || !/^\d+$/.test(s.slice(2))) { return `A UAE IBAN has 23 characters (AE + 21 digits); this one has ${s.length}.`; }
+  if (country === 'AE') {
+    if (!s.startsWith('AE')) { return 'Enter a UAE IBAN – it starts with AE.'; }
+    if (s.length !== 23 || !/^\d+$/.test(s.slice(2))) { return `A UAE IBAN has 23 characters (AE + 21 digits); this one has ${s.length}.`; }
+  } else if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(s)) {
+    return 'Enter the IBAN as 2 letters (the country), 2 check digits and the account part, without spaces.';
+  }
   const moved = s.slice(4) + s.slice(0, 4);
   let rem = 0;
   for (const ch of moved) {

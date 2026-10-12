@@ -848,3 +848,6 @@ input:focus-visible {
   }
 
 }
+/* v1.18.0: roster / staffing conflict */
+.roster-conflict{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:8px 10px;border-radius:8px;background:#fff4dc;color:#6b4c00;font-size:13px;line-height:1.4}
+.roster-conflict i{margin-top:2px}

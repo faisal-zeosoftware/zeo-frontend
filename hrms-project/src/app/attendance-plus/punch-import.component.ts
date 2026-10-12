@@ -13,7 +13,7 @@ import { ApApi } from './ap-api';
   template: `
 <div class="ap-wrap">
   <div class="ap-head">
-    <div><h1>Import Punches</h1>
+    <div><h1>Import punches</h1>
       <p class="ap-desc">CSV or Excel with the columns <b>employee_code, date, time, type</b> (date YYYY-MM-DD, time HH:MM, type in / out / break out / break in /
         lunch out / lunch in or empty for automatic). Check the file first; nothing is saved until you press Import. Punches already in the system are skipped.</p></div>
     <div class="ap-tools"><button type="button" class="ap-btn" (click)="template()">Download template</button></div>

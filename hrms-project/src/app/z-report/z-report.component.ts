@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -10,6 +10,8 @@ import { ZListDirective } from '../shared-ui/z-list.directive';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { employeeUrl, recordUrl, reportLink } from '../shared-ui/z-nav';
+import { CountryPackService, cpServerFields } from '../shared-ui/country-pack.service';   // v1.14.0
+import { I18N_UI, i18nLocalize, i18nT } from '../shared-ui/i18n.service';   // v1.15.0
 
 interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; }
 
@@ -21,7 +23,7 @@ interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; }
 @Component({
   selector: 'app-z-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZListDirective, ...I18N_UI],
   templateUrl: './z-report.component.html',
   styleUrls: ['./z-report.component.css'],
 })
@@ -31,6 +33,7 @@ export class ZReportComponent implements OnInit, OnDestroy {
   description = '';
   notes: string[] = [];   // v1.12: how the figures are worked out (from the report)
   hasPeriod = false;
+  asOf: string | null = null;   // v1.20.2: snapshot reports (gratuity) as of a date
   from = '';
   to = '';
   preset = '';
@@ -40,6 +43,9 @@ export class ZReportComponent implements OnInit, OnDestroy {
   totals: Record<string, number> = {};
   private serverTotals: Record<string, number> = {};
   drillF: { key: string; label: string; value: string }[] = [];   // v1.8.1: filters set by a drill-down
+  /** v1.16.0: filter row of the report (department, category, employee, status …): the values found in the rows */
+  filterKeys: string[] = [];
+  filterOpts: { key: string; label: string; values: string[] }[] = [];
   nz = '';
   loading = false;
   error = '';
@@ -52,14 +58,16 @@ export class ZReportComponent implements OnInit, OnDestroy {
     { k: 'year', l: 'This year' }, { k: 'lyear', l: 'Last year' },
   ];
   private subs: Subscription[] = [];
+  @ViewChildren(ZListDirective) private lists?: QueryList<ZListDirective>;   // v1.16.0: e-mail what the list shows
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient, private rec: ZRecordService,
-              private emp: EmployeeService, private cd: ChangeDetectorRef) {}
+              private emp: EmployeeService, private cd: ChangeDetectorRef, private cp: CountryPackService) {}
 
   ngOnInit(): void {
     this.subs.push(combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([p, q]) => {
       this.key = p.get('key') || ''; this.note = '';
       this.from = q.get('from') || ''; this.to = q.get('to') || ''; this.preset = '';
+      this.asOf = q.get('as_of') || null;
       this.drillF = q.keys.filter(k => k.startsWith('f_')).map(k => ({ key: k.slice(2), label: k.slice(2), value: q.get(k) || '' }));
       this.nz = q.get('nz') || '';
       this.run();
@@ -104,18 +112,23 @@ export class ZReportComponent implements OnInit, OnDestroy {
     let q = `?schema=${encodeURIComponent(s)}`;
     if (this.from && this.to) { q += `&from=${this.from}&to=${this.to}`; }
     if (branches.length) { q += `&branch=${branches.join(',')}`; }
+    if (this.asOf) { q += `&as_of=${this.asOf}`; }
     try {
       const d = await firstValueFrom(this.http.get<any>(`${this.rec.api}/dashboard/api/reports/${this.key}/${q}`));
       if (seq !== this.seq) { return; }
-      this.title = d.title; this.description = d.description; this.hasPeriod = d.has_period; this.notes = d.notes || [];
+      // v1.14.0: captions in the company's country terms; columns of features the country does not use are left out
+      // v1.15.0: then in the user's language (country first, then language)
+      this.title = i18nT(this.cp.text(d.title)); this.description = i18nT(this.cp.text(d.description)); this.hasPeriod = d.has_period; this.asOf = d.as_of || null; this.notes = (d.notes || []).map((n: any) => typeof n === 'string' ? i18nT(this.cp.text(n)) : n);
       if (d.period) { this.from = d.period.from; this.to = d.period.to; }
       this.preset = this.presets.find(p => { const [a, b] = this.range(p.k); return a === this.from && b === this.to; })?.k || '';
-      this.columns = d.columns; this.all = d.rows; this.serverTotals = d.totals || {};
+      this.columns = i18nLocalize(cpServerFields(d.columns || [], this.cp)); this.all = d.rows; this.serverTotals = d.totals || {};
+      this.filterKeys = d.filters || [];
       this.applyDrill();
+      this.buildFilters();
       this.runs = [this.runs[0] + 1];   // a fresh table, so the list tools read the new columns
     } catch (e: any) {
       if (seq !== this.seq) { return; }
-      this.error = e?.error?.detail || (e?.status === 403 ? 'You may not run this report.' : 'The report could not be run. Try again.');
+      this.error = e?.error?.detail || i18nT(e?.status === 403 ? 'You may not run this report.' : 'The report could not be run. Try again.');
       this.rows = []; this.all = []; this.columns = [];
       // v1.11.0: keep the period picker so a too-wide range can be corrected (e.g. "Choose at most 3 months")
       if (this.from && this.to && e?.status === 400) { this.hasPeriod = true; }
@@ -134,8 +147,11 @@ export class ZReportComponent implements OnInit, OnDestroy {
     let q = `?schema=${encodeURIComponent(s)}`;
     if (this.from && this.to) { q += `&from=${this.from}&to=${this.to}`; }
     if (branches.length) { q += `&branch=${branches.join(',')}`; }
+    if (this.asOf) { q += `&as_of=${this.asOf}`; }
     try {
-      const r = await firstValueFrom(this.http.post<any>(`${this.rec.api}/dashboard/api/reports/${this.key}/email/${q}`, {}));
+      // v1.16.0: the file follows the screen – filters, sort, visible columns and group by (a column per group level)
+      const shown = this.lists?.first?.csvNow() || null;
+      const r = await firstValueFrom(this.http.post<any>(`${this.rec.api}/dashboard/api/reports/${this.key}/email/${q}`, shown ? { csv: shown.text, rows: shown.rows } : {}));
       this.note = `Sent to ${r.sent_to} – ${r.rows} rows attached as a CSV file.`; this.noteErr = false;
     } catch (e: any) {
       this.note = e?.error?.detail || 'The e-mail could not be sent.'; this.noteErr = true;
@@ -159,9 +175,28 @@ export class ZReportComponent implements OnInit, OnDestroy {
     });
   }
 
+  private buildFilters(): void {
+    const lab = (k: string) => this.columns.find(c => c.key === k)?.label || (k.charAt(0).toUpperCase() + k.slice(1)).replace(/_/g, ' ');
+    this.filterOpts = this.filterKeys.map(k => ({
+      key: k, label: lab(k),
+      values: Array.from(new Set(this.all.map(r => String(r[k] ?? '').trim()).filter(v => v))).sort((a, b) => a.localeCompare(b)),
+    })).filter(f => f.values.length > 1 || this.drillValue(f.key));
+  }
+
+  drillValue(key: string): string { return this.drillF.find(f => f.key === key)?.value || ''; }
+
+  /** v1.16.0: pick a value in the filter row (same as a drill-down: f_<column>=value in the address, so it can be shared). */
+  setFilter(key: string, value: string): void {
+    const q: Record<string, string> = { ...this.route.snapshot.queryParams };
+    if (value) { q['f_' + key] = value; } else { delete q['f_' + key]; }
+    if (this.from && this.to) { q['from'] = this.from; q['to'] = this.to; }
+    this.router.navigate([], { relativeTo: this.route, queryParams: q });
+  }
+
   get nzLabel(): string { return this.columns.find(c => c.key === this.nz)?.label || this.nz; }
 
   /** Show all rows of the report again (keep the period). */
+  // (v1.16.0: also clears the filter row)
   clearDrill(): void {
     const q: Record<string, string> = {};
     if (this.from && this.to) { q['from'] = this.from; q['to'] = this.to; }
@@ -177,7 +212,7 @@ export class ZReportComponent implements OnInit, OnDestroy {
 
   cellLink(row: any, c: Col): boolean { return !!(row._cell && row._cell[c.key]) || (c.key === 'employee' && !!row._emp) || (c.key === 'held_by' && !!row._emp); }
 
-  rowLink(row: any): boolean { return !!(row._m || row._drill); }
+  rowLink(row: any): boolean { return !!(row._url || row._m || row._drill); }
 
   /** Click anywhere on a row: the record it came from (or the rows behind it); on a linked cell: that cell's record / rows. */
   rowClick(row: any, ev: MouseEvent): void {
@@ -193,6 +228,8 @@ export class ZReportComponent implements OnInit, OnDestroy {
 
   open(row: any, ev?: Event): void {
     ev?.stopPropagation();
+    // v1.22.0: rows of the add-on apps open their own page (CRM, Property, Maintenance, HSE, Projects)
+    if (row._url) { this.router.navigateByUrl(row._url); return; }
     if (row._m) { this.router.navigateByUrl(recordUrl(row._m, row._id)); } else if (row._drill) { this.go(row._drill); }
   }
 

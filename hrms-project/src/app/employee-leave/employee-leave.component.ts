@@ -31,6 +31,9 @@ export class EmployeeLeaveComponent {
 
 
   dis_half_day: boolean = false;
+  leaveDocument: File | null = null;   // v1.16.0 (D18): supporting document
+
+  pickLeaveDocument(ev: any): void { this.leaveDocument = ev?.target?.files?.[0] || null; }   // v1.16.0 (D18)
 
   registerButtonClicked: boolean = false;
 
@@ -108,15 +111,18 @@ export class EmployeeLeaveComponent {
     formData.append('start_date', this.start_date);
     formData.append('end_date', this.end_date);
     formData.append('reason', this.reason);
-    formData.append('status', this.status);
-    formData.append('approved_by', this.approved_by);
+    // v1.16.0 (D18): status / approver come from the approval workflow – only sent when the form really set them
+    if (this.status) formData.append('status', this.status);
+    if (this.approved_by) formData.append('approved_by', this.approved_by);
     // formData.append('approved_on', this.approved_on);
 
     formData.append('dis_half_day', this.dis_half_day.toString());
 
     formData.append('half_day_period', this.half_day_period);
     formData.append('leave_type', this.leave_type);
-    formData.append('employee', this.employee);
+    formData.append('employee', String(this.employee?.id ?? this.employee));   // v1.16.0 (D18): the route loads the employee object
+    // v1.16.0 (D18): supporting document (sick / maternity / parental / bereavement / study leave need one)
+    if (this.leaveDocument) formData.append('lv_document', this.leaveDocument, this.leaveDocument.name);
 
    
 

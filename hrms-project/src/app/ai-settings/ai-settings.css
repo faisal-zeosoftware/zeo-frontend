@@ -1,0 +1,24 @@
+/* v1.16.0 AI settings – used with ../leave-policy/leave-policy.css and ../org-structure/org-structure.css */
+.ai-modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 12px; }
+.ai-mode { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #e3e5ef; border-radius: 12px; padding: 14px 16px; cursor: pointer; background: #fff; margin: 0; }
+.ai-mode.on { border-color: #5b4ff5; box-shadow: 0 0 0 3px rgba(91, 79, 245, .1); }
+.ai-mode.off { cursor: not-allowed; background: #fafafd; }
+.ai-mode.off b { color: #8a8fa3; }
+.ai-mode input { margin-top: 3px; accent-color: #5b4ff5; flex: none; }
+.ai-mode b { display: block; font-size: 14px; color: #1b1640; margin-bottom: 3px; }
+.ai-mode small { display: block; font-size: 12.5px; color: #6b7185; line-height: 1.45; }
+.ai-notice { margin: 16px 0 4px; border: 1px solid #f5d48f; background: #fffaf0; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #5c4400; }
+.ai-notice b { display: block; margin-bottom: 4px; color: #7a5200; }
+.ai-notice ul { margin: 0 0 6px; padding-left: 18px; }
+.ai-notice li { margin: 3px 0; }
+.ai-notice p { margin: 0; }
+.ai-hint { font-weight: 400; color: #8a8fa3; font-size: 11.5px; line-height: 1.4; }
+.ai-hint.err { color: #b42318; }
+.ai-test { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 6px; }
+.ai-ack { display: flex; gap: 8px; align-items: flex-start; margin: 14px 0 0; font-size: 13px; color: #2b2f42; }
+.ai-ack input { margin-top: 3px; accent-color: #5b4ff5; }
+.ai-note { margin: 0 0 6px; }
+.cp-link { border: 0; background: transparent; color: #4338ca; font-size: 12px; cursor: pointer; padding: 0; }
+.cp-link:hover { text-decoration: underline; }
+.lp-form input:disabled, .lp-form select:disabled { background: #f4f5f9; color: #8a8fa3; }
+.ai-mode, .ai-mode *, .ai-ack, .lp-form label { text-transform: none; }

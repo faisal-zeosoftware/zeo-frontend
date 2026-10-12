@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } fro
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AssetApiService, CONDITIONS, today } from './asset-api.service';
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
+import { ZFieldInputComponent } from '../shared-ui/z-field-input.component';   // v1.16.0
+import { DesignField } from '../shared-ui/field-types';
 
 const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD', 'INR'];
 
@@ -9,7 +12,7 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
 @Component({
   selector: 'app-asset-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZFieldInputComponent],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="ex-back" (click)="closed.emit()">
@@ -67,6 +70,9 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
         <ng-container *ngIf="cfs.length">
           <div class="ap-section">More details ({{ typeName }})</div>
           <ng-container *ngFor="let c of cfs">
+            <!-- v1.16.0: the other field types of the one asset designer -->
+            <z-field-input *ngIf="!basic(c.type)" [field]="dfield(c)" [value]="cv[c.id]" (valueChange)="cv[c.id] = $event"
+                           [wide]="c.type === 'textarea' || c.type === 'multiselect'"></z-field-input>
             <label *ngIf="c.type === 'text'">{{ c.name }}<input [(ngModel)]="cv[c.id]" [name]="'cf' + c.id"></label>
             <label *ngIf="c.type === 'date'">{{ c.name }}<input type="date" [(ngModel)]="cv[c.id]" [name]="'cf' + c.id"></label>
             <label *ngIf="c.type === 'dropdown' || c.type === 'radio'">{{ c.name }}
@@ -103,7 +109,7 @@ export class AssetFormComponent implements OnInit {
   err = '';
   busy = false;
   conditions = CONDITIONS;
-  currencies = CURRENCIES;
+  currencies = Array.from(new Set([cpPack().currency.code, ...CURRENCIES]));   // v1.14.0: company currency first
   maxDate = today();
 
   constructor(private api: AssetApiService, private cd: ChangeDetectorRef) {}
@@ -116,7 +122,7 @@ export class AssetFormComponent implements OnInit {
       asset_type: a.asset_type ?? null, name: a.name || '', serial_number: a.serial_number || '', model: a.model || '', asset_code: a.code || '',
       condition: a.condition || 'healthy', branch_id: a.branch_id ?? null, location: a.location || '', department_id: a.department_id ?? null,
       barcode: a.barcode && a.barcode !== a.code ? a.barcode : '', purchase_date: a.purchase_date || today(), vendor: a.vendor || '',
-      purchase_cost: a.purchase_cost ?? 0, currency: a.currency || 'AED', invoice_no: a.invoice_no || '', purchase_order: a.purchase_order || '',
+      purchase_cost: a.purchase_cost ?? 0, currency: a.currency || cpPack().currency.code, invoice_no: a.invoice_no || '', purchase_order: a.purchase_order || '',
       warranty_start: a.warranty_start || null, warranty_end: a.warranty_end || null, warranty_reminder_days: a.warranty_reminder_days ?? null,
       insurance_provider: a.insurance_provider || '', insurance_policy_no: a.insurance_policy_no || '', insurance_expiry: a.insurance_expiry || null,
       depreciation_method: a.depreciation_method || 'straight_line', useful_life_months: a.useful_life_months ?? 36, salvage_value: a.salvage_value ?? 0,
@@ -146,12 +152,23 @@ export class AssetFormComponent implements OnInit {
       if (this.asset?.id && this.asset.asset_type === this.f.asset_type) {
         this.cfs = this.asset.custom_fields || [];
       } else {
-        this.cfs = (t?.custom_fields || []).map((c: any) => ({ id: c.id, name: c.custom_field, type: c.data_type || 'text', options: c.options || [] }));
+        this.cfs = (t?.custom_fields || []).map((c: any) => ({ ...c, id: c.id, name: c.custom_field, type: c.data_type || 'text', options: c.options || [] }));
       }
     } catch { /* lists stay as they are */ }
     this.cd.markForCheck();
   }
 
+  basic(t: string): boolean { return ['text', 'date', 'dropdown', 'radio', 'checkbox'].includes(t); }
+  private dcache = new Map<number, DesignField>();
+  dfield(c: any): DesignField {
+    let d = this.dcache.get(c.id);
+    if (!d) {
+      d = { name: c.name, label: c.name, field_type: c.type, options: c.options || [], required: !!c.required, help_text: c.help_text || '',
+            placeholder: c.placeholder || '', rules: c.rules || {} };
+      this.dcache.set(c.id, d);
+    }
+    return d;
+  }
   checked(id: number, o: string): boolean { return (this.cv[id] || []).includes(o); }
   toggle(id: number, o: string): void {
     const cur: string[] = this.cv[id] || [];

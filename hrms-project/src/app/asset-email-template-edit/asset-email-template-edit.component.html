@@ -10,11 +10,11 @@
     </span>
   </div> 
 
-        <h1>Asset Request Email Template</h1><hr>
+        <h1>Asset request email template</h1><hr>
 
         <form>
             <div class="form-group">
-              <label>Template Type</label>
+              <label>Template type</label>
               <select class="form-control" [(ngModel)]="templateData.template_type" [ngModelOptions]="{standalone: true}">
                 <option value="asset_created">Asset Created</option>
                 <option value="asset_approved">Asset Approved</option>
@@ -243,7 +243,7 @@
                     
                
                         <div class="col-md-4">
-                            <label>Select Field names</label>
+                            <label>Select field names</label>
                             <div class="email_placeholdername">
                               <div class="on_by_placeholders" *ngFor="let placeholder of EmailPlaceHolders" (click)="selectPlaceholder(placeholder)">
                                 <h4>{{ placeholder }}</h4> <!-- Display the placeholder value -->
@@ -261,7 +261,7 @@
 <!-- 
             <div class="form-group">
                 <div class="custom-sel">
-                    <label>Select Request Type</label>
+                    <label>Select request type</label>
                     <select class="form-control"  required [(ngModel)]="templateData.request_type"  [ngModelOptions]="{standalone: true}"  >
                         <option value="" >Select</option>
                         <option *ngFor="let deparmentsec of RequestType" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>

@@ -3,7 +3,7 @@
         <div class="col-md-10"></div>
         <!-- <div class="col-md-2">
             <button  type="button" class="btn btn-full btn-primary">
-                Excel Template
+                Excel template
             </button>
         </div> -->
         <!-- <div class="col-md-2">
@@ -22,7 +22,7 @@
         
         <!-- <div class="col-md-2">
             <button  type="button" class="btn btn-full btn-primary">
-                Excel Template
+                Excel template
             </button>
             <button (click)="bulkUploadDoc()" type="button" class="btn btn-full btn-danger">
                 {{ReadMore?"Back":"Bulk Upload"}}
@@ -32,7 +32,7 @@
 
        
         <div class="cpm-sec" *ngIf="visibilitys" >
-            <h1>Bulk Upload Department</h1>
+            <h1>Bulk upload department</h1>
             <!-- <div class="input-group">
                 <div class="custom-file">
                     <input type="file" class="custom-file-input" id="file" name="files" (change)="onFileChange($event)">
@@ -74,7 +74,7 @@
                     </div>
                     <div class="col-md-2">
                         <div class="text-right"> 
-                            <button type="button" (click)="bulkuploaddocument()" class="btn btn-success">Department Generate</button>
+                            <button type="button" (click)="bulkuploaddocument()" class="btn btn-success">Department generate</button>
                         </div>
                     </div>
                     
@@ -96,13 +96,13 @@
     </span>
   </div>
 
-        <h1>Create Department</h1><hr>
+        <h1>Create department</h1><hr>
 
         <form >
         <div class="row">
             <div class="col-md-6" >
                
-      <label>Department Name
+      <label>Department name
          <span class="required-star">*</span>
       </label>
      <input type="text"  class="form-control" required  [(ngModel)]="dept_name"  placeholder="Enter Department Name"
@@ -113,7 +113,7 @@
 
 <div class="col-md-6" >
                
-    <label>Department Code</label>
+    <label>Department code</label>
    <input type="text"  class="form-control" required  [(ngModel)]="dept_code"  placeholder="Enter code"
     [ngModelOptions]="{standalone: true}" >
 </div>
@@ -137,7 +137,7 @@
 
             <div class="custom-sel">
               
-                <label>Select Branches</label>
+                <label>Select branches</label>
                 <select class="form-control" id="deparmentsec" [(ngModel)]="selectedDeparmentsecId"  [ngModelOptions]="{standalone: true}" >
                   
                     <option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>

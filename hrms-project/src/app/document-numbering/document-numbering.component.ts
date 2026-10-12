@@ -1,3 +1,4 @@
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 import { Component } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -18,6 +19,12 @@ import {combineLatest, Subscription } from 'rxjs';
   styleUrl: './document-numbering.component.css'
 })
 export class DocumentNumberingComponent {
+  // v1.15.1: the list shows the type name, not the stored code ("general_request")
+  private typeNames: Record<string, string> = { general_request: 'General request', leave_request: 'Leave request', document_request: 'Document request',
+    advance_salary_request: 'Advance salary request', air_ticket_request: 'Air ticket request', loan_request: 'Loan request', asset_request: 'Asset request',
+    resignation_request: 'Resignation request', lateinearlyout_request: 'Late in / early out request', payroll_run: 'Payroll run' };
+  zLabel = (v: any): string => this.typeNames[String(v)] || statusLabel(v);
+
 
   
   private dataSubscription?: Subscription;
@@ -195,7 +202,7 @@ ngOnInit(): void {
   
   
                 } else {
-                  console.error('No groups found in data or groups array is empty.', firstItem);
+                  console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                 }
               } else {
                 console.error('Permissions data is not an array or is empty.', permissionsData);

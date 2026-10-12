@@ -4,7 +4,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> Loan Types</h1>
+                    <h1> Loan types</h1>
                 </div>
                <div class="col-md-3">
                     
@@ -52,11 +52,11 @@
         <div class="row">
           <div class="col-md-2">
               
-              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
   
           </div>
           <div class="col-md-3">
-              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLoanType()">Delete Selected </button>
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLoanType()">Delete selected </button>
   
           </div>
       </div>
@@ -67,7 +67,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create Loan Type</h2>
+                  <h2> Create loan type</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-md-6" >
                
-                    <label>Loan Type
+                    <label>Loan type
                       <span class="required-star">*</span>
                     </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="loan_type"  placeholder="Enter loan type"
@@ -95,7 +95,7 @@
               
            <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches
+                    <label>Select branches
                       <span class="required-star">*</span>
                     </label>
                      <div class="form-control-wrapper">
@@ -140,7 +140,7 @@
 
               <div class="col-md-6" >
                
-                <label>Maximum Amount
+                <label>Maximum amount
                   <span class="required-star">*</span>
                 </label>
                <input type="text"  class="form-control" required  [(ngModel)]="max_amount"  placeholder="Enter Maximum amount"
@@ -219,7 +219,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit Loan Type</h2>
+        <h2>Edit loan type</h2>
       </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -234,7 +234,7 @@
       <div class="row">
         <div class="col-md-6" >
        
-            <label>Loan Type</label>
+            <label>Loan type</label>
            <input type="text"  class="form-control" required  [(ngModel)]="editAsset.loan_type"  placeholder="Enter loan type"
             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !loan_type}">
            
@@ -243,7 +243,7 @@
 
                  <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select branches</label>
                      <div class="form-control-wrapper">
 
               <mat-form-field>
@@ -286,7 +286,7 @@
 
       <div class="col-md-6" >
        
-        <label>Maximum Amount</label>
+        <label>Maximum amount</label>
        <input type="text"  class="form-control" required  [(ngModel)]="editAsset.max_amount"  placeholder="Enter Maximum amount"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !max_amount}">
        

@@ -7,10 +7,12 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from '.
 const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD', 'INR', 'PKR', 'EGP', 'JOD'];
 
 /** My expenses: list (unreported / all), new / edit expense with receipt, mileage and per diem, live policy check, add to report. */
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
+
 @Component({
   selector: 'app-expense-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['./expense.css'],
   template: `
 <div class="container">
@@ -33,28 +35,27 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
     <div class="com_list mt-4">
       <p class="ex-msg" *ngIf="msg" [class.err]="msgErr">{{ msg }}</p>
       <p class="ex-muted" *ngIf="loading">Loading…</p>
-      <div class="ex-rows" *ngIf="!loading">
-        <div class="ex-row click" *ngFor="let e of rows" (click)="openEdit(e)">
-          <input type="checkbox" *ngIf="e.status === 'unreported' && !e.report" [checked]="selected.has(e.id)" (click)="$event.stopPropagation(); toggle(e.id)" [attr.aria-label]="'Select ' + (e.merchant || e.category_name)">
-          <div class="ex-thumb" [class.none]="!e.receipt">
-            <img *ngIf="img(e.receipt)" [src]="e.receipt" alt="Receipt"><span *ngIf="e.receipt && !img(e.receipt)">PDF</span><span *ngIf="!e.receipt">—</span>
-          </div>
-          <div class="main">
-            <div class="t">{{ e.merchant || e.category_name }}</div>
-            <div class="s">{{ e.date | date:'dd MMM yyyy' }} · {{ e.category_name }}
-              <span *ngIf="e.category_kind === 'mileage'"> · {{ e.mileage_km }} km</span>
-              <span *ngIf="e.category_kind === 'per_diem'"> · {{ e.per_diem_days }} day(s)</span>
-              <span *ngIf="e.report_number"> · {{ e.report_number }}</span></div>
-            <div><span class="ex-flag" [ngClass]="v.level" *ngFor="let v of e.policy_violations">{{ v.message }}</span></div>
-          </div>
-          <div class="r">
-            <div class="money">{{ m(e.amount_aed) }}</div>
-            <div class="s" *ngIf="e.currency !== 'AED'">{{ e.currency }} {{ e.amount }}</div>
-            <span class="ex-tag" [ngClass]="e.status">{{ lbl(e.status) }}</span>
-          </div>
-        </div>
-        <p class="ex-muted" *ngIf="!rows.length">No expenses here.</p>
-      </div>
+      <!-- v1.16.0: a table, so the list tools (search, filters, group by, columns, saved views, exports) work here too -->
+      <table class="table ex-table" *ngIf="!loading && rows.length">
+        <thead><tr><th></th><th>Receipt</th><th>Date</th><th>Merchant</th><th>Category</th><th>Details</th><th>Report</th><th>Amount (AED)</th><th>Original amount</th><th>Status</th><th>Policy</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let e of rows" class="click" (click)="openEdit(e)">
+            <td><input type="checkbox" *ngIf="e.status === 'unreported' && !e.report" [checked]="selected.has(e.id)" (click)="$event.stopPropagation(); toggle(e.id)" [attr.aria-label]="'Select ' + (e.merchant || e.category_name)"></td>
+            <td><div class="ex-thumb" [class.none]="!e.receipt">
+              <img *ngIf="img(e.receipt)" [src]="e.receipt" alt="Receipt"><span *ngIf="e.receipt && !img(e.receipt)">PDF</span><span *ngIf="!e.receipt">—</span></div></td>
+            <td>{{ e.date | date:'dd MMM yyyy' }}</td>
+            <td><b>{{ e.merchant || e.category_name }}</b></td>
+            <td>{{ e.category_name }}</td>
+            <td>{{ e.category_kind === 'mileage' ? e.mileage_km + ' km' : e.category_kind === 'per_diem' ? e.per_diem_days + ' day(s)' : '' }}</td>
+            <td>{{ e.report_number }}</td>
+            <td class="money">{{ m(e.amount_aed) }}</td>
+            <td>{{ e.currency !== 'AED' ? e.currency + ' ' + e.amount : '' }}</td>
+            <td><span class="ex-tag" [ngClass]="e.status">{{ lbl(e.status) }}</span></td>
+            <td><span class="ex-flag" [ngClass]="v.level" *ngFor="let v of e.policy_violations">{{ v.message }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="ex-muted" *ngIf="!loading && !rows.length">No expenses here.</p>
     </div>
   </div>
 </div>

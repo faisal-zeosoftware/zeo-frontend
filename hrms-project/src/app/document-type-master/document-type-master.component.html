@@ -5,7 +5,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Employee Document Type</h1>
+                <h1>Employee document type</h1>
             </div>
                            <div class="col-md-3">
                     
@@ -53,11 +53,11 @@
     <div class="row">
       <div class="col-md-2">
           
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedDocType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedDocType()">Delete selected </button>
 
       </div>
   </div>
@@ -68,7 +68,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Employee Document Type</h2>
+              <h2> Create employee document type</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-md-6" >
                    
-          <label>Type Name
+          <label>Type name
               <span class="required-star">*</span>
           </label>
          <input type="text"  class="form-control" required  [(ngModel)]="type_name"  placeholder="Enter type Name"
@@ -141,7 +141,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Employee Document Type</h2>
+    <h2>Edit  employee document type</h2>
   </div>
     <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -156,7 +156,7 @@
   <div class="row">
     <div class="col-md-6" >
        
-<label>Type Name</label>
+<label>Type name</label>
 <input type="text"  class="form-control" required  [(ngModel)]="editAsset.type_name"  placeholder="Enter type Name"
 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
 
@@ -214,7 +214,7 @@
         <div class="com_list  mt-4" style="border-top: white;">
           <!-- <div  class="row">
             <div class="col-md-4">
-              <h2 class="table-title">Employee Document Types</h2>
+              <h2 class="table-title">Employee document types</h2>
 
             </div>
 
@@ -234,7 +234,7 @@
     <thead>
       <tr>
         <th>No</th>
-        <th>Employee Document Type</th>
+        <th>Employee document type</th>
         <th>Description</th>
         <th>Action</th>
       </tr>
@@ -258,6 +258,7 @@
           >
             <mat-icon style="color: white;">draw</mat-icon>
           </button>
+          <z-translate *ngIf="showEditBtn" endpoint="/employee/api/Documents/" [recordId]="state.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
 
           <mat-checkbox *ngIf="Delete" [(ngModel)]="state.selected" ></mat-checkbox>
 
@@ -300,7 +301,7 @@
 <div *ngIf="isDocumentnumbereditModalOpen" class="modal">
   <div class="modal-content">
     <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
-    <h2>Edit Document Number</h2>
+    <h2>Edit document number</h2>
     <form (ngSubmit)="updateDocumentNumber()">
 
       <div class="row">
@@ -308,7 +309,7 @@
 
         <div class="col-md-6" >
                
-          <label>Type Name</label>
+          <label>Type name</label>
          <input type="text"  class="form-control" required  [(ngModel)]="selectedDoc.type_name"  placeholder="Enter type Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
          

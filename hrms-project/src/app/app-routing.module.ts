@@ -3,6 +3,8 @@ import { RejoiningComponent } from './hr-actions/rejoining.component';          
 import { PROJECT_CONTROL_CHILDREN } from './project-control/project-control.routes';  // v1.11.0
 import { ZTodoComponent } from './shared-ui/z-todo.component';
 import { ZOrgChartComponent } from './shared-ui/z-org-chart.component';
+import { NotFoundComponent } from './not-found/not-found.component';   // v1.15.1 page not found
+import { moved } from './not-found/moved';   // v1.15.1 moved pages keep their query string
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
@@ -22,6 +24,8 @@ import { CatogaryMasterComponent } from './catogary-master/catogary-master.compo
 import { UserMasterComponent } from './user-master/user-master.component';
 import { EmployeeMasterComponent } from './employee-master/employee-master.component';
 import { EmployeeDetailsComponent } from './employee-details/employee-details.component';
+import { EmployeeListComponent } from './employee-record/employee-list.component';      // v1.19.0
+import { EmployeeRecordComponent } from './employee-record/employee-record.component';  // v1.19.0
 import { CompanyDetailsComponent } from './company-details/company-details.component';
 import { UserGroupingMasterComponent } from './user-grouping-master/user-grouping-master.component';
 import { MainDashboardComponent } from './main-dashboard/main-dashboard.component';
@@ -62,6 +66,7 @@ import { CompanyPolicyComponent } from './company-policy/company-policy.componen
 import { EmployeeApprovalsComponent } from './employee-approvals/employee-approvals.component';
 import { EmployeeLeaveComponent } from './employee-leave/employee-leave.component';
 import { DashboardContentsComponent } from './dashboard-contents/dashboard-contents.component';
+import { DashboardHomeComponent } from './dashboard-home/dashboard-home.component';   // v1.17.0 one Home for every dashboard
 import { PayRollComponent } from './pay-roll/pay-roll.component';
 import { SalaryComponent } from './salary/salary.component';
 import { PayrollDetailsComponent } from './payroll-details/payroll-details.component';
@@ -83,9 +88,7 @@ import { LoanApprovalComponent } from './loan-approval/loan-approval.component';
 import { AnnouncementMasterComponent } from './announcement-master/announcement-master.component';
 import { AssetOptionsComponent } from './asset-options/asset-options.component';
 import { AssetTypesComponent } from './asset-types/asset-types.component';
-import { AssetMasterComponent } from './asset-master/asset-master.component';
 import { AssetApprovelLevelComponent } from './asset-approvel-level/asset-approvel-level.component';
-import { AssetAllocationComponent } from './asset-allocation/asset-allocation.component';
 import { AssetRequestComponent } from './asset-request/asset-request.component';
 import { AssetUdfComponent } from './asset-udf/asset-udf.component';
 import { PayrollAppovalLevelComponent } from './payroll-appoval-level/payroll-appoval-level.component';
@@ -109,12 +112,19 @@ import { ResignationRequestComponent } from './resignation-request/resignation-r
 import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
 import { ProjectOptionsComponent } from './project-options/project-options.component';
 import { HR_MODULE_ROUTES } from './hr-modules/hr-modules.routes';
+import { SETTINGS_HOME_ROUTES } from './settings-home/settings-home.routes';   // v1.15.1
+import { SETTINGS_APPS_ROUTES } from './settings-apps/settings-apps.component';   // v1.21.0 Settings → Apps
+import { AI_SETTINGS_ROUTES } from './ai-settings/ai-settings.routes';   // v1.16.0
+import { COUNTRY_PACK_ROUTES } from './country-pack/country-pack.routes';   // v1.20.1
+import { LANGUAGE_PACK_ROUTES } from './language-pack/language-pack.routes';   // v1.20.1
 import { ProjectMasterComponent } from './project-master/project-master.component';
 import { ProjectStagesComponent } from './project-stages/project-stages.component';
 import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
 import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet.component';
 import { ResignationApprovedListComponent } from './resignation-approved-list/resignation-approved-list.component';
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
+import { FinalSettlementComponent } from './payroll-plus/final-settlement.component';   // v1.18.0
+import { PayrollControlsComponent } from './payroll-plus/payroll-controls.component';   // v1.18.0
 import { GratuityComponent } from './gratuity/gratuity.component';
 import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
 import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
@@ -123,7 +133,6 @@ import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-tem
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
 
 import { ShiftOptionsComponent } from './shift-options/shift-options.component';
-import { ShiftsComponent } from './shifts/shifts.component';
 import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
 import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
 import { ShiftOverrideComponent } from './shift-override/shift-override.component';
@@ -170,10 +179,8 @@ import { ResignationEmailTemplateComponent } from './resignation-email-template/
 import { BranchPermissionsComponent } from './branch-permissions/branch-permissions.component';
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
-import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
 import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
 import { ManualEntryComponent } from './manual-entry/manual-entry.component';
-import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
 import { AttendancePolicyComponent } from './attendance-policy/attendance-policy.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
@@ -196,6 +203,8 @@ const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
   { path: 'login', component: LoginComponent, },
   ATTENDANCE_KIOSK_ROUTE,   // v1.12.0 attendance kiosk tablet (the kiosk token identifies it – no login)
+  { path: 'portal', loadChildren: () => import('./zeo-projects/zeo-projects.routes').then(m => m.PORTAL_LAZY) },   // v1.20.0 customer portal (own login, own layout)
+  { path: 'prop-portal', loadChildren: () => import('./zeo-apps/portal/prop-portal.component').then(m => m.PROP_PORTAL_LAZY) },   // v1.21.0 tenant / owner / buyer portal
 
 
   { path: 'company-selection', component: CompanySelectionComponent },
@@ -210,6 +219,13 @@ const routes: Routes = [
     path: 'main-sidebar',
     component: MainSidebarComponent, canActivate: [AuthGuard],
     children: [
+      // v1.15.1: /main-sidebar alone opens the dashboard (with the '**' below it would show "Page not found")
+      { path: '', redirectTo: 'home', pathMatch: 'full' },   // v1.17.0: Home (was dashboard-contents)
+      // v1.17.0: one Home menu entry – the right view per role, tabs for several; the old dashboard addresses open their tab
+      { path: 'home', component: DashboardHomeComponent },
+      { path: 'ceo-dashboard', redirectTo: '/main-sidebar/home?tab=management', pathMatch: 'full' },
+      { path: 'manager-dashboard', redirectTo: '/main-sidebar/home?tab=team', pathMatch: 'full' },
+      { path: 'my-dashboard', redirectTo: '/main-sidebar/home?tab=my', pathMatch: 'full' },
       // v1.7.0: My To-do (activities on every screen) and the organisation chart
       { path: 'todo', component: ZTodoComponent },
       { path: 'org-chart', component: ZOrgChartComponent },
@@ -229,25 +245,17 @@ const routes: Routes = [
             path: 'designation-master',
             component: DesignationMasterComponent
           },
-          {
-            path: 'catogary-master',
-            component: CatogaryMasterComponent
-          },
-          {
-            path: 'employee-master',
-            component: EmployeeMasterComponent,
-          },
+          { path: 'category-master', component: CatogaryMasterComponent },   // v1.15.1 (was catogary-master)
+          { path: 'catogary-master', redirectTo: 'category-master', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
+          { path: 'employee-master', component: EmployeeListComponent },              // v1.19.0 new list
+          { path: 'employee-master-classic', component: EmployeeMasterComponent },    // v1.19.0 old list (import, bulk upload)
           { path: 'employee-transfer', component: EmployeeTransferComponent },   // v1.11.0
-          {
-            path: 'employee-details/:id/details',
-            component: EmployeeDetailsComponent
-          },
+          { path: 'employee-details/:id/details', component: EmployeeRecordComponent },   // v1.19.0 new employee page
+          { path: 'employee-details/:id/classic', component: EmployeeDetailsComponent },  // v1.19.0 old tabs
 
 
-          {
-            path: 'attendace-marking',
-            component: AttendaceMarkingComponent,
-          },
+          // v1.15.1: attendance marking lives in Time & Attendance (one registration, correct spelling)
+          moved('attendace-marking', '/main-sidebar/attendance-sidebar/attendance-marking'),
 
 
           {
@@ -281,17 +289,14 @@ const routes: Routes = [
             path: 'end-of-service',
             component: EndOfServiceComponent
           },
-          {
-            path: 'gratyuity',
-            component: GratuityComponent
-          },
+          { path: 'final-settlement', component: FinalSettlementComponent },   // v1.18.0
+          { path: 'gratuity', component: GratuityComponent },   // v1.15.1 (was gratyuity)
+          { path: 'gratyuity', redirectTo: 'gratuity', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
 
 
-          {
-            path: 'report-generate',
-            component: ReportGenerateComponent
-          },
+          // v1.15.1: one report generator – the one under Reports
+          moved('report-generate', '/main-sidebar/report-options/report-generate'),
 
         ],
       },
@@ -299,6 +304,12 @@ const routes: Routes = [
         path: 'settings',
         component: SettingsComponent,
         children: [
+          ...SETTINGS_HOME_ROUTES,   // v1.15.1: Settings home (the Settings gear opens it)
+          ...SETTINGS_APPS_ROUTES,   // v1.21.0: Settings → Apps (activate apps, industry per app)
+          ...AI_SETTINGS_ROUTES,   // v1.16.0: Settings → AI settings
+          ...COUNTRY_PACK_ROUTES,   // v1.20.1: Settings → Country settings (was /main-sidebar/country-settings)
+          ...LANGUAGE_PACK_ROUTES,   // v1.20.1: Settings → Languages (was /main-sidebar/languages)
+          { path: 'field-help', loadChildren: () => import('./field-help/field-help-settings.component').then(m => m.FIELD_HELP_ROUTES) },   // v1.16.0
           {
             path: 'company-master',
             component: CompanyMasterComponent
@@ -351,10 +362,8 @@ const routes: Routes = [
             component: DocumentNumberingComponent
           },
 
-          {
-            path: 'weelcalendar',
-            component: WeelcalendarComponent
-          },
+          { path: 'weekcalendar', component: WeelcalendarComponent },   // v1.15.1 (was weelcalendar)
+          { path: 'weelcalendar', redirectTo: 'weekcalendar', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           {
             path: 'assign-weekcalendar',
             component: AssignWeekcalendarComponent
@@ -372,10 +381,8 @@ const routes: Routes = [
             component: AssignHolidayCalendarComponent
           },
 
-          {
-            path: 'shifts',
-            component: ShiftsComponent
-          },
+          // v1.15.1: shifts are kept in Shift Planner → Shift master (same calendars.Shift table, plus the shift rules)
+          moved('shifts', '/main-sidebar/shift-planner/shifts'),
 
           // {
           //   path:'report-generate',
@@ -417,10 +424,8 @@ const routes: Routes = [
           //   path:'asset-transaction-report',
           //   component:AssetTransactionReportComponent
           // },
-          {
-            path: 'from-designer',
-            component: FromDesignerComponent
-          },
+          { path: 'form-designer', component: FromDesignerComponent },   // v1.15.1 (was from-designer)
+          { path: 'from-designer', redirectTo: 'form-designer', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           {
             path: 'asset-udf',
             component: AssetUdfComponent
@@ -539,10 +544,8 @@ const routes: Routes = [
             path: 'immediate-rejection',
             component: ImmediateRejectionComponent,
           },
-          {
-            path: 'leave-accruval',
-            component: LeaveAccruvalComponent
-          },
+          { path: 'leave-accrual', component: LeaveAccruvalComponent },   // v1.15.1 (was leave-accruval)
+          { path: 'leave-accruval', redirectTo: 'leave-accrual', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           {
             path: 'employee-leave-rejoin',
             component: EmployeeLeaveRejoinComponent
@@ -592,10 +595,8 @@ const routes: Routes = [
             component: PayrollDetailsComponent
           },
 
-          {
-            path: 'payroll-appoval-level',
-            component: PayrollAppovalLevelComponent,
-          },
+          { path: 'payroll-approval-level', component: PayrollAppovalLevelComponent },   // v1.15.1 (was payroll-appoval-level)
+          { path: 'payroll-appoval-level', redirectTo: 'payroll-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
           {
             path: 'payslip-approval',
@@ -605,17 +606,14 @@ const routes: Routes = [
             path: 'wps',
             component: WpsComponent,
           },
+          { path: 'payroll-controls', component: PayrollControlsComponent },   // v1.18.0
 
           {
             path: 'advance-salary-approval-level',
             component: AdvanceSalaryApprovalLevelComponent,
           },
           {
-            path: 'advance-salary-request',
-            component: AdvanceSalaryRequestComponent,
-          },
-          {
-            path: 'advance-salary-request',
+            path: 'advance-salary-request',   // v1.15.1: was registered twice
             component: AdvanceSalaryRequestComponent,
           },
           {
@@ -648,10 +646,8 @@ const routes: Routes = [
             path: 'loan-repayment',
             component: LoanRepaymentComponent,
           },
-          {
-            path: 'loan-approvel-level',
-            component: LoanApprovelLevelComponent,
-          },
+          { path: 'loan-approval-level', component: LoanApprovelLevelComponent },   // v1.15.1 (was loan-approvel-level)
+          { path: 'loan-approvel-level', redirectTo: 'loan-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
           {
             path: 'loan-approval',
@@ -673,6 +669,12 @@ const routes: Routes = [
         path: 'asset-options',
         component: AssetOptionsComponent,
         children: [
+          // v1.15.1: the asset register and allocations are in Assets (asset-plus, same OrganisationManager tables);
+          // asset types, asset requests, their approvals, levels and escalation stay here (no new screen for them).
+          moved('', '/main-sidebar/asset-plus'),
+          moved('asset-master', '/main-sidebar/asset-plus/register'),
+          moved('asset-allocation', '/main-sidebar/asset-plus/allocations'),
+          { path: 'asset-approvel-level', redirectTo: 'asset-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
           {
             path: 'asset-type',
@@ -680,22 +682,10 @@ const routes: Routes = [
           },
 
           {
-            path: 'asset-master',
-            component: AssetMasterComponent,
-          },
-
-          {
-            path: 'asset-allocation',
-            component: AssetAllocationComponent,
-          },
-          {
             path: 'asset-request',
             component: AssetRequestComponent,
           },
-          {
-            path: 'asset-approvel-level',
-            component: AssetApprovelLevelComponent,
-          },
+          { path: 'asset-approval-level', component: AssetApprovelLevelComponent },   // v1.15.1 (was asset-approvel-level)
           {
             path: 'asset-approval',
             component: AssetApprovalComponent,
@@ -714,11 +704,13 @@ const routes: Routes = [
         path: 'attendance-sidebar',
         component: AttendanceSidebarComponent,
         children: [
-
-          {
-            path: 'attendace-marking',
-            component: AttendaceMarkingComponent,
-          },
+          // v1.15.1: the attendance app is Attendance (attendance-plus); the screens below have no new equivalent yet and stay
+          moved('', '/main-sidebar/attendance-plus'),
+          { path: 'attendance-marking', component: AttendaceMarkingComponent },   // v1.15.1 (was attendace-marking)
+          { path: 'attendace-marking', redirectTo: 'attendance-marking', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
+          // v1.15.1: two older copies of other screens of this module
+          { path: 'attendance-punching', redirectTo: 'employee-face-register', pathMatch: 'full' },        // same face / barcode registration
+          { path: 'employee-punching-details', redirectTo: 'employee-punching-list', pathMatch: 'full' },  // same attendance rows, without filters
 
           {
             path: 'employee-early-going',
@@ -740,10 +732,6 @@ const routes: Routes = [
           },
 
           {
-            path: 'attendance-punching',
-            component: AttendancePunchingComponent,
-          },
-          {
             path: 'employee-face-register',
             component: EmployeeFaceRegisterComponent,
           },
@@ -753,10 +741,6 @@ const routes: Routes = [
             component: ManualEntryComponent,
           },
 
-          {
-            path: 'employee-punching-details',
-            component: EmployeePunchingDetailsComponent,
-          },
 
           {
             path: 'attendance-policy',
@@ -949,11 +933,9 @@ const routes: Routes = [
         path: 'shift-options',
         component: ShiftOptionsComponent,
         children: [
-
-          {
-            path: 'shifts',
-            component: ShiftsComponent,
-          },
+          // v1.15.1: shifts are kept in Shift Planner → Shift master (same calendars.Shift table, plus the shift rules)
+          moved('', '/main-sidebar/shift-planner'),
+          moved('shifts', '/main-sidebar/shift-planner/shifts'),
 
           {
             path: 'shift-pattern',
@@ -1066,21 +1048,18 @@ const routes: Routes = [
       },
 
 
-      {
-        path: 'dashboard-contents',
-        component: DashboardContentsComponent,
-      },
-      {
-        path: 'attendace-marking',
-        component: AttendaceMarkingComponent,
-      },
+      // v1.17.0: the old Company dashboard address (also where the login lands) opens Home on the view of the user's role
+      { path: 'dashboard-contents', redirectTo: '/main-sidebar/home', pathMatch: 'full' },
+      { path: 'attendace-marking', redirectTo: 'attendance-sidebar/attendance-marking', pathMatch: 'full' },   // v1.15.1 one registration
 
 
       {
         path: 'fiscal-year',
         component: FiscalYearComponent,
-      }
+      },
 
+      // v1.15.1: unknown addresses under /main-sidebar/ show "Page not found" inside the app (menu stays)
+      { path: '**', component: NotFoundComponent },
     ]
   },
   {
@@ -1092,10 +1071,8 @@ const routes: Routes = [
     path: 'employee-dashboard',
     component: EmployeeDashboardComponent, canActivate: [AuthGuard],   // v1.13.0: the portal needs a login
     children: [
-      {
-        path: 'employee-sction',
-        component: EmployeeSctionComponent,
-      },
+      { path: 'employee-section', component: EmployeeSctionComponent },   // v1.15.1 (was employee-sction)
+      { path: 'employee-sction', redirectTo: 'employee-section', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
       {
         path: 'employee-approvals',
         component: EmployeeApprovalsComponent,
@@ -1123,11 +1100,8 @@ const routes: Routes = [
     path: 'branch-creation',
     component: BranchCreationComponent
   },
-  {
-    path: '',
-    redirectTo: '/main-content',
-    pathMatch: 'full'
-  }
+  // v1.15.1: every other address → "Page not found" (was a redirect to /main-content, which does not exist → blank page)
+  { path: '**', component: NotFoundComponent },
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   // { path: 'login', component: LoginComponent },
   // { path: 'dashboard', component: DashboardComponent },

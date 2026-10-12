@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ESS_BASE, EssApiService } from './ess-api.service';
+import { CountryPackService } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * v1.13.0 – HR letters.
@@ -94,9 +95,9 @@ import { ESS_BASE, EssApiService } from './ess-api.service';
         <label>Language</label>
         <select [(ngModel)]="f.language"><option value="en">English</option><option value="ar">Arabic</option></select>
       </div>
-      <div class="wide"><label>Addressed to</label><input [(ngModel)]="f.addressee" placeholder="e.g. The Manager, Emirates NBD – or leave empty for 'To whom it may concern'"></div>
+      <div class="wide"><label>Addressed to</label><input [(ngModel)]="f.addressee" [placeholder]="addresseePh"></div>
       <div class="wide"><label>Purpose</label><input [(ngModel)]="f.purpose" placeholder="e.g. car loan, visa application, opening a bank account"></div>
-      <div *ngIf="needs('bank_name')"><label>Bank</label><input [(ngModel)]="f.bank_name" placeholder="e.g. Emirates NBD"></div>
+      <div *ngIf="needs('bank_name')"><label>Bank</label><input [(ngModel)]="f.bank_name" [placeholder]="bankPh"></div>
       <div *ngIf="needs('destination')"><label>Destination</label><input [(ngModel)]="f.destination" placeholder="Country of travel"></div>
       <div *ngIf="needs('travel_from')"><label>Travel from</label><input type="date" [(ngModel)]="f.travel_from"></div>
       <div *ngIf="needs('travel_to')"><label>Return on</label><input type="date" [(ngModel)]="f.travel_to"></div>
@@ -114,7 +115,11 @@ export class EssLettersComponent implements OnInit {
   f: any = null; tab = 'pending'; base = ESS_BASE;
   tabs = [{ key: 'pending', label: 'Waiting' }, { key: 'issued', label: 'Issued' }, { key: 'rejected', label: 'Rejected' }, { key: '', label: 'All' }];
 
-  constructor(private api: EssApiService, public router: Router, private route: ActivatedRoute, private cd: ChangeDetectorRef) {}
+  constructor(private api: EssApiService, public router: Router, private route: ActivatedRoute, private cd: ChangeDetectorRef, public cp: CountryPackService) {}
+
+  // v1.14.0: UAE bank examples only for UAE companies
+  get addresseePh(): string { return this.cp.allows('pack:AE') ? "e.g. The Manager, Emirates NBD – or leave empty for 'To whom it may concern'" : "e.g. The Manager, your bank – or leave empty for 'To whom it may concern'"; }
+  get bankPh(): string { return this.cp.allows('pack:AE') ? 'e.g. Emirates NBD' : 'e.g. the name of your bank'; }
 
   async ngOnInit(): Promise<void> {
     this.hr = !!this.route.snapshot.data['hr'];

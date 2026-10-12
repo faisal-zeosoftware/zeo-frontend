@@ -25,6 +25,16 @@ export class SchemaCreationComponent {
   currency:any='';
 
   industry_type : string = '';
+  // v1.21.0: apps the company uses (Settings › Apps can change them later)
+  appChoices = [
+    { key: 'hrms', label: 'HRMS', hint: 'People, time, leave, payroll', on: true },
+    { key: 'projects', label: 'Projects', hint: 'Tickets, AMC, delivery', on: false },
+    { key: 'crm', label: 'CRM', hint: 'Contacts, pipelines, deals', on: false },
+    { key: 'property', label: 'Property', hint: 'Units, leases, sales', on: false },
+    { key: 'maintenance', label: 'Maintenance', hint: 'Work orders, plans', on: false },
+    { key: 'hse', label: 'HSE', hint: 'Risk, permits, incidents', on: false },
+  ];
+  chosenApps(): string[] { return this.appChoices.filter(a => a.on).map(a => a.key); }
   address_line1 : string = '';
   address_line2 : string = '';
   financial_year_start_month : string = '';
@@ -180,6 +190,8 @@ if (this.financial_year) {
     companyData.append('timezone', this.timezone);
 
     companyData.append('industry_type', this.industry_type);
+    if (!this.chosenApps().length) { return; }   // v1.21.0: at least one app
+    companyData.append('apps', this.chosenApps().join(','));
 
     companyData.append('address_line1', this.address_line1);
 

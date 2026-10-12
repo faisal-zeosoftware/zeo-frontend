@@ -8,7 +8,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Leave Request Email Template</h1>
+                    <h1>Leave request email template</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -44,11 +44,11 @@
         <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeaveTemp()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeaveTemp()">Delete selected </button>
 
             </div>
         </div>
@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Leave Request Email Template</h2>
+                  <h2>Leave request email template</h2>
                 </div>
                  <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -77,7 +77,7 @@
     
     
                         <div class="custom-sel">
-                            <label>Template Type
+                            <label>Template type
                                  <span class="required-star">*</span>
                             </label>
                             <select class="form-control" id="template_type" required [(ngModel)]="template_type"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !template_type}">
@@ -306,7 +306,7 @@
                     </div>
                     
                     <div class="col-md-4">
-                        <label>Select Field names</label>
+                        <label>Select field names</label>
                         <div class="email_placeholdername">
                           <div class="on_by_placeholders" *ngFor="let placeholder of EmailPlaceHolders" (click)="selectPlaceholder(placeholder)">
                             <h4>{{ placeholder }}</h4> <!-- Display the placeholder value -->
@@ -353,7 +353,7 @@
 
     <div class="cpm-sec">
         <div class="table-header">
-            <h2>Leave Email Templates</h2>
+            <h2>Leave email templates</h2>
         </div>
 
         <div class="table-responsive">
@@ -362,7 +362,7 @@
 
                 <thead>
                     <tr>
-                        <th>Template Type</th>
+                        <th>Template type</th>
                         <th>Subject</th>
                         <th>Branch</th>
                         <th>Department</th>
@@ -378,7 +378,7 @@
 
                         <td data-label="Template Type">
                             <span class="badge-template">
-                                {{ deparmentsec.template_type }}
+                                {{ zLabel(deparmentsec.template_type) }}
                             </span>
                         </td>
 

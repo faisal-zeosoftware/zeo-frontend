@@ -109,3 +109,10 @@ margin-right: 10px;
     font-size: 14px;
 
 }
+/* 1.20.1 – expiring documents as a standard list */
+.de-sub { color:#64748b; font-size:14px; margin:4px 0 0; }
+.de-show { max-width: 300px; display:inline-block; }
+.de-link { color:#4338ca; cursor:pointer; text-decoration:none; font-weight:500; }
+.de-tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; }
+.de-red { background:#fee2e2; color:#b91c1c; } .de-amber { background:#fef3c7; color:#92400e; } .de-blue { background:#e0e7ff; color:#3730a3; } .de-green { background:#dcfce7; color:#166534; }
+.header_section .de-sub { padding: 0 !important; margin: 4px 0 0 !important; text-align: start !important; }

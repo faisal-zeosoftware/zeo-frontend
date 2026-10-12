@@ -1,7 +1,7 @@
 <div mat-dialog-content class="">
     <div class="cpm-sec">
 
-        <h1>Employee Language</h1><hr>
+        <h1>Employee language</h1><hr>
 
         <form >
         <div class="row">
@@ -11,7 +11,7 @@
 
 
                 <div class="custom-sel">
-                    <label>Select Employee Langauge</label>
+                    <label>Select employee langauge</label>
                     <select class="form-control" id="language_skill" required [(ngModel)]="language_skill"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !language_skill}" >
                         <option value="" >Select</option>
                         <option *ngFor="let deparmentsec of LangaguesSkills" [value]="deparmentsec.id">{{ deparmentsec.language     }} </option>

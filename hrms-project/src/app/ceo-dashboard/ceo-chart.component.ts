@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface CeoSeries { name: string; color: string; values: number[]; }
@@ -48,7 +48,7 @@ export interface CeoSeries { name: string; color: string; values: number[]; }
             [class.on]="hover === i"></span>
     </ng-container>
     <div class="cc-x">
-      <span *ngFor="let l of labels; let i = index" [style.left.%]="xPct(i)" [class.hide]="labels.length > 8 && i % 2 === 1 && i !== labels.length - 1">{{ l }}</span>
+      <span *ngFor="let l of labels; let i = index" [style.left.%]="xPct(i)" [class.hide]="!showLabel(i)">{{ l }}</span>
     </div>
     <div class="tip" *ngIf="hover >= 0" [style.left.%]="xPct(hover)" [class.right]="xPct(hover) > 65">
       <b>{{ labels[hover] }}</b>
@@ -61,6 +61,9 @@ export interface CeoSeries { name: string; color: string; values: number[]; }
   </div>`,
   styles: [`
     :host { display: block; }
+    /* v1.15.0 (langrtl): the chart keeps its left-to-right axes in Arabic (time runs left to right); this [dir=rtl]
+       rule also tells the runtime RTL mirror (shared-ui/z-rtl.ts) to leave these styles alone */
+    :host-context([dir=rtl]) .cc { direction: ltr; }
     .cc { position: relative; padding-left: 44px; }
     .plot { position: relative; }
     .cc-legend { list-style: none; display: flex; gap: 14px; margin: 0 0 6px; padding: 0; font-size: 12px; color: #4A4F63; flex-wrap: wrap; }
@@ -73,7 +76,7 @@ export interface CeoSeries { name: string; color: string; values: number[]; }
     .dot.on { width: 10px; height: 10px; margin: -5px 0 0 -5px; }
     .cc-x { position: relative; height: 18px; margin-top: 4px; }
     .cc-x span { position: absolute; transform: translateX(-50%); font-size: 11px; color: #6B7185; white-space: nowrap; }
-    .cc-x span.hide { visibility: hidden; }
+    .cc-x span.hide { display: none; }   /* v1.17.0: thinned labels take no room */
     .cc-y { position: absolute; left: -44px; top: 0; width: 40px; }
     .cc-y span { position: absolute; right: 0; transform: translateY(-50%); font-size: 10.5px; color: #8A8FA3; }
     .tip { position: absolute; top: 0; transform: translateX(-30%); background: #1B1640; color: #fff; border-radius: 8px; padding: 8px 10px;
@@ -85,7 +88,28 @@ export interface CeoSeries { name: string; color: string; values: number[]; }
     @media (prefers-reduced-motion: no-preference) { rect { transition: opacity .12s; } }
   `],
 })
-export class CeoChartComponent implements OnChanges {
+export class CeoChartComponent implements OnChanges, OnInit, OnDestroy {
+  /** v1.17.0 (audit M9): month labels thinned to the width the chart really has (no overlapping labels at any width / language) */
+  private width = 600;
+  private ro?: ResizeObserver;
+  constructor(private el: ElementRef<HTMLElement>, private cd: ChangeDetectorRef) {}
+  ngOnInit(): void {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.ro = new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w && w !== this.width) { this.width = w; this.cd.markForCheck(); } });
+      this.ro.observe(this.el.nativeElement);
+    }
+  }
+  ngOnDestroy(): void { this.ro?.disconnect(); }
+  showLabel(i: number): boolean {
+    const n = this.labels.length;
+    if (n <= 1) { return true; }
+    const longest = Math.max(...this.labels.map(l => (l || '').length));
+    const need = longest * 6.6 + 14;                               // px one label needs (11 px font) incl. a gap
+    const room = Math.max(1, (this.width - 44) / n);              // px per column
+    const every = Math.max(1, Math.ceil(need / room));
+    return (n - 1 - i) % every === 0;                              // the last month is always labelled
+  }
+
   @Input() type: 'bar' | 'stack' | 'line' = 'bar';
   @Input() labels: string[] = [];
   @Input() series: CeoSeries[] = [];

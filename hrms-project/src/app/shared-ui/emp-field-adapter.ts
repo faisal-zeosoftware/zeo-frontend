@@ -21,6 +21,7 @@ export function empFieldAdapter(http: HttpClient, api: string, kind: string): De
     options: r.dropdown_values || r.radio_values || [], required: !!r.mandatory, section: r.section || '',
     order: r.order ?? r.id * 10, help_text: r.help_text || '', placeholder: r.placeholder || '', active: true,
     rules: { ...(r.rules || {}) }, default: (r.rules || {}).default ?? '',
+    alias_label: r.alias_label || '',   // v1.16.0: merged into a built-in field
   });
   const toBody = (f: any) => {
     const t = f.field_type || 'text';

@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ESS_BASE, EssApiService, POLICY_LABEL, money } from './ess-api.service';
+import { CountryPackService, cpServerFields } from '../shared-ui/country-pack.service';   // v1.14.0
+import { I18N_UI } from '../shared-ui/i18n.service';   // v1.15.0
+import { EssCustomFieldsComponent } from './ess-custom-fields.component';   // v1.16.0
+import { ZFieldHelpToggleComponent } from '../field-help/field-help-settings.component';   // v1.16.0
 
 interface FormField { key: string; label: string; type: string; policy: string; value: any; options?: any[]; source?: string; readonly?: boolean; }
 interface FormState { title: string; intro: string; group: string; action: 'create' | 'update' | 'delete'; recordId: number | null;
@@ -13,7 +17,7 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
 @Component({
   selector: 'app-ess-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, ...I18N_UI, EssCustomFieldsComponent, ZFieldHelpToggleComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -39,6 +43,16 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
       <p class="es-msg" *ngIf="ok">{{ ok }}</p>
       <p class="es-msg err" *ngIf="msg">{{ msg }}</p>
       <p class="es-muted" *ngIf="loading">Loading…</p>
+
+      <!-- v1.15.0: the language of every screen, messages, payslips and letters for this employee -->
+      <div class="es-panel" id="g-language">
+        <div class="es-h"><span>{{ 'Language' | t }}</span></div>
+        <div class="es-fields" style="padding:12px 16px">
+          <z-lang-picker variant="select" [showAlways]="true" label="Language used on every screen"></z-lang-picker>
+          <p class="es-muted" style="margin:8px 0 0">{{ 'Screens, messages, payslips and letters use this language. Your choice is saved for your login.' | t }}</p>
+          <z-field-help-toggle></z-field-help-toggle><!-- v1.16.0 -->
+        </div>
+      </div>
 
       <ng-container *ngIf="p">
         <div class="es-panel" *ngFor="let g of p.groups" [attr.id]="'g-' + g.key">
@@ -111,6 +125,8 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
           </ng-container>
         </div>
       </ng-container>
+      <!-- v1.16.0: custom fields of the one employee form designer -->
+      <app-ess-custom-fields *ngIf="p" [employeeId]="p.employee_id"></app-ess-custom-fields>
     </div>
   </div>
 </div>
@@ -183,13 +199,17 @@ export class EssProfileComponent implements OnInit {
   optionCache: Record<string, any[]> = {};
   m = money; policyLabel = POLICY_LABEL;
 
-  constructor(private api: EssApiService, private router: Router, private route: ActivatedRoute, private cd: ChangeDetectorRef) {}
+  private raw: any = null;   // v1.14.0: the server answer; `p` is it without the fields the company's country does not use
+
+  constructor(private api: EssApiService, private router: Router, private route: ActivatedRoute, private cd: ChangeDetectorRef, private cp: CountryPackService) {
+    this.cp.pack$.subscribe(() => { if (this.raw) { this.p = cpServerFields(this.raw, this.cp); this.cd.markForCheck(); } });
+  }
 
   ngOnInit(): void { this.load(); }
 
   async load(): Promise<void> {
     this.loading = true;
-    try { this.p = await this.api.get('profile/'); this.msg = ''; }
+    try { this.raw = await this.api.get('profile/'); this.p = cpServerFields(this.raw, this.cp); this.msg = ''; }   // v1.14.0: no Emirates ID / MOHRE / emirate for other countries
     catch (e: any) { this.msg = EssApiService.error(e, 'Could not load your profile.'); }
     this.loading = false; this.cd.detectChanges();
     const g = this.route.snapshot.queryParamMap.get('group');

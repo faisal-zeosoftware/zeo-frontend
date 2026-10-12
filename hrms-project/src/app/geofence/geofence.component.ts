@@ -19,7 +19,7 @@ import { debounceTime } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 
-declare var mapillary: any;
+// v1.15.1: Mapillary removed (unused).
 
 @Component({
   selector: 'app-geofence',
@@ -295,19 +295,10 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  // v1.15.1: the Mapillary street view was never shown on this screen (no button calls it) and carried a hard-coded
+  // third-party access token; the library (unpkg CDN) is no longer loaded. Kept as a no-op for compatibility.
   toggleStreetView() {
-    this.showStreetView = !this.showStreetView;
-    if (this.showStreetView) {
-      setTimeout(() => {
-        if (!this.mlyViewer) {
-          this.mlyViewer = new mapillary.Viewer({
-            accessToken: 'MLY|9112261628892418|451651817088927878788',
-            container: 'mly',
-          });
-        }
-        this.mlyViewer.moveCloseTo(this.latitude, this.longitude);
-      }, 200);
-    }
+    this.showStreetView = false;
   }
 
   updateCircle() {
@@ -766,7 +757,7 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
 
 
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

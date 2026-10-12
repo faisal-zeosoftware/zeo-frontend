@@ -44,3 +44,8 @@
 @media (max-width: 991.98px) { .ap-filters { padding-left: 4px; padding-right: 4px; } .ap-kv { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .ap-kv { grid-template-columns: minmax(0, 1fr); } .ap-filters select { flex: 1 1 45%; } }
 @media print { .ap-noprint { display: none !important; } }
+/* v1.16.0: work lists and the register as tables (list tools) */
+.ap-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+table.ap-reg tr.click { cursor: pointer; }
+table.ap-queue td.money, table.ap-reg td.money { text-align: right; font-weight: 600; white-space: nowrap; }
+.ap-due{color:#9b2c24}

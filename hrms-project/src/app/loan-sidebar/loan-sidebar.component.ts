@@ -127,7 +127,7 @@ export class LoanSidebarComponent {
                     this.hasViewPermissionLoanApprovalLevel = this.checkGroupPermission('view_loancommonworkflow', groupPermissions);
                     this.hasViewPermissionLoanApplication = this.checkGroupPermission('view_loanapplication', groupPermissions);
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

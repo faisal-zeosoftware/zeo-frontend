@@ -6,6 +6,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { environment } from '../../environments/environment';
+import { DesignerAdapter } from '../shared-ui/field-types';
+import { assetFieldAdapter } from '../shared-ui/asset-field-adapter';   // v1.16.0
 
 @Component({
   selector: 'app-asset-udf',
@@ -13,6 +16,11 @@ import { SessionService } from '../login/session.service';
   styleUrl: './asset-udf.component.css'
 })
 export class AssetUdfComponent {
+  // v1.16.0: the asset form's one designer (the same fields as this list; every type, help text, example, rules)
+  designing = false;
+  private _adapter?: DesignerAdapter;
+  get designerAdapter(): DesignerAdapter { return this._adapter ??= assetFieldAdapter(this.http, environment.apiBaseUrl); }
+  designerClosed(changed: boolean): void { this.designing = false; if (changed) { location.reload(); } }
 
 
 
@@ -129,7 +137,7 @@ if (this.userId !== null) {
 
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);

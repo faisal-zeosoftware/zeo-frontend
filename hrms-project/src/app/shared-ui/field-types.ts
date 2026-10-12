@@ -1,3 +1,4 @@
+import { cpText } from './country-pack.service';   // v1.14.0
 /** Field types offered by every form designer (employee custom fields and extra fields on any screen). */
 export interface FieldType { value: string; label: string; icon: string; options?: boolean; hint: string; }
 
@@ -6,7 +7,7 @@ export const FIELD_TYPES: FieldType[] = [
   { value: 'textarea', label: 'Long text', icon: 'notes', hint: 'Several lines' },
   { value: 'integer', label: 'Whole number', icon: 'pin', hint: 'e.g. 12' },
   { value: 'decimal', label: 'Decimal number', icon: 'calculate', hint: 'e.g. 12.75' },
-  { value: 'currency', label: 'Amount (AED)', icon: 'payments', hint: 'Money, 2 decimals' },
+  { value: 'currency', get label() { return cpText('Amount (AED)'); }, icon: 'payments', hint: 'Money, 2 decimals' },   // v1.14.0: company currency
   { value: 'percent', label: 'Percentage', icon: 'percent', hint: '0 to 100' },
   { value: 'date', label: 'Date', icon: 'event', hint: 'Calendar date' },
   { value: 'datetime', label: 'Date and time', icon: 'schedule', hint: 'Date with time' },
@@ -36,6 +37,8 @@ export interface FieldRules {
   visible_on?: string[];
   show_if?: { field: string; op: 'eq' | 'ne' | 'in' | 'filled' | 'empty'; value?: any } | null;
   ess_read_only?: boolean;
+  /** v1.16.0: example shown by the field help when the user is in the field */
+  example?: string;
 }
 export const VISIBLE_PLACES: { value: string; label: string }[] = [
   { value: 'create', label: 'New record form' }, { value: 'edit', label: 'Edit form' }, { value: 'view', label: 'Details page' },
@@ -161,6 +164,8 @@ export function bySection<T extends { section?: string; order?: number }>(fields
 /** Where a form designer reads and saves its fields (extra fields of a screen, or the employee custom fields). */
 export interface DesignerAdapter {
   title: string;
+  /** v1.16.0: line under the title (which screens use these fields) */
+  subtitle?: string;
   /** Extra columns this designer can store (false: no list / default / active switches). */
   rich: boolean;
   load(): Promise<any[]>;

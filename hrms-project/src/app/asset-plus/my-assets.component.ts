@@ -77,7 +77,7 @@ type Dlg = '' | 'ack' | 'damage' | 'loss' | 'return' | 'transfer' | 'history';
         <label class="wide" *ngIf="!x.ok">What is different? *<textarea [(ngModel)]="x.notes" name="n" placeholder="e.g. scratch on the lid, charger missing"></textarea></label>
       </div>
       <div class="ex-form" *ngIf="dlg === 'return'">
-        <label>When can you hand it in?<input type="date" [(ngModel)]="x.preferred_date" name="pd" [min]="todayStr"></label>
+        <label>When can you hand IT in?<input type="date" [(ngModel)]="x.preferred_date" name="pd" [min]="todayStr"></label>
         <label class="wide">Note<textarea [(ngModel)]="x.note" name="n" placeholder="Why are you returning it?"></textarea></label>
         <p class="wide ex-muted">HR checks the asset and accessories when you hand it in.</p>
       </div>

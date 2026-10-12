@@ -1,0 +1,19 @@
+/* v1.15.1 Settings home – used with ../leave-policy/leave-policy.css */
+:host { display: block; max-width: 100%; }
+.sh-wrap { padding-bottom: 32px; }
+.page-title { font-size: 18px !important; text-transform: none !important; letter-spacing: 0 !important; }
+.sh-muted { color: #6b7185; font-size: 13px; margin: 18px 24px; }
+.sh-sec { margin: 22px 24px 0; }
+.sh-sec h2 { font-size: 13px; font-weight: 700; color: #4a4f63; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 10px; }
+.sh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px; }
+.sh-card { display: flex; align-items: center; gap: 12px; padding: 14px 14px; border: 1px solid #e3e5ef; border-radius: 12px; background: #fff;
+  color: #1b1640; text-decoration: none !important; min-width: 0; transition: border-color .15s, box-shadow .15s; }
+.sh-card:hover, .sh-card:focus-visible { border-color: #b9b2ff; box-shadow: 0 0 0 3px rgba(91, 79, 245, .08); outline: none; }
+.sh-card:focus-visible { outline: 2px solid #5b4ff5; outline-offset: 2px; }
+.sh-ic { flex: none; width: 36px !important; height: 36px !important; font-size: 20px; border-radius: 10px; background: #efedff; color: #4338ca;
+  display: inline-flex !important; align-items: center; justify-content: center; }
+.sh-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 auto; }
+.sh-txt b { font-size: 14px; font-weight: 600; }
+.sh-txt small { font-size: 12.5px; color: #6b7185; line-height: 1.4; }
+.sh-go { flex: none; color: #a0a4b8; }
+@media (max-width: 991.98px) { .sh-sec, .sh-muted { margin-left: 4px; margin-right: 4px; } }

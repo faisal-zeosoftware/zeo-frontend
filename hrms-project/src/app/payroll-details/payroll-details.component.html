@@ -6,7 +6,7 @@
 
         <div class="row">
           <div class="col-md-3">
-            <h1>Employee Payslip </h1>
+            <h1>Employee payslip </h1>
           </div>
   
           <div class="col-md-4">
@@ -91,7 +91,7 @@
       
                   <div class="col-md-4" *ngIf="payslipPreferences.showBranch">
                     <P>Branch</P>
-                    <p class="payrol_det_data">{{ payslipDetails.payroll_run?.branch }}</p>
+                    <p class="payrol_det_data">{{ names(payslipDetails.payroll_run?.branch) }}</p>
                   </div>
       
                   <div class="col-md-4" *ngIf="payslipPreferences.showDepartment">
@@ -107,7 +107,7 @@
                 
               </div>
       
-              <table  class="salary-table mt-4">
+              <table zPlain class="salary-table mt-4">
                 <thead>
                  
                     <tr>
@@ -124,7 +124,7 @@
       
       
       
-              <table class="salary-table mt-4">
+              <table zPlain class="salary-table mt-4">
                 <thead>
                   <tr>
                     <th colspan="3">Earning</th>
@@ -133,7 +133,7 @@
                   <tr>
                     <th>Component</th>
                     <th>Gross </th>
-                    <th>Amount After LOP </th>
+                    <th>Amount after LOP </th>
                     <th>Component</th>
                     <th>Amount </th>
                   </tr>
@@ -169,11 +169,11 @@
               <h5 class="mb-3">Payslip Preferences</h5>
               <hr>
               <div class="mb-1">
-                <label class="small font-weight-bold">Company Logo</label>
+                <label class="small font-weight-bold">Company logo</label>
                 <input type="file" (change)="onLogoUpload($event)" class="form-control-file small mb-2" accept="image/*">
                 <div class="preference-item">
                   <input type="checkbox" id="checkLogo" [(ngModel)]="payslipPreferences.showLogo">
-                  <label for="checkLogo">Display Logo</label>
+                  <label for="checkLogo">Display logo</label>
                 </div>
               </div>
               
@@ -182,25 +182,25 @@
               <div >
                 <div class="preference-item">
                   <input type="checkbox" id="checkName" [(ngModel)]="payslipPreferences.showCompanyName">
-                  <label for="checkName">Show Company Name</label>
+                  <label for="checkName">Show company name</label>
                 </div>
               </div>
               <div class="preference-item">
                 <input type="checkbox" id="checkBranch" [(ngModel)]="payslipPreferences.showBranch">
-                <label for="checkBranch">Show Branch</label>
+                <label for="checkBranch">Show branch</label>
               </div>
       
               <div class="preference-item">
                 <input type="checkbox" id="checkDept" [(ngModel)]="payslipPreferences.showDepartment">
-                <label for="checkDept">Show Department</label>
+                <label for="checkDept">Show department</label>
               </div>
       
               <div class="preference-item">
                 <input type="checkbox" id="checkCat" [(ngModel)]="payslipPreferences.showCategory">
-                <label for="checkCat">Show Category</label>
+                <label for="checkCat">Show category</label>
               </div>
               
-              <button class="btn btn-primary btn-block mt-4">Save Template</button>
+              <button class="btn btn-primary btn-block mt-4">Save template</button>
             </div>
           </div>
         </div>
@@ -224,13 +224,14 @@
     <!-- FIXED: Use companyEmail from Company API (fallback to employee company email) -->
     <p *ngIf="companyEmail">{{ companyEmail }}</p>
     <!-- FIXED: Use companyTrn from Company API -->
-    <p *ngIf="companyTrn">TRN {{ companyTrn }}</p>
+    <p *ngIf="companyTrn">{{ 'tax_id' | zc }} {{ companyTrn }}</p>
+    <p *ngIf="employerId">{{ 'MoHRE employer ID' | t }} {{ employerId }}</p>
   </div>
 </div>
 
         <!-- Title -->
         <div class="pc-title">
-          <h2>PAY SLIP</h2>
+          <h2>Pay slip</h2>
           <!-- FIXED: Use computed monthName instead of raw number -->
           <p>{{ monthName }} {{ payslipDetails.payroll_run?.year }}</p>
         </div>
@@ -241,27 +242,30 @@
             <div class="pc-info-row">
               <span class="pc-label">Employee</span>
               <!-- FIXED: Use employeeFullName instead of employee_name/employee -->
-              <span class="pc-value">: {{ employeeFullName }}</span>
+              <span class="pc-value">: {{ employeeFullName }}<ng-container *ngIf="employeeCode && employeeCode !== employeeFullName"> ({{ employeeCode }})</ng-container></span>
             </div>
             <!-- FIXED: Emirates ID from person_id -->
             <div class="pc-info-row" *ngIf="emiratesId">
-              <span class="pc-label">Emirates Id</span>
+              <span class="pc-label">{{ 'national_id' | zc }}</span>
               <span class="pc-value">: {{ emiratesId }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="personId">
+              <span class="pc-label">{{ 'MoHRE person ID' | t }}</span>
+              <span class="pc-value">: {{ personId }}</span>
             </div>
       <!-- FIXED: Use payroll_run.designation instead of mapped designation -->
     <div class="pc-info-row" *ngIf="payslipPreferences.showDesignation">
       <span class="pc-label">Designation</span>
-      <span class="pc-value">: {{ payslipDetails.payroll_run?.designation }}</span>
+      <span class="pc-value">: {{ designationName || '–' }}</span>
     </div>
           </div>
           <div class="pc-info-col">
             <div class="pc-info-row" *ngIf="payslipPreferences.showBranch">
               <span class="pc-label">Branch</span>
-              <span class="pc-value">: {{ payslipDetails.payroll_run?.branch }}</span>
+              <span class="pc-value">: {{ names(payslipDetails.payroll_run?.branch) }}</span>
             </div>
             <div class="pc-info-row">
-              <span class="pc-label">IBAN</span>
-              <!-- FIXED: Use computed ibanNumber -->
+              <span class="pc-label">{{ ibanIsCard ? ('Salary card' | t) : 'IBAN' }}</span>
               <span class="pc-value">: {{ ibanNumber }}</span>
             </div>
             <div class="pc-info-row">
@@ -272,25 +276,25 @@
         </div>
 
         <!-- Earnings / Deductions table -->
-        <table class="pc-table pc-earnings">
+        <table zPlain class="pc-table pc-earnings">
           <thead>
             <tr>
               <th>Earning</th>
-              <th class="pc-num">Gross (AED)</th>
+              <th class="pc-num">{{ 'Gross (AED)' | zc }}</th>
               <th>Deduction</th>
-              <th class="pc-num">Amount (AED)</th>
+              <th class="pc-num">{{ 'Amount (AED)' | zc }}</th>
             </tr>
           </thead>
           <tbody>
             <!-- FIXED: Use max of earnings/deductions length for proper row rendering -->
-            <tr *ngFor="let earning of earnings; let i = index">
+            <tr *ngFor="let earning of shownEarnings; let i = index">
               <td>{{ earning.component_name }}</td>
               <td class="pc-num">{{ earning.amount || '0.00' }}</td>
-              <td>{{ deductions[i]?.component_name || '' }}</td>
-              <td class="pc-num">{{ deductions[i]?.amount || '' }}</td>
+              <td>{{ shownDeductions[i]?.component_name || '' }}</td>
+              <td class="pc-num">{{ shownDeductions[i]?.amount || '' }}</td>
             </tr>
             <!-- Render remaining deductions if deductions > earnings -->
-            <tr *ngFor="let deduction of deductions.slice(earnings.length); let i = index">
+            <tr *ngFor="let deduction of shownDeductions.slice(shownEarnings.length); let i = index">
               <td></td>
               <td class="pc-num"></td>
               <td>{{ deduction.component_name }}</td>
@@ -316,59 +320,25 @@
         </div>
 
         <!-- Attendance / leave summary -->
-        <table class="pc-table pc-summary">
-          <colgroup>
-            <col style="width: 14.28%;">
-            <col style="width: 14.28%;">
-            <col style="width: 14.28%;">
-            <col style="width: 14.28%;">
-            <col style="width: 14.28%;">
-            <col style="width: 14.28%;">
-            <col style="width: 14.32%;">
-          </colgroup>
+        <!-- v1.20.2: days of the payslip (the leave and loan figures were not in the payslip data and always showed 0) -->
+        <table zPlain class="pc-table pc-summary">
           <thead>
             <tr>
-              <th>Total Days</th>
-              <th>Days Worked</th>
-              <th>Leave Balance</th>
-              <th>Leave Days</th>
-              <th>Leave Days (Unpaid)</th>
-              <th>Sick Leave</th>
-              <th>Loan Balance (AED)</th>
+              <th>{{ 'Days in the pay period' | t }}</th>
+              <th>{{ 'Days paid' | t }}</th>
+              <th>{{ 'Attendance period' | t }}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{ payslipDetails.total_working_days }}</td>
               <td>{{ payslipDetails.days_worked }}</td>
-              <!-- FIXED: Use computed leaveBalanceTotal -->
-              <td>{{ leaveBalanceTotal | number:'1.2-2' }}</td>
-              <!-- FIXED: Use computed totalLeaveDays -->
-              <td>{{ totalLeaveDays | number:'1.2-2' }}</td>
-              <td>{{ payslipDetails.unpaid_leave_days || '0.00' }}</td>
-              <!-- FIXED: Use computed totalSickLeaveDays -->
-              <td>{{ totalSickLeaveDays | number:'1.2-2' }}</td>
-              <!-- FIXED: Use computed loanBalanceTotal -->
-              <td>{{ loanBalanceTotal | number:'1.2-2' }}</td>
+              <td>{{ payslipDetails.payroll_run?.attendance_start_date }} – {{ payslipDetails.payroll_run?.attendance_end_date }}</td>
             </tr>
           </tbody>
         </table>
 
-        <table class="pc-table pc-ot">
-          <thead>
-            <tr>
-              <th>Normal Overtime Amount (AED)</th>
-              <th>Week/Public Holiday OT Amount (AED)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <!-- FIXED: OT data not in API, default to 0.00 -->
-              <td>{{ payslipDetails.normal_ot || '0.00' }}</td>
-              <td>{{ payslipDetails.holiday_ot || '0.00' }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- v1.20.2: overtime is shown in the earnings above (the separate OT table always showed 0.00) -->
 
         <!-- Signatures -->
         <div class="pc-signatures">
@@ -396,20 +366,20 @@
   <hr>
   <div class="preference-item">
     <input type="checkbox" id="checkNameClassic" [(ngModel)]="payslipPreferences.showCompanyName">
-    <label for="checkNameClassic">Show Company Name</label>
+    <label for="checkNameClassic">Show company name</label>
   </div>
   <div class="preference-item">
     <input type="checkbox" id="checkBranchClassic" [(ngModel)]="payslipPreferences.showBranch">
-    <label for="checkBranchClassic">Show Branch</label>
+    <label for="checkBranchClassic">Show branch</label>
   </div>
   <!-- FIXED: Show Designation checkbox instead of Department -->
   <div class="preference-item">
     <input type="checkbox" id="checkDesignationClassic" [(ngModel)]="payslipPreferences.showDesignation">
-    <label for="checkDesignationClassic">Show Designation</label>
+    <label for="checkDesignationClassic">Show designation</label>
   </div>
   <!-- REMOVED: Show Department checkbox -->
   <!-- REMOVED: Show Category checkbox -->
-  <button class="btn btn-primary btn-block mt-4" (click)="downloadPayslip()">Save Template</button>
+  <button class="btn btn-primary btn-block mt-4" (click)="downloadPayslip()">Save template</button>
 </div>
     </div>
   </div>
@@ -434,16 +404,16 @@
           <div><strong>Employee ID:</strong> {{ payslipDetails.employee }}</div>
           <div><strong>Payroll Period:</strong> {{ payslipDetails.payroll_run?.month }} - {{ payslipDetails.payroll_run?.year }}</div>
           <div><strong>Payment Date:</strong> {{ payslipDetails.payroll_run?.payment_date | date }}</div>
-          <div><strong>Branch:</strong> {{ payslipDetails.payroll_run?.branch }}</div>
-          <div><strong>Department:</strong> {{ payslipDetails.payroll_run?.department }}</div>
-          <div><strong>Category:</strong> {{ payslipDetails.payroll_run?.category }}</div>
+          <div><strong>Branch:</strong> {{ names(payslipDetails.payroll_run?.branch) }}</div>
+          <div><strong>Department:</strong> {{ names(payslipDetails.payroll_run?.department) }}</div>
+          <div><strong>Category:</strong> {{ names(payslipDetails.payroll_run?.category) }}</div>
           <div><strong>Total Working Days:</strong> {{ payslipDetails.total_working_days }}</div>
 
           <div><strong>Days Worked:</strong> {{ payslipDetails.days_worked }}</div>
 
         </div>
       
-        <table class="modern-salary-table salary-table">
+        <table zPlain class="modern-salary-table salary-table">
           <thead>
             <tr>
               <th>Earning</th>
@@ -488,7 +458,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> process payroll </h2>
+              <h2> Process payroll </h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->

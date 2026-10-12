@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
+import { cpMoney } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** v1.13.0 – base path of the self-service pages (routes are registered under 'self-service'). */
 export const ESS_BASE = '/main-sidebar/self-service';
@@ -66,8 +67,8 @@ export class EssApiService {
   }
 }
 
-export const money = (v: any): string =>
-  'AED ' + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** v1.14.0: in the company currency (its decimals) */
+export const money = (v: any): string => cpMoney(Number(v || 0));
 
 export const POLICY_LABEL: Record<string, string> = {
   self: 'You can change this', request: 'Change needs HR approval', hr: 'Kept by HR', hidden: 'Not shown',

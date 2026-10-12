@@ -7,7 +7,7 @@ import { ASSET_BASE, AssetApiService, CONDITIONS, EVENT_ICON, STATUS_CLASS, STAT
 import { AssetFormComponent } from './asset-form.component';
 import { Bar, code39 } from './barcode';
 
-type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | 'schedule' | 'damage' | 'loss' | 'dispose' | 'label' | 'upload';
+type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | 'schedule' | 'damage' | 'loss' | 'dispose' | 'label' | 'upload' | 'verify';
 
 /** One asset (v1.12.0): details, assignment, maintenance, history and documents, with every life-cycle action. */
 @Component({
@@ -36,7 +36,10 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
             <button type="button" class="ex-btn" *ngIf="r.damage_add && a.status !== 'lost'" (click)="openAct('damage')">Report damage</button>
             <button type="button" class="ex-btn" *ngIf="r.loss_add && a.status !== 'lost' && a.status !== 'maintenance'" (click)="openAct('loss')">Report lost / stolen</button>
             <button type="button" class="ex-btn danger" *ngIf="r.disposal_add && !a.holder && a.status !== 'maintenance' && !a.pending?.disposal" (click)="openAct('dispose')">Dispose</button>
+            <button type="button" class="ex-btn" *ngIf="r.verify && a.status !== 'lost'" (click)="openAct('verify')">Verify</button>   <!-- v1.18.0 -->
             <button type="button" class="ex-btn" *ngIf="r.master_change" (click)="editing = true">Edit</button>
+            <!-- v1.15.1: delete a wrongly entered asset (was only possible on the old Asset master screen) -->
+            <button type="button" class="ex-btn danger" *ngIf="r.master_delete && !a.holder" (click)="removeAsset()" title="Only an asset without any history can be deleted. Dispose of it otherwise.">Delete</button>
           </ng-container>
           <button type="button" class="ex-btn" (click)="openAct('label')">Print label</button>
         </div>
@@ -77,6 +80,8 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <div><small>Depreciation</small><b>{{ dep(a.depreciation_method) }}<span *ngIf="a.depreciation_method !== 'none'">, {{ a.useful_life_months }} months</span></b></div>
           <div><small>Salvage value</small><b>{{ a.salvage_value !== undefined ? m(a.salvage_value, a.currency) : '–' }}</b></div>
           <div><small>Meter reading</small><b>{{ a.meter_reading || '–' }}</b></div>
+          <div><small>Last verified</small><b>{{ a.last_verified_on ? (a.last_verified_on | date:'dd MMM yyyy') + ' – ' + a.last_verified_label : 'Never' }}</b></div>   <!-- v1.18.0 -->
+          <div><small>Next verification</small><b [class.ap-due]="a.verification_due && a.verification_due < todayStr">{{ a.verification_due ? (a.verification_due | date:'dd MMM yyyy') : '–' }}</b></div>
           <div *ngFor="let c of a.custom_fields"><small>{{ c.name }}</small><b>{{ c.value || '–' }}</b></div>
           <div style="grid-column:1/-1" *ngIf="a.notes"><small>Notes</small><b>{{ a.notes }}</b></div>
         </div>
@@ -292,6 +297,14 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <span class="ap-gl" [class.gain]="(+x.value || 0) - +a.book_value > 0" [class.loss]="(+x.value || 0) - +a.book_value < 0">
             {{ (+x.value || 0) - +a.book_value >= 0 ? 'gain' : 'loss' }} {{ m(abs((+x.value || 0) - +a.book_value)) }}</span> (final figure on the disposal date)</div>
       </div>
+      <div class="ex-form" *ngIf="act === 'verify'">
+        <label>Result<select [(ngModel)]="x.result" name="vr"><option value="found">Found – as recorded</option><option value="wrong_location">Found – other location</option>
+          <option value="damaged">Found – damaged</option><option value="not_found">Not found</option></select></label>
+        <label>Checked on<input type="date" [(ngModel)]="x.verified_on" name="vd" [max]="todayStr"></label>
+        <label *ngIf="x.result === 'wrong_location'">Where IT is now<input [(ngModel)]="x.location" name="vl"></label>
+        <label class="wide">Note<textarea [(ngModel)]="x.note" name="vn"></textarea></label>
+        <p class="wide ex-muted" *ngIf="x.result === 'not_found' || x.result === 'damaged'">HR is told. Report the {{ x.result === 'not_found' ? 'loss' : 'damage' }} once it is confirmed – a salary deduction is never automatic.</p>
+      </div>
       <div class="ex-form" *ngIf="act === 'upload'">
         <label>Kind<select [(ngModel)]="x.kind" name="k"><option *ngFor="let k of fileKinds" [value]="k[0]">{{ k[1] }}</option></select></label>
         <label>Files *<input type="file" multiple (change)="upls = pickMany($event)" aria-label="Files"></label>
@@ -333,9 +346,9 @@ export class AssetDetailComponent implements OnInit {
   fileKinds = [['photo', 'Photo'], ['document', 'Document'], ['invoice', 'Invoice'], ['warranty', 'Warranty'], ['insurance', 'Insurance'], ['handover', 'Hand-over form'], ['other', 'Other']];
   titles: Record<string, string> = { allocate: 'Allocate the asset', return: 'Receive the asset back', transfer: 'Request a transfer', maintenance: 'Send to maintenance',
     close: 'Complete maintenance', schedule: 'Add a maintenance plan', damage: 'Report damage', loss: 'Report lost / stolen', dispose: 'Request disposal',
-    label: 'Asset label', upload: 'Upload files' };
+    label: 'Asset label', upload: 'Upload files', verify: 'Physical verification' };
   okText: Record<string, string> = { allocate: 'Allocate', return: 'Record the return', transfer: 'Send for approval', maintenance: 'Start maintenance',
-    close: 'Save', schedule: 'Add plan', damage: 'Report damage', loss: 'Report', dispose: 'Send for approval', upload: 'Upload' };
+    close: 'Save', schedule: 'Add plan', damage: 'Report damage', loss: 'Report', dispose: 'Send for approval', upload: 'Upload', verify: 'Record the check' };
   private closing: any = null;
 
   constructor(private api: AssetApiService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
@@ -383,6 +396,7 @@ export class AssetDetailComponent implements OnInit {
       loss: { kind: 'lost', loss_date: d, employee: null, place: '', police_report_no: '', description: '' },
       dispose: { method: 'sale', disposal_date: d, value: 0, buyer: '', reason: '' },
       upload: { kind: 'document' },
+      verify: { result: 'found', verified_on: d, location: '', note: '' },
     };
     this.x = { ...(defaults[a] || {}) };
     this.act = a;
@@ -420,6 +434,7 @@ export class AssetDetailComponent implements OnInit {
         case 'damage': await this.api.post(`assets/${id}/damage/`, AssetApiService.form(this.x, { photos: this.upls })); ok = 'Damage reported – it waits for approval.'; break;
         case 'loss': await this.api.post(`assets/${id}/loss/`, AssetApiService.form(this.x, { police_report_file: this.upl })); ok = 'Loss reported – it waits for approval.'; break;
         case 'dispose': await this.api.post(`assets/${id}/dispose/`, this.x); ok = 'Disposal sent for approval.'; break;
+        case 'verify': await this.api.post(`assets/${id}/verify/`, this.x); ok = 'Verification recorded.'; break;
         case 'upload':
           if (!this.upls.length) { this.err = 'Choose at least one file.'; this.busy = false; return; }
           await this.api.post(`assets/${id}/files/`, AssetApiService.form(this.x, { files: this.upls })); ok = 'Files uploaded.'; break;
@@ -447,6 +462,12 @@ export class AssetDetailComponent implements OnInit {
     try { await this.api.delete(`schedules/${s.id}/`); this.done('Plan removed.'); } catch (e: any) { this.fail(e); }
   }
 
+  /** v1.15.1: delete an asset entered by mistake (the server refuses when it has any history – then dispose of it). */
+  async removeAsset(): Promise<void> {
+    if (!confirm('Delete this asset? Only an asset without allocations, requests or maintenance can be deleted.')) return;
+    try { await this.api.delete(`assets/${this.id}/`); this.back(); } catch (e: any) { this.fail(e); }
+  }
+
   async removeFile(f: any): Promise<void> {
     if (!confirm(`Remove ${f.name}?`)) return;
     try { await this.api.delete(`assets/${this.id}/files/${f.id}/`); this.done('File removed.'); } catch (e: any) { this.fail(e); }
@@ -459,7 +480,7 @@ export class AssetDetailComponent implements OnInit {
   go(p: string): void { this.router.navigate([ASSET_BASE, p], { queryParams: { asset: this.id } }); }
   file(ev: Event): File | null { return (ev.target as HTMLInputElement).files?.[0] || null; }
   pickMany(ev: Event): File[] { return Array.from((ev.target as HTMLInputElement).files || []); }
-  m(v: any, c?: string): string { return money(v, c || this.a?.currency || 'AED'); }
+  m(v: any, c?: string): string { return money(v, c || this.a?.currency || undefined); }   // v1.14.0
   abs(v: any): number { return Math.abs(+v || 0); }
   lbl(s: string): string { return STATUS_LABEL[s] || s; }
   cls(s: string): string { return STATUS_CLASS[s] || ''; }

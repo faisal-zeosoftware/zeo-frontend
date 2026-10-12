@@ -121,7 +121,7 @@
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <header
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Employee Dashboard</h1>
+          <h1 class="h2">Employee dashboard</h1>
           <div class="d-flex">
             <div class="input-group me-3">
               <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
@@ -341,7 +341,7 @@
                               <strong>Employee Status</strong>
                             </div>
                             <small class="text-center">{{employeesec.emp_status}}</small>
-                            <!-- <h2>Employee Ess User</h2>
+                            <!-- <h2>Employee ESS user</h2>
                                 <h3>{{employee.is_ess}}</h3> -->
                           </div>
   
@@ -514,7 +514,7 @@
                             <div class="col-md-11">
                               <h2 >{{ ann.title }}</h2>
                               <h3 >
-                                {{ ann.schedule_at | date: 'mediumDate' }} – {{ ann.expires_at | date: 'mediumDate' }}
+                                {{ ann.schedule_at | date:'dd MMM yyyy' }} – {{ ann.expires_at | date:'dd MMM yyyy' }}
                               </h3>
                             </div>
                             <div class="col-md-1 text-end">
@@ -555,7 +555,7 @@
   
                <!-- EMPLOYEE PROJECT SECTION -->
   <div class="project-section" *ngIf="employeesec.projects?.length > 0; else noProjects">
-    <h3 class="section-title">🧩 Employee Projects</h3>
+    <h3 class="section-title">🧩 Employee projects</h3>
   
     <div class="project-grid">
       <div class="project-card" *ngFor="let project of employeesec.projects">
@@ -564,7 +564,7 @@
             <h4 class="project-title">{{ project.title || 'Untitled Project' }}</h4>
             <p class="project-desc">{{ project.description }}</p>
           </div>
-          <span class="status-badge" [ngClass]="project.status">{{ project.status }}</span>
+          <span class="status-badge" [ngClass]="project.status">{{ statusLabel(project.status) }}</span>
         </div>
   
         <div class="project-meta">
@@ -601,7 +601,7 @@
           <div class="task-item" *ngFor="let task of project.tasks">
             <div class="task-header">
               <strong>{{ task.title }}</strong>
-              <span class="task-status" [ngClass]="task.status">{{ task.status }}</span>
+              <span class="task-status" [ngClass]="task.status">{{ statusLabel(task.status) }}</span>
             </div>
             <p class="task-desc">{{ task.description }}</p>
             <small class="task-date">
@@ -993,13 +993,13 @@
                         <h3>{{ document.emp_doc_number }}</h3>
                       </div>
                       <div class="col-md-2">
-                        <h2>issue Date</h2>
+                        <h2>Issue date</h2>
                         <h3> {{ document.emp_doc_issued_date }}</h3>
                       </div>
   
   
                       <div class="col-md-2">
-                        <h2>expired date</h2>
+                        <h2>Expired date</h2>
                         <h3>{{ document.emp_doc_expiry_date }} </h3>
                       </div>
   
@@ -1016,7 +1016,7 @@
   
   
                       <div class="col-md-3">
-                        <h2>Employee Document</h2>
+                        <h2>Employee document</h2>
   
                         <div *ngIf="document.emp_doc_document">
                           <a [href]="document.emp_doc_document" target="_blank"
@@ -1030,7 +1030,7 @@
   
   
                       <!-- <div class="col-md-3" >
-                            <h2>employee document</h2>
+                            <h2>Employee document</h2>
                             <img src="{{ document.emp_doc_document }}"  alt="Employee Document">
                         </div> -->
   
@@ -1073,15 +1073,15 @@
   
                             <th class="text-table-header">Month</th>
   
-                            <th class="text-table-header">Total Working Days</th>
+                            <th class="text-table-header">Total working days</th>
   
-                            <th class="text-table-header">Day Worked</th>
-                            <th class="text-table-header">Payment Date</th>
+                            <th class="text-table-header">Day worked</th>
+                            <th class="text-table-header">Payment date</th>
                             <th class="text-table-header">Components </th>
-                            <th class="text-table-header">Gross Salary</th>
-                            <th class="text-table-header">Net Salary</th>
+                            <th class="text-table-header">Gross salary</th>
+                            <th class="text-table-header">Net salary</th>
                             <th class="text-table-header">Status</th>
-                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                            <!-- <th class="text-table-header">Payslip component</th> -->
                           </tr>
                         </thead>
                         <tbody class="text-table-body">
@@ -1145,19 +1145,19 @@
                   <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
                     <div class="row">
                       <div class="col-md-3">
-                        <h2>Asset Name</h2>
+                        <h2>Asset name</h2>
                         <h3>{{ member.asset }}</h3>
                       </div>
                       <div class="col-md-3">
-                        <h2>Assigned Date</h2>
+                        <h2>Assigned date</h2>
                         <h3>{{ member.assigned_date }}</h3>
                       </div>
                       <div class="col-md-3">
-                        <h2>Return Condition</h2>
+                        <h2>Return condition</h2>
                         <h3>{{ member.return_condition }}</h3>
                       </div>
                       <div class="col-md-3">
-                        <h2>Return Date</h2>
+                        <h2>Return date</h2>
                         <h3>{{ member.returned_date }}</h3>
                       </div>
   
@@ -1197,19 +1197,19 @@
                             <th class="text-table-header" style="width: 0;">No</th>
                             <!-- <th class="text-table-header">Employee</th> -->
                             <th class="text-table-header">Amount requested</th>
-                            <th class="text-table-header">EMI Amount</th>
+                            <th class="text-table-header">EMI amount</th>
   
-                            <th class="text-table-header">Loan Type</th>
-                            <th class="text-table-header">Document Number</th>
+                            <th class="text-table-header">Loan type</th>
+                            <th class="text-table-header">Document number</th>
   
-                            <th class="text-table-header">Repayment Period</th>
+                            <th class="text-table-header">Repayment period</th>
   
-                            <th class="text-table-header">Remaining Balance</th>
-                            <th class="text-table-header">applied on</th>
-                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">Remaining balance</th>
+                            <th class="text-table-header">Applied on</th>
+                            <th class="text-table-header">Applied on</th>
                             <th class="text-table-header">Disbursement date</th>
                             <th class="text-table-header">Status</th>
-                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                            <!-- <th class="text-table-header">Payslip component</th> -->
                           </tr>
                         </thead>
                         <tbody class="text-table-body">
@@ -1293,7 +1293,7 @@
                         
                             </div>
                             <div class="col-md-2 mt-3">
-                                <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
+                                <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate report</button>
                               </div>
                         </div>
                         
@@ -1314,11 +1314,11 @@
   <table class="table table-bordered table-hover mt-3 text-center">
   <thead>
   <tr>
-  <th>Employee Name</th>
+  <th>Employee name</th>
   <th *ngFor="let day of daysArray">Day {{ day }}</th>
-  <!-- <th>Total Days</th> -->
-  <th>Present Days</th>
-  <th>Absent Days</th>
+  <!-- <th>Total days</th> -->
+  <th>Present days</th>
+  <th>Absent days</th>
   </tr>
   </thead>
   <tbody>
@@ -1362,19 +1362,19 @@
                             <th class="text-table-header" style="width: 0;">No</th>
                             <!-- <th class="text-table-header">Employee</th> -->
                             <th class="text-table-header">Amount requested</th>
-                            <th class="text-table-header">EMI Amount</th>
+                            <th class="text-table-header">EMI amount</th>
   
-                            <th class="text-table-header">Loan Type</th>
-                            <th class="text-table-header">Document Number</th>
+                            <th class="text-table-header">Loan type</th>
+                            <th class="text-table-header">Document number</th>
   
-                            <th class="text-table-header">Repayment Period</th>
+                            <th class="text-table-header">Repayment period</th>
   
-                            <th class="text-table-header">Remaining Balance</th>
-                            <th class="text-table-header">applied on</th>
-                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">Remaining balance</th>
+                            <th class="text-table-header">Applied on</th>
+                            <th class="text-table-header">Applied on</th>
                             <th class="text-table-header">Disbursement date</th>
                             <th class="text-table-header">Status</th>
-                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                            <!-- <th class="text-table-header">Payslip component</th> -->
                           </tr>
                         </thead>
                         <tbody class="text-table-body">
@@ -1437,7 +1437,7 @@
             <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
               <div class="row">
                 <div class="col-md-6">
-                  <label>Start Date</label>
+                  <label>Start date</label>
                   <input
                   type="date"
                   class="form-control"
@@ -1449,7 +1449,7 @@
                 </div>
             
                 <div class="col-md-6">
-                  <label>End Date</label>
+                  <label>End date</label>
                   <input
                   type="date"
                   class="form-control"
@@ -1469,7 +1469,7 @@
            
   
                 <!-- <div class="col-md-6">
-                  <label>Approved On</label>
+                  <label>Approved on</label>
                   <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
                          [ngModelOptions]="{standalone: true}" >
                 </div> -->
@@ -1484,7 +1484,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                  <label>Half Day Period</label>
+                  <label>Half day period</label>
                   <div class="custom-sel">
                     <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
                       <option value="first_half">First Half</option>
@@ -1495,7 +1495,7 @@
   
   
                 <div class="col-md-6">
-                  <label>Leave Type</label>
+                  <label>Leave type</label>
                   <div class="custom-sel">
                     <select
                       class="form-control"
@@ -1521,7 +1521,7 @@
               <div class="row">
                 <div class="col-md-9"></div>
                 <div class="col-md-3">
-                  <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+                  <button type="submit" class="btn btn-success btn-full mt-4">Add leave type</button>
                 </div>
               </div>
             </form>
@@ -1542,14 +1542,14 @@
                     <tr>
                       <th class="text-table-header" style="width: 0;">No</th>
                       <!-- <th class="text-table-header">Employee</th> -->
-                      <th class="text-table-header">Start Date</th>
+                      <th class="text-table-header">Start date</th>
   
-                      <th class="text-table-header">End Date</th>
-                      <th class="text-table-header">Leave Type</th>
+                      <th class="text-table-header">End date</th>
+                      <th class="text-table-header">Leave type</th>
   
                       <th class="text-table-header">Status</th>
   
-                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                      <!-- <th class="text-table-header">Payslip component</th> -->
                     </tr>
                   </thead>
                   <tbody class="text-table-body">
@@ -1583,15 +1583,15 @@
                           [ngClass]="{'selected-request': selectedRequestId === request.id}">
                             <div class="row">
                               <div class="col-md-4">
-                                <label>Leave Type</label>
+                                <label>Leave type</label>
                                 <h6>{{ request.leave_type || 'N/A' }}</h6>
                               </div>
                               <div class="col-md-4">
-                                <label>Start Date</label>
+                                <label>Start date</label>
                                 <h6>{{ request.start_date }}</h6>
                               </div>
                               <div class="col-md-4">
-                                <label>End Date</label>
+                                <label>End date</label>
                                 <h6>{{ request.end_date }}</h6>
                               </div>
                             </div>
@@ -1623,7 +1623,7 @@
                                   <h6>{{ approval.note || 'N/A' }}</h6>
                                 </div>
                                 <!-- <div class="col-md-2">
-                                  <label>Updated At</label>
+                                  <label>Updated at</label>
                                   <h6>{{ approval.updated_at }}</h6>
                                 </div> -->
                               </div>
@@ -1659,7 +1659,7 @@
     
                     <!-- <div class="col-md-3">
                         <div class="custom-sel">
-                            <label>Select Branches</label>
+                            <label>Select branches</label>
                             <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                                 <option value="">Select</option>
                                 <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -1668,7 +1668,7 @@
                         </div>
                     </div> -->
                     <div class="col-md-6">
-                        <label>Document Number</label>
+                        <label>Document number</label>
                         <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
                             [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
                     </div>
@@ -1691,7 +1691,7 @@
         
               <div class="col-md-6">
                 <div class="custom-sel">
-                  <label>Select Request Type</label>
+                  <label>Select request type</label>
                   <select class="form-control"
                           id="request_type"
                           required
@@ -1727,7 +1727,7 @@
   
     
         <div class="col-md-6">
-            <label>Request Document</label>
+            <label>Request document</label>
             <input type="file" class="form-control" (change)="onFileChange($event)">
           </div>
         <div class="col-md-12">
@@ -1772,14 +1772,14 @@
                     <tr>
                       <th class="text-table-header" style="width: 0;">No</th>
                       <!-- <th class="text-table-header">Employee</th> -->
-                      <th class="text-table-header">Start Date</th>
+                      <th class="text-table-header">Start date</th>
   
-                      <th class="text-table-header">End Date</th>
-                      <th class="text-table-header">Leave Type</th>
+                      <th class="text-table-header">End date</th>
+                      <th class="text-table-header">Leave type</th>
   
                       <th class="text-table-header">Status</th>
   
-                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                      <!-- <th class="text-table-header">Payslip component</th> -->
                     </tr>
                   </thead>
                   <tbody class="text-table-body">
@@ -1831,7 +1831,7 @@
         
   
           <div class="col-md-6" >
-            <label>Select Asset Type</label>
+            <label>Select asset type</label>
             <div class="custom-sel">
               <select
                 class="form-control"
@@ -1851,7 +1851,7 @@
   
   
   <div class="col-md-6" >
-    <label>Select Requested Asset </label>
+    <label>Select requested asset </label>
     <div class="custom-sel">
       <select
         class="form-control"
@@ -1909,14 +1909,14 @@
                     <tr>
                       <th class="text-table-header" style="width: 0;">No</th>
                       <!-- <th class="text-table-header">Employee</th> -->
-                      <th class="text-table-header">Asset Type</th>
+                      <th class="text-table-header">Asset type</th>
   
                       <th class="text-table-header">Reason</th>
-                      <th class="text-table-header"> Requested Asset</th>
+                      <th class="text-table-header"> Requested asset</th>
   
                       <th class="text-table-header">Status</th>
   
-                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                      <!-- <th class="text-table-header">Payslip component</th> -->
                     </tr>
                   </thead>
                   <tbody class="text-table-body">
@@ -1951,7 +1951,7 @@
            <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
                     <div class="row">
                       <div class="col-md-6">
-                        <label>Document Number</label>
+                        <label>Document number</label>
                         <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
@@ -1963,7 +1963,7 @@
                       </div>
                   
                       <div class="col-md-6">
-                        <label>reason</label>
+                        <label>Reason</label>
                         <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
@@ -2019,16 +2019,16 @@
                     <tr>
                       <th class="text-table-header" style="width: 0;">No</th>
                       <!-- <th class="text-table-header">Employee</th> -->
-                      <th class="text-table-header">Document Number</th>
+                      <th class="text-table-header">Document number</th>
   
-                      <th class="text-table-header">Requested Amount</th>
+                      <th class="text-table-header">Requested amount</th>
                       <th class="text-table-header"> Remark</th>
                                           <th class="text-table-header"> Reason</th>
   
   
                       <th class="text-table-header">Status</th>
   
-                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                      <!-- <th class="text-table-header">Payslip component</th> -->
                     </tr>
                   </thead>
                   <tbody class="text-table-body">
@@ -2077,7 +2077,7 @@
                   </div>
   
                   <div class="col-md-4">
-                    <label>Emi amount</label>
+                    <label>EMI amount</label>
                     <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
                            [ngModelOptions]="{standalone: true}">
                   
@@ -2099,7 +2099,7 @@
             
   
                   <div class="col-md-6" >
-                    <label>Loan Type</label>
+                    <label>Loan type</label>
                     <div class="custom-sel">
                       <select
                         class="form-control"
@@ -2130,7 +2130,7 @@
                 <div class="row">
                   <div class="col-md-8"></div>
                   <div class="col-md-4">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+                    <button type="submit" class="btn btn-success btn-full mt-4">Add loan application</button>
                   </div>
                 </div>
               </form>
@@ -2151,25 +2151,25 @@
                     <tr>
                       <th class="text-table-header" style="width: 0;">No</th>
                       <!-- <th class="text-table-header">Employee</th> -->
-                      <th class="text-table-header">Amount Requested</th>
+                      <th class="text-table-header">Amount requested</th>
   
-                      <th class="text-table-header">disbursement date</th>
-                      <th class="text-table-header"> document number</th>
-                                          <th class="text-table-header"> emi amount</th>
-                                          <th class="text-table-header">  loan type</th>
-                                          <th class="text-table-header">  pause reason</th>
-                                          <th class="text-table-header">  pause start date</th>
-                                          <th class="text-table-header">  rejection reason</th>
-                                          <th class="text-table-header">  remaining balance</th>
-                                          <th class="text-table-header">  repayment period</th>
-                                          <th class="text-table-header">  resume date</th>
-                                          <th class="text-table-header">  applied on</th>
-                                          <th class="text-table-header">  approved on</th>
+                      <th class="text-table-header">Disbursement date</th>
+                      <th class="text-table-header"> Document number</th>
+                                          <th class="text-table-header"> EMI amount</th>
+                                          <th class="text-table-header">  Loan type</th>
+                                          <th class="text-table-header">  Pause reason</th>
+                                          <th class="text-table-header">  Pause start date</th>
+                                          <th class="text-table-header">  Rejection reason</th>
+                                          <th class="text-table-header">  Remaining balance</th>
+                                          <th class="text-table-header">  Repayment period</th>
+                                          <th class="text-table-header">  Resume date</th>
+                                          <th class="text-table-header">  Applied on</th>
+                                          <th class="text-table-header">  Approved on</th>
   
   
                       <th class="text-table-header">Status</th>
   
-                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                      <!-- <th class="text-table-header">Payslip component</th> -->
                     </tr>
                   </thead>
                   <tbody class="text-table-body">
@@ -2230,27 +2230,27 @@
                   </div>
     
                   <div class="col-md-6">
-                    <label> resigned on</label>
+                    <label> Resigned on</label>
                     <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
                            [ngModelOptions]="{standalone: true}" >
                   </div>
               
                   <div class="col-md-6">
-                    <label>notice period</label>
+                    <label>Notice period</label>
                     <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
                            [ngModelOptions]="{standalone: true}" >
                   </div>
     
                 
                   <div class="col-md-6">
-                    <label>last working date</label>
+                    <label>Last working date</label>
                     <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
                            [ngModelOptions]="{standalone: true}" >
                   </div>
                 
     
                   <div class="col-md-6">
-                    <label>location</label>
+                    <label>Location</label>
                     <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
                            [ngModelOptions]="{standalone: true}" >
                   </div>

@@ -6,7 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 declare var $: any;
-import 'summernote'; // Ensure you have summernote imported
+// v1.15.1: Summernote + jQuery come once from angular.json \"scripts\" (global $); importing the npm module bundled a second jQuery copy.
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import { combineLatest, Subscription } from 'rxjs';
@@ -224,7 +224,7 @@ this.loadDeparmentBranch();
 
 
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

@@ -5,6 +5,12 @@ import { Router } from '@angular/router';
 import { DashboardService, DrillRequest, MODULE_LINKS } from './dashboard.service';
 import { DrillPanelComponent } from './drill-panel.component';
 import { ZChartComponent } from './z-chart.component';
+import { COUNTRY_PACK_UI } from '../../shared-ui/country-pack.service';   // v1.14.0
+import { ZDashDesignerComponent } from '../../shared-ui/z-dash.component';   // v1.16.0
+import { DashPeriod, DashPeriods, savedPeriod } from '../../shared-ui/z-dash-period';
+import { recordUrl, employeeUrl } from '../../shared-ui/z-nav';
+import { I18N_UI, i18nT } from '../../shared-ui/i18n.service';   // v1.17.0: zdate
+import { ZStatusPipe } from '../../shared-ui/status-label';
 
 /**
  * Manager / HR dashboard across all modules.
@@ -13,14 +19,18 @@ import { ZChartComponent } from './z-chart.component';
 @Component({
   selector: 'app-manager-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, DrillPanelComponent, ZChartComponent],
+  imports: [...COUNTRY_PACK_UI, ...I18N_UI, ZStatusPipe, CommonModule, FormsModule, DrillPanelComponent, ZChartComponent, ZDashDesignerComponent],
   templateUrl: './manager-dashboard.component.html',
   styleUrls: ['./dashboards.css'],
 })
 export class ManagerDashboardComponent implements OnInit {
   @Input() embedded = false;   // inside the ESS page (no page title)
   @Input() inPortal = false;
+  /** v1.17.0: the Team view of Home – the user's own team only (company figures are on HR operations / Management) */
+  @Input() teamOnly = false;
   @Output() openTab = new EventEmitter<string>();
+  /** layout name of the designer: Team view of Home, team inside My dashboard, the old manager page */
+  get layoutName(): string { return this.teamOnly ? 'team' : this.embedded ? 'ess-team' : 'manager'; }
 
   d: any = null;
   error = '';
@@ -32,32 +42,65 @@ export class ManagerDashboardComponent implements OnInit {
 
   constructor(private svc: DashboardService, private router: Router) {}
 
+  /** v1.16.0: the dashboard period and the cards with a period of their own (from the designer). */
+  readonly boardId = 'zdm-' + Math.random().toString(36).slice(2, 8);
+  private dash: DashPeriod | null = null;
+  private own: Record<string, DashPeriod> = {};
+  private seq = 0;
+  /** card → the fields of the summary it shows (a card with its own period gets them from its own call) */
+  private readonly FIELDS: Record<string, string[]> = {
+    'm-trend': ['attendance_trend'], 'm-out': ['out_next_14', 'out_count'], 'm-celeb': ['celebrations'], 'm-ot': ['overtime'], 'm-pay': ['payroll'],
+  };
+
   ngOnInit(): void {
-    // #region agent log
-    requestAnimationFrame(() => {
-      const el = document.querySelector('.zdash') as HTMLElement | null;
-      const sidebar = document.getElementById('sidebarMenu');
-      const cr = el?.getBoundingClientRect();
-      const sr = sidebar?.getBoundingClientRect();
-      const cs = el ? getComputedStyle(el) : null;
-      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'A',location:'manager-dashboard.component.ts:ngOnInit',message:'manager-dashboard layout',data:{cls:(el?.className||'').toString(),embedded:this.embedded,contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,sidebarOpen:sidebar?.classList.contains('menu-open'),cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
-    });
-    // #endregion
+    // the designer sits inside the loaded dashboard: start with the period saved on this device, the designer confirms it
+    if (this.teamOnly) { this.scope = 'team'; }
+    this.dash = savedPeriod(this.layoutName);
     this.load();
   }
 
+  onPeriods(p: DashPeriods): void {
+    const changed = !this.dash || this.dash.from !== p.dash.from || this.dash.to !== p.dash.to;
+    this.dash = p.dash;
+    const prev = this.own;
+    this.own = {};
+    Object.keys(this.FIELDS).forEach(k => { if (p.cards[k]) { this.own[k] = p.cards[k]; } });
+    if (changed || !this.d) { this.load(); return; }
+    Object.keys(this.FIELDS).forEach(k => {
+      const a = prev[k], b = this.own[k];
+      if ((a?.from || '') + (a?.to || '') !== (b?.from || '') + (b?.to || '')) { this.loadCard(k); }
+    });
+  }
+
+  private per(p?: DashPeriod | null): Record<string, any> { return p ? { from: p.from, to: p.to } : {}; }
+
   load(): void {
     this.loading = true;
-    this.svc.team(this.scope || undefined, this.department || undefined).subscribe({
+    const seq = ++this.seq;
+    this.svc.team(this.scope || undefined, this.department || undefined, this.per(this.dash)).subscribe({
       next: d => {
+        if (seq !== this.seq) { return; }
         this.d = d;
         this.scope = d.scope;
         this.loading = false;
         if (d.is_admin && !this.departments.length) { this.svc.departments().subscribe(x => (this.departments = x)); }
+        Object.keys(this.own).forEach(k => this.loadCard(k));
       },
       error: e => { this.error = e?.error?.detail || 'Could not load the team dashboard.'; this.loading = false; },
     });
   }
+
+  /** A card with its own period: the same summary for that period, only its fields are taken. */
+  private loadCard(k: string): void {
+    const p = this.own[k] || this.dash;
+    this.svc.team(this.scope || undefined, this.department || undefined, this.per(p)).subscribe({
+      next: x => { if (this.d) { this.FIELDS[k].forEach(f => (this.d[f] = x[f])); } },
+      error: () => { /* keep what is shown */ },
+    });
+  }
+
+  /** The period a card shows (its own or the dashboard's). */
+  cardPeriod(k?: string): DashPeriod | null { return (k && this.own[k]) || this.dash; }
 
   setScope(s: string): void { this.scope = s; this.department = ''; this.load(); }
 
@@ -65,17 +108,30 @@ export class ManagerDashboardComponent implements OnInit {
     return { scope: this.scope, department: this.department || '', ...extra };
   }
 
-  drill(metric: string, title?: string, extra: Record<string, any> = {}): void {
-    this.drillReq = { metric, title, params: this.p(extra) };
+  drill(metric: string, title?: string, extra: Record<string, any> = {}, card?: string): void {
+    this.drillReq = { metric, title, params: this.p({ ...this.per(this.cardPeriod(card)), ...extra }) };
   }
 
+  /** v1.16.0: a line opens its record, a person their page. */
+  openRec(x: any): void { if (x?._m) { this.router.navigateByUrl(recordUrl(x._m, x._id)); } }
+  /** v1.17.0 (audit M12): in the Team view a manager opens the person's 360 view here (the employee master's family / job
+   *  history tabs are for HR and fail for a line manager); HR / admins still open the employee record. */
+  personId: number | null = null;
+  openEmp(id: any): void {
+    if (!id) { return; }
+    if (this.inPortal || (this.teamOnly && !this.d?.is_admin)) { this.drillReq = null; this.personId = Number(id); return; }
+    this.router.navigateByUrl(employeeUrl(id));
+  }
+  goUrl(u: string): void { if (!this.inPortal) { this.router.navigateByUrl(u); } }
+
   // charts
-  get trendLabels(): string[] { return (this.d?.attendance_trend || []).map((x: any) => new Date(x.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })); }
+  // v1.17.0: day/month in digits (the same in every language; no English month names in Arabic)
+  get trendLabels(): string[] { return (this.d?.attendance_trend || []).map((x: any) => `${String(x.date).slice(8, 10)}/${String(x.date).slice(5, 7)}`); }
   get trendValues(): number[] { return (this.d?.attendance_trend || []).map((x: any) => x.rate); }
-  get trendExtra(): string[] { return (this.d?.attendance_trend || []).map((x: any) => `${x.present} present · ${x.late} late · ${x.on_leave} on leave`); }
+  get trendExtra(): string[] { return (this.d?.attendance_trend || []).map((x: any) => i18nT('{0} present · {1} late · {2} on leave', [x.present, x.late, x.on_leave])); }
   pickDay(i: number): void {
     const x = this.d.attendance_trend[i];
-    this.drill('attendance_day', `Present on ${new Date(x.date).toLocaleDateString('en-GB')}`, { date: x.date });
+    this.drill('attendance_day', i18nT('Present on {0}', [`${String(x.date).slice(8, 10)}/${String(x.date).slice(5, 7)}/${String(x.date).slice(0, 4)}`]), { date: x.date });
   }
 
   get compLabels(): string[] { return (this.d?.composition?.rows || []).map((x: any) => x.label); }
@@ -93,6 +149,10 @@ export class ManagerDashboardComponent implements OnInit {
   get payExtra(): string[] { return (this.d?.payroll || []).map((x: any) => `gross ${Math.round(x.gross).toLocaleString()} · deductions ${Math.round(x.deductions).toLocaleString()}`); }
   pickPay(i: number): void { const r = this.d.payroll[i]; this.drill('payroll_run', `Payslips – ${r.label}`, { run: r.run_id }); }
 
+  /** v1.17.0: day/month in digits; a planner day opens the leave of that day (drill out_next, from = to = the day) */
+  dm(d: any): string { return `${String(d).slice(8, 10)}/${String(d).slice(5, 7)}`; }
+  planDay(p: any): void { this.drillReq = { metric: 'out_next', title: i18nT('Out on {0}', [`${this.dm(p.date)}/${String(p.date).slice(0, 4)}`]), params: this.p({ from: p.date, to: p.date }) }; }
+  get planMax(): number { return Math.max(1, ...((this.d?.planner || []).map((p: any) => p.out))); }
   get otMax(): number { return Math.max(1, ...((this.d?.overtime?.top || []).map((t: any) => t.hours))); }
   get ratingMax(): number { return Math.max(1, ...((this.d?.ratings?.rows || []).map((r: any) => r.count))); }
 

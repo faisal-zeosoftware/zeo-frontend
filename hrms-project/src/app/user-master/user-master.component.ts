@@ -1,3 +1,4 @@
+import { i18nT } from '../shared-ui/i18n-core';   // v1.20.1
 import { Component,OnInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
@@ -161,7 +162,7 @@ if (this.userId !== null) {
              this.hasEditPermission = this.checkGroupPermission('change_customuser', groupPermissions);
               console.log('Has edit permission:', this.hasEditPermission);
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -278,13 +279,21 @@ filterEmployees() {
     Delete: boolean = false;
     allSelected: boolean = false;
 
+  deleteOne(u: any): void { this.Users.forEach(x => x.selected = x === u); this.deleteSelectedEmployees(); }
+
+  userType(u: any): string {
+    return i18nT(u.is_superuser ? 'Administrator' : u.is_staff ? 'Staff' : u.is_ess ? 'Employee (ESS)' : 'User');
+  }
+
+  never(): string { return i18nT('Never'); }
+
   toggleCheckboxes() {
     this.Delete = !this.Delete;
   }
 
   toggleSelectAllEmployees() {
     this.allSelected = !this.allSelected;
-    this.Users.forEach(employee => employee.selected = this.allSelected);
+    this.filteredEmployees.forEach(employee => employee.selected = this.allSelected);
   }
 
   onCheckboxChange(employee:number) {
@@ -301,7 +310,7 @@ filterEmployees() {
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected user?')) {
+    if (confirm('Delete this user? They can no longer sign in.')) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

@@ -18,7 +18,7 @@ const levelDots = (n: any) => (n ? '●'.repeat(+n) + '○'.repeat(5 - +n) : '�
 const ACTIVE = { key: 'is_active', label: 'Active', type: 'bool' as const };
 
 export const CATEGORY_PAGE: PageConfig = {
-  title: 'Training Categories', itemName: 'Category', endpoint: LP_API + 'categories/', model: 'course',
+  title: 'Training categories', itemName: 'Category', endpoint: LP_API + 'categories/', model: 'course',
   intro: 'Training types used to group the course catalog (e.g. HSE, Compliance, Technical, Soft skills).',
   columns: [{ key: 'code', label: 'Code' }, { key: 'name', label: 'Category' }, { key: 'description', label: 'Description' }, ACTIVE],
   fields: [
@@ -31,7 +31,7 @@ export const CATEGORY_PAGE: PageConfig = {
 };
 
 export const PROVIDER_PAGE: PageConfig = {
-  title: 'Training Providers', itemName: 'Provider', endpoint: LP_API + 'providers/', model: 'course',
+  title: 'Training providers', itemName: 'Provider', endpoint: LP_API + 'providers/', model: 'course',
   intro: 'External institutes and consultants. TRN is the 15-digit UAE VAT number on their tax invoices.',
   columns: [
     { key: 'name', label: 'Provider' }, { key: 'contact_person', label: 'Contact' }, { key: 'phone', label: 'Phone' },
@@ -78,7 +78,7 @@ export const TRAINER_PAGE: PageConfig = {
 };
 
 export const VENUE_PAGE: PageConfig = {
-  title: 'Training Venues', itemName: 'Venue', endpoint: LP_API + 'venues/', model: 'course',
+  title: 'Training venues', itemName: 'Venue', endpoint: LP_API + 'venues/', model: 'course',
   columns: [{ key: 'name', label: 'Venue' }, { key: 'location', label: 'Location' }, { key: 'capacity', label: 'Capacity' }, { key: 'cost_per_day', label: 'Cost / day', type: 'money' }, ACTIVE],
   fields: [
     { key: 'name', label: 'Venue', type: 'text', required: true, width: 6 }, { key: 'location', label: 'Location', type: 'text', width: 6 },
@@ -100,7 +100,7 @@ export const SKILL_PAGE: PageConfig = {
 };
 
 export const ROLE_SKILL_PAGE: PageConfig = {
-  title: 'Role Skills', itemName: 'Role Skill', endpoint: LP_API + 'role-skills/', model: 'course',
+  title: 'Role skills', itemName: 'Role skill', endpoint: LP_API + 'role-skills/', model: 'course',
   intro: 'Required level of each skill per designation. The skill matrix shows the gap between an employee\'s level and this requirement.',
   columns: [{ key: 'designation_display', label: 'Designation' }, { key: 'skill_display', label: 'Skill' }, { key: 'required_level', label: 'Required level', value: r => levelDots(r.required_level) }],
   filters: [{ key: 'designation', label: 'Designation', lookup: LOOKUPS.designations }, { key: 'skill', label: 'Skill', lookup: SKILLS }],
@@ -113,7 +113,7 @@ export const ROLE_SKILL_PAGE: PageConfig = {
 };
 
 export const EMPLOYEE_SKILL_PAGE: PageConfig = {
-  title: 'Employee Skills', itemName: 'Employee Skill', endpoint: LP_API + 'employee-skills/',
+  title: 'Employee skills', itemName: 'Employee skill', endpoint: LP_API + 'employee-skills/',
   intro: 'Updated automatically when someone passes a course that gives a skill. HR and managers can record levels (verified); employees can add a self-assessment.',
   columns: [
     { key: 'employee_display', label: 'Employee' }, { key: 'skill_display', label: 'Skill' }, { key: 'level', label: 'Level', value: r => levelDots(r.level) },
@@ -133,7 +133,7 @@ export const EMPLOYEE_SKILL_PAGE: PageConfig = {
 };
 
 export const BUDGET_PAGE: PageConfig = {
-  title: 'Training Budgets', itemName: 'Budget', endpoint: LP_API + 'budgets/', model: 'trainingsession',
+  title: 'Training budgets', itemName: 'Budget', endpoint: LP_API + 'budgets/', model: 'trainingsession',
   intro: 'Yearly training budget per department; leave department empty for the company-wide budget. See Budget vs Actual for spend.',
   columns: [{ key: 'year', label: 'Year' }, { key: 'department_display', label: 'Department', value: r => r.department_display || 'Company (all)' }, { key: 'amount', label: 'Budget (AED)', type: 'money' }, { key: 'notes', label: 'Notes' }],
   filters: [{ key: 'year', label: 'Year', options: [0, 1, 2].map(i => { const y = new Date().getFullYear() + 1 - i; return { value: String(y), label: String(y) }; }) }],
@@ -147,7 +147,7 @@ export const BUDGET_PAGE: PageConfig = {
 };
 
 export const SESSION_COST_PAGE: PageConfig = {
-  title: 'Session Costs', itemName: 'Cost line', endpoint: LP_API + 'session-costs/', model: 'trainingsession',
+  title: 'Session costs', itemName: 'Cost line', endpoint: LP_API + 'session-costs/', model: 'trainingsession',
   intro: 'Trainer fees, venue, material and travel per session. Shared across confirmed participants in the per-employee cost.',
   columns: [{ key: 'session_display', label: 'Session' }, { key: 'kind', label: 'Type' }, { key: 'description', label: 'Description' }, { key: 'invoice_ref', label: 'Invoice' }, { key: 'amount', label: 'Amount (AED)', type: 'money' }],
   filters: [{ key: 'session_id', label: 'Session', lookup: SESSIONS }],

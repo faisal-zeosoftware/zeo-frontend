@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { EmployeeProfileService, eidProblem, ibanProblem } from './employee-profile.service';
+import { CountryPackService, cpLocalize } from '../shared-ui/country-pack.service';   // v1.14.0
 
 type Kind = 'dependents' | 'bank' | 'qualifications';
-interface X { key: string; label: string; type: 'text' | 'date' | 'bool' | 'select' | 'nationality' | 'country' | 'file'; options?: { v: string; l: string }[]; }
+interface X { key: string; label: string; type: 'text' | 'date' | 'bool' | 'select' | 'nationality' | 'country' | 'file'; options?: { v: string; l: string }[]; country?: string; }
 
 const CFG: Record<Kind, { title: string; endpoint: string; name: (r: any) => string; sub: (r: any) => string; fields: X[] }> = {
   dependents: {
@@ -16,7 +17,7 @@ const CFG: Record<Kind, { title: string; endpoint: string; name: (r: any) => str
       { key: 'gender', label: 'Gender', type: 'select', options: [{ v: 'M', l: 'Male' }, { v: 'F', l: 'Female' }, { v: 'O', l: 'Other' }] },
       { key: 'nationality_id', label: 'Nationality', type: 'nationality' },
       { key: 'passport_no', label: 'Passport number', type: 'text' }, { key: 'passport_expiry_date', label: 'Passport expiry', type: 'date' },
-      { key: 'emirates_id', label: 'Emirates ID', type: 'text' }, { key: 'emirates_id_expiry_date', label: 'Emirates ID expiry', type: 'date' },
+      { key: 'emirates_id', label: 'Emirates ID', type: 'text', country: 'national_id' }, { key: 'emirates_id_expiry_date', label: 'Emirates ID expiry', type: 'date', country: 'national_id' },
       { key: 'visa_number', label: 'Visa number', type: 'text' }, { key: 'visa_expiry_date', label: 'Visa expiry', type: 'date' },
       { key: 'insured', label: 'Covered by medical insurance', type: 'bool' }, { key: 'visa_sponsored', label: 'Visa sponsored by the employee', type: 'bool' }],
   },
@@ -25,7 +26,7 @@ const CFG: Record<Kind, { title: string; endpoint: string; name: (r: any) => str
     name: r => `${r.bank_name || 'Bank'} – ${r.account_number || ''}`, sub: r => r.iban_number || 'No IBAN',
     fields: [
       { key: 'payment_mode', label: 'Payment mode', type: 'select', options: [{ v: 'wps', l: 'WPS (salary transfer)' }, { v: 'bank_transfer', l: 'Bank transfer (non-WPS)' }, { v: 'cash', l: 'Cash' }, { v: 'cheque', l: 'Cheque' }] },
-      { key: 'wps_agent', label: 'WPS agent ID', type: 'text' }, { key: 'effective_from', label: 'Effective from', type: 'date' },
+      { key: 'wps_agent', label: 'WPS agent ID', type: 'text', country: 'wps_sif' }, { key: 'effective_from', label: 'Effective from', type: 'date' },
       { key: 'is_primary', label: 'Salary account', type: 'bool' }],
   },
   qualifications: {
@@ -130,9 +131,14 @@ export class ZEmpExtrasComponent implements OnChanges {
   countries: { id: number; name: string }[] = [];
   nationalities: { id: number; name: string }[] = [];
 
-  constructor(private svc: EmployeeProfileService, private http: HttpClient, private cd: ChangeDetectorRef) {}
+  /** v1.14.0: CFG with the company's country captions and without the fields its country does not use */
+  private local: typeof CFG = CFG;
 
-  get cfg() { return CFG[this.kind]; }
+  constructor(private svc: EmployeeProfileService, private http: HttpClient, private cd: ChangeDetectorRef, private cp: CountryPackService) {
+    this.cp.pack$.subscribe(() => { this.local = cpLocalize(CFG, this.cp); this.cd.markForCheck(); });
+  }
+
+  get cfg() { return this.local[this.kind]; }
 
   ngOnChanges(ch: SimpleChanges): void {
     if ((ch['employeeId'] || ch['refresh'] || ch['kind']) && this.employeeId) { this.load(!!ch['refresh'] && !ch['refresh'].firstChange); }
@@ -149,8 +155,8 @@ export class ZEmpExtrasComponent implements OnChanges {
     this.cd.markForCheck();
   }
 
-  iban(v: string): string { return ibanProblem(v); }
-  eid(v: string): string { return eidProblem(v || ''); }
+  iban(v: string): string { return ibanProblem(v, this.cp.pack.pack === 'AE' ? 'AE' : this.cp.pack.country_code); }
+  eid(v: string): string { return this.cp.allows('pack:AE') ? eidProblem(v || '') : ''; }   // 784-… check: UAE only
   opt(f: X, val: any): string { return f.options?.find(o => o.v === val)?.l || '–'; }
   name(list: { id: number; name: string }[], id: any): string { return list.find(x => x.id === id)?.name || (id ? String(id) : '–'); }
 

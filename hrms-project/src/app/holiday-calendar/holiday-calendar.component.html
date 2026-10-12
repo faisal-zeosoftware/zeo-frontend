@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>  Holiday Calendar</h1>
+                <h1>  Holiday calendar</h1>
             </div>
 
             <div class="col-md-3">
@@ -43,11 +43,11 @@
     <div class="row">
         <div class="col-md-2">
             
-            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
         </div>
         <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete">Delete Selected </button>
+            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete">Delete selected </button>
 
         </div>
     </div>
@@ -59,7 +59,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create  Holiday Calendar</h2>
+              <h2> Create  holiday calendar</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -76,7 +76,7 @@
             <div class="row">
                 <div class="col-md-4" >
    
-                    <label>year
+                    <label>Year
                          <span class="required-star">*</span>
                     </label>
                 
@@ -191,7 +191,7 @@
 
                 <div class="col-md-4" >
    
-                    <label>Calendar Title
+                    <label>Calendar title
                          <span class="required-star">*</span>
                     </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="calendar_title"  placeholder="Enter calendar title "
@@ -216,7 +216,7 @@
             <div  class="row mt-4">
                 <div class="col-md-8"></div>
                 <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">close</button>  
+                  <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Close</button>  
 
                 </div>
                 <div class="col-md-2" *ngIf="hasAddPermission">
@@ -237,7 +237,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit Holiday calendar</h2>
+        <h2>Edit holiday calendar</h2>
       </div>
  <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -253,7 +253,7 @@
       <div class="row">
         <div class="col-md-4" >
 
-            <label>year</label>
+            <label>Year</label>
         
             <div class="custom-sel">
                 <select class="form-control" [(ngModel)]="editAsset.year" [ngModelOptions]="{standalone: true}">
@@ -366,7 +366,7 @@
 
         <div class="col-md-4" >
 
-            <label>Calendar Title</label>
+            <label>Calendar title</label>
            <input type="text"  class="form-control" required  [(ngModel)]="editAsset.calendar_title"  placeholder="Enter calendar title "
             [ngModelOptions]="{standalone: true}" >
            
@@ -463,7 +463,7 @@
     <div class="table-header" *ngIf="hasAddPermission">
       <button class="btn btn-sm btn-primary"
         (click)="openHolidayModal(cal.id); $event.stopPropagation()">
-        + Add Holiday
+        + Add holiday
       </button>
     </div>
 
@@ -472,8 +472,8 @@
       <thead class="table custom-table">
         <tr>
           <th>Description</th>
-          <th>Start Date</th>
-          <th>End Date</th>
+          <th>Start date</th>
+          <th>End date</th>
           <th>Note</th>
           <!-- <th>Restricted</th> -->
           <th class="text-center">Action</th>
@@ -528,7 +528,7 @@
     </span>
   </div>
 
-    <h3>Edit Holiday</h3>
+    <h3>Edit holiday</h3>
     <hr>
 
     <div class="row">
@@ -539,12 +539,12 @@
       </div>
 
       <div class="col-md-4">
-        <label>Start Date</label>
+        <label>Start date</label>
         <input type="date" [(ngModel)]="editHolidayData.start_date" class="form-control">
       </div>
 
       <div class="col-md-4">
-        <label>End Date</label>
+        <label>End date</label>
         <input type="date" [(ngModel)]="editHolidayData.end_date" class="form-control">
       </div>
 
@@ -583,7 +583,7 @@
 <div *ngIf="isHolidayModal" class="modal">
   <div class="modal-content">
 
-    <h3>Add Holiday</h3> <hr>
+    <h3>Add holiday</h3> <hr>
 
     <div class="row">
       <div class="col-md-4">
@@ -592,13 +592,13 @@
       </div>
 
       <div class="col-md-4">
-        <label>Start Date</label>
+        <label>Start date</label>
         <input type="date" [(ngModel)]="start_date" class="form-control" [ngModelOptions]="{standalone: true}">
       </div>
 
 
       <div class="col-md-4">
-        <label>End Date</label>
+        <label>End date</label>
         <input type="date" [(ngModel)]="end_date" class="form-control" [ngModelOptions]="{standalone: true}">
     
       </div>
@@ -658,7 +658,7 @@
   <!-- Calendar Dropdown -->
   <!-- <div class="row mt-4" *ngIf="hasViewPermission">
     <div class="col-md-6">
-      <label>Holiday Calendar</label>
+      <label>Holiday calendar</label>
       <div class="custom-sel">
         <select class="form-control" (change)="selectCalendar($event)">
           <option>select</option>
@@ -674,11 +674,11 @@
   <!-- <div class="calendar_view_sec" *ngIf="selectedCalendar">
     <div class="row mt-5">
       <div class="col-md-4">
-        <h4>Calendar Description</h4>
+        <h4>Calendar description</h4>
         <h5>{{ selectedCalendar.description }}</h5>
       </div>
       <div class="col-md-4">
-        <h4>Calendar Year</h4>
+        <h4>Calendar year</h4>
         <h5>{{ selectedCalendar.year }}</h5>
       </div>
      
@@ -696,7 +696,7 @@
             <tr>
               <th>Date</th>
               <th>Day</th>
-              <th>Day Type</th>
+              <th>Day type</th>
               <th *ngIf="hasEditPermission">Action</th>
             </tr>
           </thead>
@@ -736,7 +736,7 @@
           <div class="modal-content">
             <div class="row">
               <div class="col-md-10">
-                <h2>Edit Day Type</h2>
+                <h2>Edit day type</h2>
                 <hr>
               </div>
               <div class="col-md-2">

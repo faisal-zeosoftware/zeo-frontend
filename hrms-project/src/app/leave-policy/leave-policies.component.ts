@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 interface Line { id?: number; leave_type_id: number; leave_type_name?: string; [k: string]: any; }
 
@@ -26,7 +27,7 @@ const BLANK_LINE = {
 @Component({
   selector: 'app-leave-policies',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ZListDirective],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, RouterModule, ZListDirective],
   styleUrls: ['./leave-policy.css'],
   template: `
 <div class="container">
@@ -35,10 +36,10 @@ const BLANK_LINE = {
       <div class="lp-head">
         <div>
           <h1 class="page-title">Leave policies</h1>
-          <p class="lp-desc">Employee-wise leave rules under the UAE Labour Law (Federal Decree-Law 33/2021). Each employee gets the policy of their category, or one given to them.</p>
+          <p class="lp-desc">Employee-wise leave rules<ng-container *zCountry="'pack:AE'"> under the UAE Labour Law (Federal Decree-Law 33/2021)</ng-container>. Each employee gets the policy of their category, or one given to them.</p>
         </div>
         <div class="lp-actions">
-          <button type="button" class="lp-btn" (click)="openSetup()">Load UAE standard setup</button>
+          <button type="button" class="lp-btn" *zCountry="'pack:AE'" (click)="openSetup()">Load UAE standard setup</button>
           <button type="button" class="lp-btn" (click)="openRun('accrual')">Monthly accrual</button>
           <button type="button" class="lp-btn" (click)="openRun('year')">Leave year end</button>
           <button type="button" class="lp-btn" (click)="startLedger()" title="Writes an opening line for every balance that has no ledger yet">Start ledger from balances</button>
@@ -48,7 +49,7 @@ const BLANK_LINE = {
         <button type="button" role="tab" [class.on]="tab === 'policies'" (click)="tab = 'policies'">Policies</button>
         <button type="button" role="tab" [class.on]="tab === 'employees'" (click)="tab = 'employees'; loadOverrides()">Employees</button>
         <button type="button" role="tab" [class.on]="tab === 'approvers'" (click)="tab = 'approvers'; loadApprovers()">Approvers</button>
-        <button type="button" role="tab" [class.on]="tab === 'rules'" (click)="tab = 'rules'">UAE rules</button>
+        <button type="button" role="tab" *zCountry="'pack:AE'" [class.on]="tab === 'rules'" (click)="tab = 'rules'">UAE rules</button>
       </div>
     </div>
 
@@ -65,7 +66,7 @@ const BLANK_LINE = {
           </button>
           <button type="button" class="lp-card" (click)="newPolicy()"><h3>+ New policy</h3><p>Start from an empty policy or copy one.</p></button>
         </div>
-        <p class="lp-muted" *ngIf="!policies.length">No policies yet. Press <b>Load UAE standard setup</b> to add the UAE leave types and an Office staff and a Labour policy.</p>
+        <p class="lp-muted" *ngIf="!policies.length">No policies yet. <ng-container *zCountry="'pack:AE'">Press <b>Load UAE standard setup</b> to add the UAE leave types and an Office staff and a Labour policy.</ng-container><ng-container *zCountry="'!pack:AE'">Press <b>+ New policy</b>. An administrator can load your country's leave types under Settings → Country settings → Apply country defaults.</ng-container></p>
 
         <ng-container *ngIf="edit">
           <div class="lp-form">
@@ -115,7 +116,7 @@ const BLANK_LINE = {
                   <td><input type="checkbox" [(ngModel)]="l.allow_negative" title="Allow leave beyond the balance (recovered from later accrual)"></td>
                   <td class="lp-slab"><input type="text" [ngModel]="slabText(l)" (ngModelChange)="setSlabs(l, $event)" placeholder="full pay" style="width:150px">
                     <small *ngIf="l.pay_slabs?.length">{{ slabWords(l) }}</small>
-                    <button type="button" class="lp-link" *ngIf="typeCat(l.leave_type_id) === 'sick'" (click)="setSlabs(l, '15@100, 30@50, 45@0')">UAE sick leave</button></td>
+                    <ng-container *zCountry="'pack:AE'"><button type="button" class="lp-link" *ngIf="typeCat(l.leave_type_id) === 'sick'" (click)="setSlabs(l, '15@100, 30@50, 45@0')">UAE sick leave</button></ng-container></td>
                   <td><input type="number" min="0" [(ngModel)]="l.carry_forward_max" [placeholder]="l.accrual === 'monthly' ? 'all' : 'none'"></td>
                   <td><input type="number" min="0" [(ngModel)]="l.carry_forward_expiry_months" placeholder="never"></td>
                   <td><select [(ngModel)]="l.excess_action"><option value="keep">Keep</option><option value="encash">Encash</option><option value="lapse">Lapse</option></select></td>
@@ -187,7 +188,7 @@ const BLANK_LINE = {
         <h3 style="font-size:14px;margin:16px 0 8px">Employees with a policy of their own</h3>
         <table class="table" *ngIf="overrides.length">
           <thead><tr><th>Employee</th><th>Policy</th><th>Note</th><th>Since</th><th>Actions</th></tr></thead>
-          <tbody><tr *ngFor="let o of overrides"><td>{{ o.employee }}</td><td>{{ o.policy_name }}</td><td>{{ o.note || '-' }}</td><td>{{ o.assigned_at | date:'dd/MM/yyyy' }}</td>
+          <tbody><tr *ngFor="let o of overrides"><td>{{ o.employee }}</td><td>{{ o.policy_name }}</td><td>{{ o.note || '-' }}</td><td>{{ o.assigned_at | date:'dd MMM yyyy' }}</td>
             <td><button type="button" class="lp-btn" (click)="dropOverride(o)">Back to category policy</button></td></tr></tbody>
         </table>
         <p class="lp-muted" *ngIf="!overrides.length">Everybody follows the policy of their category.</p>
@@ -255,7 +256,7 @@ const BLANK_LINE = {
       <!-- UAE rules -->
       <ng-container *ngIf="tab === 'rules'">
         <table zPlain class="lp-mini">
-          <thead><tr><th>Leave</th><th>UAE Labour Law</th><th>Pay</th></tr></thead>
+          <thead><tr><th>Leave</th><th>UAE labour law</th><th>Pay</th></tr></thead>
           <tbody>
             <tr *ngFor="let r of uaeRules"><td><b>{{ r[0] }}</b></td><td>{{ r[1] }}</td><td>{{ r[2] }}</td></tr>
           </tbody>

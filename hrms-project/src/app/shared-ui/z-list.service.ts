@@ -94,7 +94,7 @@ export class ZListService {
     const s = this.schema;
     if (!this.perms$ || this.permsSchema !== s) {
       this.permsSchema = s;
-      this.perms$ = this.http.get<any[]>(`${this.api}/organisation/api/permissions/?schema=${s}`).pipe(
+      this.perms$ = this.http.get<any[]>(`${this.api}/organisation/api/permissions/?schema=${s}&me=1`).pipe(   // v1.22.0: only my own row (fast)
         map(list => {
           const me = this.userId();
           const all = Array.isArray(list) ? list : [];

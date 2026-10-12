@@ -147,7 +147,8 @@ export class ReportOptionsComponent {
                     this.hasViewPermissionAssetReport = this.checkGroupPermission('view_assetreport', groupPermissions);
                     this.hasViewPermissionAssetTransactionReport = this.checkGroupPermission('view_assettransactionreport', groupPermissions);
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    // v1.17.0 (audit M12): a user without permission groups (an employee opening their own record) is normal – not an error
+                    console.debug('No permission groups for this user.');
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

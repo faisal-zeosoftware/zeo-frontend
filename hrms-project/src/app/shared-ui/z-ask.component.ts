@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { ZSuiteService } from './z-suite.service';
 import { ZRecordService } from './z-record.service';
 
 interface Msg { role: 'user' | 'assistant'; content: string; html?: SafeHtml; links?: { label: string; url: string }[]; error?: boolean; }
@@ -64,7 +65,8 @@ export function renderAnswer(md: string): string {
 }
 
 /**
- * v1.9.0 – Ask ZEO AI: questions about the company's data in plain language.
+ * v1.9.0 – Ask ZEO: questions about the company's data in plain language.
+ * v1.15.1: renamed from "Ask ZEO AI" – by default it answers from the company's own reports on the server (no outside AI service).
  * The server answers from the report centre and the record view, as the user (their rights and branches).
  */
 @Component({
@@ -73,19 +75,19 @@ export function renderAnswer(md: string): string {
   imports: [CommonModule, FormsModule],
   encapsulation: ViewEncapsulation.None,
   template: `
-  <button type="button" class="za-btn" *ngIf="enabled" (click)="toggle()" [class.on]="open" aria-label="Ask ZEO AI – ask a question about your data" title="Ask ZEO AI">
+  <button type="button" class="za-btn" *ngIf="enabled" (click)="toggle()" [class.on]="open" aria-label="Ask ZEO – answers from your company's own data" title="Ask ZEO – answers from your company's own data">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
       <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z"/>
       <path d="M12 6.8l.9 1.9 1.9.9-1.9.9-.9 1.9-.9-1.9-1.9-.9 1.9-.9z" fill="currentColor" stroke="none"/></svg>
-    <span class="za-btn-t">Ask ZEO AI</span>
+    <span class="za-btn-t">Ask ZEO</span>
   </button>
 
   <div class="za-back" *ngIf="open" (click)="open = false"></div>
-  <aside class="za-panel" *ngIf="open" role="dialog" aria-label="Ask ZEO AI">
+  <aside class="za-panel" *ngIf="open" role="dialog" aria-label="Ask ZEO" data-no-help>
     <header class="za-head">
       <div>
-        <h2>Ask ZEO AI</h2>
-        <p>{{ mode === 'ai' ? 'Answers from the reports you may see' : 'Basic mode – simple questions about one report' }}</p>
+        <h2>Ask ZEO</h2>
+        <p>{{ mode === 'ai' ? 'Answers from the reports you may see (external AI service switched on by your administrator)' : "Answers from your company's own data in ZEO – no outside AI service" }}</p>
       </div>
       <button type="button" class="za-new" (click)="reset()" *ngIf="msgs.length" title="Start a new conversation">New</button>
       <button type="button" class="za-x" (click)="open = false" aria-label="Close">×</button>
@@ -93,7 +95,10 @@ export function renderAnswer(md: string): string {
 
     <div class="za-body" #body>
       <div class="za-empty" *ngIf="!msgs.length">
-        <p class="za-lead">Ask about employees, leave, attendance, payroll, loans, documents, assets, requests, appraisals, recruitment or training.</p>
+        <p class="za-lead" *ngIf="suite === 'hrms' || suite === 'settings' || !suite">Ask about employees, leave, attendance, payroll, loans, documents, assets, requests, appraisals, recruitment or training.</p>
+        <p class="za-lead" *ngIf="suite === 'hse'">Ask about incidents, near misses, permits to work, risk assessments, inspections, corrective actions and audits.</p>
+        <p class="za-lead" *ngIf="suite === 'crm' || suite === 'property' || suite === 'maintenance'">Ask about employees, payroll, projects and HSE. Records of this app are in its home page and lists.</p>
+        <p class="za-lead" *ngIf="suite === 'projects'">Ask about support tickets, SLA, AMC contracts and renewals, projects, milestones, tasks and work logs.</p>
         <button type="button" class="za-sug" *ngFor="let s of suggestions" (click)="send(s)">{{ s }}</button>
       </div>
       <div *ngFor="let m of msgs" [class]="'za-msg ' + m.role + (m.error ? ' err' : '')" dir="auto">
@@ -115,7 +120,7 @@ export function renderAnswer(md: string): string {
     <p class="za-foot">Answers use only the data you have access to. Check important figures in the linked report.</p>
   </aside>`,
 })
-export class ZAskComponent implements OnInit {
+export class ZAskComponent implements OnInit, OnDestroy {
   @ViewChild('body') body?: ElementRef<HTMLElement>;
   @ViewChild('box') box?: ElementRef<HTMLTextAreaElement>;
   enabled = false;
@@ -126,14 +131,25 @@ export class ZAskComponent implements OnInit {
   msgs: Msg[] = [];
   suggestions: string[] = [];
 
-  constructor(private http: HttpClient, private rec: ZRecordService, private router: Router, private san: DomSanitizer, private cd: ChangeDetectorRef) {}
+  private sub?: Subscription;
+  suite = '';
+
+  constructor(private http: HttpClient, private rec: ZRecordService, private router: Router, private san: DomSanitizer, private cd: ChangeDetectorRef,
+              private suites: ZSuiteService) {}
 
   private get schema(): string { return localStorage.getItem('selectedSchema') || ''; }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     if (!this.schema) { return; }
+    // v1.20.1: the questions it suggests (and how it reads "ticket") follow the app in use – HRMS or Projects
+    this.sub = this.suites.suite$.subscribe(s => { if (s !== this.suite) { this.suite = s; this.load(); } });
+  }
+
+  ngOnDestroy(): void { this.sub?.unsubscribe(); }
+
+  private async load(): Promise<void> {
     try {
-      const d = await firstValueFrom(this.http.get<any>(`${this.rec.api}/dashboard/api/assistant/?schema=${encodeURIComponent(this.schema)}`));
+      const d = await firstValueFrom(this.http.get<any>(`${this.rec.api}/dashboard/api/assistant/?schema=${encodeURIComponent(this.schema)}&suite=${this.suite}`));
       this.enabled = !!d.enabled; this.mode = d.mode; this.suggestions = d.suggestions || [];
     } catch { this.enabled = false; }
     this.cd.markForCheck();
@@ -162,11 +178,11 @@ export class ZAskComponent implements OnInit {
     try { branch = (JSON.parse(localStorage.getItem('selectedBranchIds') || '[]') as number[]).join(','); } catch { branch = ''; }
     const history = this.msgs.filter(m => !m.error).map(m => ({ role: m.role, content: m.content })).slice(-12);
     try {
-      const d = await firstValueFrom(this.http.post<any>(`${this.rec.api}/dashboard/api/assistant/?schema=${encodeURIComponent(this.schema)}`, { messages: history, branch }));
+      const d = await firstValueFrom(this.http.post<any>(`${this.rec.api}/dashboard/api/assistant/?schema=${encodeURIComponent(this.schema)}`, { messages: history, branch, suite: this.suite }));
       this.mode = d.mode || this.mode;
       this.msgs.push({ role: 'assistant', content: d.answer, html: this.san.bypassSecurityTrustHtml(renderAnswer(d.answer)), links: d.links || [] });
     } catch (e: any) {
-      const t = e?.error?.detail || 'Ask ZEO AI could not answer just now. Try again.';
+      const t = e?.error?.detail || 'Ask ZEO could not answer just now. Try again.';
       this.msgs.push({ role: 'assistant', content: t, html: this.san.bypassSecurityTrustHtml(renderAnswer(t)), error: true });
     }
     this.busy = false; this.cd.markForCheck(); this.scroll();

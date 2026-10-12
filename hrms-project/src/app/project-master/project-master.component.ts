@@ -13,6 +13,7 @@ import { MatSelect } from '@angular/material/select';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 
 @Component({
   selector: 'app-project-master',
@@ -20,6 +21,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
   styleUrl: './project-master.component.css'
 })
 export class ProjectMasterComponent {
+  statusLabel = statusLabel;   // v1.15.1: readable status ("In progress", not "In_progress")
 
   @ViewChild('projectFileInput') projectFileInput!: ElementRef;
 
@@ -304,7 +306,7 @@ nextPage(): void {
                     this.hasViewPermission = this.checkGroupPermission('view_project', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

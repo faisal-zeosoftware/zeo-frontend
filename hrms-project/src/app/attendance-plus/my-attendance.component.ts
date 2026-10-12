@@ -8,15 +8,17 @@ import { ApApi, STATUS_COLOR, currentPosition, fileToDataUrl, isMobile } from '.
 
 /** ESS / mobile (v1.12.0): punch in / out, breaks and lunch, scan a site QR, my month (status, late, early, OT, break),
  *  request a correction, my corrections, my QR badge and kiosk PIN. */
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on "My month"
+
 @Component({
   selector: 'app-my-attendance',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
   <div class="ap-head">
-    <div><h1>My Attendance</h1>
+    <div><h1>My attendance</h1>
       <p class="ap-desc">Clock in and out, take breaks, see your month and ask for a correction when a punch is missing or wrong.</p></div>
   </div>
   <p class="ap-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
@@ -56,7 +58,7 @@ import { ApApi, STATUS_COLOR, currentPosition, fileToDataUrl, isMobile } from '.
       <div><button type="button" class="ap-btn small" (click)="stopScan()">Stop scanning</button></div>
     </div>
     <div class="ap-scroll" *ngIf="st.punches?.length" style="margin-top:10px">
-      <table class="ap-table"><tr><th>Time</th><th>Punch</th><th>Method</th></tr>
+      <table class="ap-table" zPlain><tr><th>Time</th><th>Punch</th><th>Method</th></tr>
         <tr *ngFor="let p of st.punches"><td>{{ p.local_time | slice:11:16 }}</td><td>{{ p.kind_label }}</td><td>{{ p.source_label }}</td></tr></table>
     </div>
   </div>
@@ -122,7 +124,7 @@ import { ApApi, STATUS_COLOR, currentPosition, fileToDataUrl, isMobile } from '.
       <h2>My corrections</h2>
       <p class="ap-muted" *ngIf="!corrections.length">No correction requests.</p>
       <div class="ap-scroll" *ngIf="corrections.length">
-        <table class="ap-table"><tr><th>Date</th><th>Type</th><th>In / out</th><th>Status</th><th></th></tr>
+        <table class="ap-table" zPlain><tr><th>Date</th><th>Type</th><th>In / out</th><th>Status</th><th></th></tr>
           <tr *ngFor="let c of corrections">
             <td>{{ c.date | date:'d MMM' }}</td><td>{{ c.kind_label }}</td>
             <td>{{ c.proposed_in_local | slice:11 }} – {{ c.proposed_out_local | slice:11 }}</td>

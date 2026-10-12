@@ -1,7 +1,7 @@
 <div mat-dialog-content class="">
     <div class="cpm-sec">
         <!-- 
-        <h1>Create Employee Family</h1><hr> -->
+        <h1>Create employee family</h1><hr> -->
 
         <mat-accordion class="example-headers-align">
             <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
@@ -18,7 +18,7 @@
                         <div class="row">
                             <div class="col-md-6">
 
-                                <label> Family Member name</label>
+                                <label> Family member name</label>
                                 <input type="text" class="form-control" required [(ngModel)]="ef_member_name"
                                     placeholder="Enter Member Name" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked && !ef_member_name}">
@@ -42,7 +42,7 @@
 
                             <div class="col-md-6">
 
-                                <label> Family Company Expense</label>
+                                <label> Family company expense</label>
                                 <input type="text" class="form-control" required [(ngModel)]="ef_company_expence"
                                     placeholder="Enter Company Expense" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked && !ef_company_expence}">
@@ -67,7 +67,7 @@
 
 
                                 <div class="custom-sel">
-                                    <label>Select Employee ID</label>
+                                    <label>Select employee ID</label>
                                     <select class="form-control" id="country" required [(ngModel)]="emp_id"
                                         [ngModelOptions]="{standalone: true}"
                                         [ngClass]="{'error-field': registerButtonClicked1 && !emp_id}">
@@ -107,7 +107,7 @@
                         <div class="row">
                             <div class="col-md-6">
 
-                                <label>Employee Qualification</label>
+                                <label>Employee qualification</label>
                                 <input type="text" class="form-control" required [(ngModel)]="emp_qualification"
                                     placeholder="Enter Qualification" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked1 && !emp_qualification}">
@@ -160,7 +160,7 @@
 
 
                                 <div class="custom-sel">
-                                    <label>Select Employee ID</label>
+                                    <label>Select employee ID</label>
                                     <select class="form-control" id="country" required [(ngModel)]="emp_id"
                                         [ngModelOptions]="{standalone: true}"
                                         [ngClass]="{'error-field': registerButtonClicked1 && !emp_id}">
@@ -203,7 +203,7 @@
                         <div class="row">
                             <div class="col-md-6">
 
-                                <label>Employee job History From date</label>
+                                <label>Employee job history from date</label>
                                 <input type="date" class="form-control" required [(ngModel)]="emp_jh_from_date"
                                     placeholder="Enter From date" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked2 && !emp_jh_from_date}">
@@ -214,7 +214,7 @@
 
                             <div class="col-md-6">
 
-                                <label>Employee job History to date</label>
+                                <label>Employee job history to date</label>
                                 <input type="date" class="form-control" required [(ngModel)]="emp_jh_end_date"
                                     placeholder="Enter to date" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked2 && !emp_jh_end_date}">
@@ -240,7 +240,7 @@
 
                             <div class="col-md-6">
 
-                                <label>Employee Designation</label>
+                                <label>Employee designation</label>
                                 <input type="text" class="form-control" required [(ngModel)]="emp_jh_designation"
                                     placeholder="Enter Designation" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked2 && !emp_jh_designation}">
@@ -276,7 +276,7 @@
 
                             <div class="col-md-6">
 
-                                <label>Employee work Experiance</label>
+                                <label>Employee work experiance</label>
                                 <input type="number" class="form-control" required [(ngModel)]="emp_jh_years_experiance"
                                     placeholder="Enter work Experiance" [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'error-field': registerButtonClicked2 && !emp_jh_years_experiance}">
@@ -291,7 +291,7 @@
 
 
                                 <div class="custom-sel">
-                                    <label>Select Employee ID</label>
+                                    <label>Select employee ID</label>
                                     <select class="form-control" id="country" required [(ngModel)]="emp_id"
                                         [ngModelOptions]="{standalone: true}"
                                         [ngClass]="{'error-field': registerButtonClicked2 && !emp_id}">
@@ -334,7 +334,7 @@
                         <div class="row">
                          
                             <div class="col-md-6">
-                                <label for="emp_doc_number">Document Number:</label>
+                                <label for="emp_doc_number">Document number:</label>
                                     <input type="number" class="form-control" id="emp_doc_number" name="emp_doc_number" placeholder="Enter document number" [(ngModel)]="emp_doc_number">
                             </div>
                             <div class="col-md-6">
@@ -342,17 +342,17 @@
                                 <input type="date" class="form-control" required id="emp_doc_issued_date" [(ngModel)]="emp_doc_issued_date" name="emp_doc_issued_date">
                             </div>
                             <div class="col-md-6">
-                                <label>Expired Date</label>
+                                <label>Expired date</label>
                                 <input type="date" class="form-control" required id="emp_doc_expiry_date" [(ngModel)]="emp_doc_expiry_date" name="emp_doc_expiry_date">
                             </div>
                             <div class="col-md-6">
-                                <label for="emp_doc_document">Employee Document:</label>
+                                <label for="emp_doc_document">Employee document:</label>
                                 <input type="file" class="form-control" id="emp_doc_document" name="emp_doc_document" (change)="onFileSelected($event)">
                             </div>
 
                             <div class="col-md-6">
                                 <div class="custom-sel">
-                                    <label>Select Document Type</label>
+                                    <label>Select document type</label>
                                     <select class="form-control" required [(ngModel)]="document_type" name="document_type">
                                         <option value="">Select</option>
                                         <option *ngFor="let country of DocumentTypes" [value]="country.id">
@@ -366,7 +366,7 @@
 
                             <div class="col-md-6">
                                 <div class="custom-sel">
-                                    <label>Select Employee ID</label>
+                                    <label>Select employee ID</label>
                                     <select class="form-control" required [(ngModel)]="emp_id" name="emp_id">
                                         <option value="">Select</option>
                                         <option *ngFor="let country of companies" [value]="country.id">

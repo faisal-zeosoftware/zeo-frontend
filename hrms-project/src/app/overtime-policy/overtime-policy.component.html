@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col-md-4">
-          <h1>OverTime Policy</h1>
+          <h1>Overtime policy</h1>
         </div>
                  <div class="col-md-3">
                     
@@ -55,12 +55,12 @@
       <div class="col-md-2">
 
         <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
+          (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
         <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedPayrollAprlvl()">Delete
-          Selected </button>
+          selected </button>
 
       </div>
     </div>
@@ -72,7 +72,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create OverTime Policy</h2>
+                  <h2>Create overtime policy</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -99,12 +99,13 @@
 
 
     <div class="col-md-6">
-        <label>Ot type</label>
+        <label>OT type</label>
         <div class="custom-sel">
           <select class="form-control" [(ngModel)]="ot_type" [ngModelOptions]="{standalone: true}">
             <option value="NORMAL">Normal OT</option>
             <option value="WEEKEND">Weekend OT</option>
             <option value="HOLIDAY">Holiday OT</option>
+            <option value="NIGHT">Night OT (22:00–04:00)</option>
           </select>
         </div>
       </div>
@@ -361,7 +362,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit OverTime Policy</h2>
+            <h2>Edit overtime policy</h2>
           </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -386,12 +387,13 @@
 
 
     <div class="col-md-6">
-        <label>Ot type</label>
+        <label>OT type</label>
         <div class="custom-sel">
           <select class="form-control" [(ngModel)]="editAsset.ot_type" [ngModelOptions]="{standalone: true}">
             <option value="NORMAL">Normal OT</option>
             <option value="WEEKEND">Weekend OT</option>
             <option value="HOLIDAY">Holiday OT</option>
+            <option value="NIGHT">Night OT (22:00–04:00)</option>
           </select>
         </div>
       </div>
@@ -652,7 +654,7 @@
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Ot Type</th>
+                    <th>OT type</th>
                     <th>Rate multiplier</th>
                     <th>Branch</th>
                     <th>Department</th>

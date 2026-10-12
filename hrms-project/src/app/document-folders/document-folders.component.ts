@@ -12,6 +12,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 
 import { combineLatest, Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -101,8 +102,12 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private authService: AuthenticationService,
     private DesignationService: DesignationService,
-    private CatogaryService: CatogaryService
+    private CatogaryService: CatogaryService,
+    private router: Router
   ) {}
+
+  /** v1.20.1: no folder open – show what to do instead of an empty page */
+  get noFolderOpen(): boolean { return !this.router.url.includes('/document-folder-files/'); }
 
 
   /* =========================================================

@@ -31,7 +31,8 @@ import { DesignField, DesignerAdapter, FIELD_TYPES, SHOW_OPS, VISIBLE_PLACES, by
               <mat-icon class="zd-grip" aria-hidden="true">drag_indicator</mat-icon>
               <button type="button" class="zd-pick" (click)="pick(f)">
                 <span>{{ f.label }}<span class="zf-req" *ngIf="f.required"> *</span></span>
-                <small>{{ typeName(f.field_type) }}{{ f.section ? ' · ' + f.section : '' }}{{ f.active ? '' : ' · hidden' }}</small></button>
+                <small>{{ typeName(f.field_type) }}{{ f.section ? ' · ' + f.section : '' }}{{ f.active ? '' : ' · hidden' }}</small>
+                <small *ngIf="f.alias_label" class="zd-alias">Merged into the built-in field “{{ f.alias_label }}” – hidden on the forms</small></button>
               <span class="zd-move">
                 <button type="button" class="zr-ic" [disabled]="i === 0" (click)="move(i, -1)" aria-label="Move up"><mat-icon>arrow_upward</mat-icon></button>
                 <button type="button" class="zr-ic" [disabled]="i === fields.length - 1" (click)="move(i, 1)" aria-label="Move down"><mat-icon>arrow_downward</mat-icon></button></span>
@@ -53,7 +54,8 @@ import { DesignField, DesignerAdapter, FIELD_TYPES, SHOW_OPS, VISIBLE_PLACES, by
               <datalist id="zd-secs"><option *ngFor="let s of sections" [value]="s"></option></datalist></div>
             <div class="zf zf-wide" *ngIf="needsOptions()"><label class="zf-label" for="zd-opts">Options (one per line) *</label>
               <textarea id="zd-opts" class="zf-in" rows="4" [value]="(edit.options || []).join('\\n')" (input)="setOptions($any($event.target).value)" placeholder="CC-100&#10;CC-200"></textarea></div>
-            <div class="zf zf-wide"><label class="zf-label" for="zd-help">Help text</label><input id="zd-help" class="zf-in" [value]="edit.help_text || ''" (input)="edit.help_text = $any($event.target).value" placeholder="Shown under the field"></div>
+            <div class="zf zf-wide"><label class="zf-label" for="zd-help">Help text</label><input id="zd-help" class="zf-in" [value]="edit.help_text || ''" (input)="edit.help_text = $any($event.target).value" placeholder="What the field means – shown in the help panel when the user is in the field"></div>
+            <div class="zf zf-wide"><label class="zf-label" for="zd-ex">Example</label><input id="zd-ex" class="zf-in" [value]="edit.rules?.example || ''" (input)="edit.rules.example = $any($event.target).value" placeholder="e.g. CC-100 – shown in the help panel"></div>
             <div class="zf" *ngIf="adapter"><label class="zf-label" for="zd-ph">Placeholder</label><input id="zd-ph" class="zf-in" [value]="edit.placeholder || ''" (input)="edit.placeholder = $any($event.target).value" placeholder="Hint inside the empty field"></div>
             <div class="zf" *ngIf="edit.field_type !== 'file' && edit.field_type !== 'employee'">
               <label class="zf-label" for="zd-def">Default value</label>
@@ -166,6 +168,7 @@ export class ZFieldDesignerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void { this.el.nativeElement.remove(); }
 
   get subtitle(): string {
+    if (this.adapter?.subtitle) { return this.adapter.subtitle; }
     return this.adapter
       ? 'Custom fields of the employee screens: create, edit and details pages, list columns and the import template'
       : `${this.screenName || this.screen} · extra fields show in this screen's form, list, export and import template`;

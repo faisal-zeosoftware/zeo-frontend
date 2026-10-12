@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EssApiService } from './ess-api.service';
+import { COUNTRY_PACK_UI, CountryPackService } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * v1.13.0 – claims and requests in one list: general requests, advance salary, loans, air tickets, documents,
@@ -12,7 +13,7 @@ import { EssApiService } from './ess-api.service';
 @Component({
   selector: 'app-ess-claims',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -51,11 +52,12 @@ import { EssApiService } from './ess-api.service';
 <div class="es-backdrop" *ngIf="f" (click)="f = null">
   <div class="es-modal" (click)="$event.stopPropagation()">
     <h3>New general request</h3>
-    <p class="es-muted">Amounts are in whole dirhams (AED) – round to the nearest dirham. For receipts with fils use Expenses.</p>
+    <p class="es-muted" *zCountry="'pack:AE'">Amounts are in whole dirhams (AED) – round to the nearest dirham. For receipts with fils use Expenses.</p>
+    <p class="es-muted" *zCountry="'!pack:AE'">Amounts are in whole {{ cp.currency().code }} – round to the nearest unit. For receipts with smaller units use Expenses.</p>
     <p class="es-msg err" *ngIf="ferr">{{ ferr }}</p>
     <div class="es-form">
       <div class="wide"><label>Type</label><select [(ngModel)]="f.request_type"><option [ngValue]="null">Choose…</option><option *ngFor="let t of types" [ngValue]="t.id">{{ t.name }}</option></select></div>
-      <div><label>Amount (AED, whole dirhams)</label><input type="number" step="1" min="0" [(ngModel)]="f.total"></div>
+      <div><label>{{ 'Amount (AED, whole dirhams)' | zc }}</label><input type="number" step="1" min="0" [(ngModel)]="f.total"></div>
       <div class="wide"><label>Reason</label><textarea [(ngModel)]="f.reason" maxlength="200"></textarea></div>
       <div class="wide"><label>Supporting document (optional)</label><input type="file" (change)="file = $any($event.target).files?.[0] || null"></div>
     </div>
@@ -70,7 +72,7 @@ export class EssClaimsComponent implements OnInit {
   rows: any[] = []; types: any[] = []; module = ''; loading = false; busy = false; msg = ''; ok = ''; ferr = '';
   f: any = null; file: File | null = null; empId: number | null = null; branchId: number | null = null;
 
-  constructor(private api: EssApiService, public router: Router, private cd: ChangeDetectorRef) {}
+  constructor(private api: EssApiService, public router: Router, private cd: ChangeDetectorRef, public cp: CountryPackService) {}
 
   async ngOnInit(): Promise<void> {
     try {

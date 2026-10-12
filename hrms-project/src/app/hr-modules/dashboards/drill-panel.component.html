@@ -1,19 +1,22 @@
-<div class="zd-backdrop" *ngIf="request" (click)="closed.emit()"></div>
-<aside class="zd-panel" *ngIf="request" role="dialog" aria-modal="true" [attr.aria-label]="title">
+<div class="zd-backdrop" *ngIf="request || personId" (click)="closed.emit()"></div>
+<aside class="zd-panel" *ngIf="request || personId" role="dialog" aria-modal="true" [attr.aria-label]="title || (person?.employee?.name ?? '')">
+  <p class="muted" *ngIf="!request && personLoading" style="padding: 18px 22px">{{ 'Loading…' | t }}</p>
+  <p class="err" *ngIf="!request && error" style="margin: 18px 22px">{{ error | t }}</p>
   <!-- level 2: employee 360 -->
   <ng-container *ngIf="person; else listView">
     <header class="zd-head">
-      <button class="zd-back" type="button" (click)="person = null" aria-label="Back to the list">‹ {{ title }}</button>
+      <button class="zd-back" type="button" *ngIf="request" (click)="person = null" aria-label="Back to the list"><span class="zd-arrow" aria-hidden="true">‹</span> {{ title | t }}</button>
+      <span *ngIf="!request"></span>
       <button class="zd-x" type="button" (click)="closed.emit()" aria-label="Close">×</button>
     </header>
     <div class="zd-body">
       <div class="p-id">
         <div class="avatar lg">{{ initials(person.employee.name) }}</div>
         <div>
-          <h3>{{ person.employee.name }}</h3>
-          <p class="muted">{{ person.employee.code }} · {{ person.employee.designation }} · {{ person.employee.department }}</p>
-          <button type="button" class="zbtn ghost" (click)="employeePage()">Open employee record</button>
-          <p class="muted small">Joined {{ person.employee.joined | date:'dd/MM/yyyy' }}<span *ngIf="person.employee.manager"> · reports to {{ person.employee.manager }}</span><span *ngIf="person.employee.nationality"> · {{ person.employee.nationality | titlecase }}</span></p>
+          <h3 data-no-translate>{{ person.employee.name }}</h3>
+          <p class="muted" data-no-translate>{{ person.employee.code }} · {{ person.employee.designation }} · {{ person.employee.department }}</p>
+          <button type="button" class="zbtn ghost" *ngIf="employeePageLink" (click)="employeePage()">Open employee record</button>
+          <p class="muted small">{{ 'Joined {0}' | t:(person.employee.joined | zdate) }}<span *ngIf="person.employee.manager"> · {{ 'reports to {0}' | t:person.employee.manager }}</span><span *ngIf="person.employee.nationality" data-no-translate> · {{ person.employee.nationality | titlecase }}</span></p>
         </div>
       </div>
 
@@ -25,7 +28,7 @@
           <div><b>{{ person.attendance.avg_hours }}</b><span>avg hours / day</span></div>
         </div>
         <table class="zt compact" *ngIf="person.attendance.last.length">
-          <tr *ngFor="let a of person.attendance.last"><td>{{ a.date | date:'EEE dd/MM' }}</td><td>{{ a.in || '–' }} – {{ a.out || '–' }}</td><td class="num">{{ a.hours }} h</td><td><span class="pill warn" *ngIf="a.late">Late</span></td></tr>
+          <tr *ngFor="let a of person.attendance.last"><td>{{ a.date | zdate }}</td><td>{{ a.in || '–' }} – {{ a.out || '–' }}</td><td class="num">{{ a.hours }} {{ 'h' | t }}</td><td><span class="pill warn" *ngIf="a.late">{{ 'Late' | t }}</span></td></tr>
         </table>
       </section>
 
@@ -33,8 +36,8 @@
         <h4>Leave balance</h4>
         <div class="meters">
           <div class="meter" *ngFor="let b of person.leave_balances">
-            <div class="m-top"><span>{{ b.name }}</span><b>{{ b.balance }} <small>of {{ b.openings }}</small></b></div>
-            <div class="m-track"><div class="m-fill" [style.width.%]="b.openings ? (b.balance * 100 / b.openings) : 0"></div></div>
+            <div class="m-top"><span data-no-translate>{{ b.name }}</span><b>{{ b.balance | number:'1.0-2' }} <small>{{ b.openings ? ('of {0} days' | t:b.openings) : ('days left' | t) }}</small></b></div>
+            <div class="m-track"><div class="m-fill" [style.width.%]="b.openings ? (b.balance * 100 / b.openings) : ((b.balance + (b.used || 0)) ? b.balance * 100 / (b.balance + (b.used || 0)) : 0)"></div></div>
           </div>
         </div>
       </section>
@@ -42,20 +45,20 @@
       <section class="p-sec" *ngIf="person.requests?.length">
         <h4>Requests</h4>
         <table class="zt compact">
-          <tr *ngFor="let r of person.requests" [class.clickable]="r._m" (click)="record(r)"><td>{{ r.module_label }}</td><td>{{ r.summary }}</td><td>{{ r.date | date:'dd/MM' }}</td><td><span [class]="statusClass(r.status)">{{ r.status | lowercase }}</span></td></tr>
+          <tr *ngFor="let r of person.requests" [class.clickable]="r._m" (click)="record(r)"><td>{{ r.module_label | t }}</td><td>{{ r.summary }}</td><td>{{ r.date | zdate }}</td><td><span [class]="statusClass(r.status)">{{ r.status | zstatus | t }}</span></td></tr>
         </table>
       </section>
 
       <section class="p-sec two" *ngIf="person.performance || person.training?.length">
         <div *ngIf="person.performance">
           <h4>Appraisal</h4>
-          <p><b>{{ person.performance.cycle }}</b></p>
-          <p class="muted">{{ person.performance.status }}</p>
-          <p class="muted small">Self {{ person.performance.self_score ?? '–' }} · Manager {{ person.performance.manager_score ?? '–' }} · Final {{ person.performance.final_rating ?? '–' }}</p>
+          <p><b data-no-translate>{{ person.performance.cycle }}</b></p>
+          <p class="muted">{{ person.performance.status | zstatus | t }}</p>
+          <p class="muted small">{{ 'Self {0} · Manager {1} · Final {2}' | t:(person.performance.self_score ?? '–'):(person.performance.manager_score ?? '–'):(person.performance.final_rating ?? '–') }}</p>
         </div>
         <div *ngIf="person.training?.length">
           <h4>Training</h4>
-          <p *ngFor="let t of person.training" class="small">{{ t.course }} <span class="muted">· {{ t.date | date:'dd/MM' }}</span></p>
+          <p *ngFor="let t of person.training" class="small"><span data-no-translate>{{ t.course }}</span> <span class="muted">· {{ t.date | zdate }}</span></p>
         </div>
       </section>
 
@@ -63,17 +66,17 @@
         <div>
           <h4>Assets</h4>
           <p *ngIf="!person.assets.length" class="muted small">No assets assigned.</p>
-          <p *ngFor="let a of person.assets" class="small">{{ a.name }} <span class="muted">· {{ a.serial }}</span></p>
+          <p *ngFor="let a of person.assets" class="small" data-no-translate>{{ a.name }} <span class="muted">· {{ a.serial }}</span></p>
         </div>
         <div>
           <h4>Documents</h4>
-          <p *ngFor="let d of person.documents" class="small">{{ d.type }} <span [class]="d.days !== null && d.days < 0 ? 'pill bad' : (d.days !== null && d.days <= 60 ? 'pill warn' : 'pill good')">{{ d.expiry | date:'dd/MM/yyyy' }}</span></p>
+          <p *ngFor="let d of person.documents" class="small"><span data-no-translate>{{ d.type }}</span> <span [class]="d.days !== null && d.days < 0 ? 'pill bad' : (d.days !== null && d.days <= 60 ? 'pill warn' : 'pill good')">{{ d.expiry | zdate }}</span></p>
         </div>
       </section>
 
       <section class="p-sec" *ngIf="person.payslip">
         <h4>Last payslip</h4>
-        <p class="small">{{ person.payslip.period }} · gross {{ person.payslip.gross | number:'1.0-0' }} · deductions {{ person.payslip.deductions | number:'1.0-0' }} · <b>net AED {{ person.payslip.net | number:'1.0-0' }}</b></p>
+        <p class="small">{{ person.payslip.period }} · {{ 'Gross {0} · deductions {1}' | t:(person.payslip.gross | number:'1.0-0'):(person.payslip.deductions | number:'1.0-0') }} · <b>{{ 'net {0}' | t:(person.payslip.net | zmoney:'1.0-0') }}</b></p>
       </section>
     </div>
   </ng-container>
@@ -82,13 +85,13 @@
   <ng-template #listView>
     <header class="zd-head">
       <div>
-        <h3>{{ title }}</h3>
-        <p class="muted small" *ngIf="!loading">{{ filtered.length }} of {{ rows.length }} rows<span *ngIf="canOpenEmployee && rows[0]?.employee_id"> · select a person to see everything about them</span></p>
+        <h3>{{ title | t }}</h3>
+        <p class="muted small" *ngIf="!loading">{{ '{0} of {1} rows' | t:filtered.length:rows.length }}<span *ngIf="canOpenEmployee && rows[0]?.employee_id"> · select a person to see everything about them</span></p>
       </div>
       <button class="zd-x" type="button" (click)="closed.emit()" aria-label="Close">×</button>
     </header>
     <div class="zd-tools">
-      <input type="search" [(ngModel)]="q" placeholder="Filter this list" aria-label="Filter this list">
+      <input type="search" [(ngModel)]="q" [placeholder]="'Filter this list' | t" [attr.aria-label]="'Filter this list' | t">
       <button type="button" class="zbtn ghost" (click)="csv()" [disabled]="!rows.length">Download CSV</button>
     </div>
     <div class="zd-body">
@@ -96,20 +99,20 @@
       <p class="err" *ngIf="error">{{ error }}</p>
       <p class="muted" *ngIf="!loading && !error && !rows.length">Nothing here right now.</p>
       <table class="zt" *ngIf="!loading && rows.length">
-        <thead><tr><th *ngFor="let c of columns" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">{{ c.label }}</th><th *ngIf="rows[0]?.module || rows[0]?._m"></th></tr></thead>
+        <thead><tr><th *ngFor="let c of columns" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">{{ c.label | t }}</th><th *ngIf="rows[0]?.module || rows[0]?._m"></th></tr></thead>
         <tbody>
           <tr *ngFor="let r of filtered" (click)="rowClick(r)" [class.clickable]="(r.employee_id && canOpenEmployee) || r.module || r._m" tabindex="0" (keydown.enter)="rowClick(r)">
             <td *ngFor="let c of columns" [ngSwitch]="c.type" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">
-              <span *ngSwitchCase="'date'">{{ r[c.key] | date:'dd/MM/yyyy' }}</span>
+              <span *ngSwitchCase="'date'">{{ r[c.key] | zdate }}</span>
               <span *ngSwitchCase="'money'">{{ r[c.key] | number:'1.0-0' }}</span>
-              <span *ngSwitchCase="'days'">{{ r[c.key] === null || r[c.key] === undefined ? '–' : r[c.key] + ' d' }}</span>
-              <span *ngSwitchCase="'status'"><span *ngIf="r[c.key]" [class]="statusClass(r[c.key])">{{ r[c.key] | lowercase }}</span></span>
+              <span *ngSwitchCase="'days'">{{ r[c.key] === null || r[c.key] === undefined ? '–' : ((r[c.key] === 1 ? '{0} day' : '{0} days') | t:r[c.key]) }}</span>
+              <span *ngSwitchCase="'status'"><span *ngIf="r[c.key]" [class]="statusClass(r[c.key])">{{ r[c.key] | zstatus | t }}</span></span>
               <span *ngSwitchCase="'time'">{{ r[c.key] ? (r[c.key] | slice:0:5) : '–' }}</span>
               <span *ngSwitchDefault>{{ r[c.key] ?? '–' }}</span>
             </td>
             <td *ngIf="rows[0]?.module || rows[0]?._m" class="num nowrap">
-              <button type="button" class="zbtn link" *ngIf="r._m" (click)="record(r, $event)">Record</button>
-              <button type="button" class="zbtn link" *ngIf="r.module && request?.metric === 'approvals'" (click)="open(r, $event)">Approve</button></td>
+              <span class="zd-acts"><button type="button" class="zbtn link" *ngIf="r._m" (click)="record(r, $event)">{{ 'Record' | t }}</button>
+              <button type="button" class="zbtn link" *ngIf="r.module && request?.metric === 'approvals'" (click)="open(r, $event)">{{ 'Approve' | t }}</button></span></td>
           </tr>
         </tbody>
       </table>

@@ -1,0 +1,180 @@
+/* =====================================================================================================================
+   v1.19.0 – ZEO design rules for every screen (from "Employee Master design recommendations").
+   Loaded last (angular.json) so it evens out the older screens without touching each one:
+   indigo for the one primary action, ink headings, sentence case, 38 px fields with the label above, white secondary buttons,
+   red text for destructive buttons, quiet tables, toasts. Colours only through the tokens below.
+   ===================================================================================================================== */
+:root {
+  --z-primary: #5B4FE0;
+  --z-primary-dark: #4A3FD0;
+  --z-primary-soft: #EEEDFD;
+  --z-ink: #1B1640;
+  --z-text: #1F2433;
+  --z-muted: #6B7185;
+  --z-line: #E3E5EE;
+  --z-page: #F4F5FA;
+  --z-ok: #2E9D6A;
+  --z-ok-soft: #E6F5EE;
+  --z-warn: #B8730F;
+  --z-warn-soft: #FDF3E1;
+  --z-bad: #D64550;
+  --z-bad-soft: #FCEBEC;
+  --z-radius: 8px;
+  --primary-color: #5B4FE0;
+  --main-color: #5B4FE0;
+}
+
+body { font-family: Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--z-text); background: var(--z-page) !important; }
+
+/* ---------------------------------------------------------------- sentence case everywhere */
+label, th, h1, h2, h3, h4, h5, h6, legend, .page-title, .btn, button, .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-tab .mdc-tab__text-label,
+.mat-mdc-form-field-label, mat-label, .nav-link, .card-title, .modal-title, input::placeholder, textarea::placeholder, .mat-mdc-dialog-title {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* ---------------------------------------------------------------- page titles and section titles */
+.header_section h1, .header_section h2, .page-title, .cpm-sec h1, .comapny_section > h1, .comapny_section .header_section h1,
+.list_company_sec h1, .list_company_sec h2 {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: var(--z-ink) !important;
+}
+.comapny_section h2, .com_list h2, .card h2, .modal h2, .mat-mdc-dialog-container h2 { font-size: 15px; font-weight: 600; color: var(--z-ink); }
+.comapny_section { background: var(--z-page) !important; }
+
+/* cards: line instead of the navy top border and heavy shadow */
+.list_company_sec, .com_list, .header_section {
+  border-top-color: var(--z-primary) !important;
+}
+.list_company_sec { border-radius: 12px; box-shadow: 0 1px 2px rgba(27, 22, 64, .06) !important; border: 1px solid var(--z-line); border-top: 3px solid var(--z-primary) !important; }
+
+/* ---------------------------------------------------------------- buttons: one filled indigo, secondary white, destructive red text */
+.btn { border-radius: var(--z-radius); font-weight: 500; }
+.btn-primary, .btn-success, .btn-Create, .btn-save-confirm, .hr-save, button.btn.btn-full.btn-success {
+  background-color: var(--z-primary) !important;
+  border-color: var(--z-primary) !important;
+  color: #fff !important;
+}
+.btn-primary:hover, .btn-success:hover, .btn-Create:hover, .btn-save-confirm:hover, .hr-save:hover { background-color: var(--z-primary-dark) !important; border-color: var(--z-primary-dark) !important; }
+.btn-info, .btn-secondary, .btn-warning, .btn-light, .btn-Edit, .btn-outline-secondary, .btn-outline-primary, .btn-outline-info, .btn-export-excel {
+  background-color: #fff !important;
+  border: 1px solid var(--z-line) !important;
+  color: var(--z-ink) !important;
+}
+.btn-info:hover, .btn-secondary:hover, .btn-warning:hover, .btn-light:hover, .btn-Edit:hover, .btn-outline-secondary:hover, .btn-outline-primary:hover,
+.btn-outline-info:hover, .btn-export-excel:hover { background-color: var(--z-primary-soft) !important; border-color: #CFCBF7 !important; color: var(--z-ink) !important; }
+.btn-danger, .btn-Delete, .btn-outline-danger {
+  background-color: #fff !important;
+  border: 1px solid #F1C6CB !important;
+  color: var(--z-bad) !important;
+}
+.btn-danger:hover, .btn-Delete:hover, .btn-outline-danger:hover { background-color: var(--z-bad-soft) !important; color: #B32D38 !important; }
+.btn .mat-icon, .btn mat-icon { color: inherit !important; }
+.btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--z-primary); outline-offset: 2px; box-shadow: none !important; }
+
+/* ---------------------------------------------------------------- fields: label above, 38 px, red * only when mandatory */
+label { font-size: 12px; font-weight: 500; color: var(--z-muted); margin-bottom: 4px; }
+.form-control, .form-select, select.form-control, .comapny_section input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),
+.comapny_section select, .com_list input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]), .com_list select {
+  min-height: 38px;
+  border: 1px solid var(--z-line);
+  border-radius: var(--z-radius);
+  font-size: 13.5px;
+  color: var(--z-text);
+}
+.comapny_section textarea, .com_list textarea, textarea.form-control { border: 1px solid var(--z-line); border-radius: var(--z-radius); font-size: 13.5px; }
+.form-control:focus, .form-select:focus, .comapny_section input:focus, .comapny_section select:focus, .comapny_section textarea:focus,
+.com_list input:focus, .com_list select:focus, .com_list textarea:focus {
+  border-color: var(--z-primary) !important;
+  box-shadow: 0 0 0 3px rgba(91, 79, 224, .15) !important;
+  outline: none;
+}
+input::placeholder, textarea::placeholder { color: #9AA0B2 !important; }
+.error-message, .text-danger.small, .field-error { color: var(--z-bad) !important; font-size: 12px; }
+
+/* ---------------------------------------------------------------- tables: quiet header, lines between rows only */
+table thead th {
+  background: #F7F7FB !important;
+  color: var(--z-ink) !important;
+  font-weight: 600 !important;
+  font-size: 12.5px;
+  padding: 10px 12px;
+  border: 0 !important;
+  border-bottom: 1px solid var(--z-line) !important;
+}
+table thead th a, table thead th .mat-icon, table thead th i { color: inherit !important; }
+table tr td { border: 0; border-bottom: 1px solid #EEF0F5; padding: 10px 12px; }
+.table > thead > tr > th, table.table th {
+  background: #F7F7FB;
+  color: var(--z-ink);
+  font-weight: 600;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--z-line);
+}
+.table td { color: var(--z-text); font-size: 13.5px; border-color: var(--z-line); vertical-align: middle; }
+.table-hover > tbody > tr:hover > * { background: #FAFAFE; }
+td.num, th.num, td.amount, th.amount, .text-money { text-align: right !important; font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- status chips (green / amber / red only for status) */
+.z-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 500; white-space: nowrap; background: #EEF0F5; color: var(--z-text); }
+.z-chip.ok { background: var(--z-ok-soft); color: #1D6B47; }
+.z-chip.warn { background: var(--z-warn-soft); color: #7A4D07; }
+.z-chip.bad { background: #fff; color: var(--z-bad); border: 1px solid var(--z-bad); }
+.z-chip.dead { background: var(--z-bad); color: #fff; }
+.z-chip.info { background: var(--z-primary-soft); color: #3F35B5; }
+
+/* ---------------------------------------------------------------- empty states and loading */
+.z-empty { padding: 22px 16px; text-align: center; color: var(--z-muted); font-size: 13.5px; }
+.z-empty a, .z-empty button { color: var(--z-primary); font-weight: 500; background: none; border: 0; cursor: pointer; }
+.z-skel { display: block; height: 14px; border-radius: 6px; background: linear-gradient(90deg, #EEF0F5 25%, #F6F7FA 50%, #EEF0F5 75%); background-size: 200% 100%; animation: zskel 1.2s infinite; }
+@keyframes zskel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .z-skel { animation: none; } }
+
+/* ---------------------------------------------------------------- toasts (z-toast.ts) */
+.ztoast-host { position: fixed; right: 20px; bottom: 20px; z-index: 100100; display: flex; flex-direction: column; gap: 8px; max-width: min(420px, calc(100vw - 32px)); }
+[dir=rtl] .ztoast-host { right: auto; left: 20px; }
+.ztoast { display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border-radius: 10px; background: var(--z-ink); color: #fff; font-size: 13.5px;
+  line-height: 1.4; box-shadow: 0 8px 24px rgba(27, 22, 64, .22); cursor: pointer; animation: ztin .18s ease-out; white-space: pre-line; }
+.ztoast.out { opacity: 0; transform: translateY(6px); transition: all .18s; }
+.ztoast-ok { background: #1D6B47; }
+.ztoast-err { background: #B32D38; }
+.ztoast-ic { flex: none; width: 20px; height: 20px; border-radius: 50%; background: rgba(255, 255, 255, .2); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+.ztoast-tx { flex: 1; overflow-wrap: anywhere; max-height: 180px; overflow: auto; }
+.ztoast-x { flex: none; background: none; border: 0; color: #fff; opacity: .7; font-size: 18px; line-height: 1; padding: 0 2px; cursor: pointer; }
+@keyframes ztin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) { .ztoast-host { left: 16px; right: 16px; bottom: 16px; max-width: none; } }
+
+/* header button groups of the older list screens painted every button white text – keep the design colours */
+.button-group .btn-info, .button-group .btn-secondary, .button-group .btn-warning, .button-group .btn-light, .button-group .btn-Edit,
+.button-group .btn-outline-secondary, .button-group .btn-outline-primary { color: var(--z-ink) !important; }
+.button-group .btn-danger, .button-group .btn-Delete, .button-group .btn-outline-danger { color: var(--z-bad) !important; }
+.button-group .btn .mat-icon { color: inherit !important; }
+
+/* list screens (zlist) – same quiet table header */
+table.zl-table > thead > tr > th {
+  background: #F7F7FB !important; color: var(--z-ink) !important; font-weight: 600 !important; font-size: 12.5px !important;
+  text-transform: none !important; letter-spacing: normal !important; border-bottom: 1px solid var(--z-line) !important;
+}
+table.zl-table > thead > tr > th.zl-sortable:hover { background: var(--z-primary-soft) !important; }
+table.zl-table > thead > tr > th input[type=checkbox] { accent-color: var(--z-primary); }
+
+/* v1.19.0 employee side panel (moved to <body>): opens from the left in Arabic */
+[dir=rtl] .er-panel { right: auto !important; left: 0 !important; box-shadow: 12px 0 40px rgba(27, 22, 64, .18) !important; }
+
+/* v1.20.0: dashboard tiles of Expenses and Projects in sentence case too */
+.ex-tile .lbl, .ex-h, .zp-card h3 { text-transform: none !important; letter-spacing: normal !important; }
+
+/* ---------------------------------------------------------------- 1.20.1: approval screens as standard lists */
+.approval-list.apr-list { display: block !important; grid-template-columns: none !important; margin-top: 16px; }
+.apr-list .apr-link { color: #4338ca; cursor: pointer; font-weight: 600; text-decoration: none; }
+.apr-list .apr-link:hover { text-decoration: underline; }
+.apr-list table .status-badge { display: inline-block; text-transform: none; letter-spacing: 0; white-space: nowrap; }
+.apr-list .apr-acts { white-space: nowrap; }
+.apr-list .apr-acts .btn { margin-inline-start: 6px; }
+.apr-list .apr-deleg { margin-top: 12px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #fff; }
+/* 1.20.1: round "fab" icon buttons inside lists look like the other row actions (quiet, small) */
+table td .mat-mdc-fab, table td .mat-mdc-mini-fab { width: 32px !important; height: 32px !important; min-height: 32px; box-shadow: none !important; background: #eef2ff !important; color: #4338ca !important; border-radius: 8px !important; }
+table td .mat-mdc-fab mat-icon, table td .mat-mdc-mini-fab mat-icon { font-size: 18px; width: 18px; height: 18px; color: #4338ca !important; }
+table td .mat-mdc-fab:hover, table td .mat-mdc-mini-fab:hover { background: #e0e7ff !important; }
+.apr-list .apr-link { color: #4338ca !important; }

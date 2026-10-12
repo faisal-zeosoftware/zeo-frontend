@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col-md-3">
-          <h1> Leave Types</h1>
+          <h1> Leave types</h1>
         </div>
 
         <div class="col-md-4">
@@ -48,12 +48,12 @@
       <div class="col-md-2">
 
         <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllLeaveTypes()">Select All</button>
+          (click)="toggleSelectAllLeaveTypes()">Select all</button>
 
       </div>
       <div class="col-md-3">
         <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedLeavetype()">Delete
-          Selected </button>
+          selected </button>
 
       </div>
     </div>
@@ -70,17 +70,17 @@
               <thead>
                 <tr>
                   <th class="sticky-left" style="width: 60px;">No</th>
-                  <th>Leave Type</th>
-                  <th>Leave Category</th>
+                  <th>Leave type</th>
+                  <th>Leave category</th>
                   <th>Code</th>
                   <th>Type</th>
                   <th>Branch</th>
                   <th>Unit</th>
-                  <th>Valid From</th>
-                  <th>Valid To</th>
-                  <th>Half Day</th>
+                  <th>Valid from</th>
+                  <th>Valid to</th>
+                  <th>Half day</th>
                   <th>Negative</th>
-                  <th>Enable leave Pay Rule</th>
+                  <th>Enable leave pay rule</th>
                   <th>Holiday</th>
                   <th>Weekend</th>
                   <th>Description</th>
@@ -106,8 +106,8 @@
                   </td>
                   <td data-label="Branch">{{ leavetype.branch }}</td>
                   <td data-label="Unit">{{ leavetype.unit | titlecase }}</td>
-                  <td data-label="Valid From">{{ leavetype.valid_from | date:'mediumDate' }}</td>
-                  <td data-label="Valid To">{{ leavetype.valid_to | date:'mediumDate' }}</td>
+                  <td data-label="Valid From">{{ leavetype.valid_from | date:'dd MMM yyyy' }}</td>
+                  <td data-label="Valid To">{{ leavetype.valid_to | date:'dd MMM yyyy' }}</td>
                                      <td data-label="Half Day">
                     <span class="status-badge" [class.status-yes]="leavetype.allow_half_day" [class.status-no]="!leavetype.allow_half_day">
                       {{ leavetype.allow_half_day ? 'Yes' : 'No' }}
@@ -149,6 +149,7 @@
     class="table-edit-btn">
     <mat-icon>draw</mat-icon>
   </button>
+  <z-translate *ngIf="showEditBtn" endpoint="/calendars/api/leave-type/" [recordId]="leavetype.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
 
   <mat-checkbox
     *ngIf="Delete"
@@ -185,7 +186,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Leave Type</h2>
+            <h2>Edit leave type</h2>
           </div>
           <div class="col-md-2">
  <div class="pull-right">
@@ -214,7 +215,7 @@
             </div>
 
             <div class="col-md-4">
-              <label>Leave Type</label>
+              <label>Leave type</label>
               <div class="custom-sel">
                 <select class="form-control" id="type" name="type" [(ngModel)]="editLeaveType.type"
                   [ngModelOptions]="{standalone: true}">
@@ -244,7 +245,7 @@
               </div>
 
             <div class="col-md-4">
-              <label>Leave Unit</label>
+              <label>Leave unit</label>
               <div class="custom-sel">
                 <select class="form-control" id="unit" name="unit" [(ngModel)]="editLeaveType.unit"
                   [ngModelOptions]="{standalone: true}">
@@ -255,13 +256,13 @@
             </div>
 
             <div class="col-md-4">
-              <label>Valid From</label>
+              <label>Valid from</label>
               <input type="date" class="form-control" required [(ngModel)]="editLeaveType.valid_from"
                 placeholder="Enter valid from" [ngModelOptions]="{standalone: true}">
             </div>
 
             <div class="col-md-4">
-              <label>Valid To</label>
+              <label>Valid to</label>
               <input type="date" class="form-control" required [(ngModel)]="editLeaveType.valid_to"
                 placeholder="Enter valid to" [ngModelOptions]="{standalone: true}">
             </div>
@@ -401,7 +402,7 @@
                     <div class="row"  #leaveApplicableTopSection>
 
                       <div class="col-md-4" style="display: none;">
-                        <label>Leave Type</label>
+                        <label>Leave type</label>
                         <div class="custom-sel">
                           <select class="form-control" disabled id="leave_type" name="leave_type"
                             [(ngModel)]="selectedLeaveTypeForModal.id" [ngModelOptions]="{standalone: true}">
@@ -447,7 +448,7 @@
 
 
                       <div class="col-md-4">
-                        <label>Select Branches</label>
+                        <label>Select branches</label>
                         <div class="custom-sel">
                           <div class="form-control-wrapper">
 
@@ -670,7 +671,7 @@
                     <div class="row" *ngIf="hasAddPermission">
                       <div class="col-md-8"></div>
                       <div class="col-md-4">
-                        <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Entitlement </button>
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add leave entitlement </button>
 
                       </div>
                     </div>
@@ -689,7 +690,7 @@
                       <div class="row">
 
                         <div class="col-md-4" style="display: none;">
-                          <label>Leave Entitlement</label>
+                          <label>Leave entitlement</label>
                           <div class="custom-sel">
                             <select class="form-control" [(ngModel)]="leave_entitlement" name="leave_entitlement"
                               [ngModelOptions]="{standalone: true}">
@@ -838,7 +839,7 @@
                       <div class="row">
 
                         <div class="col-md-4">
-                          <label>Opening Balance</label>
+                          <label>Opening balance</label>
                           <div class="custom-sel">
                             <input type="number" class="form-control" [(ngModel)]="opening_balance"
                               [ngModelOptions]="{standalone: true}">
@@ -884,7 +885,7 @@
 
 
                         <div class="col-md-4" style="display: none;">
-                          <label>Leave Type</label>
+                          <label>Leave type</label>
                           <div class="custom-sel">
                             <select class="form-control" id="leave_type" name="leave_type"
                               [(ngModel)]="selectedLeaveTypeForModal.id" [ngModelOptions]="{standalone: true}">
@@ -904,7 +905,7 @@
                       <div class="row" *ngIf="hasAddPermission">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
-                          <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Reset </button>
+                          <button type="submit" class="btn btn-success btn-full mt-4">Add leave reset </button>
 
                         </div>
                       </div>
@@ -932,30 +933,30 @@
       <tr>
         <th class="sticky-left">No</th>
 
-        <th>Leave Type</th>
-        <th>Min Experience</th>
-        <th>Effective After From</th>
-        <th>Effective After Unit</th>
+        <th>Leave type</th>
+        <th>Min experience</th>
+        <th>Effective after from</th>
+        <th>Effective after unit</th>
         <th>Accrual</th>
-        <th>Accrual Rate</th>
-        <th>Accrual Frequency</th>
-        <th>Accrual Day</th>
-        <th>Accrual Month</th>
-        <th>Prorate Accrual</th>
-        <th>Enable Leave Pay Rule</th>
+        <th>Accrual rate</th>
+        <th>Accrual frequency</th>
+        <th>Accrual day</th>
+        <th>Accrual month</th>
+        <th>Prorate accrual</th>
+        <th>Enable leave pay rule</th>
         <th>Branches</th>
         <th>Categories</th>
         <th>Departments</th>
         <th>Designations</th>
-        <th>Reset Policy</th>
-        <th>Created At</th>
-        <th>Created By</th>
-        <th>Reset Frequency</th>
-        <th>Reset Month</th>
-        <th>Reset Day</th>
+        <th>Reset policy</th>
+        <th>Created at</th>
+        <th>Created by</th>
+        <th>Reset frequency</th>
+        <th>Reset month</th>
+        <th>Reset day</th>
         <th>Allow CF</th>
-        <th>Allow Encashment</th>
-        <th>Opening Balance</th>
+        <th>Allow encashment</th>
+        <th>Opening balance</th>
         <th class="sticky-right">Action</th>
       </tr>
 
@@ -1079,7 +1080,7 @@
                     <div class="mt-3" *ngIf="hasAddPermission">
 
                       <button class="btn btn-success me-2" (click)="submitPayRule()">
-                        Save Pay Rule
+                        Save pay rule
                       </button>
 
                         <button
@@ -1087,7 +1088,7 @@
                        (click)="updatePayRule()"
                        *ngIf="editingPayRuleId">
 
-                         Update Pay Rule
+                         Update pay rule
 
                          </button>
                     </div>
@@ -1170,7 +1171,7 @@
                 </div>
 
                 <div class="col-md-4" style="display: none;">
-                  <label>Leave Type</label>
+                  <label>Leave type</label>
                   <div class="custom-sel">
                     <select class="form-control" id="leave_type" name="leave_type"
                       [(ngModel)]="selectedLeaveTypeForModal.id" [ngModelOptions]="{standalone: true}">
@@ -1181,7 +1182,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label>Select Branches</label>
+                  <label>Select branches</label>
                   <div class="custom-sel">
                     <div class="form-control-wrapper">
 

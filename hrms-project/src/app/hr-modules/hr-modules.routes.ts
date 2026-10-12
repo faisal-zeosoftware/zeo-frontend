@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { moved } from '../not-found/moved';   // v1.15.1
 import { ModuleOptionsComponent, ModuleMenuItem } from './module-options/module-options.component';
 import { CrudPageComponent } from './crud-page/crud-page.component';
 import { GoalWorkspaceComponent } from './goal-workspace/goal-workspace.component';
@@ -28,51 +29,51 @@ import { BOND_PAGE, CERTIFICATE_PAGE, COURSE_PAGE, LEARNING_REPORT_PAGE, NEEDS_P
 
 const PERFORMANCE_MENU: ModuleMenuItem[] = [
   { path: 'kpi-library', label: 'KPI & Competency', icon: 'tune', model: 'kpi' },
-  { path: 'templates', label: 'Appraisal Templates', icon: 'dashboard_customize', model: 'appraisaltemplate' },
-  { path: 'cycles', label: 'Appraisal Cycle', icon: 'event_repeat', model: 'appraisalcycle' },
-  { path: 'goal-setting', label: 'Goal Setting', icon: 'flag', selfService: true },
-  { path: 'check-in', label: 'Mid-Year Check-in', icon: 'update', selfService: true },
-  { path: 'self-appraisal', label: 'Self Appraisal', icon: 'rate_review', selfService: true },
-  { path: 'manager-review', label: 'Manager Review', icon: 'supervisor_account', selfService: true },
+  { path: 'templates', label: 'Appraisal templates', icon: 'dashboard_customize', model: 'appraisaltemplate' },
+  { path: 'cycles', label: 'Appraisal cycle', icon: 'event_repeat', model: 'appraisalcycle' },
+  { path: 'goal-setting', label: 'Goal setting', icon: 'flag', selfService: true },
+  { path: 'check-in', label: 'Mid-year check-in', icon: 'update', selfService: true },
+  { path: 'self-appraisal', label: 'Self appraisal', icon: 'rate_review', selfService: true },
+  { path: 'manager-review', label: 'Manager review', icon: 'supervisor_account', selfService: true },
   { path: 'calibration', label: 'Calibration', icon: 'balance', model: 'calibrationlog' },
-  { path: 'outcomes', label: 'Appraisal Outcome', icon: 'trending_up', model: 'appraisaloutcome' },
+  { path: 'outcomes', label: 'Appraisal outcome', icon: 'trending_up', model: 'appraisaloutcome' },
   { path: 'pip', label: 'PIP', icon: 'warning', model: 'performanceimprovementplan' },
 ];
 
 const RECRUITMENT_MENU: ModuleMenuItem[] = [
-  { path: 'requisitions', label: 'Manpower Requisition', icon: 'post_add', model: 'manpowerrequisition' },
-  { path: 'job-openings', label: 'Job Openings', icon: 'work', model: 'jobopening' },
-  { path: 'pipeline', label: 'Candidate Pipeline', icon: 'view_kanban', model: 'application' },
+  { path: 'requisitions', label: 'Manpower requisition', icon: 'post_add', model: 'manpowerrequisition' },
+  { path: 'job-openings', label: 'Job openings', icon: 'work', model: 'jobopening' },
+  { path: 'pipeline', label: 'Candidate pipeline', icon: 'view_kanban', model: 'application' },
   { path: 'candidates', label: 'Candidates', icon: 'badge', model: 'candidate' },
   { path: 'interviews', label: 'Interviews', icon: 'event', model: 'interview' },
-  { path: 'offers', label: 'Offer Letters', icon: 'description', model: 'offer' },
+  { path: 'offers', label: 'Offer letters', icon: 'description', model: 'offer' },
   { path: 'onboarding', label: 'Pre-Onboarding & Visa', icon: 'flight_land', model: 'visastep' },
-  { path: 'approval-levels', label: 'Approval Levels', icon: 'account_tree', model: 'requisitionapprovallevel' },
+  { path: 'approval-levels', label: 'Approval levels', icon: 'account_tree', model: 'requisitionapprovallevel' },
 ];
 
 const LEARNING_MENU: ModuleMenuItem[] = [
-  { path: 'my-learning', label: 'My Learning', icon: 'school', selfService: true },   // v1.11.0
-  { path: 'needs', label: 'Training Needs', icon: 'psychology', model: 'trainingneed' },
-  { path: 'courses', label: 'Course Catalog', icon: 'menu_book', model: 'course' },
-  { path: 'calendar', label: 'Training Calendar', icon: 'calendar_month', model: 'trainingsession' },
+  { path: 'my-learning', label: 'My learning', icon: 'school', selfService: true },   // v1.11.0
+  { path: 'needs', label: 'Training needs', icon: 'psychology', model: 'trainingneed' },
+  { path: 'courses', label: 'Course catalog', icon: 'menu_book', model: 'course' },
+  { path: 'calendar', label: 'Training calendar', icon: 'calendar_month', model: 'trainingsession' },
   { path: 'nominations', label: 'Nominations', icon: 'group_add', model: 'nomination' },
   { path: 'results', label: 'Attendance & Assessment', icon: 'checklist', model: 'participantresult' },
   { path: 'certificates', label: 'Certificates', icon: 'workspace_premium', selfService: true },
-  { path: 'bonds', label: 'Training Bond', icon: 'handshake', selfService: true },
-  { path: 'reports', label: 'Learning Reports', icon: 'insights', model: 'trainingsession' },
+  { path: 'bonds', label: 'Training bond', icon: 'handshake', selfService: true },
+  { path: 'reports', label: 'Learning reports', icon: 'insights', model: 'trainingsession' },
   // v1.11.0
   { path: 'month', label: 'Calendar (month)', icon: 'event', selfService: true },
-  { path: 'attendance-sheet', label: 'Attendance Sheet', icon: 'fact_check', model: 'participantresult' },
-  { path: 'history', label: 'Training History', icon: 'history', selfService: true },
-  { path: 'skill-matrix', label: 'Skill Matrix', icon: 'grid_on', selfService: true },
-  { path: 'employee-skills', label: 'Employee Skills', icon: 'stars', selfService: true },
+  { path: 'attendance-sheet', label: 'Attendance sheet', icon: 'fact_check', model: 'participantresult' },
+  { path: 'history', label: 'Training history', icon: 'history', selfService: true },
+  { path: 'skill-matrix', label: 'Skill matrix', icon: 'grid_on', selfService: true },
+  { path: 'employee-skills', label: 'Employee skills', icon: 'stars', selfService: true },
   { path: 'budget-vs-actual', label: 'Budget vs Actual', icon: 'bar_chart', model: 'trainingsession' },
-  { path: 'budgets', label: 'Training Budgets', icon: 'account_balance', model: 'trainingsession' },
-  { path: 'session-costs', label: 'Session Costs', icon: 'receipt_long', model: 'trainingsession' },
+  { path: 'budgets', label: 'Training budgets', icon: 'account_balance', model: 'trainingsession' },
+  { path: 'session-costs', label: 'Session costs', icon: 'receipt_long', model: 'trainingsession' },
   { path: 'skills', label: 'Skills', icon: 'psychology_alt', model: 'course' },
-  { path: 'role-skills', label: 'Role Skills', icon: 'assignment_ind', model: 'course' },
-  { path: 'categories', label: 'Training Categories', icon: 'category', model: 'course' },
-  { path: 'providers', label: 'Training Providers', icon: 'apartment', model: 'course' },
+  { path: 'role-skills', label: 'Role skills', icon: 'assignment_ind', model: 'course' },
+  { path: 'categories', label: 'Training categories', icon: 'category', model: 'course' },
+  { path: 'providers', label: 'Training providers', icon: 'apartment', model: 'course' },
   { path: 'trainers', label: 'Trainers', icon: 'co_present', model: 'course' },
   { path: 'venues', label: 'Venues', icon: 'meeting_room', model: 'course' },
 ];
@@ -85,17 +86,28 @@ export const HR_MODULE_ROUTES: Routes = [
   { path: 'ceo-dashboard', component: CeoDashboardComponent },          // v1.11.0
   { path: 'unified-calendar', component: UnifiedCalendarComponent },    // v1.11.0
   ...EXPENSE_ROUTES,                                                    // v1.11.0
+  // v1.15.1: one "My policies" page – /main-sidebar/my-policies (the copy inside Organisation redirects there)
+  moved('org-structure/my-policies', '/main-sidebar/my-policies'),
   ...ORG_STRUCTURE_ROUTES,                                              // v1.12.0
   ...SHIFT_PLANNER_ROUTES,                                              // v1.12.0
   ...ATTENDANCE_PLUS_ROUTES,                                            // v1.12.0
   ...ASSET_PLUS_ROUTES,                                                 // v1.12.0
+  { path: 'zeo-projects', loadChildren: () => import('../zeo-projects/zeo-projects.routes').then(m => m.ZEO_PROJECTS_LAZY) },   // v1.20.0 Projects app (loaded on first use)
+  // v1.21.0 CRM, Property, Maintenance (ZEO app kit) and HSE apps, each loaded on first use
+  { path: 'zeo-crm', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_APP_LAZY) },
+  { path: 'zeo-property', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_APP_LAZY) },
+  { path: 'zeo-maintenance', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_APP_LAZY) },
+  { path: 'zeo-hse', loadChildren: () => import('../zeo-hse/zeo-hse.routes').then(m => m.ZEO_HSE_LAZY) },
   ...EMPLOYEE_PROFILE_ROUTES,                                           // v1.13.0
   ...SELF_SERVICE_ROUTES,                                               // v1.13.0
+  // v1.20.1: Country settings and Languages open inside Settings (with the Settings menu); the old addresses still work
+  { path: 'country-settings', redirectTo: 'settings/country-settings', pathMatch: 'full' },
+  { path: 'languages', redirectTo: 'settings/languages', pathMatch: 'full' },
   { path: 'my-dashboard', component: EssDashboardComponent },
   {
     path: 'performance-options',
     component: ModuleOptionsComponent,
-    data: { title: 'Performance Options', base: '/main-sidebar/performance-options', menu: PERFORMANCE_MENU },
+    data: { title: 'Performance options', base: '/main-sidebar/performance-options', menu: PERFORMANCE_MENU },
     children: [
       { path: '', redirectTo: 'goal-setting', pathMatch: 'full' },
       page('kpi-library', KPI_PAGE),
@@ -113,7 +125,7 @@ export const HR_MODULE_ROUTES: Routes = [
   {
     path: 'recruitment-options',
     component: ModuleOptionsComponent,
-    data: { title: 'Recruitment Options', base: '/main-sidebar/recruitment-options', menu: RECRUITMENT_MENU },
+    data: { title: 'Recruitment options', base: '/main-sidebar/recruitment-options', menu: RECRUITMENT_MENU },
     children: [
       { path: '', redirectTo: 'job-openings', pathMatch: 'full' },
       page('requisitions', REQUISITION_PAGE),
@@ -129,7 +141,7 @@ export const HR_MODULE_ROUTES: Routes = [
   {
     path: 'learning-options',
     component: ModuleOptionsComponent,
-    data: { title: 'Learning Options', base: '/main-sidebar/learning-options', menu: LEARNING_MENU },
+    data: { title: 'Learning options', base: '/main-sidebar/learning-options', menu: LEARNING_MENU },
     children: [
       { path: '', redirectTo: 'my-learning', pathMatch: 'full' },
       page('needs', NEEDS_PAGE),

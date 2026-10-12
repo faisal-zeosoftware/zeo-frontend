@@ -13,7 +13,7 @@ export class DesignationService {
 
 
   
-  private baseUrl = 'http://127.0.0.1:8000/organisation/api';
+  private baseUrl = `${environment.apiBaseUrl}/organisation/api`;
 
   constructor(private http: HttpClient) {}
 

@@ -6,7 +6,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> General Request Escalation</h1>
+                    <h1> General request escalation</h1>
                 </div>
 
                            <div class="col-md-3">
@@ -56,13 +56,13 @@
  <div class="row">
     <div class="col-md-2">
         <button class="mt-3 btn-warning btn" style="width: 100%;" *ngIf="Delete" (click)="toggleSelectAllEmployees()">
-            Select All
+            Select all
         </button>
     </div>
 
     <div class="col-md-3">
         <button class="mt-3 btn-warning btn" *ngIf="Delete" (click)="resetSelectedGeneralReq()">
-            Reset Selected
+            Reset selected
         </button>
     </div>
  </div>
@@ -75,7 +75,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create General Request Escalation</h2>
+                  <h2> Create general request escalation</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -93,7 +93,7 @@
                  
               <div class="col-md-6">
                 <div class="custom-sel">
-                  <label>Select Request Type</label>
+                  <label>Select request type</label>
                   <select class="form-control"
                           id="request_type"
                           required
@@ -110,7 +110,7 @@
 <!-- LEVEL DROPDOWN -->
 <div class="col-md-6 " *ngIf="EscalationLevels.length > 0">
     <div class="custom-sel">
-      <label>Select Level</label>
+      <label>Select level</label>
       <select class="form-control"
               [(ngModel)]="selectedLevel"
               [ngModelOptions]="{standalone: true}">
@@ -125,7 +125,7 @@
 
  <div class="col-md-6">
                             <div class="custom-sel">
-                                <label>Select User</label>
+                                <label>Select user</label>
                                 <select class="form-control" id="escalate_to" required [(ngModel)]="escalate_to"  [ngModelOptions]="{standalone: true}" >
                                     <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
                                 </select>
@@ -199,7 +199,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit General Request Escalation</h2>
+          <h2>Edit general request escalation</h2>
         </div>
 <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -218,7 +218,7 @@
                  
             <div class="col-md-6">
               <div class="custom-sel">
-                <label>Select Request Type</label>
+                <label>Select request type</label>
                 <select class="form-control"
                         id="request_type"
                         required
@@ -235,7 +235,7 @@
 <!-- LEVEL DROPDOWN -->
 <div class="col-md-6 " *ngIf="EscalationLevels.length > 0">
   <div class="custom-sel">
-    <label>Select Level</label>
+    <label>Select level</label>
     <select class="form-control"
             [(ngModel)]="editAsset.selectedLevel"
             [ngModelOptions]="{standalone: true}">
@@ -250,7 +250,7 @@
 
 <div class="col-md-6">
                           <div class="custom-sel">
-                              <label>Select User</label>
+                              <label>Select user</label>
                               <select class="form-control" id="escalate_to" required [(ngModel)]="editAsset.escalate_to"  [ngModelOptions]="{standalone: true}" >
                                   <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
                               </select>
@@ -332,13 +332,13 @@
     <thead class="thead-dark">
       <tr>
         <th class="sticky-left">No</th>
-        <th>Request Type</th>
-        <th>Approval Level</th>
+        <th>Request type</th>
+        <th>Approval level</th>
         <th>Approver</th>
-        <th>Escalater Name</th>
-        <th>Escalate After Days</th>
-        <th>Escalate After Hour</th>
-        <th>Escalate After Minitus</th>
+        <th>Escalater name</th>
+        <th>Escalate after days</th>
+        <th>Escalate after hour</th>
+        <th>Escalate after minitus</th>
 
 
         <th class="sticky-right">Actions</th>

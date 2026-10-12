@@ -4,15 +4,21 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription, filter } from 'rxjs';
 import { ZListService } from './z-list.service';
-import { MAIN_GROUPS, MenuApp, MenuGroup, MenuSection, appForUrl, itemVisible } from './menu-config';
+import { MAIN_GROUPS, MenuApp, MenuGroup, MenuSection, Suite, appForUrl, itemVisible, countryVisible } from './menu-config';
+import { CountryPackService } from './country-pack.service';
+import { I18N_UI, I18nService, i18nT } from './i18n.service';   // v1.15.0
 
 type Access = { admin: boolean; codes: Set<string> } | null;
 
 /** Shared helpers for the main menu and the module menus. */
-export function visibleSections(app: MenuApp | null, access: Access): MenuSection[] {
+export function visibleSections(app: MenuApp | null, access: Access, cp?: CountryPackService): MenuSection[] {
   if (!app || !app.sections) { return []; }
+  const allows = cp ? (e: string) => cp.allows(e) : undefined;   // v1.14.0: country-gated items and captions
   return app.sections
-    .map(s => ({ ...s, items: s.items.filter(i => itemVisible(i.perms, access)) }))
+    .map(s => ({ ...s, items: s.items
+      .filter(i => itemVisible(i.perms, access) && countryVisible(i.country, allows))
+      .map(i => cp ? { ...i, label: cp.text(i.label), hint: i.hint ? cp.text(i.hint) : i.hint } : i)
+      .map(i => ({ ...i, label: i18nT(i.label), hint: i.hint ? i18nT(i.hint) : i.hint })) }))   // v1.15.0: country first, then language
     .filter(s => s.items.length);
 }
 
@@ -22,23 +28,43 @@ export function appLanding(app: MenuApp, access: Access): string | null {
   return first ? first.items[0].link : null;
 }
 
-export function visibleGroups(access: Access, hideAdmin = false): { title: string; apps: { app: MenuApp; link: string }[] }[] {
-  return MAIN_GROUPS
-    .map((g: MenuGroup) => ({
+export function visibleGroups(access: Access, hideAdmin = false, suite?: Suite | null): { title: string; apps: { app: MenuApp; link: string }[] }[] {
+  // v1.20.0: one app (HRMS / Projects / Settings) at a time; the common apps (Calendar, My To-do) follow the app's first entry
+  const common = MAIN_GROUPS.filter(g => g.suite === 'common').flatMap(g => g.apps);
+  const groups = suite ? MAIN_GROUPS.filter(g => (g.suite || 'hrms') === suite)
+                       : MAIN_GROUPS.filter(g => g.suite !== 'common');
+  const out = groups
+    .map((g: MenuGroup, gi: number) => ({
       title: g.title,
-      apps: g.apps
-        .filter(a => !(hideAdmin && (a.key === 'reports' || a.key === 'settings')))
+      apps: (gi === 0 && suite !== 'settings' ? [g.apps[0], ...common, ...g.apps.slice(1)] : g.apps)
+        .filter(a => !(hideAdmin && (a.key === 'reports' || a.key === 'settings' || a.key === 'hrsettings' || a.key.startsWith('st-'))))
         .map(a => ({ app: a, link: appLanding(a, access) as string }))
         .filter(x => !!x.link),
     }))
     .filter(g => g.apps.length);
+  if (!suite) { out.unshift({ title: 'Overview', apps: common.map(a => ({ app: a, link: appLanding(a, access) as string })) }); }
+  return out;
+}
+
+/** v1.20.0: the app (suite) a page belongs to – null for pages every app shares (Calendar, My To-do). */
+export function suiteForUrl(url: string): Exclude<Suite, 'common'> | null {
+  const app = appForUrl(url);
+  if (!app) { return null; }
+  const g = MAIN_GROUPS.find(x => x.apps.includes(app));
+  const s = (g?.suite || 'hrms') as Suite;
+  return s === 'common' ? null : s;
+}
+export function suiteOfApp(key: string): Exclude<Suite, 'common'> | null {
+  const g = MAIN_GROUPS.find(x => x.apps.some(a => a.key === key));
+  const s = (g?.suite || 'hrms') as Suite;
+  return s === 'common' ? null : s;
 }
 
 /** The module menu shown in the second sidebar: the sections of the module the current page belongs to. */
 @Component({
   selector: 'z-module-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, ...I18N_UI],
   encapsulation: ViewEncapsulation.None,
   template: `
   <ul class="nav-menu-list zm-list">
@@ -46,7 +72,7 @@ export function visibleGroups(access: Access, hideAdmin = false): { title: strin
       <li class="zm-section" *ngIf="open && sections.length > 1">
         <button type="button" class="zm-section-head" [class.zm-toggle]="s.collapsed" (click)="toggle(s)"
                 [attr.aria-expanded]="!isClosed(s)">
-          <span>{{ s.title }}</span>
+          <span>{{ s.title | t }}</span>
           <span class="zm-count" *ngIf="isClosed(s)">{{ s.items.length }}</span>
           <mat-icon *ngIf="s.collapsed" class="zm-chev">{{ isClosed(s) ? 'expand_more' : 'expand_less' }}</mat-icon>
         </button>
@@ -62,7 +88,7 @@ export function visibleGroups(access: Access, hideAdmin = false): { title: strin
         </li>
       </ng-container>
     </ng-container>
-    <li *ngIf="!sections.length && loaded" class="zm-empty">No pages available for your rights.</li>
+    <li *ngIf="!sections.length && loaded" class="zm-empty">{{ 'No pages available for your rights.' | t }}</li>
   </ul>`,
   styles: [`
     .zm-list { gap: 2px !important; }
@@ -94,10 +120,12 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
   private opened = new Set<string>();
   private subs: Subscription[] = [];
 
-  constructor(private router: Router, private zlist: ZListService, private cd: ChangeDetectorRef) {}
+  constructor(private router: Router, private zlist: ZListService, private cd: ChangeDetectorRef, private cp: CountryPackService, private i18n: I18nService) {}
 
   ngOnInit(): void {
     this.refresh();
+    this.subs.push(this.cp.pack$.subscribe(() => this.refresh()));   // v1.14.0
+    this.subs.push(this.i18n.lang$.subscribe(() => this.refresh()));   // v1.15.0
     this.subs.push(this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.refresh()));
     this.subs.push(this.zlist.permissions().subscribe(a => { this.access = a; this.loaded = true; this.refresh(); }));
   }
@@ -108,7 +136,7 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
     const app = appForUrl(this.router.url);
     if (app !== this.app) { this.opened.clear(); }
     this.app = app;
-    this.sections = visibleSections(app, this.access);
+    this.sections = visibleSections(app, this.access, this.cp);
     // a folded section opens by itself when the current page is in it
     const url = this.router.url.split('?')[0];
     for (const s of this.sections) {
@@ -136,11 +164,13 @@ export class ZAppTitleComponent implements OnInit, OnDestroy {
   @Input() fallback = '';
   title = '';
   private sub?: Subscription;
-  constructor(private router: Router) {}
+  private sub2?: Subscription;
+  constructor(private router: Router, private i18n: I18nService) {}
   ngOnInit(): void {
     this.set();
     this.sub = this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.set());
+    this.sub2 = this.i18n.lang$.subscribe(() => this.set());   // v1.15.0
   }
-  ngOnDestroy(): void { this.sub?.unsubscribe(); }
-  private set(): void { this.title = appForUrl(this.router.url)?.label || this.fallback; }
+  ngOnDestroy(): void { this.sub?.unsubscribe(); this.sub2?.unsubscribe(); }
+  private set(): void { this.title = i18nT(appForUrl(this.router.url)?.label || this.fallback); }
 }

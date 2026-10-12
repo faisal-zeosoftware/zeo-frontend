@@ -1,0 +1,120 @@
+/* =====================================================================================================================
+   ZEO HRMS v1.15.0 – right-to-left layout (Arabic) and the Arabic screen font                       (builder: langrtl)
+   ---------------------------------------------------------------------------------------------------------------------
+   How RTL works in ZEO (3 parts):
+   1. I18nService sets <html dir="rtl" lang="ar">, body.rtl, and tells Angular Material / CDK the direction
+      (Directionality) so sidenavs, menus, selects, datepickers, paginators and dialogs mirror themselves.
+   2. shared-ui/z-rtl.ts mirrors the app's own stylesheets at runtime (left <-> right, margins, paddings, borders,
+      radius, text-align, float, shadows, translateX) – like rtlcss – and flags direction icons with .z-mirror.
+   3. This file: what the runtime mirror cannot do – Arabic font, icons, numbers / Latin text inside RTL, Bootstrap 4
+      classes from the CDN sheet (cross-origin, not mirrored), inline template styles and screen-specific fixes.
+   Every rule here is scoped with html[dir=rtl] or html[lang=ar]: English (left-to-right) pages are not affected.
+   The runtime mirror skips selectors that contain [dir … / [lang … so these rules are applied exactly as written.
+   Must be the LAST entry of "styles" in angular.json.
+   ===================================================================================================================== */
+
+/* ---------------------------------------------------------------- 1. Arabic font (Noto Sans Arabic, SIL OFL 1.1, bundled
+   in src/assets/fonts/ar – no CDN). unicode-range: only Arabic letters use it; Latin text and digits keep the app font. */
+@font-face { font-family: 'ZEO Arabic'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('./assets/fonts/ar/noto-sans-arabic-arabic-400-normal.woff2') format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'ZEO Arabic'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url('./assets/fonts/ar/noto-sans-arabic-arabic-500-normal.woff2') format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'ZEO Arabic'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url('./assets/fonts/ar/noto-sans-arabic-arabic-600-normal.woff2') format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'ZEO Arabic'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url('./assets/fonts/ar/noto-sans-arabic-arabic-700-normal.woff2') format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0897-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+html[lang=ar] body,
+html[lang=ar] body :not(mat-icon, .mat-icon, .material-icons, .material-icons-outlined, .material-icons-round, .material-symbols-outlined,
+  i, [class^="fa"], [class*=" fa-"], [class^="bi-"], [class*=" bi-"], .bi, [class*="note-icon"], [class*="k-icon"], code, pre, kbd, samp, svg, svg *) {
+  font-family: 'ZEO Arabic', 'Noto Sans Arabic', Roboto, 'Segoe UI', Tahoma, Arial, sans-serif !important;
+}
+/* Arabic letters need a little more line height and must not be letter-spaced or upper-cased (breaks joining) */
+html[lang=ar] body { line-height: 1.6; }
+html[lang=ar] body :is(h1, h2, h3, h4, h5, h6, label, th, .btn, button, .badge, [class*="title"], [class*="label"], [class*="head"]) {
+  letter-spacing: normal !important;
+}
+
+/* ---------------------------------------------------------------- 2. icons that point to a side */
+/* Material icons: z-rtl.ts adds .z-mirror (arrow_back, chevron_right, logout, send …). `scale` composes with any rotate. */
+html[dir=rtl] .z-mirror { scale: -1 1; }
+/* Font Awesome / Bootstrap icons with a direction */
+html[dir=rtl] :is([class*="fa-arrow-left"], [class*="fa-arrow-right"], [class*="fa-chevron-left"], [class*="fa-chevron-right"],
+  [class*="fa-angle-left"], [class*="fa-angle-right"], [class*="fa-angles-left"], [class*="fa-angles-right"], [class*="fa-angle-double-"],
+  [class*="fa-caret-left"], [class*="fa-caret-right"], [class*="fa-sign-out"], [class*="fa-sign-in"], [class*="fa-right-from"],
+  [class*="fa-right-to"], [class*="fa-reply"], [class*="fa-share"], [class*="fa-paper-plane"], [class*="fa-external-link"],
+  [class*="fa-list"], [class*="fa-long-arrow-"], [class*="fa-circle-arrow-left"], [class*="fa-circle-arrow-right"],
+  [class*="bi-arrow-left"], [class*="bi-arrow-right"], [class*="bi-chevron-left"], [class*="bi-chevron-right"],
+  [class*="bi-chevron-double-"], [class*="bi-caret-left"], [class*="bi-caret-right"], [class*="bi-box-arrow"], [class*="bi-send"],
+  [class*="bi-reply"], [class*="bi-list-"], [class*="bi-text-left"], [class*="bi-text-right"]) { scale: -1 1; }
+html[dir=rtl] [data-no-mirror] .z-mirror { scale: none; }
+
+/* ---------------------------------------------------------------- 3. numbers, codes, e-mails, IBANs, Latin names inside RTL */
+/* typed values that are always left-to-right: keep them LTR, aligned to the right edge of the RTL form */
+html[dir=rtl] :is(input[type=email], input[type=tel], input[type=url], input[type=number], input[type=password],
+  input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]) { direction: ltr; }
+:where(html[dir=rtl]) :where(input[type=email], input[type=tel], input[type=url], input[type=number], input[type=password],
+  input[type=date], input[type=time], input[type=datetime-local], input[type=month], input[type=week]) { text-align: right; }
+html[dir=rtl] :is(input[type=email], input[type=tel], input[type=url], input[type=number])::placeholder { direction: rtl; }
+/* free text inputs / textareas: the direction follows what the user types (Arabic → RTL, English → LTR) */
+html[dir=rtl] :is(input:not([type]), input[type=text], input[type=search], textarea) { unicode-bidi: plaintext; }
+/* table cells: each one gets its own direction from its first letter (Latin names, phone numbers, IBANs and codes keep
+   their order); cells stay right-aligned unless the screen says otherwise */
+:where(html[dir=rtl]) :where(td, th) { unicode-bidi: plaintext; text-align: right; }
+:where(html[dir=rtl]) :where(td.text-center, th.text-center, .text-center td, td[align=center], th[align=center]) { text-align: center; }
+html[dir=rtl] .inner-log-table tbody tr.no-logs-row td { text-align: center; }
+/* things that are always Latin / numeric */
+html[dir=rtl] :is(code, pre, kbd, samp, .ltr, [dir=ltr], .zl-mono, .mono, .iban, .email, .phone) { direction: ltr; unicode-bidi: isolate; }
+html[dir=rtl] :is(.zl-data, .zr-fval, .zr-val, .zdo-kpi b, .kpi-value, .stat-value, .badge, .zl-pill, .chip) { unicode-bidi: plaintext; }
+html[dir=rtl] [dir=auto] { unicode-bidi: plaintext; }
+
+/* ---------------------------------------------------------------- 4. Bootstrap 4 classes (bootstrap 4.0 is loaded from a CDN
+   in index.html – cross-origin, so the runtime mirror cannot read it). Bootstrap 5 (bundled) is mirrored at runtime. */
+html[dir=rtl] .text-right { text-align: left !important; }
+html[dir=rtl] .text-left { text-align: right !important; }
+html[dir=rtl] .float-right { float: left !important; }
+html[dir=rtl] .float-left { float: right !important; }
+html[dir=rtl] .dropdown-menu-right { right: auto; left: 0; }
+html[dir=rtl] .dropdown-menu-left { left: auto; right: 0; }
+html[dir=rtl] .custom-select { padding: .375rem .75rem .375rem 1.75rem; background-position: left .75rem center; }
+html[dir=rtl] .input-group > .input-group-prepend > :is(.btn, .input-group-text) { border-radius: 0 .25rem .25rem 0; }
+html[dir=rtl] .input-group > .input-group-append > :is(.btn, .input-group-text) { border-radius: .25rem 0 0 .25rem; }
+html[dir=rtl] .input-group > .form-control:not(:last-child) { border-radius: 0 .25rem .25rem 0; }
+html[dir=rtl] .input-group > .form-control:not(:first-child) { border-radius: .25rem 0 0 .25rem; }
+html[dir=rtl] .modal-header .close { margin: -1rem auto -1rem -1rem; }
+html[dir=rtl] .ml-0 { margin-right: 0 !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-0 { margin-left: 0 !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-0 { padding-right: 0 !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-0 { padding-left: 0 !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-1 { margin-right: .25rem !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-1 { margin-left: .25rem !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-1 { padding-right: .25rem !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-1 { padding-left: .25rem !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-2 { margin-right: .5rem !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-2 { margin-left: .5rem !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-2 { padding-right: .5rem !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-2 { padding-left: .5rem !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-3 { padding-right: 1rem !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-3 { padding-left: 1rem !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-4 { margin-right: 1.5rem !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-4 { padding-right: 1.5rem !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-4 { padding-left: 1.5rem !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-5 { margin-right: 3rem !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-5 { margin-left: 3rem !important; margin-right: 0 !important; }
+html[dir=rtl] .pl-5 { padding-right: 3rem !important; padding-left: 0 !important; }
+html[dir=rtl] .pr-5 { padding-left: 3rem !important; padding-right: 0 !important; }
+html[dir=rtl] .ml-auto { margin-right: auto !important; margin-left: 0 !important; }
+html[dir=rtl] .mr-auto { margin-left: auto !important; margin-right: 0 !important; }
+
+/* ---------------------------------------------------------------- 5. inline SVG arrows (not Material icons) */
+html[dir=rtl] .zl-pg svg,                                   /* shared list pager: previous / next page */
+html[dir=rtl] .zl-caret,                                    /* shared list group rows: closed group caret */
+html[dir=rtl] .view-all-link svg,                           /* top bar notifications footer */
+html[dir=rtl] .za-in button[type=submit] svg { scale: -1 1; }   /* Ask ZEO AI: send */
+
+/* ---------------------------------------------------------------- 6. phone-like / signed numbers found by z-rtl.ts (.z-ltr):
+   "+971 50 123 4567", "050 123 4567", "-1,200.00" – kept left-to-right, still aligned like the text around them */
+html[dir=rtl] .z-ltr { direction: ltr; unicode-bidi: isolate; }
+:where(html[dir=rtl]) .z-ltr { text-align: -webkit-match-parent; }

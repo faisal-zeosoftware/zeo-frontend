@@ -152,7 +152,7 @@ export class GeneralSidebarComponent {
                     this.hasViewPermissionAprvlvl = this.checkGroupPermission('view_approvallevel', groupPermissions);
                     this.hasViewPermissionGenReqEsc = this.checkGroupPermission('view_genrl_escalation', groupPermissions);
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

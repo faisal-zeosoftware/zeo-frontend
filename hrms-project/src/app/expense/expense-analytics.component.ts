@@ -63,7 +63,7 @@ import { ExpenseApiService, money } from './expense-api.service';
           <div class="ex-rows">
             <div class="ex-row" *ngFor="let l of j.lines">
               <div class="main"><div class="t">{{ l.account }} · {{ l.description }}</div>
-                <div class="s">{{ l.date | date:'dd/MM/yyyy' }} · {{ l.report }}<span *ngIf="l.cost_center"> · CC {{ l.cost_center }}</span></div></div>
+                <div class="s">{{ l.date | date:'dd MMM yyyy' }} · {{ l.report }}<span *ngIf="l.cost_center"> · CC {{ l.cost_center }}</span></div></div>
               <div class="r"><div class="money" *ngIf="num(l.debit)">Dr {{ m(l.debit) }}</div><div class="money" *ngIf="num(l.credit)" style="color:#0b6a93">Cr {{ m(l.credit) }}</div></div>
             </div>
           </div>

@@ -246,7 +246,7 @@ textarea.zf-in { height: auto; padding: 7px 10px; resize: vertical; }
 .zr input, .zr textarea, .zr select, .zd input, .zd textarea, .zd select, .zef input, .zef textarea, .zef select,
 .zr input::placeholder, .zd input::placeholder, .zd textarea::placeholder, .zef input::placeholder { text-transform: none !important; }
 /* pages of their own (To-do, organisation chart): clear the top bar and the folded menu */
-.zt, .zo-page { padding-top: 88px !important; padding-left: calc(var(--zm-sidebar-w, 35px) + 20px) !important; padding-right: 20px !important; transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.zt, .zo-page { padding-top: 88px !important; padding-left: 76px !important; padding-right: 20px !important; }
 .zt { max-width: 1080px; }
 @media (max-width: 991.98px) { .zt, .zo-page { padding-left: 14px !important; padding-top: 74px !important; } }
 /* dashboard designer: Hide / Show buttons are plain pills, never underlined links */

@@ -1,0 +1,70 @@
+/* Customer portal (v1.14.0) */
+:host { display: block; min-height: 100vh; background: #f5f6fb; font-family: inherit; color: #1d2033; }
+.pt-top { background: #1b1640; color: #fff; }
+.pt-top .in { max-width: 1180px; margin: 0 auto; padding: 14px 20px 0; }
+.pt-brand { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pt-brand .co { font-size: 18px; font-weight: 700; letter-spacing: .2px; }
+.pt-brand .who { font-size: 13px; color: #c7c3f3; text-align: right; }
+.pt-brand .who button { margin-left: 10px; background: transparent; border: 1px solid #5b55a0; color: #fff; border-radius: 8px; padding: 3px 10px; cursor: pointer; font: inherit; font-size: 12.5px; }
+.pt-nav { display: flex; gap: 2px; margin-top: 14px; overflow-x: auto; }
+.pt-nav a { color: #c7c3f3; text-decoration: none; padding: 10px 14px; font-size: 14px; border-bottom: 3px solid transparent; white-space: nowrap; cursor: pointer; }
+.pt-nav a.on { color: #fff; border-bottom-color: #8b80ff; font-weight: 600; }
+.pt-nav .cnt { background: #f59e0b; color: #1b1640; border-radius: 10px; font-size: 11px; font-weight: 700; padding: 0 6px; margin-left: 4px; }
+.pt-main { max-width: 1180px; margin: 0 auto; padding: 22px 20px 60px; }
+.pt-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.pt-h h1 { font-size: 22px; margin: 0; font-weight: 700; color: #1b1640; }
+.pt-h p { margin: 4px 0 0; color: #6b7185; font-size: 13.5px; }
+.pt-card { background: #fff; border: 1px solid #e3e5ef; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; }
+.pt-card h2 { font-size: 15px; margin: 0 0 10px; color: #1b1640; }
+.pt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.pt-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; border: 1px solid #dfe1ea; background: #fff; border-radius: 9px;
+  padding: 0 14px; font: inherit; font-size: 13.5px; cursor: pointer; color: #1d2033; }
+.pt-btn.primary { background: #5b4fe0; border-color: #5b4fe0; color: #fff; }
+.pt-btn.green { background: #1f7a4d; border-color: #1f7a4d; color: #fff; }
+.pt-btn.danger { color: #b42318; }
+.pt-btn:disabled { opacity: .5; cursor: default; }
+.pt-row { display: flex; gap: 12px; align-items: center; padding: 12px 4px; border-bottom: 1px solid #f0f1f6; cursor: pointer; }
+.pt-row:last-child { border-bottom: 0; }
+.pt-row:hover { background: #faf9ff; }
+.pt-row .m { flex: 1; min-width: 0; }
+.pt-row .t { font-weight: 600; color: #1b1640; font-size: 14px; }
+.pt-row .s { font-size: 12.5px; color: #6b7185; margin-top: 2px; }
+.pt-tag { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; background: #f1f2f6; color: #4a4f63; white-space: nowrap; }
+.pt-tag.open { background: #eef2ff; color: #4338ca; } .pt-tag.wait { background: #fff4e5; color: #9a5b00; } .pt-tag.done { background: #e8f7ef; color: #1f7a4d; }
+.pt-tag.bad { background: #fff0f0; color: #b42318; }
+.pt-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.pt-form label { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 600; color: #4a4f63; min-width: 0; }
+.pt-form input, .pt-form select, .pt-form textarea { height: 38px; border: 1px solid #dcdfea; border-radius: 9px; padding: 0 12px; font: inherit; font-size: 14px; color: #1d2033; background: #fff; min-width: 0; }
+.pt-form textarea { height: auto; min-height: 90px; padding: 10px 12px; resize: vertical; }
+.pt-form .wide { grid-column: 1 / -1; }
+.pt-msg { border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; max-width: 88%; border: 1px solid #ececf4; }
+.pt-msg.us { background: #fff; }
+.pt-msg.them { background: #f3f1ff; border-color: #e1ddff; margin-left: auto; }
+.pt-msg .w { font-size: 12px; font-weight: 600; color: #1b1640; }
+.pt-msg .w small { font-weight: 400; color: #6b7185; margin-left: 6px; }
+.pt-msg .b { font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 4px; }
+.pt-file { border: 1px solid #dcdfea; background: #fff; border-radius: 8px; font-size: 12px; padding: 3px 9px; cursor: pointer; color: #4338ca; margin: 6px 6px 0 0; }
+.pt-note { border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin-bottom: 12px; background: #f3f1ff; color: #3730a3; border: 1px solid #e1ddff; white-space: pre-wrap; }
+.pt-note.err { background: #fff5f5; border-color: #f3c3c3; color: #b42318; }
+.pt-note.ok { background: #ecfdf3; border-color: #b7ebc9; color: #1f7a4d; }
+.pt-meter { height: 10px; border-radius: 6px; background: #eef0f6; overflow: hidden; margin: 8px 0 4px; }
+.pt-meter > div { height: 100%; background: #10b981; }
+.pt-meter.warn > div { background: #f59e0b; } .pt-meter.bad > div { background: #dc2626; }
+.pt-kv { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 6px 10px; font-size: 13.5px; }
+.pt-kv dt { color: #6b7185; } .pt-kv dd { margin: 0; overflow-wrap: anywhere; }
+.pt-muted { color: #6b7185; font-size: 13px; }
+.pt-stars button { border: 0; background: transparent; font-size: 26px; cursor: pointer; color: #d0d3df; padding: 0 2px; }
+.pt-stars button.on { color: #f59e0b; }
+.pt-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.pt-table th, .pt-table td { text-align: left; padding: 9px 8px; border-bottom: 1px solid #f0f1f6; }
+.pt-table th { color: #6b7185; font-weight: 600; font-size: 12px; text-transform: uppercase; background: #f6f7fb; }
+.pt-table td.r, .pt-table th.r { text-align: right; }
+.pt-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.pt-tabs button { border: 1px solid #dcdfea; background: #fff; border-radius: 18px; padding: 5px 14px; font: inherit; font-size: 13px; cursor: pointer; color: #4a4f63; }
+.pt-tabs button.on { background: #5b4fe0; border-color: #5b4fe0; color: #fff; }
+.pt-login { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); }
+.pt-login .box { background: #fff; border-radius: 16px; padding: 28px; width: min(420px, 100%); box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+.pt-login h1 { font-size: 20px; margin: 0 0 4px; color: #1b1640; }
+.pt-login p { color: #6b7185; font-size: 13.5px; margin: 0 0 18px; }
+.pt-login .pt-form { grid-template-columns: 1fr; }
+@media (max-width: 640px) { .pt-form { grid-template-columns: minmax(0, 1fr); } .pt-msg { max-width: 100%; } .pt-kv { grid-template-columns: 110px minmax(0, 1fr); } }

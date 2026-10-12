@@ -9,18 +9,23 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ModuleApiService } from '../module-api.service';
 import { ActionConfig, ChildConfig, ColumnConfig, FieldConfig, PageConfig } from '../page-config';
 import { HrPermissionService } from '../hr-permission.service';
+import { CountryPackService, cpLocalize } from '../../shared-ui/country-pack.service';
+import { ZTranslateComponent } from '../../shared-ui/z-translate.component';
+import { I18nService, i18nLocalize } from '../../shared-ui/i18n.service';   // v1.15.0
 
 type Opt = { value: any; label: string };
 
 @Component({
   selector: 'app-hr-crud-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective],
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent],
   templateUrl: './crud-page.component.html',
   styleUrls: ['../hr-shared.css'],
 })
 export class CrudPageComponent implements OnInit {
   @Input() config!: PageConfig;
+  /** v1.14.0: the config as written; `config` is its copy with the company's country captions / fields */
+  private rawConfig: PageConfig | null = null;
 
   rows: any[] = [];
   loading = false;
@@ -71,20 +76,31 @@ export class CrudPageComponent implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
     private perms: HrPermissionService,
+    private cp: CountryPackService,
+    private i18n: I18nService,
   ) {}
 
   ngOnInit(): void {
     if (!this.config) {
       this.config = this.route.snapshot.data['config'];
     }
+    this.rawConfig = this.config;
+    this.config = this.localize(this.rawConfig);   // v1.14.0 country captions, v1.15.0 then the language
     this.route.data.subscribe(d => {
-      if (d['config'] && d['config'] !== this.config) {
-        this.config = d['config'];
+      if (d['config'] && d['config'] !== this.rawConfig) {
+        this.rawConfig = d['config'];
+        this.config = this.localize(d['config'] as PageConfig);
         this.reset();
       }
     });
+    // v1.14.0: the company's country pack arrived / changed → captions and country-only fields follow
+    this.cp.pack$.subscribe(() => { if (this.rawConfig) { this.config = this.localize(this.rawConfig); } });
+    this.i18n.lang$.subscribe(() => { if (this.rawConfig) { this.config = this.localize(this.rawConfig); } });   // v1.15.0
     this.reset();
   }
+
+  /** Country pack captions first (v1.14.0), then the user's language (v1.15.0). */
+  private localize(cfg: PageConfig): PageConfig { return i18nLocalize(cpLocalize(cfg, this.cp)); }
 
   private reset(): void {
     this.filters = { ...(this.config.defaultParams || {}) };
@@ -342,7 +358,7 @@ export class CrudPageComponent implements OnInit {
     this.api.action(endpoint, row ? row.id : null, a.action || '', body, a.method || 'post').subscribe({
       next: (res: any) => {
         if (a.document) {
-          this.docHtml = this.sanitizer.bypassSecurityTrustHtml(a.document(res));
+          this.docHtml = this.sanitizer.bypassSecurityTrustHtml(this.cp.text(a.document(res)));   // v1.14.0: currency / law captions
           return;
         }
         this.showOk(res?.detail || `${a.label}: done.`);
@@ -438,7 +454,7 @@ export class CrudPageComponent implements OnInit {
     const v = this.stats?.[tile.key];
     if (v === null || v === undefined) return '–';
     if (tile.format === 'percent') return `${v}%`;
-    if (tile.format === 'money') return `AED ${Number(v).toLocaleString()}`;
+    if (tile.format === 'money') return `${this.cp.currency().code} ${Number(v).toLocaleString()}`;   // v1.14.0
     if (tile.format === 'days') return `${v} days`;
     return String(v);
   }

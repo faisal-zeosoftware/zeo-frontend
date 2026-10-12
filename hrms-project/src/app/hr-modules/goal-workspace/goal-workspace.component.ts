@@ -30,7 +30,7 @@ export const SHEET_FLOW = [
 })
 export class GoalWorkspaceComponent implements OnInit {
   mode: 'goals' | 'checkin' | 'self' | 'review' = 'goals';
-  title = 'Goal Setting';
+  title = 'Goal setting';
   flow = SHEET_FLOW;
 
   cycles: any[] = [];
@@ -61,7 +61,7 @@ export class GoalWorkspaceComponent implements OnInit {
     this.perms.isSuperuser().subscribe(v => (this.isAdmin = v));
     this.route.data.subscribe(d => {
       this.mode = d['mode'] || 'goals';
-      this.title = ({ goals: 'Goal Setting', checkin: 'Mid-Year Check-in', self: 'Self Appraisal', review: 'Manager Review' } as any)[this.mode];
+      this.title = ({ goals: 'Goal setting', checkin: 'Mid-year check-in', self: 'Self appraisal', review: 'Manager review' } as any)[this.mode];
       this.scope = this.mode === 'review' || this.mode === 'checkin' ? 'team' : 'mine';
       this.sheet = null;
       this.loadSheets();

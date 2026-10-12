@@ -7,6 +7,7 @@ import { SpShiftMasterComponent } from './shift-master.component';
 import { SpRequestsComponent } from './requests.component';
 import { SpAvailabilityComponent } from './availability.component';
 import { SpReportsComponent } from './shift-reports.component';
+import { SpOnCallComponent } from './on-call.component';
 
 export const SHIFT_PLANNER_MENU: ModuleMenuItem[] = [
   { path: 'my-schedule', label: 'My schedule', icon: 'event_available', selfService: true },
@@ -14,6 +15,7 @@ export const SHIFT_PLANNER_MENU: ModuleMenuItem[] = [
   { path: 'rosters', label: 'Rosters', icon: 'calendar_view_week', model: 'rosterperiod' },
   { path: 'shifts', label: 'Shift master', icon: 'schedule', model: 'shift' },
   { path: 'availability', label: 'Availability', icon: 'event_busy', model: 'availability' },
+  { path: 'on-call', label: 'On-call duty', icon: 'phone_in_talk', model: 'oncallduty', selfService: true },
   { path: 'reports', label: 'Shift reports', icon: 'summarize', model: 'rosterperiod' },
 ];
 
@@ -21,7 +23,7 @@ export const SHIFT_PLANNER_ROUTES: Routes = [
   {
     path: 'shift-planner',
     component: ModuleOptionsComponent,
-    data: { title: 'Shift Planner', base: '/main-sidebar/shift-planner', menu: SHIFT_PLANNER_MENU },
+    data: { title: 'Shift planner', base: '/main-sidebar/shift-planner', menu: SHIFT_PLANNER_MENU },
     children: [
       { path: '', redirectTo: 'my-schedule', pathMatch: 'full' },
       { path: 'my-schedule', component: SpMyScheduleComponent },
@@ -29,6 +31,7 @@ export const SHIFT_PLANNER_ROUTES: Routes = [
       { path: 'rosters', component: SpRosterComponent },
       { path: 'shifts', component: SpShiftMasterComponent },
       { path: 'availability', component: SpAvailabilityComponent },
+      { path: 'on-call', component: SpOnCallComponent },
       { path: 'reports', component: SpReportsComponent },
     ],
   },

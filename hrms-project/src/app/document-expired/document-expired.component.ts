@@ -8,6 +8,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -137,7 +138,7 @@ if (this.userId !== null) {
 
 
               } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+                console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
               }
             } else {
               console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -271,15 +272,29 @@ if (this.userId !== null) {
   //   }
 
     isLoading: boolean = false;
+    allDocs: any[] = [];
+    private last?: [string, number[]];
+    show: 'due' | 'expired' | '30' | 'all' = 'due';
+
+    applyShow(): void {
+      const m: any = { due: ['Expired', 'Expiring in 30 days', 'Expiring in 90 days'], expired: ['Expired'], '30': ['Expired', 'Expiring in 30 days'] };
+      this.Documents = this.show === 'all' ? this.allDocs.slice() : this.allDocs.filter(r => m[this.show].includes(r.status));
+    }
+
+    tone(st: string): string { return st === 'Expired' ? 'de-red' : st === 'Expiring in 30 days' ? 'de-amber' : st === 'Valid' ? 'de-green' : 'de-blue'; }
+
+    openEmployee(r: any): void { if (r._emp) { this.router.navigate(['/main-sidebar/sub-sidebar/employee-details', r._emp, 'details']); } }
 
 
     fetchEmployees(schema: string, branchIds: number[]): void {
+      // v1.20.1: one row per document from the report centre (expired and expiring), instead of the old message cards
       this.isLoading = true;
-      this.EmployeeService.getExpiredDocumentsMasterNew(schema, branchIds).subscribe({
+      this.last = [schema, branchIds];
+      const b = (branchIds || []).join(',');
+      this.http.get<any>(`${environment.apiBaseUrl}/dashboard/api/reports/documents/?schema=${encodeURIComponent(schema)}` + (b ? `&branch=${b}` : '')).subscribe({
         next: (data: any) => {
-          // Filter active employees
-          this.Documents = data.filter((emp: any) => emp.is_active !== false);
-         
+          this.allDocs = (data?.rows || []).filter((r: any) => r.current !== 'No' && r.status !== 'No expiry' && r.status !== 'Replaced');
+          this.applyShow();
           this.isLoading = false;
         },
         error: (err) => {
@@ -300,8 +315,6 @@ if (this.userId !== null) {
         
       });
   
-      dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
-      });
+      dialogRef.afterClosed().subscribe(() => { if (this.last) { this.fetchEmployees(this.last[0], this.last[1]); } });
     }
 }

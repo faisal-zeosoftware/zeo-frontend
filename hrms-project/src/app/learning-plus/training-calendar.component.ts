@@ -13,7 +13,7 @@ import { LpApi } from './lp-api';
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Training Calendar</h1><p class="lp-desc">Sessions this month. Highlighted: sessions you are nominated for.</p></div>
+    <div><h1>Training calendar</h1><p class="lp-desc">Sessions this month. Highlighted: sessions you are nominated for.</p></div>
     <div class="lp-tools">
       <button type="button" class="lp-btn small" (click)="move(-1)" aria-label="Previous month">‹</button>
       <strong style="min-width:130px;text-align:center">{{ month | date:'MMMM yyyy' }}</strong>
@@ -38,7 +38,7 @@ import { LpApi } from './lp-api';
   </div>
   <div class="lp-card" *ngIf="sel" style="margin-top:12px">
     <h2>{{ sel.title }} <span class="lp-tag">{{ sel.status }}</span></h2>
-    <div class="lp-muted">{{ sel.code }} · {{ sel.start_date | date:'dd/MM/yyyy' }}<span *ngIf="sel.end_date !== sel.start_date"> – {{ sel.end_date | date:'dd/MM/yyyy' }}</span>
+    <div class="lp-muted">{{ sel.code }} · {{ sel.start_date | date:'dd MMM yyyy' }}<span *ngIf="sel.end_date !== sel.start_date"> – {{ sel.end_date | date:'dd MMM yyyy' }}</span>
       <span *ngIf="sel.start_time"> · {{ sel.start_time }}–{{ sel.end_time }}</span></div>
     <div class="lp-muted">Trainer: {{ sel.trainer || '–' }} · Venue: {{ sel.venue || '–' }} · Seats {{ sel.confirmed }}/{{ sel.seats }}<span *ngIf="sel.my_status"> · Your seat: {{ sel.my_status }}</span></div>
     <a *ngIf="sel.online_link" [href]="sel.online_link" target="_blank" rel="noopener">Join online</a>

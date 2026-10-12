@@ -17,7 +17,7 @@ const ICON: Record<string, string> = { todo: 'task_alt', call: 'call', meeting: 
   template: `
   <div class="zt">
     <header class="zt-h">
-      <div><h2>My To-do</h2><p class="zr-muted">Activities planned on records of every screen. Open one to go to its record.</p></div>
+      <div><h2>My to-do</h2><p class="zr-muted">Activities planned on records of every screen. Open one to go to its record.</p></div>
       <span class="zr-grow"></span>
       <div class="zt-tabs" role="tablist" aria-label="Which activities">
         <button type="button" role="tab" *ngFor="let t of tabs" [class.on]="scope === t.key" [attr.aria-selected]="scope === t.key" (click)="setScope(t.key)">{{ t.label }}</button>
@@ -62,19 +62,7 @@ export class ZTodoComponent implements OnInit {
 
   constructor(private rec: ZRecordService, private router: Router, private cd: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    // #region agent log
-    requestAnimationFrame(() => {
-      const el = document.querySelector('.zt') as HTMLElement | null;
-      const sidebar = document.getElementById('sidebarMenu');
-      const cr = el?.getBoundingClientRect();
-      const sr = sidebar?.getBoundingClientRect();
-      const cs = el ? getComputedStyle(el) : null;
-      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'D',location:'z-todo.component.ts:ngOnInit',message:'todo layout',data:{contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,paddingTop:cs?.paddingTop,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,sidebarOpen:sidebar?.classList.contains('menu-open'),cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
-    });
-    // #endregion
-    this.load();
-  }
+  ngOnInit(): void { this.load(); }
 
   setScope(s: string): void { this.scope = s; this.load(); }
 

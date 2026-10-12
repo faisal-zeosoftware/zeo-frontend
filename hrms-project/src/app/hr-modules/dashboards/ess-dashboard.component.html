@@ -1,10 +1,11 @@
-<div class="zdash" [class.page]="!inPortal">
+<div class="zdash" [class.page]="!inPortal && !embedded" [class.in-home]="embedded">
   <p class="err" *ngIf="error">{{ error }}</p>
   <p class="muted" *ngIf="!d && !error">Loading your dashboard…</p>
 
   <ng-container *ngIf="d">
     <!-- greeting + today -->
-    <header class="zh">
+    <p class="muted" *ngIf="embedded && d.message">{{ d.message }}</p>
+    <header class="zh" *ngIf="!embedded">
       <div class="zh-who">
         <div class="avatar">{{ initials(d.employee?.name) }}</div>
         <div>
@@ -22,17 +23,21 @@
     <app-manager-dashboard *ngIf="view === 'team'" [embedded]="true" [inPortal]="inPortal" (openTab)="openTab.emit($event)"></app-manager-dashboard>
 
     <ng-container *ngIf="view === 'me' && d.employee">
-      <z-dash-designer name="ess" scope=".zdash"></z-dash-designer>
+      <!-- v1.16.0: period of the dashboard, drag & drop, sizes, a period per card -->
+      <z-dash-designer name="ess" [scope]="'#' + boardId" (periods)="onPeriods($event)"></z-dash-designer>
+      <div class="zdd-board" [id]="boardId">
       <!-- today strip -->
-      <section data-widget="ess-today" data-widget-title="Today" class="today">
-        <button type="button" class="t-item" (click)="drill('my_attendance', 'My attendance – last 30 days')">
+      <section data-widget="ess-today" data-widget-title="Today" class="today" data-widget-size="f" data-widget-timed="0" data-widget-now="Today: your punch, next leave, open requests and tasks.">
+        <button type="button" class="t-item" (click)="drill('my_attendance', 'My attendance – today', dayParams(d.today))">
           <span class="t-k">Today</span>
-          <b *ngIf="d.attendance.today.checked_in">In at {{ d.attendance.today.checked_in | slice:0:5 }}<span *ngIf="d.attendance.today.checked_out"> · out {{ d.attendance.today.checked_out | slice:0:5 }}</span></b>
-          <b *ngIf="!d.attendance.today.checked_in" class="warn-text">Not checked in yet</b>
+          <b *ngIf="d.attendance.today.checked_in">{{ 'In at {0}' | t:(d.attendance.today.checked_in | slice:0:5) }}<span *ngIf="d.attendance.today.checked_out"> · {{ 'out {0}' | t:(d.attendance.today.checked_out | slice:0:5) }}</span></b>
+          <!-- v1.17.0 (audit L6): a weekly off / holiday says so, it is not "not checked in yet" -->
+          <b *ngIf="!d.attendance.today.checked_in && d.attendance.today.off">{{ d.attendance.today.off_label | t }}</b>
+          <b *ngIf="!d.attendance.today.checked_in && !d.attendance.today.off" class="warn-text">Not checked in yet</b>
         </button>
         <button type="button" class="t-item" (click)="drill('my_leave', 'My leave')">
           <span class="t-k">Next leave</span>
-          <b *ngIf="d.next_leave">{{ d.next_leave.from | date:'d MMM' }} – {{ d.next_leave.to | date:'d MMM' }} <small>{{ d.next_leave.type }}, {{ d.next_leave.status }}</small></b>
+          <b *ngIf="d.next_leave">{{ d.next_leave.from | zdate }} – {{ d.next_leave.to | zdate }} <small><span data-no-translate>{{ d.next_leave.type }}</span>{{ ', ' }}<span>{{ d.next_leave.status | zstatus | t }}</span></small></b>
           <b *ngIf="!d.next_leave">None planned</b>
         </button>
         <button type="button" class="t-item" (click)="drill('my_requests', 'My open requests', {status: 'pending'})">
@@ -41,11 +46,7 @@
         </button>
         <button type="button" class="t-item" *ngIf="d.tasks" (click)="drill('my_tasks', 'My tasks and to-dos')">
           <span class="t-k">My open tasks</span>
-          <b>{{ d.tasks.open }}<small *ngIf="d.tasks.overdue" class="bad-text"> · {{ d.tasks.overdue }} overdue</small></b>
-        </button>
-        <button type="button" class="t-item" *ngIf="d.overtime?.hours" (click)="drill('my_attendance', 'My attendance – last 30 days')">
-          <span class="t-k">Overtime · {{ d.overtime.month_label }}</span>
-          <b>{{ d.overtime.hours | number:'1.0-1' }} h <small>{{ d.overtime.approved | number:'1.0-1' }} approved</small></b>
+          <b>{{ d.tasks.open }}<small *ngIf="d.tasks.overdue" class="bad-text"> · {{ '{0} overdue' | t:d.tasks.overdue }}</small></b>
         </button>
         <button type="button" class="t-item" *ngIf="d.approvals.total" (click)="drill('approvals', 'Waiting for my approval')">
           <span class="t-k">Waiting for my approval</span>
@@ -54,143 +55,214 @@
       </section>
 
       <!-- attendance ribbon (signature element) -->
-      <section data-widget="ess-attendance" data-widget-title="My attendance" class="card ribbon-card">
+      <section data-widget="ess-attendance" data-widget-title="My attendance" class="card ribbon-card" data-widget-size="f" data-widget-timed="1">
         <div class="card-h">
-          <h2>Last 30 days</h2>
-          <button type="button" class="zbtn link" (click)="drill('my_attendance', 'My attendance – last 30 days')">See every punch</button>
+          <h2>{{ 'My attendance' | t }} <span class="muted small">· {{ d.attendance.from | zdate }} – {{ (d.attendance.shown_to || d.attendance.to) | zdate }}</span></h2>
+          <button type="button" class="zbtn link" (click)="drill('my_attendance', 'My attendance', perParams('ess-attendance'))">See every day</button>
         </div>
+        <p class="muted small" *ngIf="!d.attendance_trend.length">No working days in this period yet.</p>
         <div class="ribbon" role="list" aria-label="Attendance for the last 30 days">
           <button type="button" role="listitem" *ngFor="let t of d.attendance_trend" [class]="cellClass(t)" [title]="cellTitle(t)" [attr.aria-label]="cellTitle(t)"
-                  (click)="drill('my_attendance', 'My attendance – last 30 days')">
+                  (click)="drill('my_attendance', 'My attendance', dayParams(t.date))">
             <span class="c-bar" *ngIf="t.status === 'present' && t.hours" [style.height.%]="t.hours / 10 * 100"></span>
           </button>
         </div>
         <div class="ribbon-days" aria-hidden="true">
-          <span *ngFor="let t of d.attendance_trend" [class.wkend]="!t.working">{{ t.date | date:'d' }}</span>
+          <span *ngFor="let t of d.attendance_trend" [class.wkend]="!t.working" class="zgo" (click)="drill('my_attendance', 'My attendance', dayParams(t.date))">{{ t.date | date:'d' }}</span>
         </div>
         <div class="ribbon-foot">
           <ul class="legend">
-            <li *ngFor="let l of ribbonLegend"><i [class]="'sw ' + l.key"></i>{{ l.label }}</li>
+            <li *ngFor="let l of ribbonLegend"><i [class]="'sw ' + l.key"></i>{{ l.label | t }}</li>
           </ul>
           <dl class="mstats">
-            <div><dt>{{ d.attendance.month_label }}</dt><dd>{{ d.attendance.present }} / {{ d.attendance.working_days }} days</dd></div>
-            <div><dt>Late</dt><dd>{{ d.attendance.late }}</dd></div>
-            <div><dt>Absent</dt><dd>{{ d.attendance.absent }}</dd></div>
-            <div><dt>Avg hours</dt><dd>{{ d.attendance.avg_hours }}</dd></div>
+            <div class="ms-b zgo" role="button" tabindex="0" (click)="drill('my_attendance', 'Days present', perParams('ess-attendance', 'Present|Missing punch|Half day'))" (keydown.enter)="drill('my_attendance', 'Days present', perParams('ess-attendance', 'Present|Missing punch|Half day'))"><dt>Present</dt><dd>{{ d.attendance.present }} / {{ '{0} days' | t:d.attendance.working_days }}</dd></div>
+            <div class="ms-b zgo" role="button" tabindex="0" (click)="drill('my_attendance', 'Late days', perParams('ess-attendance', 'late'))" (keydown.enter)="drill('my_attendance', 'Late days', perParams('ess-attendance', 'late'))"><dt>Late</dt><dd>{{ d.attendance.late }}</dd></div>
+            <div class="ms-b zgo" role="button" tabindex="0" (click)="drill('my_attendance', 'Absent days', perParams('ess-attendance', 'Absent'))" (keydown.enter)="drill('my_attendance', 'Absent days', perParams('ess-attendance', 'Absent'))"><dt>Absent</dt><dd>{{ d.attendance.absent }}</dd></div>
+            <div class="ms-b zgo" role="button" tabindex="0" (click)="drill('my_attendance', 'My attendance', perParams('ess-attendance'))" (keydown.enter)="drill('my_attendance', 'My attendance', perParams('ess-attendance'))"><dt>Avg hours</dt><dd>{{ d.attendance.avg_hours }}</dd></div>
+            <div class="ms-b zgo" role="button" tabindex="0" *ngIf="d.overtime" (click)="drill('my_attendance', 'My attendance', perParams('ess-attendance'))" (keydown.enter)="drill('my_attendance', 'My attendance', perParams('ess-attendance'))"><dt>Overtime</dt><dd>{{ d.overtime.hours | number:'1.0-1' }} {{ 'h' | t }} <small>({{ '{0} approved' | t:(d.overtime.approved | number:'1.0-1') }})</small></dd></div>
           </dl>
         </div>
       </section>
 
-      <div class="grid g-2">
+      <div class="grid g-2 zdd-contents">
         <!-- leave -->
-        <section data-widget="ess-leave" data-widget-title="Leave balance" class="card">
+        <section data-widget="ess-leave" data-widget-title="Leave balance" class="card" data-widget-timed="0" data-widget-now="Balances as of today.">
           <div class="card-h"><h2>Leave balance</h2><button type="button" class="zbtn" (click)="newRequest('leave')">Apply for leave</button></div>
           <p class="muted" *ngIf="!d.leave_balances.length">No leave balance set up yet.</p>
           <div class="meters">
-            <button type="button" class="meter" *ngFor="let b of d.leave_balances" (click)="drill('my_leave', b.name, {leave_type: b.leave_type_id})">
-              <div class="m-top"><span>{{ b.name }}</span><b>{{ b.balance }} <small>of {{ b.openings }} days</small></b></div>
+            <button type="button" class="meter" *ngFor="let b of d.leave_balances" (click)="drill('my_leave_ledger', b.name, {leave_type: b.leave_type_id})" [title]="'Open the statement of this leave type' | t">
+              <div class="m-top"><span data-no-translate>{{ b.name }}</span><b>{{ b.balance | number:'1.0-2' }} <small>{{ b.openings ? ('of {0} days' | t:b.openings) : ('days left' | t) }}</small></b></div>
               <div class="m-track"><div class="m-fill" [style.width.%]="pct(b)"></div></div>
-              <small class="muted" *ngIf="b.used">{{ b.used }} taken this year</small>
+              <small class="muted" *ngIf="b.used">{{ '{0} taken this year' | t:b.used }}</small>
             </button>
           </div>
         </section>
 
         <!-- requests -->
-        <section data-widget="ess-requests" data-widget-title="My requests" class="card">
+        <section data-widget="ess-requests" data-widget-title="My requests" class="card" data-widget-timed="0" data-widget-now="Your latest requests, whatever their date.">
           <div class="card-h"><h2>My requests</h2><button type="button" class="zbtn link" (click)="drill('my_requests', 'All my requests')">See all</button></div>
           <div class="chips" role="group" aria-label="Filter by type">
             <button type="button" [class.on]="!moduleFilter" (click)="moduleFilter = ''">All</button>
             <button type="button" *ngFor="let m of d.requests.by_module" [class.on]="moduleFilter === m.module" (click)="moduleFilter = m.module">
-              {{ m.label }} <small>{{ m.count }}</small>
+              <span>{{ m.label | t }}</span> <small>{{ m.count }}</small>
             </button>
           </div>
           <p class="muted" *ngIf="!filteredRequests.length">No requests yet.</p>
           <ul class="rlist">
-            <li *ngFor="let r of filteredRequests" (click)="drill('my_requests', r.module_label + ' requests', {module: r.module})" tabindex="0">
-              <div><b>{{ r.module_label }}</b><span class="muted"> {{ r.document_number }}</span><p class="small">{{ r.summary }}</p></div>
-              <div class="r-end"><span [class]="reqClass(r.status_key)">{{ r.status | lowercase }}</span><small class="muted">{{ r.date | date:'dd/MM' }}</small></div>
+            <li *ngFor="let r of filteredRequests" (click)="openReq(r)" (keydown.enter)="openReq(r)" tabindex="0" role="link">
+              <div><b>{{ r.module_label | t }}</b><span class="muted" data-no-translate *ngIf="r.document_number">&nbsp;{{ r.document_number }}</span><p class="small" data-no-translate>{{ r.summary }}</p></div>
+              <!-- v1.17.1: the newer modules send their status as a label ("Waiting for HR") – shown as it is, translated -->
+              <div class="r-end"><span [class]="reqClass(r.status_key) + (r.status_label ? ' nocap' : '')">{{ r.status_label ? (r.status_label | t) : (r.status | zstatus) }}</span><small class="muted">{{ r.date | date:'dd/MM' }}</small></div>
             </li>
           </ul>
         </section>
       </div>
 
-      <div class="grid g-3">
+      <div class="grid g-3 zdd-contents">
         <!-- pay -->
-        <section data-widget="ess-pay" data-widget-title="Pay" class="card">
+        <section data-widget="ess-pay" data-widget-title="Pay" class="card" data-widget-timed="1">
           <div class="card-h"><h2>Pay</h2><button type="button" class="zbtn link" (click)="drill('my_payslips', 'My payslips')">Payslips</button></div>
           <ng-container *ngIf="d.payslip; else noPay">
             <p class="muted small">{{ d.payslip.period }}</p>
-            <p class="big">AED {{ d.payslip.net | number:'1.0-0' }} <small>net</small></p>
-            <p class="muted small">Gross {{ d.payslip.gross | number:'1.0-0' }} · deductions {{ d.payslip.deductions | number:'1.0-0' }}</p>
+            <p class="big zgo" role="link" tabindex="0" (click)="openRec(d.payslip)" (keydown.enter)="openRec(d.payslip)" title="Open the payslip">{{ d.payslip.net | zmoney:'1.0-0' }} <small>{{ 'net' | t }}</small></p>
+            <p class="muted small">{{ 'Gross {0} · deductions {1}' | t:(d.payslip.gross | number:'1.0-0'):(d.payslip.deductions | number:'1.0-0') }}</p>
           </ng-container>
-          <ng-template #noPay><p class="muted">No payslip yet.</p></ng-template>
-          <div class="kv" *ngIf="d.loans.count"><span>Loan balance</span><b>AED {{ d.loans.outstanding | number:'1.0-0' }} <small>EMI {{ d.loans.emi | number:'1.0-0' }}</small></b></div>
-          <div class="kv" *ngIf="d.air_ticket"><span>Air ticket</span><b>AED {{ d.air_ticket.remaining | number:'1.0-0' }} <small>left, until {{ d.air_ticket.expiry | date:'MMM y' }}</small></b></div>
+          <ng-template #noPay><p class="muted">No approved payslip up to the end of this period.</p></ng-template>
+          <div class="kv zgo" *ngIf="d.loans.count" role="link" tabindex="0" (click)="drill('my_requests', 'My loans', {module: 'loan'})" (keydown.enter)="drill('my_requests', 'My loans', {module: 'loan'})"><span>Loan balance</span><b>{{ d.loans.outstanding | zmoney:'1.0-0' }} <small>{{ 'EMI {0}' | t:(d.loans.emi | number:'1.0-0') }}</small></b></div>
+          <div class="kv zgo" *ngIf="d.air_ticket" role="link" tabindex="0" (click)="drill('my_requests', 'My air tickets', {module: 'airticket'})" (keydown.enter)="drill('my_requests', 'My air tickets', {module: 'airticket'})"><span>Air ticket</span><b>{{ d.air_ticket.remaining | zmoney:'1.0-0' }} <small>{{ 'left, until {0}' | t:(d.air_ticket.expiry | zdate) }}</small></b></div>
         </section>
 
         <!-- appraisal & learning -->
-        <section data-widget="ess-goals" data-widget-title="Goals &amp; learning" class="card">
+        <section data-widget="ess-goals" data-widget-title="Goals &amp; learning" class="card" data-widget-timed="0" data-widget-now="The active appraisal cycle and coming training.">
           <div class="card-h"><h2>Goals &amp; learning</h2></div>
           <ng-container *ngIf="d.performance; else noGoals">
-            <p class="small"><b>{{ d.performance.cycle }}</b> · {{ d.performance.status_label }}</p>
-            <div class="m-top"><span>Goal progress ({{ d.performance.goals }} goals)</span><b>{{ d.performance.progress }}%</b></div>
+            <p class="small"><b data-no-translate>{{ d.performance.cycle }}</b> · <span>{{ d.performance.status_label | t }}</span></p>
+            <!-- v1.17.0 (audit L1): the progress opens my goals -->
+            <div class="m-top zgo" role="link" tabindex="0" (click)="goUrl('/main-sidebar/performance-options/goal-setting')" (keydown.enter)="goUrl('/main-sidebar/performance-options/goal-setting')">
+              <span>{{ 'Goal progress ({0} goals)' | t:d.performance.goals }}</span><b>{{ d.performance.progress }}%</b></div>
             <div class="m-track"><div class="m-fill" [style.width.%]="d.performance.progress"></div></div>
-            <p class="muted small" *ngIf="d.performance.self_score">Self score {{ d.performance.self_score }}</p>
+            <p class="muted small" *ngIf="d.performance.self_score">{{ 'Self score {0}' | t:d.performance.self_score }}</p>
           </ng-container>
           <ng-template #noGoals><p class="muted small">No active appraisal cycle.</p></ng-template>
           <h3 class="sub">Upcoming training</h3>
           <p class="muted small" *ngIf="!d.training?.length">None scheduled.</p>
-          <p class="small" *ngFor="let t of d.training">{{ t.course }} <span class="muted">· {{ t.date | date:'d MMM' }} · {{ t.seat }}</span></p>
-          <p class="small" *ngFor="let c of d.certificates?.slice(0,2)">{{ c.title }} <span [class]="c.status === 'valid' ? 'pill good' : c.status === 'renewed' ? 'pill' : 'pill warn'">{{ c.status }}</span></p>
+          <p class="small zgo" *ngFor="let t of d.training" role="link" tabindex="0" (click)="goUrl('/main-sidebar/learning-options/my-learning')" (keydown.enter)="goUrl('/main-sidebar/learning-options/my-learning')"><span data-no-translate>{{ t.course }}</span> <span class="muted">· {{ t.date | zdate }} · <span>{{ t.seat | zstatus | t }}</span></span></p>
+          <!-- v1.17.1: every certificate with its expiry state (expired / expiring within 60 days / valid / renewed) -->
+          <h3 class="sub" *ngIf="d.certificates?.length">My certificates</h3>
+          <p class="small zgo" *ngFor="let c of d.certificates" role="link" tabindex="0" (click)="goUrl('/main-sidebar/learning-options/my-learning')" (keydown.enter)="goUrl('/main-sidebar/learning-options/my-learning')" [attr.data-cert]="c._id"><span data-no-translate>{{ c.title }}</span><span class="muted" *ngIf="c.expiry">&nbsp;· {{ (c.days < 0 ? 'expired {0}' : 'until {0}') | t:(c.expiry | zdate) }}</span> <span [class]="c.status === 'valid' ? 'pill good' : c.status === 'renewed' ? 'pill' : c.status === 'expired' ? 'pill bad' : 'pill warn'">{{ c.status | zstatus | t }}</span></p>
         </section>
 
         <!-- documents & assets -->
-        <section data-widget="ess-docs-assets" data-widget-title="Documents &amp; assets" class="card">
+        <section data-widget="ess-docs-assets" data-widget-title="Documents &amp; assets" class="card" data-widget-timed="0" data-widget-now="Expiry and assets as of today.">
           <div class="card-h"><h2>Documents &amp; assets</h2><button type="button" class="zbtn link" (click)="drill('my_documents', 'My documents')">All</button></div>
           <p class="muted small" *ngIf="!d.documents.length">No documents on file.</p>
-          <div class="kv" *ngFor="let x of d.documents"><span>{{ x.type }}</span><span [class]="docClass(x)">{{ x.days < 0 ? 'expired ' + (x.expiry | date:'dd/MM/yy') : (x.days <= 60 ? x.days + ' days left' : 'until ' + (x.expiry | date:'MMM y')) }}</span></div>
+          <div class="kv zgo" *ngFor="let x of d.documents" role="link" tabindex="0" (click)="openRec(x)" (keydown.enter)="openRec(x)"><span data-no-translate>{{ x.type }}</span><span [class]="docClass(x)">{{ x.days < 0 ? ('expired {0}' | t:(x.expiry | zdate)) : (x.days <= 60 ? ('{0} days left' | t:x.days) : ('until {0}' | t:(x.expiry | zdate))) }}</span></div>
           <h3 class="sub">With me</h3>
           <p class="muted small" *ngIf="!d.assets.length">No company assets.</p>
-          <p class="small" *ngFor="let a of d.assets">{{ a.name }} <span class="muted">· since {{ a.since | date:'MMM y' }}</span></p>
+          <p class="small zgo" *ngFor="let a of d.assets" role="link" tabindex="0" (click)="openRec(a)" (keydown.enter)="openRec(a)"><span data-no-translate>{{ a.name }}</span><span class="muted">&nbsp;· {{ 'since {0}' | t:(a.since | zdate) }}</span></p>
         </section>
       </div>
 
-      <section data-widget="ess-tasks" data-widget-title="My tasks" class="card" *ngIf="d.tasks">
+      <!-- v1.17.1: company policies and my entitlements, my shift, my expense reports – each only when it has something to show -->
+      <div class="grid g-3 zdd-contents" *ngIf="d.policies || d.entitlements || d.shift || d.expenses">
+        <section data-widget="ess-policies" data-widget-title="Company policies" class="card" *ngIf="d.policies || d.entitlements" data-widget-timed="0" data-widget-now="Policies and entitlements as of today.">
+          <div class="card-h"><h2>Company policies</h2><button type="button" class="zbtn link" (click)="goUrl('/main-sidebar/my-policies')">All policies</button></div>
+          <ng-container *ngIf="d.policies">
+            <button type="button" class="watch" *ngIf="d.policies.to_ack" data-ess="policies-open" (click)="drill('my_policies', 'Policies to acknowledge', {state: 'open'})">
+              <span>To acknowledge<small class="bad-text" *ngIf="d.policies.overdue"> · {{ '{0} overdue' | t:d.policies.overdue }}</small></span><b [class.bad-text]="d.policies.overdue" [class.warn-text]="!d.policies.overdue">{{ d.policies.to_ack }}</b></button>
+            <ul class="rlist">
+              <li *ngFor="let p of d.policies.items" class="pol-row" [attr.data-policy]="p.id" (click)="drill('my_policies', 'Company policies')" (keydown.enter)="drill('my_policies', 'Company policies')" tabindex="0" role="link">
+                <div><b data-no-translate>{{ p.title }}</b>
+                  <p class="small muted">{{ 'Version {0}' | t:p.version }}<span *ngIf="p.date">&nbsp;· {{ p.date | zdate }}</span><span *ngIf="p.state === 'to_acknowledge' || p.state === 'overdue'" [class.bad-text]="p.state === 'overdue'">&nbsp;· {{ 'acknowledge by {0}' | t:(p.due | zdate) }}</span></p>
+                  <span class="pol-acts">
+                    <button type="button" class="zbtn link" *ngIf="p.has_file" (click)="openPolicy(p, $event)">Open file</button>
+                    <button type="button" class="zbtn ghost" *ngIf="p.state === 'to_acknowledge' || p.state === 'overdue'" [disabled]="busy" (click)="ackPolicy(p, $event)">Acknowledge</button>
+                  </span>
+                </div>
+                <div class="r-end"><span [class]="polClass(p)">{{ p.state_label | t }}</span></div>
+              </li>
+            </ul>
+            <p class="small" *ngIf="msg" [class.bad-text]="msgErr" role="status">{{ msg | t }}</p>
+          </ng-container>
+          <ng-container *ngIf="d.entitlements as en">
+            <h3 class="sub">My entitlements</h3>
+            <ng-container *ngIf="en.leave">
+              <p class="small muted">{{ 'Leave policy' | t }}: <span data-no-translate>{{ en.leave.policy }}</span></p>
+              <ng-container *ngFor="let l of leaveLines(en.leave.lines)">
+                <div class="kv zgo" role="link" tabindex="0" (click)="drill('my_leave_ledger', l.name, {leave_type: l.leave_type_id})" (keydown.enter)="drill('my_leave_ledger', l.name, {leave_type: l.leave_type_id})">
+                  <span data-no-translate>{{ l.name }}</span><b>{{ '{0} days a year' | t:(l.days | number:'1.0-2') }}</b></div>
+              </ng-container>
+              <button type="button" class="zbtn link ent-more" *ngIf="leaveMore(en.leave.lines)" (click)="allLeave = !allLeave">{{ allLeave ? ('Show fewer' | t) : ('Show all {0} leave types' | t:leaveMore(en.leave.lines)) }}</button>
+            </ng-container>
+            <ng-container *ngIf="en.expense">
+              <p class="small muted ent-h">{{ 'Expense policy' | t }}: <span data-no-translate>{{ en.expense.policy }}</span></p>
+              <div class="kv zgo" *ngFor="let x of en.expense.limits" role="link" tabindex="0" (click)="goUrl('/main-sidebar/expense-options/home')" (keydown.enter)="goUrl('/main-sidebar/expense-options/home')">
+                <span data-no-translate>{{ x.category }}</span><b>{{ limitText(x) }}</b></div>
+              <div class="kv zgo" *ngIf="en.expense.per_diem" role="link" tabindex="0" (click)="goUrl('/main-sidebar/expense-options/home')" (keydown.enter)="goUrl('/main-sidebar/expense-options/home')">
+                <span>Per diem</span><b>{{ en.expense.per_diem | zmoney:'1.0-2' }} <small>{{ 'a day' | t }}</small></b></div>
+            </ng-container>
+            <div class="kv zgo" *ngIf="en.air_ticket" role="link" tabindex="0" (click)="drill('my_requests', 'My air tickets', {module: 'airticket'})" (keydown.enter)="drill('my_requests', 'My air tickets', {module: 'airticket'})">
+              <span>Air ticket</span><b><span>{{ en.air_ticket.class | t }}</span> · {{ (en.air_ticket.every_years === 1 ? 'every year' : 'every {0} years') | t:en.air_ticket.every_years }}</b></div>
+          </ng-container>
+        </section>
+
+        <section data-widget="ess-shift" data-widget-title="My shift" class="card" *ngIf="d.shift" data-widget-timed="0" data-widget-now="Today and the next 7 days.">
+          <div class="card-h"><h2>My shift</h2><button type="button" class="zbtn link" (click)="goUrl('/main-sidebar/shift-planner/my-schedule')">My schedule</button></div>
+          <div class="zgo sh-today" role="link" tabindex="0" (click)="goUrl('/main-sidebar/shift-planner/my-schedule')" (keydown.enter)="goUrl('/main-sidebar/shift-planner/my-schedule')">
+            <span class="muted small">Today</span>
+            <p class="big">{{ shiftText(d.shift.today) }}</p>
+            <p class="small muted" *ngIf="!d.shift.today.off && d.shift.today.name"><span data-no-translate>{{ d.shift.today.name }}</span></p>
+          </div>
+          <h3 class="sub">Next 7 days</h3>
+          <div class="kv zgo" *ngFor="let s of d.shift.days" [class.sh-off]="s.off" role="link" tabindex="0" (click)="goUrl('/main-sidebar/shift-planner/my-schedule')" (keydown.enter)="goUrl('/main-sidebar/shift-planner/my-schedule')">
+            <span>{{ dayName(s.date) | t }} <small>{{ s.date | zdate }}</small></span><b>{{ shiftText(s) }} <small *ngIf="!s.off && s.name" data-no-translate>{{ s.name }}</small></b></div>
+        </section>
+
+        <section data-widget="ess-expenses" data-widget-title="My expenses" class="card" *ngIf="d.expenses" data-widget-timed="0" data-widget-now="Your expense reports, whatever their date.">
+          <div class="card-h"><h2>My expenses</h2><button type="button" class="zbtn link" (click)="drill('my_expenses', 'My expense reports')">{{ 'All {0}' | t:d.expenses.total }}</button></div>
+          <button type="button" class="watch" *ngFor="let s of d.expenses.states" [attr.data-exp]="s.key" (click)="drill('my_expenses', s.label, {status: s.key})">
+            <span>{{ s.label | t }} <small class="muted">· {{ s.amount | zmoney:'1.0-0' }}</small></span><b>{{ s.count }}</b></button>
+          <p class="muted small">Drafts are listed under "Your items needing input" until you submit them.</p>
+        </section>
+      </div>
+
+      <section data-widget="ess-tasks" data-widget-title="My tasks" class="card" *ngIf="d.tasks" data-widget-size="f" data-widget-timed="0" data-widget-now="Open tasks, whatever their due date.">
         <div class="card-h">
-          <h2>My tasks <span class="muted small">{{ d.tasks.open }} open<span *ngIf="d.tasks.overdue" class="bad-text"> · {{ d.tasks.overdue }} overdue</span><span *ngIf="d.tasks.due_week"> · {{ d.tasks.due_week }} due this week</span></span></h2>
+          <h2>{{ 'My tasks' | t }} <span class="muted small">{{ '{0} open' | t:d.tasks.open }}<span *ngIf="d.tasks.overdue" class="bad-text"> · {{ '{0} overdue' | t:d.tasks.overdue }}</span><span *ngIf="d.tasks.due_week"> · {{ '{0} due this week' | t:d.tasks.due_week }}</span></span></h2>
           <span>
             <button type="button" class="zbtn link" *ngIf="d.tasks.overdue" (click)="drill('my_tasks', 'Overdue tasks', {state: 'overdue'})">Overdue</button>
-            <button type="button" class="zbtn link" (click)="drill('my_tasks', 'My tasks and to-dos')" *ngIf="d.tasks.open">&nbsp;· See all</button>
+            <button type="button" class="zbtn link" (click)="drill('my_tasks', 'My tasks and to-dos')" *ngIf="d.tasks.open">&nbsp;· see all</button>
           </span>
         </div>
         <p class="muted small" *ngIf="!d.tasks.open">Nothing open. Project tasks you are a member of and to-dos planned for you appear here.</p>
         <ul class="rlist">
           <li *ngFor="let t of d.tasks.items" class="task-row" [class.overdue]="t.overdue" (click)="openTask(t)" (keydown.enter)="openTask(t)" tabindex="0">
-            <div><b>{{ t.title }}</b><p class="small muted">{{ t.kind_label }}<span *ngIf="t.project"> · {{ t.project }}</span></p></div>
+            <div><b data-no-translate>{{ t.title }}</b><p class="small muted"><span>{{ t.kind_label | t }}</span><span *ngIf="t.project" data-no-translate> · {{ t.project }}</span></p></div>
             <div class="r-end">
-              <small [class.bad-text]="t.overdue">{{ t.due ? (t.due | date:'d MMM') : 'no due date' }}</small>
-              <span [class]="t.overdue ? 'pill bad' : 'pill'">{{ t.overdue ? 'overdue' : t.status }}</span>
+              <small [class.bad-text]="t.overdue">{{ t.due ? (t.due | zdate) : ('no due date' | t) }}</small>
+              <span [class]="t.overdue ? 'pill bad' : 'pill'">{{ (t.overdue ? 'Overdue' : (t.status | zstatus)) | t }}</span>
             </div>
           </li>
         </ul>
       </section>
 
-      <div class="grid" [class.g-2]="d.approvals.total">
-        <section data-widget="ess-approvals" data-widget-title="Waiting for my approval" class="card" *ngIf="d.approvals.total">
+      <div class="grid zdd-contents" [class.g-2]="d.approvals.total">
+        <section data-widget="ess-approvals" data-widget-title="Waiting for my approval" class="card" *ngIf="d.approvals.total" data-widget-timed="0" data-widget-now="Requests waiting for you now.">
           <div class="card-h"><h2>Waiting for my approval</h2><button type="button" class="zbtn link" (click)="drill('approvals', 'Waiting for my approval')">Open all</button></div>
           <ul class="rlist">
-            <li *ngFor="let a of d.approvals.items" (click)="drill('approvals', a.module_label, {module: a.module})" tabindex="0">
-              <div><b>{{ a.employee }}</b><span class="muted"> · {{ a.module_label }}</span><p class="small">{{ a.summary }}</p></div>
+            <li *ngFor="let a of d.approvals.items" (click)="go({module: a.module, kind: 'approval'})" (keydown.enter)="go({module: a.module, kind: 'approval'})" [title]="'Open the approval screen' | t" tabindex="0" role="link">
+              <div><b data-no-translate>{{ a.employee }}</b><span class="muted">&nbsp;· {{ a.module_label | t }}</span><p class="small" data-no-translate>{{ a.summary }}</p></div>
               <div class="r-end"><small class="muted">{{ a.date | date:'dd/MM' }}</small></div>
             </li>
           </ul>
         </section>
-        <section data-widget="ess-news" data-widget-title="Company news" class="card">
+        <section data-widget="ess-news" data-widget-title="Company news" class="card" data-widget-timed="0" data-widget-now="Announcements that are live now.">
           <div class="card-h"><h2>Company news</h2></div>
-          <div class="news" *ngFor="let n of d.announcements"><b>{{ n.title }}</b><p class="small muted">{{ n.message }}</p></div>
+          <div class="news zgo" *ngFor="let n of d.announcements" role="link" tabindex="0" (click)="goUrl('/main-sidebar/self-service/announcements')" (keydown.enter)="goUrl('/main-sidebar/self-service/announcements')" data-no-translate><b>{{ n.title }}</b><p class="small muted">{{ n.message }}</p></div>
           <h3 class="sub" *ngIf="d.holidays.length">Coming holidays</h3>
-          <p class="small" *ngFor="let h of d.holidays">{{ h.name }} <span class="muted">· {{ h.from | date:'EEE d MMM' }}<span *ngIf="h.to !== h.from"> – {{ h.to | date:'d MMM' }}</span></span></p>
+          <p class="small zgo" *ngFor="let h of d.holidays" role="link" tabindex="0" (click)="goUrl('/main-sidebar/unified-calendar')" (keydown.enter)="goUrl('/main-sidebar/unified-calendar')"><span data-no-translate>{{ h.name }}</span> <span class="muted">&nbsp;· {{ h.from | zdate }}<span *ngIf="h.to !== h.from">&nbsp;– {{ h.to | zdate }}</span></span></p>
         </section>
+      </div>
       </div>
     </ng-container>
   </ng-container>

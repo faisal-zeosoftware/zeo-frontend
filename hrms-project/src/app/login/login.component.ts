@@ -24,12 +24,13 @@ export class LoginComponent implements OnInit {
 
 
 
-  username: string = 'admin@zeo.com';
+  // v1.15.1: never pre-fill credentials (customer finding 1). There is no remember-me; nothing is saved by the app.
+  username: string = '';
   hide: boolean = true;
   input: any;
   register: any;
   email = '';
-  password = 'admin';
+  password = '';
   contact_number: any='';
 
   users: any[] = [];
@@ -55,7 +56,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     
 
-    this.loadUser();
+    // v1.15.1: the login page no longer downloads the user list (it was unused and exposed user names before login).
     // user register  section
 
     this.register = {
@@ -74,9 +75,9 @@ export class LoginComponent implements OnInit {
 
     // this.input = {
 
-    //   email: 'testing@gmail.com',
+    //   email: '',
 
-    //   password: 'test'
+    //   password: ''
 
     // }
 

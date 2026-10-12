@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * v1.13.0 – "Employment" tab: one employment status (active, on probation, on notice, left, terminated, absconded,
@@ -11,7 +12,7 @@ import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service
 @Component({
   selector: 'z-emp-employment',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep" *ngIf="d">
@@ -25,6 +26,7 @@ import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service
     <div class="ep-kpi"><small>{{ d.probation_status === 'confirmed' ? 'Confirmed on' : 'Probation ends' }}</small>
       <b>{{ fmt(d.probation_status === 'confirmed' ? d.confirmed_on : d.probation_end_date) || '–' }}</b>
       <div class="lp-muted" *ngIf="d.probation_days && d.probation_source !== 'manual'">{{ d.probation_days }} days ({{ d.probation_source === 'employment_type' ? 'employment type' : 'branch' }})</div></div>
+    <div class="ep-kpi" *ngIf="+d.unpaid_days_before_golive"><small>Unpaid days before go-live</small><b>{{ +d.unpaid_days_before_golive }}</b></div>
     <div class="ep-kpi" *ngIf="d.date_of_leaving"><small>Date of leaving</small><b>{{ fmt(d.date_of_leaving) }}</b><div class="lp-muted">{{ d.leaving_reason }}</div></div>
   </div>
 
@@ -34,7 +36,7 @@ import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service
       <button type="button" class="lp-btn" (click)="start('extend')">Extend probation</button>
       <button type="button" class="lp-btn danger" (click)="start('fail')">Probation not passed</button>
     </ng-container>
-    <button type="button" class="lp-btn" (click)="start('status')">Change status / date of leaving</button>
+    <button type="button" class="lp-btn" (click)="start('status')">Change status / date of leaving / unpaid days</button>
   </div>
 
   <div class="ep-row-form" *ngIf="mode">
@@ -45,12 +47,12 @@ import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service
       </div>
       <div *ngSwitchCase="'extend'" class="ep-grid">
         <label class="ep-f" [class.bad]="ferr['to_date']"><span>New end date *</span><input type="date" [(ngModel)]="f.to_date" [max]="d.limits?.max_end_date">
-          <small class="hint">UAE law allows at most 6 months in total – latest {{ fmt(d.limits?.max_end_date) }}.</small><small class="err" *ngIf="ferr['to_date']">{{ ferr['to_date'] }}</small></label>
+          <small class="hint" *zCountry="'pack:AE'">UAE law allows at most 6 months in total – latest {{ fmt(d.limits?.max_end_date) }}.</small><small class="hint" *zCountry="'!pack:AE'">Latest end date allowed: {{ fmt(d.limits?.max_end_date) }}.</small><small class="err" *ngIf="ferr['to_date']">{{ ferr['to_date'] }}</small></label>
         <label class="ep-f" [class.bad]="ferr['reason']"><span>Reason *</span><input type="text" [(ngModel)]="f.reason"><small class="err" *ngIf="ferr['reason']">{{ ferr['reason'] }}</small></label>
       </div>
       <div *ngSwitchCase="'fail'" class="ep-grid">
         <label class="ep-f" [class.bad]="ferr['last_day']"><span>Last working day</span><input type="date" [(ngModel)]="f.last_day">
-          <small class="hint">Leave empty for 14 days from today (the written notice UAE law asks for).</small><small class="err" *ngIf="ferr['last_day']">{{ ferr['last_day'] }}</small></label>
+          <small class="hint">Leave empty for 14 days from today<ng-container *zCountry="'pack:AE'"> (the written notice UAE law asks for)</ng-container>.</small><small class="err" *ngIf="ferr['last_day']">{{ ferr['last_day'] }}</small></label>
         <label class="ep-f" [class.bad]="ferr['reason']"><span>Reason *</span><input type="text" [(ngModel)]="f.reason"><small class="err" *ngIf="ferr['reason']">{{ ferr['reason'] }}</small></label>
       </div>
       <div *ngSwitchCase="'status'" class="ep-grid">
@@ -59,6 +61,8 @@ import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service
         <label class="ep-f" [class.bad]="ferr['date_of_leaving']" *ngIf="leaving(f.status)"><span>Date of leaving (last working day) *</span><input type="date" [(ngModel)]="f.date_of_leaving">
           <small class="err" *ngIf="ferr['date_of_leaving']">{{ ferr['date_of_leaving'] }}</small></label>
         <label class="ep-f" *ngIf="leaving(f.status)"><span>Reason</span><input type="text" [(ngModel)]="f.leaving_reason"></label>
+        <label class="ep-f" [class.bad]="ferr['unpaid_days_before_golive']"><span>Unpaid days before ZEO go-live</span><input type="number" min="0" step="0.5" [(ngModel)]="f.unpaid_days_before_golive">
+          <small class="hint">Unpaid leave and absence from earlier systems – not counted as service for the gratuity.</small><small class="err" *ngIf="ferr['unpaid_days_before_golive']">{{ ferr['unpaid_days_before_golive'] }}</small></label>
       </div>
     </ng-container>
     <div class="ep-actions">
@@ -112,7 +116,7 @@ export class ZEmpEmploymentComponent implements OnChanges {
   leaving(s: string): boolean { return ['on_notice', 'left', 'terminated', 'absconded', 'retired'].includes(s); }
   statusClass(s: string): string { return s === 'active' ? 'ok' : s === 'probation' ? 'blue' : s === 'on_notice' ? 'warn' : 'bad'; }
   fmt(v: string | null | undefined): string { if (!v) { return ''; } const [y, m, dd] = String(v).split('-'); return dd ? `${dd}/${m}/${y}` : String(v); }
-  label(): string { return { confirm: 'Confirm', extend: 'Extend probation', fail: 'Record: not passed', status: 'Save status' }[this.mode!] || 'Save'; }
+  label(): string { return { confirm: 'Confirm', extend: 'Extend probation', fail: 'Record: not passed', status: 'Save' }[this.mode!] || 'Save'; }
 
   start(m: 'confirm' | 'extend' | 'fail' | 'status'): void {
     this.mode = m;
@@ -121,7 +125,7 @@ export class ZEmpEmploymentComponent implements OnChanges {
     this.warning = '';
     const today = new Date().toISOString().slice(0, 10);
     this.f = m === 'confirm' ? { date: today, note: '' } : m === 'extend' ? { to_date: '', reason: '' } : m === 'fail' ? { last_day: '', reason: '' }
-      : { status: this.d.status, date_of_leaving: this.d.date_of_leaving || '', leaving_reason: this.d.leaving_reason || '' };
+      : { status: this.d.status, date_of_leaving: this.d.date_of_leaving || '', leaving_reason: this.d.leaving_reason || '', unpaid_days_before_golive: +this.d.unpaid_days_before_golive || 0 };
   }
 
   async submit(): Promise<void> {
@@ -131,7 +135,7 @@ export class ZEmpEmploymentComponent implements OnChanges {
     try {
       let r: any;
       if (this.mode === 'status') {
-        const body: any = { status: this.f.status };
+        const body: any = { status: this.f.status, unpaid_days_before_golive: +this.f.unpaid_days_before_golive || 0 };
         if (this.leaving(this.f.status)) { body.date_of_leaving = this.f.date_of_leaving || null; body.leaving_reason = this.f.leaving_reason || ''; }
         r = await this.svc.put(`employment/${this.employeeId}/`, body);
       } else {

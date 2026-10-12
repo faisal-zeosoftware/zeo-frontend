@@ -10,6 +10,7 @@ import { ZListService } from './z-list.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { empFieldAdapter } from './emp-field-adapter';
+import { assetFieldAdapter } from './asset-field-adapter';   // v1.16.0
 
 interface FeedItem { kind: 'note' | 'change' | 'created' | 'deleted'; at: string; who: string; body?: string; changes?: any[]; attachments?: any[]; id?: number; mine?: boolean; }
 
@@ -37,10 +38,10 @@ const ACT_TYPES = [
       <div class="zr-head">
         <h4>More details</h4>
         <span class="zr-grow"></span>
-        <button type="button" class="zr-link" *ngIf="canDesign" (click)="designing = true"><mat-icon>tune</mat-icon>{{ isEmployee ? 'Design employee fields' : 'Design this form' }}</button>
+        <button type="button" class="zr-link" *ngIf="canDesign" (click)="designing = true"><mat-icon>tune</mat-icon>{{ owned ? 'Design ' + ownerTitle.toLowerCase() + ' fields' : 'Design this form' }}</button>
       </div>
-      <p class="zr-muted" *ngIf="!fields.length && !isEmployee">No extra fields yet. Use “Design this form” to add fields such as a cost centre, a contract file or a rating.</p>
-      <p class="zr-muted" *ngIf="!fields.length && isEmployee">Employee fields you add appear in this form with the other employee details (reopen the form after designing).</p>
+      <p class="zr-muted" *ngIf="!fields.length && !owned">No extra fields yet. Use “Design this form” to add fields such as a cost centre, a contract file or a rating.</p>
+      <p class="zr-muted" *ngIf="!fields.length && owned">{{ ownerTitle }} fields have one designer: the fields you add there appear in this form with the other {{ ownerTitle.toLowerCase() }} details (reopen the form after designing).</p>
       <ng-container *ngFor="let g of visibleGroups()">
         <div class="zr-sec" *ngIf="g.section">{{ g.section }}</div>
         <div class="zr-grid">
@@ -156,8 +157,8 @@ const ACT_TYPES = [
       <div class="zr-err" *ngIf="error" role="alert">{{ error }}</div>
     </div>
 
-    <z-field-designer *ngIf="designing && !isEmployee" [screen]="endpoint" [screenName]="screenName" (closed)="designClosed($event)"></z-field-designer>
-    <z-field-designer *ngIf="designing && isEmployee" [adapter]="employeeAdapter" (closed)="designClosed($event)"></z-field-designer>
+    <z-field-designer *ngIf="designing && !owned" [screen]="endpoint" [screenName]="screenName" (closed)="designClosed($event)"></z-field-designer>
+    <z-field-designer *ngIf="designing && owned" [adapter]="ownerAdapter" (closed)="designClosed($event)"></z-field-designer>
   </section>`,
 })
 export class ZRecordPanelComponent implements OnInit, OnDestroy {
@@ -210,8 +211,15 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
 
   /** Employee screens keep their own custom fields (employee form designer), not the generic extra fields. */
   get isEmployee(): boolean { return /\/employee\/api\/(Employee|emplist)\//i.test(this.endpoint || ''); }
-  private _empAdapter?: DesignerAdapter;
-  get employeeAdapter(): DesignerAdapter { return this._empAdapter ??= empFieldAdapter(this.http, environment.apiBaseUrl, 'employee'); }
+  /** v1.16.0: the form's own designer (employee forms, assets) sent by the server – one designer per form. */
+  owner: { store: string; kind: string; title: string } | null = null;
+  get owned(): boolean { return !!this.owner || this.isEmployee; }
+  get ownerTitle(): string { return this.owner?.title || 'Employee'; }
+  private _ownAdapter?: DesignerAdapter;
+  get ownerAdapter(): DesignerAdapter {
+    const o = this.owner || { store: 'employee', kind: 'employee', title: 'Employee' };
+    return this._ownAdapter ??= o.store === 'asset' ? assetFieldAdapter(this.http, environment.apiBaseUrl) : empFieldAdapter(this.http, environment.apiBaseUrl, o.kind);
+  }
 
   get openActs(): any[] { return this.activities.filter(a => a.state === 'open'); }
 
@@ -234,6 +242,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
     try {
       if (this.id && this.endpoint) {
         const r = await firstValueFrom(this.rec.record(this.endpoint, this.id));
+        this.owner = r.owner || null;
         this.applyFields(r.fields || [], r.values || {});
         this.attachments = r.attachments || [];
         this.activities = r.activities || [];
@@ -242,6 +251,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
         this.canDesign = await this.designAllowed();
       } else if (this.endpoint) {
         const r = await firstValueFrom(this.rec.fields(this.endpoint));
+        this.owner = r.owner || null;
         this.applyFields((r.fields || []).filter((f: any) => f.active), {});
         this.canDesign = !!r.can_design;
         for (const f of this.fields) { if (f.default && this.values[f.name] === undefined) { this.values[f.name] = f.default; } }
@@ -259,7 +269,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
   }
 
   private applyFields(fields: any[], values: Record<string, any>): void {
-    if (this.isEmployee) { fields = []; }
+    if (this.owned) { fields = []; }   // v1.16.0: shown by the form itself from its own designer (never twice)
     this.fields = fields;
     this.groups = bySection(fields);
     for (const k of Object.keys(this.values)) { delete this.values[k]; }

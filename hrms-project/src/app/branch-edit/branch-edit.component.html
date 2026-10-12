@@ -9,14 +9,14 @@
     </span>
   </div>  
   
-        <h1>Branch Details Edit</h1><hr>
+        <h1>Branch details edit</h1><hr>
   
         <form enctype="multipart/form-data">
            <div class="row">
 
             <div class="col-md-6" >
                      
-                <label>Branch Code</label>
+                <label>Branch code</label>
                <input type="text"  class="form-control" required id="branch_code" name="branch_code"  [(ngModel)]="Emp.branch_code"  placeholder="Enter Branch Code"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_code}">
                
@@ -25,7 +25,7 @@
           
             <div class="col-md-6" >
                      
-              <label>Branch Name</label>
+              <label>Branch name</label>
              <input type="text"  class="form-control" required id="branch_name" name="branch_name"  [(ngModel)]="Emp.branch_name"  placeholder="Enter Branch Name"
               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_name}">
              
@@ -68,7 +68,7 @@
           <div class="col-md-6">
                          
                   
-              <label>pincode
+              <label>Pincode
               </label>
               <input type="text" [(ngModel)]="br_pincode" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Branch pincode">
     
@@ -113,7 +113,7 @@
   
     
 <div class="col-md-6"> 
-  <label for="branch_logo">Branch Logo :</label>
+  <label for="branch_logo">Branch logo :</label>
 
   <div class="custom-file-box" (click)="triggerFileInput()">
 

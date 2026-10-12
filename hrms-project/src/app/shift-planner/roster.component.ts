@@ -9,12 +9,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list (Branch filter …)
 import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.service';
 
 @Component({
   selector: 'app-sp-roster',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -130,7 +131,7 @@ import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.serv
           <li *ngFor="let x of problems" [ngClass]="x.level"><b>{{ x.employee }}</b> · {{ nice(x.date) }} – {{ x.message }}</li>
         </ul>
         <div class="lp-scroll" *ngIf="uploadRows.length" style="margin-top:12px">
-          <table class="lp-mini"><thead><tr><th>Row</th><th>Employee</th><th>Date</th><th>Shift</th><th>Result</th></tr></thead>
+          <table class="lp-mini" zPlain><thead><tr><th>Row</th><th>Employee</th><th>Date</th><th>Shift</th><th>Result</th></tr></thead>
             <tbody><tr *ngFor="let u of uploadRows"><td>{{ u.row }}</td><td>{{ u.employee || u.employee_code }}</td><td>{{ u.date }}</td><td>{{ u.shift }}</td>
               <td [class.lp-bad]="!u.ok" [class.lp-ok]="u.ok">{{ u.ok ? 'OK' : u.errors.join(' ') }}</td></tr></tbody></table>
           <div class="lp-foot"><button type="button" class="lp-btn" (click)="uploadRows = []; uploadFile = null">Cancel</button>

@@ -17,7 +17,7 @@ function esc(s: any): string {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 }
 function num(s: string): number | null {
-  const t = String(s || '').replace(/[, ]|AED|aed|%/g, '');
+  const t = String(s || '').replace(/[, ]|AED|SAR|QAR|OMR|BHD|KWD|USD|INR|%/gi, '');   // v1.14.0: GCC currencies
   if (!/^-?\d+(\.\d+)?$/.test(t)) { return null; }
   return Number(t);
 }

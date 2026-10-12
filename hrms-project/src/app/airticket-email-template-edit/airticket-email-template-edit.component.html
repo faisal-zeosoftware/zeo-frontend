@@ -10,11 +10,11 @@
     </span>
   </div> 
 
-        <h1>Airticket Request Email Template</h1><hr>
+        <h1>Airticket request email template</h1><hr>
 
         <form>
             <div class="form-group">
-              <label>Template Type</label>
+              <label>Template type</label>
               <select class="form-control" [(ngModel)]="templateData.template_type" [ngModelOptions]="{standalone: true}">
                 <option value="request_created">Request Created</option>
                 <option value="request_approved">Request Approved</option>
@@ -243,7 +243,7 @@
                     
                
                         <div class="col-md-4">
-                            <label>Select Field names</label>
+                            <label>Select field names</label>
                             <div class="email_placeholdername">
                               <div class="on_by_placeholders" *ngFor="let placeholder of EmailPlaceHolders" (click)="selectPlaceholder(placeholder)">
                                 <h4>{{ placeholder }}</h4> <!-- Display the placeholder value -->

@@ -11,12 +11,16 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+
 @Component({
   selector: 'app-main-dashboard',
   templateUrl: './main-dashboard.component.html',
   styleUrl: './main-dashboard.component.css'
 })
 export class MainDashboardComponent {
+
+  statusLabel = statusLabel;   // v1.15.1: readable status ("In progress", not "In_progress")
 
   
   
@@ -221,7 +225,7 @@ notificationCount: number = 0; // number to show in the red badge
                  this.hasEditPermission = this.checkGroupPermission('change_emp_master', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
                  } else {
-                   console.error('No groups found in data or groups array is empty.', firstItem);
+                   console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                  }
                } else {
                  console.error('Permissions data is not an array or is empty.', permissionsData);
@@ -241,7 +245,7 @@ notificationCount: number = 0; // number to show in the red badge
            
    
            // // Extract group permissions from user details
-           // const groupPermissions = this.userDetails.groups.map((group: { permissions: any; }) => group.permissions).flat();
+           // const groupPermissions = (this.userDetails.groups || []).map((group: { permissions: any; }) => group.permissions).flat();
            // console.log('Group Permissions:', groupPermissions);
    
            // // Check permissions for various actions
@@ -440,7 +444,7 @@ loadExpiredDoc(): void {
 
 
   redirectToExpiredDocuments(): void {
-    this.router.navigate(['/main-sidebar/settings/document-expired']);
+    this.router.navigate(['/main-sidebar/sub-sidebar/document-expired']);   // v1.15.1: was under settings (no such page)
     this.expiredDocumentsCount = 0;
   }
 

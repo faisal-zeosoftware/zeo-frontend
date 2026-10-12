@@ -35,6 +35,8 @@
               "src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "node_modules/leaflet/dist/leaflet.css",
               "src/custom-theme.scss",
               "src/styles.css",
               "node_modules/summernote/dist/summernote.css",
@@ -43,13 +45,12 @@
               "node_modules/summernote/dist/summernote-bs4.css",
               "src/zlist.css",
               "src/zrecord.css",
-              "src/zresponsive.css"
+              "src/zresponsive.css",
+              "src/zrtl.css",
+              "src/zdesign.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/popper.js/dist/umd/popper.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "node_modules/summernote/dist/summernote-lite.min.js",
               "node_modules/summernote/dist/summernote-bs4.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]

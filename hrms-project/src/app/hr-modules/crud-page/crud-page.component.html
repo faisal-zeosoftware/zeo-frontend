@@ -63,8 +63,8 @@
               <tr *ngFor="let r of pagedRows; trackBy: trackById" (click)="openDetail(r)" [class.selected]="detail?.id === r.id">
                 <td *ngFor="let c of config.columns" [ngSwitch]="c.type || 'text'">
                   <span *ngSwitchCase="'tag'" [ngClass]="tagClass(r, c)">{{ cell(r, c) }}</span>
-                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd/MM/yyyy' }}</span>
-                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd MMM yyyy' }}</span>
+                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd MMM yyyy, HH:mm' }}</span>
                   <span *ngSwitchCase="'money'">{{ cell(r, c) !== null && cell(r, c) !== undefined ? (cell(r, c) | number:'1.0-2') : '–' }}</span>
                   <span *ngSwitchCase="'percent'">{{ cell(r, c) !== null && cell(r, c) !== undefined ? (cell(r, c) | number:'1.0-2') + '%' : '–' }}</span>
                   <span *ngSwitchCase="'bool'">{{ cell(r, c) ? 'Yes' : 'No' }}</span>
@@ -101,8 +101,8 @@
           <ng-container *ngFor="let c of (config.detailFields || config.columns)">
             <dt>{{ c.label }}</dt>
             <dd [ngSwitch]="c.type || 'text'">
-              <span *ngSwitchCase="'date'">{{ cell(detail, c) | date:'dd/MM/yyyy' }}</span>
-              <span *ngSwitchCase="'datetime'">{{ cell(detail, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+              <span *ngSwitchCase="'date'">{{ cell(detail, c) | date:'dd MMM yyyy' }}</span>
+              <span *ngSwitchCase="'datetime'">{{ cell(detail, c) | date:'dd MMM yyyy, HH:mm' }}</span>
               <span *ngSwitchCase="'tag'" [ngClass]="tagClass(detail, c)">{{ cell(detail, c) }}</span>
               <span *ngSwitchCase="'money'">{{ cell(detail, c) | number:'1.0-2' }}</span>
               <span *ngSwitchCase="'bool'">{{ cell(detail, c) ? 'Yes' : 'No' }}</span>
@@ -124,8 +124,8 @@
               <tr *ngFor="let r of childRows[ch.title]">
                 <td *ngFor="let c of ch.columns" [ngSwitch]="c.type || 'text'">
                   <span *ngSwitchCase="'tag'" [ngClass]="tagClass(r, c)">{{ cell(r, c) }}</span>
-                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd/MM/yyyy' }}</span>
-                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd MMM yyyy' }}</span>
+                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd MMM yyyy, HH:mm' }}</span>
                   <span *ngSwitchCase="'money'">{{ cell(r, c) | number:'1.0-2' }}</span>
                   <span *ngSwitchCase="'bool'">{{ cell(r, c) ? '✔' : '—' }}</span>
                   <span *ngSwitchCase="'stars'" class="hr-stars"><i *ngFor="let s of stars(cell(r, c))" [class.on]="s">★</i></span>
@@ -183,6 +183,7 @@
       </div>
       <pre class="hr-error" *ngIf="formErrors">{{ formErrors }}</pre>
       <div class="hr-modal-foot">
+        <z-translate *ngIf="formEditId !== null && formEditId !== undefined" [endpoint]="formEndpoint" [recordId]="formEditId" style="margin-inline-end: auto"></z-translate>
         <button type="button" class="btn btn-danger" (click)="formOpen = false">Close</button>
         <button type="button" class="btn btn-primary hr-save" [disabled]="saving" (click)="save()">{{ saving ? 'Saving…' : 'Save' }}</button>
       </div>

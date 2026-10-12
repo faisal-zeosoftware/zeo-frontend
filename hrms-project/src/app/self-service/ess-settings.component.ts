@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { EssApiService } from './ess-api.service';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * v1.13.0 – Self-service settings (HR):
@@ -13,7 +14,7 @@ import { EssApiService } from './ess-api.service';
 @Component({
   selector: 'app-ess-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -43,11 +44,11 @@ import { EssApiService } from './ess-api.service';
           <span class="es-tag hidden">hidden</span> not shown. Fields with a lock can only be "hr" or "hidden".
         </p>
         <div *ngFor="let g of grouped" class="es-panel">
-          <div class="es-h">{{ g.label }}</div>
+          <div class="es-h">{{ g.label | zc }}</div>
           <div class="es-scroll">
             <table class="es-table" zPlain>
               <tr *ngFor="let r of g.rows">
-                <td style="width:45%">{{ r.label }} <span *ngIf="r.locked" title="Kept by HR">🔒</span></td>
+                <td style="width:45%">{{ r.label | zc }} <span *ngIf="r.locked" title="Kept by HR">🔒</span></td>
                 <td>
                   <select class="es-input" style="max-width:220px" [(ngModel)]="r.policy" (ngModelChange)="dirty = true">
                     <option value="self" [disabled]="r.locked">self – employee changes it</option>

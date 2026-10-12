@@ -47,11 +47,11 @@ import { SessionService } from '../login/session.service';
       <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete Selected Employees</button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete selected employees</button>
 
             </div>
         </div>
@@ -182,7 +182,7 @@ if (this.userId !== null) {
         console.log('User is not superuser');
 
         // Extract group permissions from user details
-        const groupPermissions = this.userDetails.groups.map((group: { permissions: any; }) => group.permissions).flat();
+        const groupPermissions = (this.userDetails.groups || []).map((group: { permissions: any; }) => group.permissions).flat();
         console.log('Group Permissions:', groupPermissions);
 
         // Check permissions for various actions

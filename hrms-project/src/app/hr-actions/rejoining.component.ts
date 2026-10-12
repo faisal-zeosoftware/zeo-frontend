@@ -76,8 +76,8 @@ function dmy(s: any): string { return s ? String(s).slice(0, 10).split('-').reve
             <tr *ngFor="let r of rows" class="ha-click" (click)="rowClick($event, r)">
               <td data-label="Employee">{{ r.employee }}</td>
               <td data-label="Leave">{{ r.leave }}<small style="display:block;color:#8a8fa3">{{ r.leave_type }}</small></td>
-              <td data-label="Leave dates">{{ r.start | date:'dd/MM/yyyy' }} – {{ r.end | date:'dd/MM/yyyy' }}</td>
-              <td data-label="Back on">{{ r.rejoin_date | date:'dd/MM/yyyy' }}</td>
+              <td data-label="Leave dates">{{ r.start | date:'dd MMM yyyy' }} – {{ r.end | date:'dd MMM yyyy' }}</td>
+              <td data-label="Back on">{{ r.rejoin_date | date:'dd MMM yyyy' }}</td>
               <td data-label="Gap"><span class="ha-tag" [ngClass]="gapClass(r.kind)">{{ gapText(r) }}</span></td>
               <td data-label="Actions"><button type="button" class="lp-btn primary" style="height:30px" (click)="$event.stopPropagation(); openSettle(r)">Settle</button></td>
             </tr>
@@ -94,8 +94,8 @@ function dmy(s: any): string { return s ? String(s).slice(0, 10).split('-').reve
             <tr *ngFor="let r of rows">
               <td data-label="Employee">{{ r.employee }}</td>
               <td data-label="Leave">{{ r.leave }}<small style="display:block;color:#8a8fa3">{{ r.leave_type }}</small></td>
-              <td data-label="Leave dates">{{ r.start | date:'dd/MM/yyyy' }} – {{ r.end | date:'dd/MM/yyyy' }}</td>
-              <td data-label="Back on">{{ r.rejoin_date | date:'dd/MM/yyyy' }}</td>
+              <td data-label="Leave dates">{{ r.start | date:'dd MMM yyyy' }} – {{ r.end | date:'dd MMM yyyy' }}</td>
+              <td data-label="Back on">{{ r.rejoin_date | date:'dd MMM yyyy' }}</td>
               <td data-label="Gap"><span class="ha-tag" [ngClass]="gapClass(r.kind)">{{ gapText(r) }}</span></td>
               <td data-label="Treatment">{{ r.treatment || '–' }}</td>
               <td data-label="Days" class="ha-move">{{ dayCounts(r) || '–' }}</td>
@@ -148,8 +148,8 @@ function dmy(s: any): string { return s ? String(s).slice(0, 10).split('-').reve
     <div class="body">
       <div class="ha-facts">
         <div><span>Leave</span>{{ cur.leave }} · {{ cur.leave_type }}</div>
-        <div><span>Leave dates</span>{{ cur.start | date:'dd/MM/yyyy' }} – {{ cur.end | date:'dd/MM/yyyy' }}</div>
-        <div><span>Back on</span>{{ cur.rejoin_date | date:'dd/MM/yyyy' }}</div>
+        <div><span>Leave dates</span>{{ cur.start | date:'dd MMM yyyy' }} – {{ cur.end | date:'dd MMM yyyy' }}</div>
+        <div><span>Back on</span>{{ cur.rejoin_date | date:'dd MMM yyyy' }}</div>
         <div *ngIf="plan?.from"><span>{{ kind() === 'early' ? 'Days not used' : 'Days missed' }}</span>{{ dmy(plan?.from) }}{{ plan?.to !== plan?.from ? ' – ' + dmy(plan?.to) : '' }}</div>
       </div>
 

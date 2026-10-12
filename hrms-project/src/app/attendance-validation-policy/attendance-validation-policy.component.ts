@@ -207,7 +207,7 @@ export class AttendanceValidationPolicyComponent {
                     console.log('Has view permission:', this.hasViewPermission);
 
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

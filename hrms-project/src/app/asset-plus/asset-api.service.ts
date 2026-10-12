@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** Base path of the Assets pages (routes registered under 'asset-plus'). v1.12.0 */
 export const ASSET_BASE = '/main-sidebar/asset-plus';
@@ -69,7 +70,7 @@ export class AssetApiService {
   }
 }
 
-export const money = (v: any, cur = 'AED'): string =>
+export const money = (v: any, cur = cpPack().currency.code): string =>   // v1.14.0: company currency by default
   `${cur} ` + Number(v || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export const STATUS_LABEL: Record<string, string> = {

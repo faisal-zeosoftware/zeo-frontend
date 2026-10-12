@@ -11,8 +11,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 })
 export class ApiService {
   private apiUrl = 'https://jsonplaceholder.typicode.com/users'; // Replace this with your API URL
-  private baseUrl= 'http://127.0.0.1:8000/employee/api/emp-report/';
-  private apiUrls = 'http://127.0.0.1:8000/employee/api/emp-report/select_employee_fields/';
+  private baseUrl= `${environment.apiBaseUrl}/employee/api/emp-report/`;
+  private apiUrls = `${environment.apiBaseUrl}/employee/api/emp-report/select_employee_fields/`;
 
   constructor(private http: HttpClient,private https:HttpClient,private sanitizer: DomSanitizer) { }
 

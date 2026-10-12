@@ -24,7 +24,7 @@
                               </div>
             
                               <div class="col-md-4">
-                                <label>Emi amount</label>
+                                <label>EMI amount</label>
                                 <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
                                        [ngModelOptions]="{standalone: true}">
                               
@@ -62,7 +62,7 @@
             
             
                               <div class="col-md-6" >
-                                <label>Loan Type</label>
+                                <label>Loan type</label>
                                 <div class="custom-sel">
                                   <select
                                     class="form-control"
@@ -93,7 +93,7 @@
                             <div class="row">
                               <div class="col-md-8"></div>
                               <div class="col-md-4">
-                                <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+                                <button type="submit" class="btn btn-success btn-full mt-4">Add loan application</button>
                               </div>
                             </div>
                           </form>
@@ -119,15 +119,15 @@
                                       [ngClass]="{'selected-request': selectedRequestId === request.id}">
                                         <div class="row">
                                           <div class="col-md-4">
-                                            <label>Loan Type</label>
+                                            <label>Loan type</label>
                                             <h6>{{ request.loan_type || 'N/A' }}</h6>
                                           </div>
                                           <div class="col-md-4">
-                                            <label>Requested Amount</label>
+                                            <label>Requested amount</label>
                                             <h6>{{ request.amount_requested }}</h6>
                                           </div>
                                           <div class="col-md-4">
-                                            <label>Emi Amount</label>
+                                            <label>EMI amount</label>
                                             <h6>{{ request.emi_amount }}</h6>
                                           </div>
                                         </div>
@@ -159,7 +159,7 @@
                                               <h6>{{ approval.note || 'N/A' }}</h6>
                                             </div>
                                             <!-- <div class="col-md-2">
-                                              <label>Updated At</label>
+                                              <label>Updated at</label>
                                               <h6>{{ approval.updated_at }}</h6>
                                             </div> -->
                                           </div>

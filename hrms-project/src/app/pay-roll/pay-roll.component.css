@@ -720,6 +720,33 @@ table.styled-table td {
   color: #b91c1c;
 }
 
+/* v1.16.0 (D16): run status + approve / mark as paid buttons */
+.payroll-status.status-run-processed { background: #e0f2fe; color: #0369a1; }
+.payroll-status.status-run-approved { background: #ede9fe; color: #6d28d9; }
+.payroll-status.status-run-paid { background: #dcfce7; color: #15803d; }
+
+.payroll-run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  margin-inline-end: 6px;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.payroll-run-btn.paid { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
+.payroll-run-btn.undo { border-color: #e5e7eb; background: #f9fafb; color: #374151; }   /* v1.16.0 */
+.payroll-run-btn:hover:not([disabled]) { filter: brightness(0.95); }
+.payroll-run-btn[disabled] { opacity: 0.6; cursor: wait; }
+
 /* Empty table */
 .payroll-empty {
   text-align: center !important;
@@ -2096,3 +2123,7 @@ table.styled-table td {
     font-size: 11px;
   }
 }
+/* v1.18.0: run controls (prepared / approved / paid) and checks */
+.run-ctl{margin-top:4px;font-size:11px;line-height:1.35;color:#5d6670;min-width:170px;max-width:230px;white-space:normal;overflow-wrap:anywhere}
+.run-warn{display:inline-block;margin:2px 4px 0 0;padding:1px 7px;border-radius:9px;background:#eef1f4;color:#33414d;cursor:help}
+.run-warn[data-l=error]{background:#fdeceb;color:#9b2c24}.run-warn[data-l=warning]{background:#fff4dc;color:#7a5600}

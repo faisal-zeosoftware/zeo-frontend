@@ -115,9 +115,8 @@ const LS = 'zeo.ucal';
     </div>
   </div>`,
   styles: [`
-    :host { display: block; margin-top: 64px; margin-left: var(--zm-sidebar-w, 35px); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); --ink: #1B1640; --muted: #6B7185; --line: #E3E5EE; --page: #F4F5FA; --p: #5B4FE0; --pw: #ECEAFD; }
-    @media (max-width: 991.98px) { :host { margin-top: 54px; margin-left: 0; } }
-    .uc { padding: 18px 22px 40px; background: var(--page); min-height: calc(100vh - 64px); color: #262A3D; font-size: 14px; }
+    :host { display: block; --ink: #1B1640; --muted: #6B7185; --line: #E3E5EE; --page: #F4F5FA; --p: #5B4FE0; --pw: #ECEAFD; }
+    .uc { padding: 18px 22px 40px; background: var(--page); min-height: 100%; color: #262A3D; font-size: 14px; }
     .uc-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
     h1 { margin: 0; font-size: 24px; font-weight: 500; color: var(--ink); }
     .muted { color: var(--muted); margin: 0; } .small { font-size: 12.5px; }
@@ -219,16 +218,6 @@ export class UnifiedCalendarComponent implements OnInit {
     } catch { /* storage off */ }
     if (window.innerWidth < 760) { this.view = 'agenda'; }
     this.load();
-    // #region agent log
-    requestAnimationFrame(() => {
-      const el = document.querySelector('.uc') as HTMLElement | null;
-      const sidebar = document.getElementById('sidebarMenu');
-      const cr = el?.getBoundingClientRect();
-      const sr = sidebar?.getBoundingClientRect();
-      const cs = el ? getComputedStyle(el) : null;
-      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'B',location:'unified-calendar.component.ts:ngOnInit',message:'unified-calendar layout',data:{contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,sidebarOpen:sidebar?.classList.contains('menu-open'),cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
-    });
-    // #endregion
   }
 
   @HostListener('document:keydown.escape') esc(): void { this.picked = null; }

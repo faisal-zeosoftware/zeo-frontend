@@ -105,12 +105,16 @@ import { EmployeeDashboardComponent } from './employee-dashboard/employee-dashbo
 import { EssDashboardComponent } from './hr-modules/dashboards/ess-dashboard.component';
 import { ZListDirective } from './shared-ui/z-list.directive';
 import { ZAskComponent } from './shared-ui/z-ask.component';
+import { ZAppLauncherComponent } from './shared-ui/z-app-launcher.component';   // v1.20.0
 import { ZOrgPickDirective } from './shared-ui/z-org-pick.directive';
 import { ZModuleMenuComponent, ZAppTitleComponent } from './shared-ui/z-module-menu.component';
 import { ZDashDesignerComponent, ZDashOverviewComponent } from './shared-ui/z-dash.component';
 import { ZFieldDesignerComponent } from './shared-ui/z-field-designer.component';
 import { ZFieldInputComponent } from './shared-ui/z-field-input.component';
 import { ZEmpFieldsComponent } from './shared-ui/z-emp-fields.component';
+import { COUNTRY_PACK_UI } from './shared-ui/country-pack.service';   // v1.14.0 country packs
+import { I18N_UI, I18nInterceptor, I18nService, startI18n } from './shared-ui/i18n.service';   // v1.15.0 language packs
+import { ZTranslateComponent } from './shared-ui/z-translate.component';   // v1.15.0 translated master data (Translate button)
 import { ZEmpOrgFieldsComponent } from './org-structure/z-emp-org-fields.component';   // v1.12.0 organisation fields
 import { ZIfOrgDirective } from './org-structure/z-if-org.directive';                     // v1.12.0
 import { EMPLOYEE_PROFILE_COMPONENTS } from './employee-profile/employee-profile.components';   // v1.13.0 employee master tabs / fields
@@ -135,7 +139,8 @@ import { DepartmentReportComponent } from './department-report/department-report
 import { DesignationReportComponent } from './designation-report/designation-report.component';
 import { DocumentReportComponent } from './document-report/document-report.component';
 import { MatSortModule } from '@angular/material/sort';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
+import { MAT_DATE_LOCALE } from '@angular/material/core';   // v1.19.0
 import { ReportGenerateComponent } from './report-generate/report-generate.component';
 import { EmployeeAddMoreFieldComponent } from './employee-add-more-field/employee-add-more-field.component';
 import { UesrEmployeeComponent } from './uesr-employee/uesr-employee.component';
@@ -513,6 +518,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     EssDashboardComponent,
     ZListDirective,
     ZAskComponent,
+    ZAppLauncherComponent,   // v1.20.0 app launcher (HRMS / Projects / Settings)
     ZOrgPickDirective,
     ZModuleMenuComponent,
     ZDashDesignerComponent,
@@ -524,6 +530,9 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     ZEmpOrgFieldsComponent,
     ZIfOrgDirective,
     EMPLOYEE_PROFILE_COMPONENTS,   // v1.13.0 (nested array)
+    COUNTRY_PACK_UI,   // v1.14.0: zc / zmoney pipes, *zCountry
+    I18N_UI,           // v1.15.0: t / zdate pipes, <z-lang-picker>
+    ZTranslateComponent,   // v1.15.0: <z-translate> on the master screens
     
     
     BrowserModule,
@@ -573,8 +582,12 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
       multi: true,
     },
     { provide: HTTP_INTERCEPTORS, useClass: ZListRecorderInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: I18nInterceptor, multi: true },   // v1.15.0: X-Language on every API call
+    { provide: APP_INITIALIZER, useFactory: startI18n, deps: [I18nService], multi: true },   // v1.15.0: language at start
     { provide: ZRecordServiceToken, useExisting: ZRecordService },
-    { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true }],
+    { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true },
+    { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { dateFormat: 'dd MMM yyyy' } },   // v1.19.0: 12 May 1990 in views
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }],                                   // v1.19.0: DD/MM/YYYY in date pickers
     
    
 

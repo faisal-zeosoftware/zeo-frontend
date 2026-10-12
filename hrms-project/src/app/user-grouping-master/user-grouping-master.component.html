@@ -57,7 +57,7 @@
           *ngIf="Delete"
           (click)="toggleSelectAllEmployees()"
         >
-          Select All
+          Select all
         </button>
       </div>
       <div class="col-md-3">
@@ -67,7 +67,7 @@
           *ngIf="Delete"
           (click)="deleteSelectedEmployees()"
         >
-          Delete Selected Group
+          Delete selected group
         </button>
       </div>
     </div>
@@ -79,7 +79,8 @@
             <thead>
               <tr>
                 <th style="color: white">No</th>
-                <th style="color: white">Group Name</th>
+                <th style="color: white">Group name</th>
+                <th style="color: white">App</th>
                 <th style="color: white">Action</th>
               </tr>
             </thead>
@@ -90,6 +91,7 @@
               >
                 <td data-label="No">{{ i + 1 }}</td>
                 <td data-label="Group Name">{{ Rolegroup.name }}</td>
+                <td data-label="App">{{ appOf(Rolegroup.name) }}</td>
                 <td data-label="Action" class="d-flex gap-2">
                   <button
                     mat-fab

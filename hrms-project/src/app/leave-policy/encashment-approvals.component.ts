@@ -7,13 +7,19 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { recordUrl } from '../shared-ui/z-nav';
+import { COUNTRY_PACK_UI, cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** v1.10.0 – approve or reject leave encashment: the balance goes down on approval and the next payroll pays it. */
 @Component({
   selector: 'app-encashment-approvals',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, ZListDirective],
   styleUrls: ['./leave-policy.css'],
+  styles: [`
+.enc-steps{min-width:200px}.enc-step{display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.4;color:#5d6670}
+.enc-step .dot{width:9px;height:9px;border-radius:50%;border:2px solid #b8c0c8;margin-top:3px;flex:none}
+.enc-step.done{color:#1f2a33}.enc-step.done .dot{background:#2e8b57;border-color:#2e8b57}.enc-step.next .dot{border-color:#c98a00}
+`],
   template: `
 <div class="container">
   <div class="comapny_section">
@@ -21,7 +27,7 @@ import { recordUrl } from '../shared-ui/z-nav';
       <div class="lp-head">
         <div>
           <h1 class="page-title">Encashment approvals</h1>
-          <p class="lp-desc">Leave encashment requests with the policy checks. Approving takes the days off the balance; the amount is paid with the next payroll (component with formula <code>leave_encashment_amount</code>).</p>
+          <p class="lp-desc">Leave encashment requests with the policy checks. When the approval chain is on, HR confirms the balance, Finance verifies the amount and management gives the final approval – each step by a different person. Approving takes the days off the balance; the amount is paid with the next payroll (component with formula <code>leave_encashment_amount</code>).</p>
         </div>
         <div class="lp-actions">
           <select [(ngModel)]="status" (ngModelChange)="load()" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px" aria-label="Status">
@@ -33,15 +39,28 @@ import { recordUrl } from '../shared-ui/z-nav';
       <p class="lp-msg" *ngIf="msg" [class.err]="msgErr">{{ msg }}</p>
       <p class="lp-muted" *ngIf="loading">Loading…</p>
       <table class="table" *ngIf="!loading">
-        <thead><tr><th>Employee</th><th>Leave type</th><th>Days</th><th>Amount (AED)</th><th>Balance now</th><th>Requested</th><th>Status</th><th>Checks</th><th>Remarks</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Employee</th><th>Leave type</th><th>Days</th><th>{{ 'Amount (AED)' | zc }}</th><th>Balance now</th><th>Requested</th><th>Status</th><th>Checks</th><th>Approval steps</th><th>Remarks</th><th>Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let r of rows">
             <td><a href="" (click)="$event.preventDefault(); open(r)">{{ r.employee }}</a></td><td>{{ r.leave_type }}</td><td>{{ r.days }}</td>
-            <td>{{ r.amount | number:'1.2-2' }}</td><td>{{ r.balance_now }}</td><td>{{ r.requested | date:'dd/MM/yyyy' }}</td><td>{{ r.status }}</td>
+            <td>{{ r.amount | number:'1.2-2' }}</td><td>{{ r.balance_now }}</td><td>{{ r.requested | date:'dd MMM yyyy' }}</td><td>{{ r.status }}</td>
             <td><span class="lp-ok" *ngIf="!r.problems.length && (r.status === 'Pending Approval' || r.status === 'Draft')">OK</span><span class="lp-bad" *ngFor="let p of r.problems">{{ p }} </span><span *ngIf="r.payroll_run">{{ r.payroll_run }}</span></td>
+            <td class="enc-steps">
+              <ng-container *ngIf="r.steps?.chain; else noChain">
+                <div *ngFor="let s of r.steps.steps" class="enc-step" [class.done]="s.done" [class.next]="r.steps.next === s.step">
+                  <span class="dot" aria-hidden="true"></span>
+                  <span><b>{{ s.label }}</b><ng-container *ngIf="s.done"> – {{ s.by }}<span class="lp-muted"> {{ s.at | date:'dd/MM HH:mm' }}</span></ng-container>
+                    <ng-container *ngIf="!s.done && r.steps.next === s.step"> – next</ng-container></span>
+                </div>
+              </ng-container>
+              <ng-template #noChain><span class="lp-muted">One approval</span></ng-template>
+            </td>
             <td>{{ r.remarks || '-' }}</td>
             <td><ng-container *ngIf="r.status === 'Pending Approval' || r.status === 'Draft'">
-              <button type="button" class="lp-btn primary" [disabled]="busy || r.problems.length" (click)="act(r, 'approve')">Approve</button>
+              <ng-container *ngIf="r.steps?.chain && r.steps.next && r.steps.next !== 'management'">
+                <button type="button" class="lp-btn primary" [disabled]="busy || r.problems.length" (click)="step(r)">{{ r.steps.next === 'hr' ? 'Confirm balance (HR)' : 'Verify amount (Finance)' }}</button>
+              </ng-container>
+              <button type="button" class="lp-btn primary" *ngIf="!r.steps?.chain || r.steps.next === 'management'" [disabled]="busy || r.problems.length" (click)="act(r, 'approve')">{{ r.steps?.chain ? 'Final approval' : 'Approve' }}</button>
               <button type="button" class="lp-btn danger" [disabled]="busy" (click)="act(r, 'reject')" style="margin-left:6px">Reject</button></ng-container></td>
           </tr>
         </tbody>
@@ -72,7 +91,20 @@ export class EncashmentApprovalsComponent implements OnInit {
     this.busy = true;
     try {
       const d = await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/encashments/'), { id: r.id, action, remarks }));
-      this.msg = action === 'approve' ? `Approved: ${r.days} days of ${r.employee} – AED ${Number(d.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })} with the next payroll.` : `Rejected: ${r.employee}.`;
+      this.msg = action === 'approve' ? `Approved: ${r.days} days of ${r.employee} – ${cpPack().currency.code} ${Number(d.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })} with the next payroll.` : `Rejected: ${r.employee}.`;
+      this.msgErr = false; await this.load();
+    } catch (e: any) { this.msg = e?.error?.detail || 'It could not be done.'; this.msgErr = true; }
+    this.busy = false; this.cd.detectChanges();
+  }
+
+  /** v1.18.0: HR confirms the balance / Finance verifies the amount (approval chain switched on in the payroll controls). */
+  async step(r: any): Promise<void> {
+    const note = prompt(r.steps.next === 'hr' ? 'Note (balance and eligibility checked)' : 'Note (amount verified)') ?? null;
+    if (note === null) { return; }
+    this.busy = true;
+    try {
+      await firstValueFrom(this.http.post<any>(this.url(`payroll-plus/api/encashments/${r.id}/steps/`), { step: r.steps.next, note }));
+      this.msg = r.steps.next === 'hr' ? `Balance confirmed for ${r.employee} – Finance verifies next.` : `Amount verified for ${r.employee} – waiting for the final approval.`;
       this.msgErr = false; await this.load();
     } catch (e: any) { this.msg = e?.error?.detail || 'It could not be done.'; this.msgErr = true; }
     this.busy = false; this.cd.detectChanges();

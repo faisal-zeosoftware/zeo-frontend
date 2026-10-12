@@ -55,11 +55,11 @@
         <div class="row">
             <div class="col-md-2">
                 
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedShifts()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedShifts()">Delete selected </button>
 
             </div>
         </div>
@@ -71,7 +71,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create Shifts</h2>
+                  <h2> Create shifts</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -88,7 +88,7 @@
                 <div class="row">
                     <div class="col-md-6" >
                    
-                        <label>Shift Name
+                        <label>Shift name
                             <span class="required-star">*</span>
                         </label>
                        <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name "
@@ -100,7 +100,7 @@
     
                   <div class="col-md-6" >
                    
-                    <label>Start Time
+                    <label>Start time
                         <span class="required-star">*</span>
                     </label>
                    <input type="time"  class="form-control" required  [(ngModel)]="start_time"  placeholder="Enter start time "
@@ -111,7 +111,7 @@
     
               <div class="col-md-6" >
                    
-                <label>End Time
+                <label>End time
                     <span class="required-star">*</span>
                 </label>
                <input type="time"  class="form-control" required  [(ngModel)]="end_time"  placeholder="Enter time date "
@@ -157,7 +157,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit Shifts</h2>
+          <h2>Edit shifts</h2>
         </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -175,7 +175,7 @@
                 <div class="row">
                     <div class="col-md-6" >
                    
-                        <label>Shift Name</label>
+                        <label>Shift name</label>
                        <input type="text"  class="form-control" required  [(ngModel)]="editshifts.name"  placeholder="Enter name "
                         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
                        
@@ -240,10 +240,10 @@
          <thead>
           <tr>
           <th>No</th>
-          <th>Shift Name</th>
-          <th>Start Time</th>
-          <th>End Time</th>
-          <th>Break Duration</th>
+          <th>Shift name</th>
+          <th>Start time</th>
+          <th>End time</th>
+          <th>Break duration</th>
           <th>Action</th>
           </tr>
           </thead>

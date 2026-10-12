@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { EmployeeProfileService } from './employee-profile.service';
+import { CountryPackService, cpLocalize } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /**
  * v1.13.0 – optional employee-list columns (passport / visa / Emirates ID expiry, employment status, probation end,
@@ -13,17 +14,22 @@ import { EmployeeProfileService } from './employee-profile.service';
  */
 @Injectable({ providedIn: 'root' })
 export class EmpProfileColumnsService {
-  readonly cols: { field: string; label: string }[] = [
-    { field: 'passport_expiry', label: 'Passport expiry' }, { field: 'visa_expiry', label: 'Visa expiry' },
-    { field: 'eid_expiry', label: 'Emirates ID expiry' }, { field: 'status_label', label: 'Employment status' },
+  private readonly all: { field: string; label: string; country?: string }[] = [
+    { field: 'passport_expiry', label: 'Passport expiry' }, { field: 'visa_expiry', label: 'Visa expiry', country: 'residence_visa' },
+    { field: 'eid_expiry', label: 'Emirates ID expiry', country: 'national_id' }, { field: 'status_label', label: 'Employment status' },
     { field: 'probation_end', label: 'Probation ends' }, { field: 'manager', label: 'Reporting manager' },
   ];
+  private local: { field: string; label: string }[] = this.all;
+  /** v1.14.0: the columns for the company's country (Emirates ID → the country's ID caption, or left out) */
+  get cols(): { field: string; label: string }[] { this.cp.pack; return this.local; }
   private rows = new Map<number, any>();
   private at = 0;
   private schema = '';
   private loading = false;
 
-  constructor(private http: HttpClient, private svc: EmployeeProfileService) {}
+  constructor(private http: HttpClient, private svc: EmployeeProfileService, private cp: CountryPackService) {
+    this.cp.pack$.subscribe(() => { this.local = cpLocalize(this.all, this.cp); });
+  }
 
   value(empId: number, field: string): string {
     this.refresh();

@@ -181,8 +181,8 @@ button:focus-visible, li:focus-visible, tr:focus-visible, select:focus-visible, 
 .p-stats b { font-size: 22px; font-weight: 500; color: var(--ink); }
 .p-stats span { color: var(--muted); font-size: 12px; }
 
-/* stand-alone route inside main-sidebar: clear the fixed top bar and follow open/folded width */
-.zdash.page { margin: 64px 0 0 var(--zm-sidebar-w, 35px); min-height: calc(100vh - 64px); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+/* stand-alone route inside main-sidebar: clear the fixed top bar and the 235px menu */
+.zdash.page { margin: 64px 0 0 235px; min-height: calc(100vh - 64px); }
 @media (max-width: 991.98px) { .zdash.page { margin: 54px 0 0 0; padding: 14px 14px 32px; } }
 /* beat the global "table thead th" rule (purple !important) so drill lists read as quiet headers */
 .zt thead { display: table-header-group !important; }
@@ -204,3 +204,69 @@ button:focus-visible, li:focus-visible, tr:focus-visible, select:focus-visible, 
 .rcol .rk { font-size: 12px; color: var(--muted); }
 .rcol:hover:not(:disabled) .rbar i { filter: brightness(1.1); }
 .task-row.overdue b { color: var(--bad-text); }
+
+/* v1.16.0: everything with a figure or a name opens what is behind it */
+.zgo { cursor: pointer; border-radius: 6px; }
+.zgo:hover { background: #F7F7FD; }
+.zgo:focus-visible { outline: 2px solid var(--accent, #5B4FE0); outline-offset: 1px; }
+.mstats { flex-wrap: wrap; }
+.mstats .ms-b { padding: 2px 6px; margin: -2px -6px; }
+
+/* v1.17.0: team leave planner (next 14 days) */
+.planner { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; align-items: end; margin-bottom: 8px; }
+.pl-day { border: 0; background: transparent; padding: 0; display: flex; flex-direction: column; align-items: stretch; gap: 3px; cursor: pointer; font: inherit; min-width: 0; }
+.pl-n { font-size: 12px; text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pl-day.has .pl-n { color: var(--ink); font-weight: 600; }
+.pl-bar { height: 56px; background: #F0F1F6; border-radius: 4px; display: flex; align-items: flex-end; overflow: hidden; }
+.pl-bar i { display: block; width: 100%; background: var(--leave); border-radius: 4px 4px 0 0; }
+.pl-day.off .pl-bar { background: repeating-linear-gradient(45deg, #ECEDF2, #ECEDF2 4px, #F6F6F9 4px, #F6F6F9 8px); }
+.pl-d { font-size: 10px; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: clip; direction: ltr; }
+.pl-day:hover .pl-bar, .pl-day:focus-visible .pl-bar { outline: 2px solid var(--primary); outline-offset: 1px; }
+@media (max-width: 760px) { .planner { grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 10px; } }
+/* v1.17.0: inside Home the page frame (scroll area, gutters, title) belongs to Home */
+.zdash.in-home { padding: 0; background: transparent; min-height: 0; margin: 0; }
+.zdash.in-home > .zh { margin-bottom: 10px; }
+/* v1.17.0: the "Today" strip keeps its period chip visible (it was cut by overflow: hidden); lines drawn per item */
+.zdd-board .today { overflow: visible; background: var(--surface); gap: 0; }
+.zdd-board .today .t-item { background: transparent; box-shadow: 1px 0 0 var(--line), 0 1px 0 var(--line); border-radius: 0; }
+.r-end { min-width: 0; }
+.daychip { white-space: nowrap; width: auto; min-width: 30px; height: 26px; padding: 0 8px; border-radius: 13px; font-size: 12px; font-variant-numeric: tabular-nums; }   /* v1.17.0: dd/MM fits (was a 30 px circle) */
+/* v1.17.0 (audit L1): a zero that opens nothing does not look clickable */
+.bars button:disabled, .rcol:disabled, .zbtn:disabled { cursor: default; }
+.bars button:disabled:hover { background: transparent; }
+.hero.zgo { cursor: pointer; }
+.hero.zgo:hover { text-decoration: underline; text-underline-offset: 6px; }
+/* v1.17.0 (audit M11): the drill list uses the whole panel, short rows, actions apart; sentence-case placeholder */
+.zd-body table.zt { width: 100% !important; table-layout: auto; display: table !important; }
+.zd-body .zt tbody { display: table-row-group !important; }
+.zd-body .zt tbody tr { display: table-row !important; margin: 0 !important; border: 0 !important; background: transparent !important; }
+.zd-body .zt tbody tr td { display: table-cell !important; padding: 8px !important; }
+.zd-body .zt tbody td::before { content: none !important; display: none !important; }
+.zd-body .zt td { overflow-wrap: anywhere; }
+.zd-body .zt td.nowrap .zd-acts { display: inline-flex; gap: 14px; }
+.zd-tools input::placeholder { text-transform: none; }
+/* v1.17.0 (audit layout check): short pieces of a line (name, status, date) wrap as whole pieces – no two pieces share a box */
+.zdash p > span, .zdash p > b, .zdash p > span > span, .zdash small > span, .zdash .t-item b > small, .zdash .rlist b, .zdash .rlist .muted { display: inline-block; max-width: 100%; }
+/* v1.17.0: the global record-designer sheet (zrecord.css) also uses .zd-body – as a 3-column grid with overflow hidden.
+   In the drill drawer that squeezed the list into one narrow column with very tall rows and stopped long lists scrolling. */
+.zd-panel .zd-body { display: block !important; grid-template-columns: none !important; overflow-y: auto !important; overflow-x: auto; min-height: 0; }
+.zd-panel .zd-tools input::placeholder { text-transform: none !important; }
+
+/* v1.17.1 (dash171): company policies (file / acknowledge on the line), my shift, zero lines that open nothing */
+.pol-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 6px; }
+.pol-acts .zbtn.ghost { padding: 3px 10px; font-size: 12.5px; }
+.rlist li.pol-row { cursor: pointer; }
+.ent-h { margin-top: 10px; }
+.sh-today { padding: 2px 6px; margin: -2px -6px 4px; }
+.sh-today .big { margin: 0; font-variant-numeric: tabular-nums; }
+.kv.sh-off b { color: var(--muted); font-weight: 400; }
+.kv b { text-align: end; overflow-wrap: anywhere; }
+.watch:disabled { cursor: default; }
+.watch:disabled:hover span { color: inherit; }
+.pill.nocap { text-transform: none; }   /* v1.17.1: status labels of the newer modules ("Waiting for HR") */
+.ent-more { margin-top: 6px; }
+.rlist li > div:first-child { min-width: 0; flex: 1 1 0; overflow-wrap: anywhere; }   /* v1.17.1: a long line wraps, its date / status stays whole inside the card */
+.rlist li > .r-end { flex: none; }
+/* v1.17.1: day numbers under "My attendance" never break into two lines ("1 0"); on a phone every other day is labelled */
+.ribbon-days span { white-space: nowrap; overflow: visible; }
+@media (max-width: 600px) { .ribbon-days span { font-size: 9.5px; } .ribbon-days span:nth-child(even) { visibility: hidden; } }

@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { openDocFill } from '../ai-settings/doc-fill-dialog.component';   // v1.16.0
 
 @Component({
   selector: 'app-employee-family',
@@ -154,6 +155,7 @@ bankDetails: any[] = [
     private sessionService: SessionService,
 
    private ref:MatDialogRef<EmployeeFamilyComponent>,
+   private dialog: MatDialog,   // v1.16.0: Fill from document
    @Inject(MAT_DIALOG_DATA) public data: any,
    ) {
     this.emp_id = data.emp_id;
@@ -465,6 +467,20 @@ calculateExperience(job: any): void {
 
 
 
+
+// v1.16.0: "Fill from document" – the user picks which suggested values go into the form (nothing is saved here)
+async fillFromDocument(doc: any): Promise<void> {
+  if (!doc?.selectedFile) { return; }
+  const v = await openDocFill(this.dialog, doc.selectedFile, this.DocumentTypes || [], {
+    document_type: doc.document_type, emp_doc_number: doc.emp_doc_number,
+    emp_doc_issued_date: doc.emp_doc_issued_date, emp_doc_expiry_date: doc.emp_doc_expiry_date,
+  });
+  if (!v) { return; }
+  if (v.document_type !== undefined) { doc.document_type = String(v.document_type); }
+  if (v.emp_doc_number !== undefined) { doc.emp_doc_number = v.emp_doc_number; }
+  if (v.emp_doc_issued_date !== undefined) { doc.emp_doc_issued_date = v.emp_doc_issued_date; }
+  if (v.emp_doc_expiry_date !== undefined) { doc.emp_doc_expiry_date = v.emp_doc_expiry_date; }
+}
 
 onFileSelected(event:any, doc:any){
 

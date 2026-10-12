@@ -8,7 +8,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Resignation Request </h1>
+                <h1>Resignation request </h1>
             </div>
 
                 <div class="col-md-3">
@@ -58,11 +58,11 @@
     <div class="row">
         <div class="col-md-2">
             
-            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
         </div>
         <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete selected </button>
 
         </div>
     </div>
@@ -74,7 +74,7 @@
         <div class="modal-content">  
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Resigantion Request</h2>
+              <h2> Create resigantion request</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -90,7 +90,7 @@
 
              <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches
+                    <label>Select branches
                        <span class="required-star">*</span>
                     </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
@@ -156,7 +156,7 @@
         
 
 <div class="col-md-6">
-  <label>Document Number</label>
+  <label>Document number</label>
   <input 
     type="text" 
     class="form-control" 
@@ -202,7 +202,7 @@
               </div>
 
               <div class="col-md-6">
-                <label> resigned on
+                <label> Resigned on
                   <span class="required-star">*</span>
                 </label>
                 <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
@@ -212,14 +212,14 @@
               </div>
           
               <div class="col-md-6">
-                <label>notice period</label>
+                <label>Notice period</label>
                 <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
                        [ngModelOptions]="{standalone: true}" >
               </div>
 
             
               <div class="col-md-6">
-                <label>last working date
+                <label>Last working date
                   <span class="required-star">*</span>
                 </label>
                 <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
@@ -229,7 +229,7 @@
             
 
               <div class="col-md-6">
-                <label>location
+                <label>Location
                   <span class="required-star">*</span>
                 </label>
                 <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
@@ -240,7 +240,7 @@
 
 
           <div class="col-md-6">
-            <label>Request Attachment</label>
+            <label>Request attachment</label>
             <input type="file" class="form-control" (change)="onFileChange($event)">
           </div>
               
@@ -294,7 +294,7 @@
 <div class="modal-content">
   <div class="row">
     <div class="col-md-10">
-      <h2>Edit  Resignation Request </h2>
+      <h2>Edit  resignation request </h2>
     </div>
       <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -310,7 +310,7 @@
 
                    <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select branches</label>
                     <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option value="">Select</option>
                         <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -367,7 +367,7 @@
             </div>
 
 <div class="col-md-6">
-  <label>Document Number</label>
+  <label>Document number</label>
   <input 
     type="text" 
     class="form-control" 
@@ -393,27 +393,27 @@
     </div>
 
     <div class="col-md-6">
-      <label> resigned on</label>
+      <label> Resigned on</label>
       <input type="date" class="form-control" required [(ngModel)]="editAsset.resigned_on" placeholder="Enter resigned on"
              [ngModelOptions]="{standalone: true}" >
     </div>
 
     <div class="col-md-6">
-      <label>notice period</label>
+      <label>Notice period</label>
       <input type="number" class="form-control" required [(ngModel)]="editAsset.notice_period" placeholder="Enter notice period"
              [ngModelOptions]="{standalone: true}" >
     </div>
 
   
     <div class="col-md-6">
-      <label>last working date</label>
+      <label>Last working date</label>
       <input type="date" class="form-control" required [(ngModel)]="editAsset.last_working_date" placeholder="Enter last working date"
              [ngModelOptions]="{standalone: true}" >
     </div>
   
 
     <div class="col-md-6">
-      <label>location</label>
+      <label>Location</label>
       <input type="text" class="form-control" required [(ngModel)]="editAsset.location" placeholder="Enter location"
              [ngModelOptions]="{standalone: true}" >
     </div>
@@ -436,7 +436,7 @@
     </div>
 
               <div class="col-md-6">
-            <label>Request Attachment</label>
+            <label>Request attachment</label>
             <input type="file" class="form-control" (change)="onFileChange($event)">
           </div>
     

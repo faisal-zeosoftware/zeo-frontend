@@ -12,6 +12,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { forkJoin } from 'rxjs';
 import {combineLatest, Subscription } from 'rxjs';
+import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 
 @Component({
   selector: 'app-project-tasks',
@@ -19,6 +20,7 @@ import {combineLatest, Subscription } from 'rxjs';
   styleUrl: './project-tasks.component.css'
 })
 export class ProjectTasksComponent {
+  statusLabel = statusLabel;   // v1.15.1: readable status ("In progress", not "In_progress")
 
   private dataSubscription?: Subscription;
 
@@ -305,7 +307,7 @@ ngOnInit(): void {
                   this.hasViewPermission = this.checkGroupPermission('view_task', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
                 } else {
-                  console.error('No groups found in data or groups array is empty.', firstItem);
+                  console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                 }
               } else {
                 console.error('Permissions data is not an array or is empty.', permissionsData);

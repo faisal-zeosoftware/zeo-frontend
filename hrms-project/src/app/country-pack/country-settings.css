@@ -1,0 +1,15 @@
+/* v1.14.0 Country settings – used with ../leave-policy/leave-policy.css and ../org-structure/org-structure.css */
+.cp-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 18px; margin: 16px 0 4px; }
+.cp-pack { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #6b7185; min-width: 0; }
+.cp-pack select { height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13.5px; color: #1d2033; background: #fff; max-width: 100%; }
+.cp-note { margin: 0 0 10px; }
+.cp-def { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cp-link { border: 0; background: transparent; color: #4338ca; font-size: 12.5px; cursor: pointer; padding: 0; }
+.cp-link:hover { text-decoration: underline; }
+.cp-labels td input { height: 32px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13px; width: 260px; max-width: 100%; }
+.cp-labels td.cp-defcol { color: #6b7185; }
+.cp-result { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.cp-result small { color: #6b7185; margin-left: 6px; }
+.os-facts a { color: #4338ca; text-decoration: none; }
+.os-facts a:hover { text-decoration: underline; }
+@media (max-width: 640px) { .cp-labels td input { width: 180px; } }

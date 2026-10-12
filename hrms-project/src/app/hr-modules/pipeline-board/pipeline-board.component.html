@@ -2,7 +2,7 @@
   <div class="comapny_section">
     <div class="header_section">
       <div class="row align-items-center">
-        <div class="col-md-4"><h1>Candidate Pipeline</h1></div>
+        <div class="col-md-4"><h1>Candidate pipeline</h1></div>
         <div class="col-md-8 pb-top">
           <select class="form-control" [(ngModel)]="jobId" (ngModelChange)="selected = null; load()">
             <option [ngValue]="null">Select job opening</option>
@@ -37,7 +37,7 @@
           <dt>Nationality</dt><dd>{{ selected.candidate_nationality || '–' }}</dd>
           <dt>Experience</dt><dd>{{ selected.candidate_experience }} years</dd>
           <dt>Source</dt><dd>{{ selected.candidate_source }}</dd>
-          <dt>Applied</dt><dd>{{ selected.applied_on | date:'dd/MM/yyyy' }}</dd>
+          <dt>Applied</dt><dd>{{ selected.applied_on | date:'dd MMM yyyy' }}</dd>
           <dt *ngIf="selected.rejection_reason">Rejection reason</dt><dd *ngIf="selected.rejection_reason">{{ selected.rejection_reason }}</dd>
         </dl>
         <div class="row">
@@ -50,7 +50,7 @@
           <button class="hr-mini hr-btn-red" *ngIf="selected.stage !== 'hired' && selected.stage !== 'rejected'" (click)="move(selected, 'rejected')">Reject</button>
         </div>
         <h4 class="pb-h">History</h4>
-        <div class="pb-hist" *ngFor="let h of selected.history"><b>{{ h.from_stage || '–' }} → {{ h.to_stage }}</b> <span class="muted">{{ h.changed_at | date:'dd/MM/yyyy HH:mm' }} · {{ h.changed_by_display }}</span><div *ngIf="h.note">{{ h.note }}</div></div>
+        <div class="pb-hist" *ngFor="let h of selected.history"><b>{{ h.from_stage || '–' }} → {{ h.to_stage }}</b> <span class="muted">{{ h.changed_at | date:'dd MMM yyyy, HH:mm' }} · {{ h.changed_by_display }}</span><div *ngIf="h.note">{{ h.note }}</div></div>
         <p class="muted">Schedule interviews under Interviews, and create the offer under Offer Letters.</p>
       </aside>
     </div>
@@ -68,9 +68,9 @@
         <div class="col-md-4 hr-field"><label>Current location</label><input class="form-control" [(ngModel)]="adding.current_location"></div>
         <div class="col-md-3 hr-field"><label>Experience (yrs)</label><input type="number" class="form-control" [(ngModel)]="adding.experience_years"></div>
         <div class="col-md-3 hr-field"><label>Notice (days)</label><input type="number" class="form-control" [(ngModel)]="adding.notice_period_days"></div>
-        <div class="col-md-3 hr-field"><label>Expected salary (AED)</label><input type="number" class="form-control" [(ngModel)]="adding.expected_salary"></div>
+        <div class="col-md-3 hr-field"><label>{{ 'Expected salary (AED)' | zc }}</label><input type="number" class="form-control" [(ngModel)]="adding.expected_salary"></div>
         <div class="col-md-3 hr-field"><label>Source</label><select class="form-control" [(ngModel)]="adding.source"><option *ngFor="let s of sources" [value]="s[0]">{{ s[1] }}</option></select></div>
-        <div class="col-md-6 hr-field"><label>Visa status</label><select class="form-control" [(ngModel)]="adding.visa_status"><option *ngFor="let v of visas" [value]="v[0]">{{ v[1] }}</option></select></div>
+        <div class="col-md-6 hr-field"><label>Visa status</label><select class="form-control" [(ngModel)]="adding.visa_status"><option *ngFor="let v of visas" [value]="v[0]">{{ v[1] | zc }}</option></select></div>
         <div class="col-md-6 hr-field"><label>Skills</label><input class="form-control" [(ngModel)]="adding.skills"></div>
       </div>
       <div class="hr-modal-foot"><button class="btn btn-danger" (click)="adding = null">Cancel</button><button class="btn btn-primary hr-save" (click)="saveAdd()">Add</button></div>

@@ -3,7 +3,7 @@
     <div class="header_section">
       <div class="row">
         <div class="col-md-4">
-          <h1>General Request Approval Level</h1>
+          <h1>General request approval level</h1>
         </div>
 
                            <div class="col-md-3">
@@ -77,7 +77,7 @@
           *ngIf="Delete"
           (click)="toggleSelectAllEmployees()"
         >
-          Select All
+          Select all
         </button>
       </div>
       <div class="col-md-3">
@@ -87,7 +87,7 @@
           *ngIf="Delete"
           (click)="deleteSelectedAssetType()"
         >
-          Delete Selected
+          Delete selected
         </button>
       </div>
     </div>
@@ -96,7 +96,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Create General Request Approval Level</h2>
+            <h2>Create general request approval level</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -110,7 +110,7 @@
             <div class="col-md-4">
               <div class="custom-sel">
                 <label
-                  >Select Request Type
+                  >Select request type
                   <span class="required-star">*</span>
                 </label>
                 <select
@@ -233,7 +233,7 @@
               *ngIf="approval_type === 'multi_approval'"
               class="col-md-12 mt-3"
             >
-              <h4>Approval Levels</h4>
+              <h4>Approval levels</h4>
 
               <div
                 *ngFor="let lvl of levels; let i = index"
@@ -284,7 +284,7 @@
 
               <!-- Add Button -->
               <button class="btn btn-primary mt-2" (click)="addLevel()">
-                + Add Level
+                + Add level
               </button>
             </div>
           </div>
@@ -319,7 +319,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit General Request Approval Level</h2>
+            <h2>Edit general request approval level</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -332,7 +332,7 @@
           <div class="row">
             <div class="col-md-4">
               <div class="custom-sel">
-                <label>Select Request Type</label>
+                <label>Select request type</label>
                 <select
                   class="form-control"
                   id="request_type"
@@ -439,7 +439,7 @@
               *ngIf="editAsset.approval_type === 'multi_approval'"
               class="col-md-12 mt-3"
             >
-              <h4>Edit Approval Levels</h4>
+              <h4>Edit approval levels</h4>
 
               <div
                 *ngFor="let lvl of editAsset.levels; let i = index"
@@ -495,7 +495,7 @@
                 class="btn btn-primary mt-2"
                 (click)="addEditLevel()"
               >
-                + Add Level
+                + Add level
               </button>
             </div>
           </div>
@@ -532,8 +532,8 @@
           <tr>
             <th>No</th>
             <th>Level</th>
-            <th>Request Type</th>
-            <th>Approver Type</th>
+            <th>Request type</th>
+            <th>Approver type</th>
             <th>Approver</th>
             <th>Branch</th>
             <th>Action</th>

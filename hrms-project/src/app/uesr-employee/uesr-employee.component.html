@@ -5,7 +5,7 @@
 
     <div class="row">
       <div class="col-md-10">
-        <h1>Create Employee</h1>
+        <h1>Create employee</h1>
       </div>
       <div class="col-md-2">
         <div class="text-right">
@@ -26,7 +26,7 @@
               <div class="header-left">
                 <span class="section-number">01</span>
                 <div>
-                  <h3>Employee Basic Details</h3>
+                  <h3>Employee basic details</h3>
                   <p>Employee official information</p>
                 </div>
               </div>
@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label>Select Company</label>
+                  <label>Select company</label>
                   <div class="custom-sel">
                     <select class="form-control" id="companySelect" [(ngModel)]="selectedCompany" name="company"
                       (change)="onCompanyChange()" [ngModelOptions]="{standalone: true}">
@@ -70,7 +70,7 @@
 
                 <!-- Employee Code -->
                 <div class="col-md-6">
-                  <label>Employee Code<span class="required-star">*</span></label>
+                  <label>Employee code<span class="required-star">*</span></label>
                   <input type="text" class="form-control" id="emp_code" name="emp_code" [(ngModel)]="emp_code"
                     placeholder="Enter Employee Code" [ngModelOptions]="{standalone: true}"
                     [ngClass]="{'error-field': registerButtonClicked && !emp_code}">
@@ -79,7 +79,7 @@
 
                 <!-- First Name -->
                 <div class="col-md-6">
-                  <label>First Name<span class="required-star">*</span></label>
+                  <label>First name<span class="required-star">*</span></label>
                   <input type="text" class="form-control" id="emp_first_name" name="emp_first_name"
                     [(ngModel)]="emp_first_name" placeholder="Enter First Name"
                     [ngModelOptions]="{standalone: true}"
@@ -89,7 +89,7 @@
 
                 <!-- Last Name -->
                 <div class="col-md-6">
-                  <label>Last Name</label>
+                  <label>Last name</label>
                   <input type="text" class="form-control" id="emp_last_name" name="emp_last_name"
                     [(ngModel)]="emp_last_name" placeholder="Enter Last Name"
                     [ngModelOptions]="{standalone: true}">
@@ -97,7 +97,7 @@
 
                 <!-- Gender -->
                 <div class="col-md-6">
-                  <label>Select Gender</label>
+                  <label>Select gender</label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_gender" name="emp_gender" [(ngModel)]="emp_gender"
                       [ngModelOptions]="{standalone: true}">
@@ -111,7 +111,7 @@
 
                 <!-- Date of Birth -->
                 <div class="col-md-6">
-                  <label>Date of Birth<span class="required-star">*</span></label>
+                  <label>Date of birth<span class="required-star">*</span></label>
                   <input type="date" class="form-control" id="emp_date_of_birth" name="emp_date_of_birth"
                     [(ngModel)]="emp_date_of_birth" [ngModelOptions]="{standalone: true}"
                     [ngClass]="{'error-field': registerButtonClicked && !emp_date_of_birth}">
@@ -128,7 +128,7 @@
 
                 <!-- Company Number -->
                 <div class="col-md-6">
-                  <label>Company Number</label>
+                  <label>Company number</label>
                   <input type="text" class="form-control" id="emp_mobile_number_1" name="emp_mobile_number_1"
                     [(ngModel)]="emp_mobile_number_1" placeholder="Enter Company Number"
                     [ngModelOptions]="{standalone: true}">
@@ -136,7 +136,7 @@
 
                 <!-- Branch -->
                 <div class="col-md-6">
-                  <label>Select Branch<span class="required-star">*</span></label>
+                  <label>Select branch<span class="required-star">*</span></label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_branch_id" name="emp_branch_id" [(ngModel)]="emp_branch_id"
                       [ngModelOptions]="{standalone: true}"
@@ -150,7 +150,7 @@
 
                 <!-- Department -->
                 <div class="col-md-6">
-                  <label>Select Department<span class="required-star">*</span></label>
+                  <label>Select department<span class="required-star">*</span></label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_dept_id" name="emp_dept_id" [(ngModel)]="emp_dept_id"
                       [ngModelOptions]="{standalone: true}"
@@ -164,7 +164,7 @@
 
                 <!-- Designation -->
                 <div class="col-md-6">
-                  <label>Select Designation<span class="required-star">*</span></label>
+                  <label>Select designation<span class="required-star">*</span></label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_desgntn_id" name="emp_desgntn_id"
                       [(ngModel)]="emp_desgntn_id" [ngModelOptions]="{standalone: true}"
@@ -178,7 +178,7 @@
 
                 <!-- Category (v1.12.0: hidden when employee categories are switched off) -->
                 <div class="col-md-6" *zIfOrg="'employee_categories'">
-                  <label>Select Category<span class="required-star">*</span></label>
+                  <label>Select category<span class="required-star">*</span></label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_ctgry_id" name="emp_ctgry_id" [(ngModel)]="emp_ctgry_id"
                       [ngModelOptions]="{standalone: true}"
@@ -192,7 +192,7 @@
 
                 <!-- Joining Date -->
                 <div class="col-md-6">
-                  <label>Joining Date<span class="required-star">*</span></label>
+                  <label>Joining date<span class="required-star">*</span></label>
                   <input type="date" class="form-control" [(ngModel)]="emp_joined_date"
                     [ngModelOptions]="{standalone: true}"
                     [ngClass]="{'error-field': registerButtonClicked && !emp_joined_date}">
@@ -201,14 +201,14 @@
 
                 <!-- Confirmation Date -->
                 <div class="col-md-6">
-                  <label>Confirmation Date</label>
+                  <label>Confirmation date</label>
                   <input type="date" class="form-control" [(ngModel)]="emp_date_of_confirmation"
                     [ngModelOptions]="{standalone: true}">
                 </div>
 
                 <!-- Profile Picture -->
                 <div class="col-md-6">
-                  <label class="upload-label">Employee Profile Picture</label>
+                  <label class="upload-label">Employee profile picture</label>
                   <div class="profile-upload-box">
                     <div class="preview-section" *ngIf="imagePreview">
                       <img [src]="imagePreview" class="profile-preview">
@@ -251,7 +251,7 @@
               <div class="header-left">
                 <span class="section-number">02</span>
                 <div>
-                  <h3>Employee Personal Details</h3>
+                  <h3>Employee personal details</h3>
                   <p>Employee personal information</p>
                 </div>
               </div>
@@ -266,28 +266,28 @@
 
                 <!-- Personal Email -->
                 <div class="col-md-6">
-                  <label>Personal Email ID</label>
+                  <label>Personal email ID</label>
                   <input type="email" class="form-control" [(ngModel)]="emp_personal_email"
                     placeholder="Enter Personal Email" [ngModelOptions]="{standalone: true}">
                 </div>
 
                 <!-- Personal Number -->
                 <div class="col-md-6">
-                  <label>Personal Number</label>
+                  <label>Personal number</label>
                   <input type="text" class="form-control" [(ngModel)]="emp_mobile_number_2"
                     placeholder="Enter Personal Number" [ngModelOptions]="{standalone: true}">
                 </div>
 
                 <!-- Permanent Address -->
                 <div class="col-md-6">
-                  <label>Permanent Address</label>
+                  <label>Permanent address</label>
                   <textarea class="form-control" [(ngModel)]="emp_permenent_address"
                     placeholder="Enter Permanent Address" [ngModelOptions]="{standalone: true}"></textarea>
                 </div>
 
                 <!-- Present Address -->
                 <div class="col-md-6">
-                  <label>Present Address</label>
+                  <label>Present address</label>
                   <textarea class="form-control" [(ngModel)]="emp_present_address"
                     placeholder="Enter Present Address" [ngModelOptions]="{standalone: true}"></textarea>
                 </div>
@@ -301,7 +301,7 @@
 
                 <!-- Blood Group -->
                 <div class="col-md-6">
-                  <label>Blood Group</label>
+                  <label>Blood group</label>
                   <input type="text" class="form-control" [(ngModel)]="emp_blood_group"
                     placeholder="Enter Blood Group" [ngModelOptions]="{standalone: true}">
                 </div>
@@ -334,7 +334,7 @@
 
                 <!-- Marital Status -->
                 <div class="col-md-6">
-                  <label>Marital Status</label>
+                  <label>Marital status</label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_marital_status" name="emp_marital_status"
                       [(ngModel)]="emp_marital_status" [ngModelOptions]="{standalone: true}">
@@ -349,14 +349,14 @@
 
                 <!-- Father Name -->
                 <div class="col-md-6">
-                  <label>Father Name</label>
+                  <label>Father name</label>
                   <input type="text" class="form-control" [(ngModel)]="emp_father_name"
                     placeholder="Enter Father Name" [ngModelOptions]="{standalone: true}">
                 </div>
 
                 <!-- Mother Name -->
                 <div class="col-md-6">
-                  <label>Mother Name</label>
+                  <label>Mother name</label>
                   <input type="text" class="form-control" [(ngModel)]="emp_mother_name"
                     placeholder="Enter Mother Name" [ngModelOptions]="{standalone: true}">
                 </div>
@@ -388,7 +388,7 @@
 
                 <!-- Posting Location -->
                 <div class="col-md-6">
-                  <label>Select Location</label>
+                  <label>Select location</label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_posting_location" name="emp_posting_location"
                       [(ngModel)]="emp_posting_location" [ngModelOptions]="{standalone: true}">
@@ -400,7 +400,7 @@
 
                 <!-- Work Location -->
                 <div class="col-md-6">
-                  <label>Select Work Location</label>
+                  <label>Select work location</label>
                   <div class="custom-sel">
                     <select class="form-control" id="work_location" name="work_location"
                       [(ngModel)]="work_location" [ngModelOptions]="{standalone: true}">
@@ -412,7 +412,7 @@
 
                 <!-- Visa Location -->
                 <div class="col-md-6">
-                  <label>Select Visa Location</label>
+                  <label>Select visa location</label>
                   <div class="custom-sel">
                     <select class="form-control" id="visa_location" name="visa_location"
                       [(ngModel)]="visa_location" [ngModelOptions]="{standalone: true}">
@@ -472,7 +472,7 @@
             </div>
 
             <div class="col-md-6">
-              <label>Select Company</label>
+              <label>Select company</label>
               <div class="custom-sel">
                 <select class="form-control" [(ngModel)]="selectedCompany" name="company"
                   (change)="onCompanyChange()">
@@ -483,7 +483,7 @@
             </div>
 
             <div class="col-md-6">
-              <label>Select Emp Code:</label>
+              <label>Select emp code:</label>
               <div class="custom-sel">
                 <select class="form-control" id="employee" [(ngModel)]="selectedEmp" name="employee"
                   (ngModelChange)="onEmployeeChange()">

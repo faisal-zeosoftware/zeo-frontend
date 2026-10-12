@@ -187,12 +187,14 @@ export class LeaveApprovalsComponent {
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                    // v1.18.0: line managers and named approvers see their own approval steps without the HR right
+                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions)
+                      || this.checkGroupPermission('approver_leaveapproval', groupPermissions) || this.checkGroupPermission('role_line_manager', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     
                   } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
+                    console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);

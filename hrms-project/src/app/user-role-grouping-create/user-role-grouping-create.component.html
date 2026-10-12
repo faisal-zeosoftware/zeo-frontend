@@ -4,14 +4,14 @@
       <span class="close-btn" (click)="ClosePopup()"> × </span>
     </div>
 
-    <h1>Add Group Role</h1>
+    <h1>Add group role</h1>
     <hr />
 
     <form>
       <!-- Group Name Section -->
       <div class="row">
         <div class="col-md-6">
-          <label class="form-label">Group Name</label>
+          <label class="form-label">Group name</label>
           <input
             type="text"
             class="form-control"
@@ -52,55 +52,55 @@
         <div class="col-md-3">
           <div class="module-sidebar">
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'employee'" (click)="setActiveTab('employee')">
-              Employee Management
+              Employee management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'settings'" (click)="setActiveTab('settings')">
-              Settings & Configs
+              Settings & configs
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'userperm'" (click)="setActiveTab('userperm')">
-              User And Permissions
+              User and permissions
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'emailtemplates'" (click)="setActiveTab('emailtemplates')">
-              Email Templates
+              Email templates
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'reports'" (click)="setActiveTab('reports')">
-              Report Management
+              Report management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'customization'" (click)="setActiveTab('customization')">
               Customization
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'calendar'" (click)="setActiveTab('calendar')">
-              Calendar Management
+              Calendar management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'leave'" (click)="setActiveTab('leave')">
-              Leave Management
+              Leave management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'payroll'" (click)="setActiveTab('payroll')">
-              Payroll Management
+              Payroll management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'general'" (click)="setActiveTab('general')">
-              General Management
+              General management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'loan'" (click)="setActiveTab('loan')">
-              Loan Management
+              Loan management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'asset'" (click)="setActiveTab('asset')">
-              Asset Management
+              Asset management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'attendance'" (click)="setActiveTab('attendance')">
-              Attendance Management
+              Attendance management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'document'" (click)="setActiveTab('document')">
-              Document Management
+              Document management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'project'" (click)="setActiveTab('project')">
-              Project Management
+              Project management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'airticket'" (click)="setActiveTab('airticket')">
-              Airticket Management
+              Airticket management
             </button>
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'shifts'" (click)="setActiveTab('shifts')">
-              Shift Management
+              Shift management
             </button>
           </div>
         </div>
@@ -3393,7 +3393,7 @@
                 <!-- OverTime Rule -->
                 <div class="row permission-row">
                   <div class="col-md-3">
-                    <mat-checkbox [(ngModel)]="OvertimeRuleChecked" [indeterminate]="isOvertimeRuleIndeterminate()" (change)="onOvertimeRuleChange()" [ngModelOptions]="{ standalone: true }">OverTime Rule</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="OvertimeRuleChecked" [indeterminate]="isOvertimeRuleIndeterminate()" (change)="onOvertimeRuleChange()" [ngModelOptions]="{ standalone: true }">Overtime rule</mat-checkbox>
                   </div>
                   <div class="col-md-9">
                     <div class="selection_checkmark_sec">
@@ -3426,7 +3426,7 @@
         </div>
         <div class="col-md-2">
           <button type="button" (click)="createGroup()" class="btn btn-primary btn-full">
-            Add Group
+            Add group
           </button>
         </div>
       </div>

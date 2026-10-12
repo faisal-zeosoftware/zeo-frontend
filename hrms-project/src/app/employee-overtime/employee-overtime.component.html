@@ -3,7 +3,7 @@
     <div class="header_section">
       <div class="row">
         <div class="col-md-3">
-          <h1>Employee Overtime</h1>
+          <h1>Employee overtime</h1>
         </div>
                   <div class="col-md-3">
                     
@@ -71,7 +71,7 @@
           *ngIf="Delete"
           (click)="toggleSelectAllEmployees()"
         >
-          Select All
+          Select all
         </button>
       </div>
       <div class="col-md-3">
@@ -81,7 +81,7 @@
           *ngIf="Delete"
           (click)="deleteSelectedAssetType()"
         >
-          Delete Selected
+          Delete selected
         </button>
       </div>
     </div>
@@ -90,7 +90,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Create Employee Overtime</h2>
+            <h2>Create employee overtime</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -187,7 +187,7 @@
 
 
               <div class="col-md-6">
-              <label>OT Type</label>
+              <label>OT type</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -197,6 +197,7 @@
                   <option value="NORMAL">Normal OT</option>
                   <option value="WEEKEND">Weekend OT</option>
                   <option value="HOLIDAY">Holiday OT</option>
+                  <option value="NIGHT">Night OT (22:00–04:00)</option>
 
                 </select>
               </div>
@@ -229,7 +230,7 @@
             </div>
 
             <div class="col-md-6">
-              <label>approved by</label>
+              <label>Approved by</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -285,7 +286,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Employee Overtime</h2>
+            <h2>Edit employee overtime</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -376,7 +377,7 @@
             </div>
 
               <div class="col-md-6">
-              <label>OT Type</label>
+              <label>OT type</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -386,6 +387,7 @@
                   <option value="NORMAL">Normal OT</option>
                   <option value="WEEKEND">Weekend OT</option>
                   <option value="HOLIDAY">Holiday OT</option>
+                  <option value="NIGHT">Night OT (22:00–04:00)</option>
 
                 </select>
               </div>
@@ -406,7 +408,7 @@
             </div>
 
             <div class="col-md-6">
-              <label>approved by</label>
+              <label>Approved by</label>
               <div class="custom-sel">
                 <select
                   class="form-control"
@@ -467,7 +469,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <h2>Employee OverTime Bulk Upload & Download Details</h2> 
+                <h2>Employee OverTime bulk upload & download details</h2> 
             </div>
 <div class="col-md-4 text-right">
     <!-- Styled Square Close Button -->
@@ -504,7 +506,7 @@
     <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
       <div class="row">
         <div class="col-md-12">
-          <label for="emp_profile_pic">Upload Employee OverTime Details:</label>
+          <label for="emp_profile_pic">Upload employee OverTime details:</label>
           <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event);">
         </div>
       </div>
@@ -513,7 +515,7 @@
         <div class="col-md-8"></div>
         <div class="col-md-2 col-6">
             <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
-              close
+              Close
             </button>
           </div>
         
@@ -549,10 +551,10 @@
             <th>No</th>
             <th>Date</th>
             <th>Hours</th>
-            <th>OT Type</th>
+            <th>OT type</th>
             <th>Approved</th>
             <th>Employee</th>
-            <th>Approved By</th>
+            <th>Approved by</th>
             <th>Actions</th>
           </tr>
         </thead>

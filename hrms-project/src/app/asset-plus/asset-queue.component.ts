@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ASSET_BASE, AssetApiService, STATUS_CLASS, STATUS_LABEL, firstOfMonth, money } from './asset-api.service';
+import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
 
 interface QueueDef {
   title: string;
@@ -35,7 +36,7 @@ const DEFS: Record<string, QueueDef> = {
 @Component({
   selector: 'app-asset-queue',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZListDirective],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="container">
@@ -47,41 +48,15 @@ const DEFS: Record<string, QueueDef> = {
     <div class="com_list mt-4">
       <p class="ex-msg" *ngIf="msg" [class.err]="msgErr">{{ msg }}</p>
       <p class="ex-muted" *ngIf="loading">Loading…</p>
-      <div class="ex-rows" *ngIf="!loading">
-        <div class="ex-row" *ngFor="let x of rows">
-          <div class="main">
-            <ng-container [ngSwitch]="kind">
-              <ng-container *ngSwitchCase="'transfers'"><div class="t">{{ x.number }} · {{ x.asset }}</div>
-                <div class="s">{{ x.from }} → {{ x.to }} · {{ x.transfer_date | date:'dd MMM yyyy' }} · {{ x.reason }} · by {{ x.requested_by }}<span *ngIf="x.decision_note"> · {{ x.decision_note }}</span></div></ng-container>
-              <ng-container *ngSwitchCase="'returns'"><div class="t">{{ x.number }} · {{ x.asset }}</div>
-                <div class="s">{{ x.employee }}<span *ngIf="x.preferred_date"> · wants {{ x.preferred_date | date:'dd MMM yyyy' }}</span><span *ngIf="x.request_note"> · {{ x.request_note }}</span>
-                  <span *ngIf="x.return_date"> · returned {{ x.return_date | date:'dd MMM yyyy' }}, {{ x.condition }}<span *ngIf="x.missing_items">, missing {{ x.missing_items }}</span></span></div></ng-container>
-              <ng-container *ngSwitchCase="'maintenance'">
-                <ng-container *ngIf="x.title"><div class="t">{{ x.asset_name }} <span class="ap-code">{{ x.code }}</span> · {{ x.title }}</div>
-                  <div class="s">Every {{ x.interval_value }} {{ x.interval_type }} · next {{ x.next_due_date ? (x.next_due_date | date:'dd MMM yyyy') : ('at ' + x.next_due_reading + ' (now ' + (x.meter_reading || '–') + ')') }}</div></ng-container>
-                <ng-container *ngIf="!x.title"><div class="t">{{ x.number }} · {{ x.asset }} · {{ x.kind_label }}</div>
-                  <div class="s">{{ x.start_date | date:'dd MMM yyyy' }} → {{ x.end_date ? (x.end_date | date:'dd MMM yyyy') : 'open' }}<span *ngIf="x.vendor"> · {{ x.vendor }}</span> · {{ x.description }}</div></ng-container></ng-container>
-              <ng-container *ngSwitchCase="'allocations'"><div class="t">{{ x.asset }} <span class="ap-code">{{ x.code }}</span></div>
-                <div class="s">{{ x.employee || x.holder }} · since {{ x.assigned_date | date:'dd MMM yyyy' }}<span *ngIf="x.expected_return_date"> · back by {{ x.expected_return_date | date:'dd MMM yyyy' }}</span>
-                  <span *ngIf="x.returned_date"> · returned {{ x.returned_date | date:'dd MMM yyyy' }}</span><span *ngIf="x.ack_condition_notes"> · remarks: {{ x.ack_condition_notes }}</span></div></ng-container>
-              <ng-container *ngSwitchCase="'recoveries'"><div class="t">{{ x.employee }} · {{ x.month | date:'MMM yyyy' }}</div>
-                <div class="s">{{ x.number }} ({{ x.source_type }})</div></ng-container>
-              <ng-container *ngSwitchCase="'disposals'"><div class="t">{{ x.number }} · {{ x.asset }} <span class="ap-code">{{ x.code }}</span></div>
-                <div class="s">{{ x.method_label }} on {{ x.disposal_date | date:'dd MMM yyyy' }}<span *ngIf="x.buyer"> to {{ x.buyer }}</span> · book value {{ m(x.book_value) }} ·
-                  <span class="ap-gl" [class.gain]="x.result === 'gain'" [class.loss]="x.result === 'loss'">{{ x.result === 'none' ? 'no gain or loss' : x.result + ' ' + m(abs(x.gain_loss)) }}</span> · {{ x.reason }}</div></ng-container>
-              <ng-container *ngSwitchDefault><div class="t">{{ x.number }} · {{ x.asset }} · {{ x.kind_of_record === 'damage' ? x.severity_label + ' damage' : x.kind_label }}</div>
-                <div class="s">{{ (x.damage_date || x.loss_date) | date:'dd MMM yyyy' }} · {{ x.employee || 'no employee' }} · {{ x.description }}
-                  <span *ngIf="x.police_report_no"> · police {{ x.police_report_no }}</span><span *ngIf="x.investigation_label"> · {{ x.investigation_label | lowercase }}</span>
-                  <span *ngIf="+x.recovery_amount"> · recover {{ m(x.recovery_amount) }} ({{ x.recovery_method_label | lowercase }}), recovered {{ m(x.recovered_amount) }}</span></div></ng-container>
-            </ng-container>
-          </div>
-          <div class="r">
-            <div class="money" *ngIf="kind === 'disposals'">{{ m(x.value) }}</div>
-            <div class="money" *ngIf="kind === 'recoveries'">{{ m(x.amount) }}</div>
-            <div class="money" *ngIf="kind === 'damages'">{{ m(x.repair_cost) }}</div>
-            <div class="money" *ngIf="kind === 'maintenance' && !x.title">{{ m(x.cost) }}</div>
-            <span class="ex-tag" [ngClass]="cls(x)">{{ statusText(x) }}</span>
-            <div style="margin-top:4px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+      <!-- v1.16.0: a table, so the list tools (search, filters, group by, columns, saved views, exports) work here too -->
+      <table class="table ap-queue" *ngIf="!loading && rows.length">
+        <thead><tr><th *ngFor="let c of cols">{{ c.l }}</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let x of rows">
+            <td *ngFor="let c of cols" [class.money]="c.money">{{ c.v(x) }}</td>
+            <td><span class="ex-tag" [ngClass]="cls(x)">{{ statusText(x) }}</span></td>
+            <td>
+            <div class="ap-acts">
               <button type="button" class="ex-link" *ngIf="x.asset_id || x.asset" (click)="open(x.asset_id || x.asset)">Asset</button>
               <ng-container *ngIf="kind === 'transfers' && x.status === 'pending'">
                 <button type="button" class="ex-link" *ngIf="r.transfer_approve" (click)="decide(x, 'approve')">Approve</button>
@@ -101,10 +76,11 @@ const DEFS: Record<string, QueueDef> = {
                 <button type="button" class="ex-link" (click)="decide(x, 'cancel')">Cancel</button></ng-container>
               <button type="button" class="ex-link" *ngIf="kind === 'returns' && x.status === 'requested'" (click)="decide(x, 'cancel')">Cancel</button>
             </div>
-          </div>
-        </div>
-        <p class="ex-muted" *ngIf="!rows.length">Nothing here.</p>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="ex-muted" *ngIf="!loading && !rows.length">Nothing here.</p>
     </div>
   </div>
 </div>
@@ -151,6 +127,7 @@ export class AssetQueueComponent implements OnInit {
   dec: any = null;
   f: any = {};
   asset: string | null = null;
+  cols: { l: string; v: (x: any) => string; money?: boolean }[] = [];   // v1.16.0: table columns of this list
 
   constructor(private api: AssetApiService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
 
@@ -187,8 +164,42 @@ export class AssetQueueComponent implements OnInit {
       this.msg = AssetApiService.error(e, 'The list could not be loaded.');
       this.msgErr = true;
     }
+    this.cols = this.colsFor();
     this.loading = false;
     this.cd.markForCheck();
+  }
+
+  /** v1.16.0: the columns of each work list (the cards became table rows). */
+  private colsFor(): { l: string; v: (x: any) => string; money?: boolean }[] {
+    const dt = (v: any) => { if (!v) { return ''; } const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v); return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+    const mon = (v: any) => { if (!v) { return ''; } const d = new Date(String(v).slice(0, 10) + 'T00:00:00'); return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }); };
+    const t = (v: any) => (v === null || v === undefined ? '' : String(v));
+    const m = (v: any) => (v === null || v === undefined || v === '' ? '' : this.m(v));
+    switch (this.kind) {
+      case 'transfers': return [{ l: 'Number', v: x => t(x.number) }, { l: 'Asset', v: x => t(x.asset) }, { l: 'From', v: x => t(x.from) }, { l: 'To', v: x => t(x.to) },
+        { l: 'Transfer date', v: x => dt(x.transfer_date) }, { l: 'Reason', v: x => t(x.reason) }, { l: 'Requested by', v: x => t(x.requested_by) }, { l: 'Decision note', v: x => t(x.decision_note) }];
+      case 'returns': return [{ l: 'Number', v: x => t(x.number) }, { l: 'Asset', v: x => t(x.asset) }, { l: 'Employee', v: x => t(x.employee) }, { l: 'Wanted on', v: x => dt(x.preferred_date) },
+        { l: 'Request note', v: x => t(x.request_note) }, { l: 'Returned on', v: x => dt(x.return_date) }, { l: 'Condition', v: x => t(x.condition) }, { l: 'Missing items', v: x => t(x.missing_items) }];
+      case 'maintenance': return this.tab === 'due'
+        ? [{ l: 'Asset', v: x => t(x.asset_name) }, { l: 'Code', v: x => t(x.code) }, { l: 'Plan', v: x => t(x.title) }, { l: 'Every', v: x => `${t(x.interval_value)} ${t(x.interval_type)}`.trim() },
+          { l: 'Next due', v: x => x.next_due_date ? dt(x.next_due_date) : (x.next_due_reading ? `at ${x.next_due_reading} (now ${x.meter_reading || '–'})` : '') }]
+        : [{ l: 'Number', v: x => t(x.number) }, { l: 'Asset', v: x => t(x.asset) }, { l: 'Kind', v: x => t(x.kind_label) }, { l: 'Start', v: x => dt(x.start_date) },
+          { l: 'End', v: x => x.end_date ? dt(x.end_date) : 'Open' }, { l: 'Vendor', v: x => t(x.vendor) }, { l: 'Description', v: x => t(x.description) }, { l: 'Cost', v: x => m(x.cost), money: true }];
+      case 'allocations': return [{ l: 'Asset', v: x => t(x.asset) }, { l: 'Code', v: x => t(x.code) }, { l: 'Held by', v: x => t(x.employee || x.holder) }, { l: 'Since', v: x => dt(x.assigned_date) },
+        { l: 'Back by', v: x => dt(x.expected_return_date) }, { l: 'Returned on', v: x => dt(x.returned_date) }, { l: 'Remarks', v: x => t(x.ack_condition_notes) }];
+      case 'recoveries': return [{ l: 'Employee', v: x => t(x.employee) }, { l: 'Month', v: x => mon(x.month) }, { l: 'Record', v: x => t(x.number) }, { l: 'Source', v: x => t(x.source_type) },
+        { l: 'Amount', v: x => m(x.amount), money: true }];
+      case 'disposals': return [{ l: 'Number', v: x => t(x.number) }, { l: 'Asset', v: x => t(x.asset) }, { l: 'Code', v: x => t(x.code) }, { l: 'Method', v: x => t(x.method_label) },
+        { l: 'Disposal date', v: x => dt(x.disposal_date) }, { l: 'Buyer', v: x => t(x.buyer) }, { l: 'Book value', v: x => m(x.book_value), money: true }, { l: 'Value received', v: x => m(x.value), money: true },
+        { l: 'Gain or loss', v: x => x.result === 'none' ? 'No gain or loss' : `${x.result === 'loss' ? '-' : ''}${m(this.abs(x.gain_loss))}`, money: true }, { l: 'Reason', v: x => t(x.reason) }];
+      default: return [{ l: 'Number', v: x => t(x.number) }, { l: 'Asset', v: x => t(x.asset) },
+        { l: 'Kind', v: x => x.kind_of_record === 'damage' ? `${t(x.severity_label)} damage` : t(x.kind_label) }, { l: 'Date', v: x => dt(x.damage_date || x.loss_date) },
+        { l: 'Employee', v: x => t(x.employee) }, { l: 'Description', v: x => t(x.description) },
+        ...(this.kind === 'losses' ? [{ l: 'Police report', v: (x: any) => t(x.police_report_no) }, { l: 'Investigation', v: (x: any) => t(x.investigation_label) }]
+          : [{ l: 'Repair cost', v: (x: any) => m(x.repair_cost), money: true }]),
+        { l: 'To recover', v: x => +x.recovery_amount ? m(x.recovery_amount) : '', money: true }, { l: 'Recovered', v: x => +x.recovery_amount ? m(x.recovered_amount) : '', money: true },
+        { l: 'Recovery method', v: x => t(x.recovery_method_label) }];
+    }
   }
 
   openDecision(x: any): void {

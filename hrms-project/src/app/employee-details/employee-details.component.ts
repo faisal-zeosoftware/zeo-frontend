@@ -8,6 +8,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CompanySelectionComponent } from '../company-selection/company-selection.component';
 import { MatDialog } from '@angular/material/dialog';
+import { openDocFill } from '../ai-settings/doc-fill-dialog.component';   // v1.16.0
 import { EmployeeService } from '../employee-master/employee.service'; 
 import { DesignationCreationComponent } from '../designation-creation/designation-creation.component';
 import { Router } from '@angular/router';
@@ -2003,6 +2004,18 @@ onDocFileSelected(event: any, document: any): void {
   if (event.target.files && event.target.files.length > 0) {
     document._newFile = event.target.files[0];
   }
+}
+
+// v1.16.0: "Fill from document" for the new file of a document being edited – number and dates only (the user confirms)
+async fillDocFromFile(document: any): Promise<void> {
+  if (!document?._newFile) { return; }
+  const v = await openDocFill(this.dialog, document._newFile, [], {
+    emp_doc_number: document.emp_doc_number, emp_doc_issued_date: document.emp_doc_issued_date, emp_doc_expiry_date: document.emp_doc_expiry_date,
+  }, ['emp_doc_number', 'emp_doc_issued_date', 'emp_doc_expiry_date']);
+  if (!v) { return; }
+  if (v.emp_doc_number !== undefined) { document.emp_doc_number = v.emp_doc_number; }
+  if (v.emp_doc_issued_date !== undefined) { document.emp_doc_issued_date = v.emp_doc_issued_date; }
+  if (v.emp_doc_expiry_date !== undefined) { document.emp_doc_expiry_date = v.emp_doc_expiry_date; }
 }
 
   // saveFamilyCustomFields(): void {

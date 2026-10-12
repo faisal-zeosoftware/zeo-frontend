@@ -1,3 +1,4 @@
+<z-field-designer *ngIf="designing" [adapter]="designerAdapter" (closed)="designerClosed($event)"></z-field-designer>
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
 
@@ -17,6 +18,8 @@
                     <div class="button-group pull-right">
                         <button type="button" class="btn-Create btn btn-success "  (click)="openFamFieldModal()" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button>
+                        <!-- v1.16.0: the asset form's one designer (every field type, help text, example, rules) -->
+                        <button type="button" class="btn btn-primary ms-2" (click)="designing = true" *ngIf="hasAddPermission || hasEditPermission">Open form designer</button>
 
             
                     </div>
@@ -55,13 +58,13 @@
                 <div class="row">
                     <!-- Field Name -->
                     <div class="col-md-6">
-                        <label>Field Name</label>
+                        <label>Field name</label>
                         <input type="text" class="form-control" [(ngModel)]="field.custom_field" placeholder="Enter Field Name" [ngModelOptions]="{standalone: true}" />
                     </div>
   
                     <!-- Data Type -->
                     <div class="col-md-6">
-                        <label>Data Type</label>
+                        <label>Data type</label>
                         <div class="custom-sel">
                             <select class="form-control" [(ngModel)]="field.data_type" [ngModelOptions]="{standalone: true}">
                                 <option value="dropdown">Dropdown</option>
@@ -75,13 +78,13 @@
   
                     <!-- Dropdown Values -->
                     <div class="col-md-6" *ngIf="field.data_type === 'dropdown'">
-                        <label>Dropdown Values</label>
+                        <label>Dropdown values</label>
                         <input type="text" class="form-control" [(ngModel)]="field.dropdown_values" placeholder="Enter Dropdown Values (comma separated)" [ngModelOptions]="{standalone: true}" />
                     </div>
   
                     <!-- Radio Values -->
                     <div class="col-md-6" *ngIf="field.data_type === 'radio'">
-                        <label>Radio Values</label>
+                        <label>Radio values</label>
                         <input type="text" class="form-control" [(ngModel)]="field.radio_values" placeholder="Enter Radio Values (comma separated)" [ngModelOptions]="{standalone: true}" />
                     </div>
   
@@ -110,7 +113,7 @@
   </div>
   
   
-  <!-- <button class="d-block mx-auto btn " (click)="openFamFieldModal()">Add More Field</button> -->
+  <!-- <button class="d-block mx-auto btn " (click)="openFamFieldModal()">Add more field</button> -->
 
 
    <!-- Modal Popup for add marketing language skill -->
@@ -119,7 +122,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Add New Fields For Employee Family</h2>
+          <h2>Add new fields for employee family</h2>
           <hr>
         </div>
 
@@ -137,7 +140,7 @@
         <div class="row">
             <div class="col-md-6">
 
-                <label> Field Name
+                <label> Field name
                      <span class="required-star">*</span>
                 </label>
                 <input type="text" class="form-control" required [(ngModel)]="field_name_fam"
@@ -151,7 +154,7 @@
        
 
             <div class="col-md-6">
-                <label>Data Type</label>
+                <label>Data type</label>
                 <div class="custom-sel">
                   <select
                     class="form-control"
@@ -176,7 +179,7 @@
               
               <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
               <div class="col-md-6" *ngIf="data_type_fam === 'dropdown'">
-                <label>Dropdown Values</label>
+                <label>Dropdown values</label>
                 <input
                   type="text"
                   class="form-control"
@@ -189,7 +192,7 @@
               
               <!-- Radio values input field, displayed only if "radio" is selected -->
               <div class="col-md-6" *ngIf="data_type_fam === 'radio'">
-                <label>Radio Values</label>
+                <label>Radio values</label>
                 <input
                   type="text"
                   class="form-control"
@@ -202,7 +205,7 @@
               
 
               <div class="col-md-6" >
-                <label>Select Asset Type</label>
+                <label>Select asset type</label>
                 <div class="custom-sel">
                   <select
                     class="form-control"

@@ -348,3 +348,9 @@
     font-size:16px;
     left: 0px;
 }
+/* v1.15.0: language picker on the login page */
+.login-lang{
+    display:flex;
+    justify-content:center;
+    margin-top:10px;
+}

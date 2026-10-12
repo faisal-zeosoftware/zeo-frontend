@@ -8,39 +8,59 @@
           <p class="zq-desc zq-rnote" *ngFor="let n of notes">{{ n }}</p>
         </div>
         <div class="zq-side">
-          <span class="zq-count" *ngIf="!loading && !error">{{ rows.length | number }} {{ rows.length === 1 ? 'row' : 'rows' }}</span>
-          <button type="button" class="zq-mail" (click)="email()" [disabled]="sending || loading || !!error" title="Send this report to your e-mail as a CSV file">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg><span>{{ sending ? 'Sending…' : 'E-mail me' }}</span>
+          <span class="zq-count" *ngIf="!loading && !error">{{ (rows.length === 1 ? '{0} row' : '{0} rows') | t:(rows.length | number) }}</span>
+          <button type="button" class="zq-mail" (click)="email()" [disabled]="sending || loading || !!error" [title]="'Send this report to your e-mail as a CSV file' | t">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg><span>{{ (sending ? 'Sending…' : 'E-mail me') | t }}</span>
           </button>
         </div>
       </div>
       <p class="zq-note" *ngIf="note" [class.zq-err]="noteErr">{{ note }}</p>
 
-      <div class="zq-period" *ngIf="hasPeriod">
-        <span class="zq-plabel">Period</span>
-        <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l }}</button>
+      <div class="zq-period" *ngIf="asOf !== null">
+        <span class="zq-plabel">{{ 'As of' | t }}</span>
         <span class="zq-custom">
-          <input type="date" [(ngModel)]="from" aria-label="From date">
-          <span>to</span>
-          <input type="date" [(ngModel)]="to" aria-label="To date">
-          <button type="button" class="zq-run" (click)="custom()" [disabled]="!from || !to || loading">Run</button>
+          <input type="date" [(ngModel)]="asOf" [attr.aria-label]="'As of' | t">
+          <button type="button" class="zq-run" (click)="run()" [disabled]="!asOf || loading">{{ 'Run' | t }}</button>
+        </span>
+      </div>
+      <div class="zq-period" *ngIf="hasPeriod">
+        <span class="zq-plabel">{{ 'Period' | t }}</span>
+        <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l | t }}</button>
+        <span class="zq-custom">
+          <input type="date" [(ngModel)]="from" [attr.aria-label]="'From date' | t">
+          <span>{{ 'to' | t }}</span>
+          <input type="date" [(ngModel)]="to" [attr.aria-label]="'To date' | t">
+          <button type="button" class="zq-run" (click)="custom()" [disabled]="!from || !to || loading">{{ 'Run' | t }}</button>
         </span>
       </div>
     </div>
 
+    <!-- v1.16.0: filter row (branch is the top bar) -->
+    <div class="zq-filters" *ngIf="filterOpts.length && !error">
+      <span class="zq-plabel">{{ 'Filter' | t }}</span>
+      <label *ngFor="let f of filterOpts" class="zq-f">
+        <span>{{ f.label }}</span>
+        <select [ngModel]="drillValue(f.key)" (ngModelChange)="setFilter(f.key, $event)" [attr.aria-label]="'Filter by {0}' | t:f.label">
+          <option value="">{{ 'All' | t }}</option>
+          <option *ngIf="drillValue(f.key) && !f.values.includes(drillValue(f.key))" [value]="drillValue(f.key)">{{ drillValue(f.key).split('|').join(' or ') }}</option>
+          <option *ngFor="let v of f.values" [value]="v">{{ v }}</option>
+        </select>
+      </label>
+    </div>
+
     <div class="com_list mt-4">
       <div class="zq-drill" *ngIf="(drillF.length || nz) && !loading && !error">
-        <span class="zq-dl">Drilled down to</span>
+        <span class="zq-dl">{{ 'Drilled down to' | t }}</span>
         <span class="zq-dchip" *ngFor="let f of drillF">{{ f.label }} = <b>{{ f.value.split('|').join(' or ') }}</b></span>
-        <span class="zq-dchip" *ngIf="nz">{{ nzLabel }} <b>not zero</b></span>
+        <span class="zq-dchip" *ngIf="nz">{{ nzLabel }} <b>{{ 'not zero' | t }}</b></span>
         <span class="zq-dn">{{ rows.length | number }} of {{ all.length | number }} rows</span>
-        <button type="button" class="zq-dx" (click)="clearDrill()">Show all rows</button>
+        <button type="button" class="zq-dx" (click)="clearDrill()">{{ 'Show all rows' | t }}</button>
       </div>
       <div class="zq-totals" *ngIf="totalCols.length && !loading && !error">
-        <button type="button" *ngFor="let c of totalCols" (click)="drillTotal(c)" [title]="'Show the rows that make up ' + c.label"><em>{{ c.label }}</em><b>{{ fmt(totals[c.key]) }}</b></button>
+        <button type="button" *ngFor="let c of totalCols" (click)="drillTotal(c)" [title]="'Show the rows that make up {0}' | t:c.label"><em>{{ c.label }}</em><b>{{ fmt(totals[c.key]) }}</b></button>
       </div>
 
-      <p class="zq-msg" *ngIf="loading">Running the report…</p>
+      <p class="zq-msg" *ngIf="loading">{{ 'Running the report…' | t }}</p>
       <p class="zq-msg zq-err" *ngIf="error && !loading">{{ error }}</p>
 
       <ng-container *ngIf="!loading && !error">
@@ -59,7 +79,7 @@
             </tbody>
           </table>
         </ng-container>
-        <p class="zq-msg" *ngIf="!rows.length">Nothing to show for this period and these branches. Pick another period or branch.</p>
+        <p class="zq-msg" *ngIf="!rows.length">{{ 'Nothing to show for this period and these branches. Pick another period or branch.' | t }}</p>
       </ng-container>
     </div>
   </div>

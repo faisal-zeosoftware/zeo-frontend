@@ -9,7 +9,7 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 
 
 declare var $: any;
-import 'summernote';
+// v1.15.1: Summernote + jQuery come once from angular.json \"scripts\" (global $); importing the npm module bundled a second jQuery copy.
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core'; // Ensure you have summernote imported
 

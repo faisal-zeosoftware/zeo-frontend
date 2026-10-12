@@ -17,7 +17,7 @@
 
 
 
-<!-- <h1>lerning</h1>
+<!-- <h1>Lerning</h1>
 <router-outlet></router-outlet> -->
 
 
@@ -48,9 +48,12 @@
           class="logo"
           alt="Logo">
 
-        <h2>ZEO HRMS</h2>
+        <h2>ZEO hrms</h2>
 
-        <p>Human Resource Management System</p>
+        <p>{{ 'Human Resource Management System' | t }}</p>
+
+        <!-- v1.15.0: language before login -->
+        <z-lang-picker class="login-lang" variant="select" [reload]="false"></z-lang-picker>
 
       </div>
 
@@ -64,7 +67,8 @@
 
           <input
             type="text"
-            placeholder="Username"
+            [placeholder]="'Username' | t"
+            autocomplete="username"
             [(ngModel)]="username"
             [ngModelOptions]="{standalone:true}">
 
@@ -75,7 +79,8 @@
 
     <input
         [type]="showPassword ? 'text' : 'password'"
-        placeholder="Password"
+        [placeholder]="'Password' | t"
+        autocomplete="current-password"
         [(ngModel)]="password"
         [ngModelOptions]="{standalone:true}">
 
@@ -96,7 +101,7 @@
           type="submit"
           class="btn-login">
 
-          Login
+          {{ 'Login' | t }}
 
         </button>
 
@@ -113,17 +118,17 @@
 
         </div>
 
-        <h4>User Validated Successfully</h4>
+        <h4>{{ 'User Validated Successfully' | t }}</h4>
 
         <p>
-          Click below to receive OTP
+          {{ 'Click below to receive OTP' | t }}
         </p>
 
         <button
           class="btn-login"
           (click)="sendOtp()">
 
-          Send OTP
+          {{ 'Send OTP' | t }}
 
         </button>
 
@@ -132,10 +137,10 @@
       <!-- STEP 3 -->
       <form *ngIf="step === 3">
 
-        <h3>OTP Verification</h3>
+        <h3>{{ 'OTP Verification' | t }}</h3>
 
         <p class="subtitle">
-          Enter OTP sent to your mobile/email
+          {{ 'Enter OTP sent to your mobile/email' | t }}
         </p>
 
         <div class="input-group">
@@ -144,7 +149,7 @@
 
           <input
             type="text"
-            placeholder="Enter OTP"
+            [placeholder]="'Enter OTP' | t"
             [(ngModel)]="otp"
             [ngModelOptions]="{standalone:true}">
 
@@ -154,7 +159,7 @@
           class="btn-login"
           (click)="verifyOtp()">
 
-          Verify OTP
+          {{ 'Verify OTP' | t }}
 
         </button>
 
@@ -169,11 +174,10 @@
       src="assets/no-projects.svg"
         class="hero-image">
 
-      <h1>HR Management</h1>
+      <h1>{{ 'HR Management' | t }}</h1>
 
       <p>
-        Manage Employees, Attendance,
-        Payroll and Performance from one place.
+        {{ 'Manage Employees, Attendance, Payroll and Performance from one place.' | t }}
       </p>
 
       <!-- <div class="feature-cards">
@@ -213,5 +217,5 @@
 <!-- GLOBAL LOADING SPINNER -->
 <div class="loading-overlay" *ngIf="isLoading">
   <div class="spinner"></div>
-  <p>Please wait...</p>
+  <p>{{ 'Please wait...' | t }}</p>
 </div>

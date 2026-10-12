@@ -7,7 +7,7 @@
 
       <div class="row">
           <div class="col-md-4">
-              <h1>Request Type</h1>
+              <h1>Request type</h1>
           </div>
 
                            <div class="col-md-3">
@@ -55,11 +55,11 @@
   <div class="row">
       <div class="col-md-2">
           
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedRequestType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedRequestType()">Delete selected </button>
 
       </div>
   </div>
@@ -71,7 +71,7 @@
       <div class="modal-content">  
         <div class="row">
           <div class="col-md-10">
-            <h2> Create Request Type</h2>
+            <h2> Create request type</h2>
           </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -173,7 +173,7 @@
       </div> -->
      
       <div class="col-md-6" *ngIf="showSalaryDropdown">
-          <label>Salary Component
+          <label>Salary component
               <span class="required-star">*</span>
           </label>
           <div class="custom-sel">
@@ -231,7 +231,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Request Type</h2>
+    <h2>Edit  request type</h2>
   </div>
     <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -322,7 +322,7 @@
 
 
 <div class="col-md-6" *ngIf="editAsset.salary_component != null">
-  <label>Salary Component</label>
+  <label>Salary component</label>
   <div class="custom-sel">
     <select class="form-control" id="salary_component" name="salary_component" [(ngModel)]="editAsset.salary_component"
       [ngModelOptions]="{standalone: true}" >
@@ -383,10 +383,10 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th>Request Name</th>
+                <th>Request name</th>
                 <th>Description</th>
                 <th>Branch</th>
-                <th>Salary Component</th>
+                <th>Salary component</th>
                 <th>Action</th>
               </tr>
             </thead>

@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Shift Pattern</h1>
+                    <h1>Shift pattern</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -44,12 +44,12 @@
             <div class="col-md-2">
 
                 <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-                    (click)="toggleSelectAllEmployees()">Select All</button>
+                    (click)="toggleSelectAllEmployees()">Select all</button>
 
             </div>
             <div class="col-md-3">
                 <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete"
-                    (click)="deleteSelectedShiftPattern()">Delete Selected </button>
+                    (click)="deleteSelectedShiftPattern()">Delete selected </button>
 
             </div>
         </div>
@@ -86,7 +86,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
-                                            <label class="custom-form-label">Pattern Name <span class="required-star">*</span></label>
+                                            <label class="custom-form-label">Pattern name <span class="required-star">*</span></label>
                                             <div class="input-with-icon">
                                                 <i class="fa fa-pen-nib field-icon"></i>
                                                 <input type="text" class="form-control custom-input" required [(ngModel)]="Patern_name" placeholder="e.g. General Shift Pattern" name="pattName">
@@ -95,7 +95,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
-                                            <label class="custom-form-label">Pattern Type</label>
+                                            <label class="custom-form-label">Pattern type</label>
                                             <!-- <select class="form-control custom-select" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
                                                 <option value="weekly">Weekly</option>
                                                 <option value="monthly">Monthly</option>
@@ -110,12 +110,12 @@
                                     </div>
                                     <div class="col-md-4" *ngIf="pattern_type !== 'rotating'">
                                         <div class="form-group mb-0">
-                                            <label class="custom-form-label">Rotates / Changes Every</label>
+                                            <label class="custom-form-label">Rotates / changes every</label>
                                             <div class="d-flex align-items-center dynamic-duration-picker">
                                                 <select class="form-control custom-select compact-width mr-3" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
                                                     <option *ngFor="let val of (pattern_type === 'weekly' ? weeklyCounts : monthlyCounts)" [value]="val">{{ val }}</option>
                                                 </select>
-                                                <span class="duration-context-badge">{{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}</span>
+                                                <span class="duration-context-badge">{{ pattern_type === 'weekly' ? 'week(s)' : 'month(s)' }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -170,7 +170,7 @@
                                                             *ngFor="let day of dateOptions"
                                                             [ngValue]="day">
                                                     
-                                                            {{ day === 'last_day' ? 'Last Day' : day }}
+                                                            {{ day === 'last_day' ? 'Last day' : day }}
                                                     
                                                         </option>
                                                     
@@ -189,7 +189,7 @@
                                                             *ngFor="let day of dateOptions"
                                                             [ngValue]="day">
                                                     
-                                                            {{ day === 'last_day' ? 'Last Day' : day }}
+                                                            {{ day === 'last_day' ? 'Last day' : day }}
                                                     
                                                         </option>
                                                     
@@ -218,13 +218,13 @@
                             
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <label class="custom-form-label">Working Days <span class="required-star">*</span></label>
+                                            <label class="custom-form-label">Working days <span class="required-star">*</span></label>
                                             <select class="form-control custom-select" [(ngModel)]="rotating_work_days" name="rotWorkDays" (change)="onRotatingCountChange()">
                                                 <option *ngFor="let val of rotatingDayCounts" [value]="val">{{ val }}</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="custom-form-label">Off Days <span class="required-star">*</span></label>
+                                            <label class="custom-form-label">Off days <span class="required-star">*</span></label>
                                             <select class="form-control custom-select" [(ngModel)]="rotating_off_days" name="rotOffDays">
                                                 <option *ngFor="let val of rotatingOffCounts" [value]="val">{{ val }}</option>
                                             </select>
@@ -277,7 +277,7 @@
             <div class="modal-content">
                 <div class="row">
                     <div class="col-md-10">
-                        <h2>Edit Shift Pattern</h2>
+                        <h2>Edit shift pattern</h2>
                     </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -303,7 +303,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Monday Shift</label>
+                            <label>Monday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="monday_shift" required
@@ -324,7 +324,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label>Tuesday Shift</label>
+                            <label>Tuesday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="tuesday_shift" required
@@ -346,7 +346,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Wednesday Shift</label>
+                            <label>Wednesday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="wednesday_shift" required
@@ -369,7 +369,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Thursday Shift</label>
+                            <label>Thursday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="thursday_shift" required
@@ -391,7 +391,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Friday Shift</label>
+                            <label>Friday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="friday_shift" required
@@ -413,7 +413,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Saturday Shift</label>
+                            <label>Saturday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="saturday_shift" required
@@ -435,7 +435,7 @@
 
 
                         <div class="col-md-6">
-                            <label>Sunday Shift</label>
+                            <label>Sunday shift</label>
                             <div class="custom-sel">
 
                                 <select class="form-control" id="sunday_shift" required
@@ -488,7 +488,7 @@
             
                     <div class="col-md-5">
             
-                        <label >Search Pattern</label>
+                        <label >Search pattern</label>
             
                         <div class="input-group">
             
@@ -505,7 +505,7 @@
                             <input
                                 type="text"
                                 class="form-control"
-                                placeholder="Search Pattern Name..."
+                                placeholder="Search pattern name…"
                                 [(ngModel)]="searchPattern"
                                 (input)="applyFilters()">
             
@@ -515,7 +515,7 @@
             
                     <div class="col-md-4">
             
-                        <label class="mb-1">Pattern Type</label>
+                        <label class="mb-1">Pattern type</label>
             
                         <select
                             class="form-control"
@@ -575,15 +575,15 @@
                       <div>
                         <h5 class="pattern-title mb-0">{{ pattern.name }}</h5>
                         <p class="pattern-subtitle mb-0 text-muted" style="text-align: left;">
-                          Changes Every : {{ pattern.changes_every }} {{ pattern.pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}
+                          Changes every: {{ pattern.changes_every }} {{ pattern.pattern_type === 'weekly' ? 'week(s)' : 'month(s)' }}
                         </p>
                         <span class="meta-dates">
-                            Created :
+                            Created
                             {{pattern.created_at | date:'dd MMM yyyy'}}
                         
                             •
                         
-                            Updated :
+                            updated
                             {{pattern.updated_at | date:'dd MMM yyyy'}}
                         </span>
                       </div>
@@ -622,7 +622,7 @@
                         <div class="monthly-list-table">
                           <div class="monthly-row d-flex align-items-center justify-content-between p-2 border-bottom" *ngFor="let rule of month.rules">
                             <span class="date-range-text text-secondary font-weight-bold">
-                              {{ rule.from }} - {{ rule.to === 'last_day' ? 'Last Day' : rule.to }}
+                              {{ rule.from }} - {{ rule.to === 'last_day' ? 'Last day' : rule.to }}
                             </span>
                             <div class="d-flex align-items-center">
                               <span class="separator-colon mr-4">:</span>

@@ -2,12 +2,13 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ESS_BASE, EssApiService } from './ess-api.service';
+import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 
 /** v1.13.0 – my documents with expiry badges and authenticated download; a new copy goes to HR as a change request. */
 @Component({
   selector: 'app-ess-documents',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -16,7 +17,7 @@ import { ESS_BASE, EssApiService } from './ess-api.service';
       <div class="es-head">
         <div>
           <h1 class="page-title">My documents</h1>
-          <p class="es-desc">Your passport, visa, Emirates ID and other documents kept by HR, and the letters HR issued to you.</p>
+          <p class="es-desc">{{ 'Your passport, visa, Emirates ID and other documents kept by HR, and the letters HR issued to you.' | zc }}</p>
         </div>
         <div class="es-actions">
           <button type="button" class="es-btn" *ngIf="policy === 'self' || policy === 'request'" (click)="router.navigate([base + '/profile'], { queryParams: { group: 'documents' } })">Add a document</button>

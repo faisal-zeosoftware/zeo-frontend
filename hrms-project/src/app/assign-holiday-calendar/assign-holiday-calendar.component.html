@@ -7,7 +7,7 @@
 
       <div class="row">
           <div class="col-md-4">
-              <h1> Assigned Holiday Calendar</h1>
+              <h1> Assigned holiday calendar</h1>
           </div>
 
           <div class="col-md-3">
@@ -44,11 +44,11 @@
   <div class="row">
       <div class="col-md-2">
           
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete selected </button>
 
       </div>
   </div>
@@ -60,7 +60,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2> Assign Holiday Calendar</h2>
+            <h2> Assign holiday calendar</h2>
           </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -76,7 +76,7 @@
             <div class="row">
                 <div class="col-md-6" >
                 <div class="custom-sel">
-                    <label>Holiday Calendar
+                    <label>Holiday calendar
                        <span class="required-star">*</span>
                     </label>
                     <select class="form-control" id="holiday_model" required [(ngModel)]="holiday_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !holiday_model}">
@@ -497,7 +497,7 @@
     </div>
     <div class="col-md-2">
       <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" *ngIf="hasAddPermission" 
-      (click)="closeapplicationModal()">close</button>  
+      (click)="closeapplicationModal()">Close</button>  
    </div>
   
     <div class="col-md-2">
@@ -515,7 +515,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit Assign Holidays</h2>
+    <h2>Edit assign holidays</h2>
   </div>
     <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -531,7 +531,7 @@
               <div class="row">
                 <div class="col-md-6" >
                 <div class="custom-sel">
-                    <label>Holiday Calendar
+                    <label>Holiday calendar
                        <span class="required-star">*</span>
                     </label>
                     <select class="form-control" id="holiday_model" required [(ngModel)]="editAsset.holiday_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !holiday_model}">
@@ -947,7 +947,7 @@
     <div class="col-md-8"></div>
     <div class="col-md-2">
       <button type="button" class="btn-Create btn btn-full mt-5 btn-danger" *ngIf="hasAddPermission" 
-      (click)="closeEditModal()">close</button>  
+      (click)="closeEditModal()">Close</button>  
    </div>
     <div class="col-md-2">
       <button
@@ -979,7 +979,7 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th>Holiday Calendar</th>
+                <th>Holiday calendar</th>
                 <th>Branch</th>
                 <th>Department</th>
                 <th>Category</th>
