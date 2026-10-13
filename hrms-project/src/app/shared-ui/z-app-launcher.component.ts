@@ -38,7 +38,7 @@ const TILE_ICON: Record<string, string> = {
     </button>
     <div class="zal-panel" *ngIf="open" role="dialog" [attr.aria-label]="'Apps and modules' | t">
       <div class="zal-suites" role="tablist">
-        <button type="button" role="tab" *ngFor="let s of shownSuites()" [class.on]="view === s.key" [attr.aria-selected]="view === s.key" (click)="view = s.key; q = ''">
+        <button type="button" role="tab" *ngFor="let s of suiteList; trackBy: trackSuite" [class.on]="view === s.key" [attr.aria-selected]="view === s.key" (click)="selectView(s.key)">
           <mat-icon aria-hidden="true">{{ s.icon }}</mat-icon><span><b>{{ s.label | t }}</b><small>{{ s.hint | t }}</small></span>
         </button>
       </div>
@@ -57,7 +57,7 @@ const TILE_ICON: Record<string, string> = {
         <p class="zal-none" *ngIf="!hits.length">{{ 'Nothing found' | t }}</p>
       </div>
       <div class="zal-grid" *ngIf="!q.trim()">
-        <button type="button" *ngFor="let t of tiles(view)" class="zal-tile" [class.cur]="t.key === current" (click)="go(t.link, t.suite, t.key)">
+        <button type="button" *ngFor="let t of tileList; trackBy: trackTile" class="zal-tile" [class.cur]="t.key === current" (click)="go(t.link, t.suite, t.key)">
           <mat-icon aria-hidden="true">{{ t.icon }}</mat-icon><span>{{ t.label }}</span></button>
       </div>
     </div>
@@ -113,6 +113,13 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   open = false; q = ''; view: AppSuite = 'hrms'; suite: AppSuite = 'hrms';
   current = ''; hits: Hit[] = []; recent: { key: string; label: string; link: string; suite: AppSuite | null }[] = [];
   suites = SUITES;
+
+  // FIX: stored arrays (not method calls in the template), so the buttons are not re-created on every change detection
+  tileList: Tile[] = [];
+  suiteList: typeof SUITES = [];
+  trackTile = (_: number, t: Tile) => t.key;
+  trackSuite = (_: number, s: { key: string }) => s.key;
+
   private access: { admin: boolean; codes: Set<string> } | null = null;
   private subs: Subscription[] = [];
   @ViewChild('box') box?: ElementRef<HTMLInputElement>;
@@ -121,12 +128,13 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
               private cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.subs.push(this.zlist.permissions().subscribe({ next: a => { this.access = a; this.buildRecent(); }, error: () => {} }));
-    this.subs.push(this.ss.suite$.subscribe(s => { this.suite = s; if (!this.open) { this.view = s; } this.cd.markForCheck(); }));
+    this.subs.push(this.zlist.permissions().subscribe({ next: a => { this.access = a; this.buildRecent(); this.rebuildTiles(); }, error: () => {} }));
+    this.subs.push(this.ss.suite$.subscribe(s => { this.suite = s; if (!this.open) { this.view = s; } this.rebuildTiles(); }));
     this.subs.push(this.ss.recent$.subscribe(() => this.buildRecent()));
-    this.subs.push(this.ss.active$.subscribe(() => { this.buildRecent(); this.cd.markForCheck(); }));
+    this.subs.push(this.ss.active$.subscribe(() => { this.buildRecent(); this.rebuildTiles(); }));
     this.subs.push(this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => { this.mark(); this.open = false; }));
     this.mark();
+    this.rebuildTiles();
   }
   ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
 
@@ -135,8 +143,22 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
 
   toggle(): void {
     this.open = !this.open; this.q = ''; this.view = this.suite;
+    this.rebuildTiles();
     if (this.open) { setTimeout(() => this.box?.nativeElement.focus(), 30); }
   }
+
+  selectView(k: AppSuite): void {
+    this.view = k;
+    this.q = '';
+    this.rebuildTiles();
+  }
+
+  private rebuildTiles(): void {
+    this.suiteList = this.shownSuites();
+    this.tileList = this.tiles(this.view);
+    this.cd.markForCheck();
+  }
+
   /** Apps the user has at least one module in (an employee without rights sees no Settings). */
   shownSuites() {
     // v1.21.0: only the apps active in the company (Settings → Apps) and with at least one module the user may open
@@ -148,7 +170,12 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   /** The module tiles of an app: every module the user may open. */
   tiles(s: AppSuite): Tile[] {
     return visibleGroups(this.access, false, s).flatMap(g => g.apps).map(a => ({
-      key: a.app.key, label: i18nT(this.cp.text(a.app.label)), icon: TILE_ICON[a.app.key] || a.app.icon, link: this.landing(a.app, a.link), suite: s,
+      key: a.app.key,
+      label: i18nT(this.cp.text(a.app.label)),
+      icon: TILE_ICON[a.app.key] || a.app.icon,
+      // FIX: use appLanding (same as the search) and fall back to the menu link
+      link: this.landing(a.app, appLanding(a.app, this.access) || a.link),
+      suite: s,
     }));
   }
   private landing(app: MenuApp, link: string): string { return app.key === 'settings' ? '/main-sidebar/settings/home' : link; }
@@ -180,6 +207,8 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   first(): void { const h = this.hits[0]; if (h) { this.go(h.link, h.suite, h.appKey); } }
 
   go(link: string, suite: AppSuite | null, key: string): void {
+    console.log('launcher go', { link, suite, key });   // remove after testing
+    if (!link) { return; }
     if (suite) { this.ss.set(suite); }
     this.ss.touch(key);
     this.open = false; this.q = '';
