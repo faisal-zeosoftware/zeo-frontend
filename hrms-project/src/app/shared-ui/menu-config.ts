@@ -255,7 +255,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
   {
     title: 'Pay', apps: [
       {
-        key: 'payroll', label: 'Payroll', icon: 'payments', parents: ['salary-options'],
+        key: 'payroll', label: 'Payroll', icon: 'payments', parents: ['salary-options'], country: 'app:payroll',   // v1.23.0 Payroll is its own app
         sections: [
           { title: 'Daily work', items: [
             { label: 'Payroll runs', link: M + 'salary-options/pay-roll', icon: 'payments', perms: ['view_payrollrun'] },
@@ -281,13 +281,13 @@ export const MAIN_GROUPS: MenuGroup[] = [
         key: 'benefits', label: 'Loans & Benefits', icon: 'savings', parents: ['loan-sidebar', 'air-ticket-options'],
         sections: [
           { title: 'Loans', items: [
-            { label: 'Loan requests', link: M + 'loan-sidebar/loan-application', icon: 'request_quote', perms: ['view_loanapplication'] },
-            { label: 'Loan approvals', link: M + 'loan-sidebar/loan-approval', icon: 'fact_check', perms: ['view_loanapproval', 'approver_loanapproval'] },
-            { label: 'Loan repayments', link: M + 'loan-sidebar/loan-repayment', icon: 'price_check', perms: ['view_loanrepayment'] },
+            { label: 'Loan requests', link: M + 'loan-sidebar/loan-application', icon: 'request_quote', perms: ['view_loanapplication'], country: 'app:payroll' },
+            { label: 'Loan approvals', link: M + 'loan-sidebar/loan-approval', icon: 'fact_check', perms: ['view_loanapproval', 'approver_loanapproval'], country: 'app:payroll' },
+            { label: 'Loan repayments', link: M + 'loan-sidebar/loan-repayment', icon: 'price_check', perms: ['view_loanrepayment'], country: 'app:payroll' },
           ] },
           { title: 'Advance salary', items: [
-            { label: 'Advance requests', link: M + 'salary-options/advance-salary-request', icon: 'request_quote', perms: ['view_advancesalaryrequest'] },
-            { label: 'Advance approvals', link: M + 'salary-options/advance-salary-approvals', icon: 'fact_check', perms: ['view_advancesalaryapproval', 'approver_advancesalaryapproval'] },
+            { label: 'Advance requests', link: M + 'salary-options/advance-salary-request', icon: 'request_quote', perms: ['view_advancesalaryrequest'], country: 'app:payroll' },
+            { label: 'Advance approvals', link: M + 'salary-options/advance-salary-approvals', icon: 'fact_check', perms: ['view_advancesalaryapproval', 'approver_advancesalaryapproval'], country: 'app:payroll' },
           ] },
           { title: 'Air tickets', items: [
             { label: 'Air ticket requests', link: M + 'air-ticket-options/airticket-request', icon: 'flight_takeoff', perms: ['view_airticketrequest'] },
@@ -295,9 +295,9 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Air ticket allocation', link: M + 'air-ticket-options/airticket-allocation', icon: 'confirmation_number', perms: ['view_airticketallocation'] },
           ] },
           { title: 'Loan setup', collapsed: true, items: [
-            { label: 'Loan types', link: M + 'loan-sidebar/loan-type', icon: 'account_balance', perms: ['view_loantype'] },
-            { label: 'Approval levels', link: M + 'loan-sidebar/loan-approval-level', icon: 'approval', perms: ['view_loancommonworkflow'] },
-            { label: 'Escalation', link: M + 'loan-sidebar/loan-escalation', icon: 'trending_up', perms: ['view_loan_escalation'] },
+            { label: 'Loan types', link: M + 'loan-sidebar/loan-type', icon: 'account_balance', perms: ['view_loantype'], country: 'app:payroll' },
+            { label: 'Approval levels', link: M + 'loan-sidebar/loan-approval-level', icon: 'approval', perms: ['view_loancommonworkflow'], country: 'app:payroll' },
+            { label: 'Escalation', link: M + 'loan-sidebar/loan-escalation', icon: 'trending_up', perms: ['view_loan_escalation'], country: 'app:payroll' },
           ] },
           { title: 'Advance salary setup', collapsed: true, items: [
             { label: 'Approval levels', link: M + 'salary-options/advance-salary-approval-level', icon: 'approval', perms: ['view_advancecommonworkflow'] },
@@ -404,27 +404,27 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Shift requests', link: M + 'report-options/r/shift-requests', icon: 'swap_horiz', perms: ['view_shiftrequest', 'view_shift'] },   // v1.12.0
           ] },
           { title: 'Payroll', items: [
-            { label: 'Payroll register', link: M + 'report-options/r/payroll-register', icon: 'receipt_long', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'Payroll by department', link: M + 'report-options/r/payroll-department', icon: 'account_tree', perms: ['view_payslip', 'view_payrollrun'] },   // v1.16.0
-            { label: 'Payroll summary by component', link: M + 'report-options/r/payroll-components', icon: 'view_column', perms: ['view_payslip', 'view_payrollrun'] },   // v1.16.0
-            { label: 'Bank / WPS transfer list', link: M + 'report-options/r/bank-transfer', icon: 'account_balance', perms: ['view_payslip', 'view_payrollrun'] },   // v1.16.0
-            { label: 'Payroll month over month', link: M + 'report-options/r/payroll-mom', icon: 'compare_arrows', perms: ['view_payslip', 'view_payrollrun'] },   // v1.16.0
-            { label: 'Payslip status', link: M + 'report-options/r/payslip-status', icon: 'fact_check', perms: ['view_payslip', 'view_payrollrun'] },   // v1.16.0
-            { label: 'WPS salary file data', link: M + 'report-options/r/wps', icon: 'account_balance', perms: ['view_payslip', 'view_payrollrun'], country: 'wps_sif' },   // v1.14.0
-            { label: 'Salary by employee', link: M + 'report-options/r/salary', icon: 'payments', perms: ['view_employeesalarystructure', 'view_payslip'] },
-            { label: 'Salary revisions', link: M + 'report-options/r/salary-revisions', icon: 'trending_up', perms: ['view_salaryrevisionhistory', 'view_employeesalarystructure'] },
-            { label: 'Gratuity accrual', link: M + 'report-options/r/gratuity', icon: 'savings', perms: ['view_employeesalarystructure', 'view_payslip'], country: 'gratuity' },   // v1.14.0
-            { label: 'Leave liability', link: M + 'report-options/r/leave-liability', icon: 'weekend', perms: ['view_employeesalarystructure', 'view_payslip'] },
-            { label: 'Loans outstanding', link: M + 'report-options/r/loans', icon: 'request_quote', perms: ['view_loanapplication'] },
-            { label: 'Advance salary', link: M + 'report-options/r/advances', icon: 'price_check', perms: ['view_advancesalaryrequest'] },
-            { label: 'Air tickets', link: M + 'report-options/r/air-tickets', icon: 'flight_takeoff', perms: ['view_airticketallocation', 'view_airticketrequest'] },
-            { label: 'Allowance register', link: M + 'report-options/r/allowance-register', icon: 'add_card', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'Deduction register', link: M + 'report-options/r/deduction-register', icon: 'remove_circle_outline', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'Overtime pay', link: M + 'report-options/r/overtime-pay', icon: 'more_time', perms: ['view_payslip', 'view_employeeovertime'] },
-            { label: 'Payroll cost (employer)', link: M + 'report-options/r/payroll-cost', icon: 'account_balance_wallet', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'Department cost', link: M + 'report-options/r/department-cost', icon: 'pie_chart', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'Payroll variance', link: M + 'report-options/r/payroll-variance', icon: 'compare_arrows', perms: ['view_payslip', 'view_payrollrun'] },
-            { label: 'WPS payment status', link: M + 'report-options/r/wps-status', icon: 'event_available', perms: ['view_payrollrun'] },   // v1.18.0
+            { label: 'Payroll register', link: M + 'report-options/r/payroll-register', icon: 'receipt_long', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'Payroll by department', link: M + 'report-options/r/payroll-department', icon: 'account_tree', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },   // v1.16.0
+            { label: 'Payroll summary by component', link: M + 'report-options/r/payroll-components', icon: 'view_column', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },   // v1.16.0
+            { label: 'Bank / WPS transfer list', link: M + 'report-options/r/bank-transfer', icon: 'account_balance', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },   // v1.16.0
+            { label: 'Payroll month over month', link: M + 'report-options/r/payroll-mom', icon: 'compare_arrows', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },   // v1.16.0
+            { label: 'Payslip status', link: M + 'report-options/r/payslip-status', icon: 'fact_check', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },   // v1.16.0
+            { label: 'WPS salary file data', link: M + 'report-options/r/wps', icon: 'account_balance', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll,wps_sif' },   // v1.14.0
+            { label: 'Salary by employee', link: M + 'report-options/r/salary', icon: 'payments', perms: ['view_employeesalarystructure', 'view_payslip'], country: 'app:payroll' },
+            { label: 'Salary revisions', link: M + 'report-options/r/salary-revisions', icon: 'trending_up', perms: ['view_salaryrevisionhistory', 'view_employeesalarystructure'], country: 'app:payroll' },
+            { label: 'Gratuity accrual', link: M + 'report-options/r/gratuity', icon: 'savings', perms: ['view_employeesalarystructure', 'view_payslip'], country: 'app:payroll,gratuity' },   // v1.14.0
+            { label: 'Leave liability', link: M + 'report-options/r/leave-liability', icon: 'weekend', perms: ['view_employeesalarystructure', 'view_payslip'], country: 'app:payroll' },
+            { label: 'Loans outstanding', link: M + 'report-options/r/loans', icon: 'request_quote', perms: ['view_loanapplication'], country: 'app:payroll' },
+            { label: 'Advance salary', link: M + 'report-options/r/advances', icon: 'price_check', perms: ['view_advancesalaryrequest'], country: 'app:payroll' },
+            { label: 'Air tickets', link: M + 'report-options/r/air-tickets', icon: 'flight_takeoff', perms: ['view_airticketallocation', 'view_airticketrequest'], country: 'app:payroll' },
+            { label: 'Allowance register', link: M + 'report-options/r/allowance-register', icon: 'add_card', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'Deduction register', link: M + 'report-options/r/deduction-register', icon: 'remove_circle_outline', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'Overtime pay', link: M + 'report-options/r/overtime-pay', icon: 'more_time', perms: ['view_payslip', 'view_employeeovertime'], country: 'app:payroll' },
+            { label: 'Payroll cost (employer)', link: M + 'report-options/r/payroll-cost', icon: 'account_balance_wallet', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'Department cost', link: M + 'report-options/r/department-cost', icon: 'pie_chart', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'Payroll variance', link: M + 'report-options/r/payroll-variance', icon: 'compare_arrows', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
+            { label: 'WPS payment status', link: M + 'report-options/r/wps-status', icon: 'event_available', perms: ['view_payrollrun'], country: 'app:payroll' },   // v1.18.0
           ] },
           { title: 'Requests, exits & assets', items: [
             { label: 'General requests', link: M + 'report-options/r/general-requests', icon: 'assignment', perms: ['view_generalrequestreport', 'view_generalrequest'] },
@@ -823,7 +823,14 @@ export const MAIN_GROUPS: MenuGroup[] = [
       // v1.21.0: which apps the company uses, with the industry of each
       { key: 'st-apps', label: 'Apps', icon: 'apps', sections: [
         { title: 'Apps', items: [
-            { label: 'Apps', hint: 'Activate HRMS, Projects, CRM, Property, Maintenance and HSE, with the industry of each', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
+            { label: 'Apps', hint: 'Activate HR, Payroll, Projects, CRM, Property, Maintenance and HSE, with the industry of each', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
+          ] },
+      ] },
+      // v1.23.0 ZEO Cloud: the account owner's subscription and sign-in rules
+      { key: 'st-account', label: 'Subscription', icon: 'workspace_premium', country: 'cloud:owner', sections: [
+        { title: 'Account', items: [
+            { label: 'Subscription', hint: 'Plan, apps, limits and usage, renewal, invoices', link: M + 'settings/subscription', icon: 'workspace_premium', country: 'cloud:owner' },
+            { label: 'Security', hint: 'Who can be a user: any e-mail or only company e-mails', link: M + 'settings/security', icon: 'shield', country: 'cloud:owner' },
           ] },
       ] },
       { key: 'st-users', label: 'Users & rights', icon: 'manage_accounts', sections: [

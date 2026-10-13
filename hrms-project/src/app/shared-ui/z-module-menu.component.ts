@@ -6,6 +6,7 @@ import { Subscription, filter } from 'rxjs';
 import { ZListService } from './z-list.service';
 import { MAIN_GROUPS, MenuApp, MenuGroup, MenuSection, Suite, appForUrl, itemVisible, countryVisible } from './menu-config';
 import { CountryPackService } from './country-pack.service';
+import { flagsVisible } from './zeo-flags';
 import { I18N_UI, I18nService, i18nT } from './i18n.service';   // v1.15.0
 
 type Access = { admin: boolean; codes: Set<string> } | null;
@@ -16,7 +17,7 @@ export function visibleSections(app: MenuApp | null, access: Access, cp?: Countr
   const allows = cp ? (e: string) => cp.allows(e) : undefined;   // v1.14.0: country-gated items and captions
   return app.sections
     .map(s => ({ ...s, items: s.items
-      .filter(i => itemVisible(i.perms, access) && countryVisible(i.country, allows))
+      .filter(i => itemVisible(i.perms, access) && countryVisible(i.country, allows) && flagsVisible(i.country))
       .map(i => cp ? { ...i, label: cp.text(i.label), hint: i.hint ? cp.text(i.hint) : i.hint } : i)
       .map(i => ({ ...i, label: i18nT(i.label), hint: i.hint ? i18nT(i.hint) : i.hint })) }))   // v1.15.0: country first, then language
     .filter(s => s.items.length);
@@ -38,6 +39,7 @@ export function visibleGroups(access: Access, hideAdmin = false, suite?: Suite |
       title: g.title,
       apps: (gi === 0 && suite !== 'settings' ? [g.apps[0], ...common, ...g.apps.slice(1)] : g.apps)
         .filter(a => !(hideAdmin && (a.key === 'reports' || a.key === 'settings' || a.key === 'hrsettings' || a.key.startsWith('st-'))))
+        .filter(a => flagsVisible(a.country))   // v1.23.0 app: / cloud: (Payroll, Subscription)
         .map(a => ({ app: a, link: appLanding(a, access) as string }))
         .filter(x => !!x.link),
     }))

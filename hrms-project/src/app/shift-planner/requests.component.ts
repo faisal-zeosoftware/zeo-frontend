@@ -46,10 +46,10 @@ import { SpApiService, SpMeta, isoDate, niceDate } from './sp-api.service';
         <p class="lp-muted" *ngIf="!reqs.length && !claims.length">{{ tab === 'wait' ? 'Nothing is waiting for you.' : 'No requests.' }}</p>
         <div class="lp-scroll" *ngIf="reqs.length">
           <table class="lp-mini">
-            <thead><tr><th>Employee</th><th>Request</th><th>Day</th><th>Details</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Number</th><th>Employee</th><th>Request</th><th>Day</th><th>Details</th><th>Reason</th><th>Status</th><th></th></tr></thead>
             <tbody>
               <tr *ngFor="let r of reqs">
-                <td>{{ r.employee }}</td><td>{{ r.kind_label }}</td><td>{{ nice(r.date) }}</td>
+                <td>{{ r.number }}</td><td>{{ r.employee }}</td><td>{{ r.kind_label }}</td><td>{{ nice(r.date) }}</td>
                 <td>{{ r.from_shift }}<span *ngIf="r.to_shift"> → {{ r.to_shift }}</span><span *ngIf="r.kind === 'swap'"> ⇄ {{ r.swap_employee }} ({{ r.swap_shift }}, {{ nice(r.swap_date) }})</span></td>
                 <td>{{ r.reason }}</td>
                 <td><span class="sp-tag" [ngClass]="r.status">{{ r.status_label }}</span><div class="lp-muted" *ngIf="r.decided_by">{{ r.decided_by }} – {{ r.decision_note }}</div></td>

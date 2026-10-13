@@ -1,142 +1,173 @@
-
-<div [class.blur-background]="isLoading">
-
-<div class="navbar">
-    <!-- <div class="nav-logo">
-      <a >Logo</a>
-    </div> -->
-    <div class="nav-items">
-      <ul>
-        <li><img
-          src="assets/zeo_logo_new.png"
-          class="logo"
-          alt="Logo"></li>
-        <!-- <li><a href="#"> Services </a></li>
-        <li><a href="#"> About </a></li>
-        <li><a href="#"> Contact </a></li>
-        <li><a href="#"> Home </a></li> -->
-      </ul>
+<!-- v1.22.2: after sign-in every company of the user is listed – open one with a click (was a drop-down) -->
+<div class="zc-page" data-no-help>
+  <header class="zc-top">
+    <img src="assets/zeo_logo_new.png" class="zc-logo" alt="ZEO">
+    <div class="zc-user" *ngIf="me">
+      <span class="zc-avatar" aria-hidden="true">{{ initials(me.name || me.username) }}</span>
+      <span class="zc-who"><b>{{ me.name || me.username }}</b><small *ngIf="me.email">{{ me.email }}</small></span>
+      <a class="zc-out zc-console" *ngIf="platformAdmin" routerLink="/control">{{ 'Control console' | t }}</a>
+      <button type="button" class="zc-out" (click)="logout()">{{ 'Sign out' | t }}</button>
     </div>
-    <!-- <div class="nav-button" (click)="showbaordlist()">
+  </header>
 
-        <div class="grou-item"  *ngIf="userDetails">
-            <div class="user_dis">
-                <mat-icon>person
-
-                </mat-icon>
-            </div>
-      
-            <a >{{ userDetails.username }}</a>
-        </div>
-     
-    </div> -->
-
-
-    <div class="user_logged_outer" *ngIf="userDetails" (click)="showbaordlist()">
-      <div class="user_logged_in">
-        <mat-icon>person</mat-icon>
+  <main class="zc-main">
+    <div class="zc-head">
+      <div>
+        <h1>{{ 'Choose a company' | t }}</h1>
+        <p *ngIf="!loading">{{ companies.length === 1 ? ('You have access to 1 company.' | t) : ('You have access to {0} companies.' | t:companies.length) }}</p>
       </div>
-      <div class="user_logged_out">
-        <h1>{{ userDetails.username }}</h1>
-      </div>
-      
-
+      <button type="button" class="zc-create" *ngIf="canCreate" (click)="openPopuss()">{{ 'Create company' | t }}</button>
     </div>
-  </div>
 
-  <div id="mobile-menu">
-    <div class="mobile-nav-items">
-      <ul>
-        <li><a > Home </a></li>
-        <!-- <li><a href="#"> Services </a></li>
-        <li><a href="#"> About </a></li>
-        <li><a href="#"> Contact </a></li>
-        <li><a href="#"> Home </a></li> -->
-      </ul>
+    <div class="zc-search" *ngIf="companies.length > 5">
+      <input type="search" [(ngModel)]="query" [placeholder]="'Search by company, country or industry' | t"
+             [attr.aria-label]="'Search companies' | t">
     </div>
-    <div class="mobile-nav-button">
-      <div class="anim-layer"></div>
-      <a href="#">Sign Up</a>
-    </div>
-    <div id="hamburger-cross">&#10006;</div>
-  </div>
 
-  <div class="row">
-    <div class="col-md-9"></div>
-    <div class="col-md-2">
-        <div class="board_user" *ngIf="showboard">
+    <div class="zc-msg" *ngIf="error" role="alert">{{ error }}</div>
+    <!-- v1.23.0 ZEO Cloud: an account removed this person's access -->
+    <div class="zc-notice" *ngFor="let n of notices" role="status">{{ n.text }}
+      <button type="button" class="zc-x" (click)="seenNotices()" [attr.aria-label]="'Close' | t">×</button></div>
 
-            <div class="log_out" style="background-color: #DC3545; color: aliceblue;" (click)="logout()">
-                <h1>LogOut</h1>
-            </div>
-        
+    <ul class="zc-list" *ngIf="loading" aria-busy="true">
+      <li class="zc-row zc-skel" *ngFor="let i of [1,2,3]"><span class="zc-mark"></span><span class="zc-lines"><i></i><i></i></span></li>
+    </ul>
+
+    <!-- v1.23.0 ZEO Cloud: companies grouped by account – own account first, then the accounts the user is a member of -->
+    <ng-container *ngIf="!loading">
+      <section class="zc-group" *ngFor="let g of groups(); trackBy: trackG">
+        <div class="zc-acc" *ngIf="g.acc as a">
+          <div class="zc-acc-t"><b>{{ a.name }}</b>
+            <span class="zc-role" [class.own]="a.role === 'owner'">{{ (a.role === 'owner' ? 'Your account · Owner' : 'Member') | t }}</span>
+            <span class="zc-plan" data-no-translate *ngIf="a.role === 'owner'">{{ a.plan }}</span>
+            <span class="zc-st" *ngIf="a.status !== 'active'" [ngClass]="a.status">{{ statusLabel(a) }}</span></div>
+          <button type="button" class="zc-create small" *ngIf="a.can_create" (click)="askCreate(a)">{{ 'Create company' | t }}</button>
         </div>
+        <div class="zc-locked" *ngIf="g.acc && g.acc.role === 'owner' && !g.acc.group_features && g.list.length > 1">
+          <span class="zc-locked-i" aria-hidden="true">▦</span>
+          <span><b>{{ 'All companies – group view' | t }}</b><small>{{ 'Available in Premium: group dashboard, one approval inbox, group reports, transfers between companies' | t }}</small></span>
+        </div>
+        <ul class="zc-list" role="list" *ngIf="g.list.length">
+          <ng-container *ngTemplateOutlet="rows; context: { $implicit: g.list }"></ng-container>
+        </ul>
+        <p class="zc-empty small" *ngIf="!g.list.length">{{ 'No company yet – create the first one.' | t }}</p>
+      </section>
+    </ng-container>
+    <ng-template #rows let-list>
+      <li *ngFor="let c of list; trackBy: trackC" class="zc-item" [class.fresh]="c.schema_name === fresh">
+        <button type="button" class="zc-row" (click)="open(c)" [disabled]="opening || c.moving" [attr.aria-label]="('Open company' | t) + ' ' + c.name">
+          <span class="zc-mark" [ngClass]="'t' + tint(c.name)">
+            <img *ngIf="c.logo" [src]="c.logo" alt="">
+            <ng-container *ngIf="!c.logo">{{ initials(c.name) }}</ng-container>
+          </span>
+          <span class="zc-info">
+            <span class="zc-name">{{ c.name }}<em class="zc-last" *ngIf="c.schema_name === last">{{ 'Last opened' | t }}</em>
+              <em class="zc-ro" *ngIf="c.read_only">{{ 'Read-only' | t }}</em>
+              <em class="zc-mv" *ngIf="c.moving">{{ 'Being moved – back in a few minutes' | t }}</em>
+              <em class="zc-xc" *ngIf="c.extra">{{ 'extra company' | t }}</em>
+              <em class="zc-wh" [class.own]="c.where === 'Own database'" *ngIf="c.where">{{ c.where | t }}</em>
+              <em class="zc-test" *ngIf="c.neutralized" [title]="'E-mails are not sent from this company' | t">{{ 'Test copy – no e-mails' | t }}</em></span>
+            <span class="zc-copyof" *ngIf="c.copy_of">{{ 'Copy of {0}' | t:c.copy_of }}</span>
+            <span class="zc-meta">{{ meta(c) }}</span>
+            <span class="zc-apps" *ngIf="c.apps?.length"><span *ngFor="let a of c.apps">{{ a | t }}</span></span>
+          </span>
+          <span class="zc-open">
+            <span class="zc-spin" *ngIf="opening === c.schema_name" aria-hidden="true"></span>{{ (opening === c.schema_name ? 'Opening…' : 'Open company') | t }}
+          </span>
+        </button>
+        <!-- v1.22.3: duplicate (like the Odoo database list) -->
+        <button type="button" class="zc-dup" *ngIf="canCreate || ownsAcc(c)" (click)="askDuplicate(c)" [disabled]="!!opening || !!dup"
+                [attr.aria-label]="('Duplicate' | t) + ' ' + c.name" [title]="'Make a copy of this company with all its data' | t">{{ 'Duplicate' | t }}</button>
+      </li>
+    </ng-template>
+
+    <p class="zc-empty" *ngIf="!loading && companies.length && !shown().length">{{ 'No company matches the search.' | t }}</p>
+    <div class="zc-empty" *ngIf="!loading && !companies.length && !error">
+      <p>{{ 'Your login is not linked to a company yet.' | t }}</p>
+      <p>{{ canCreate ? ('Create the first company to start.' | t) : ('Ask your administrator to give you access to your company.' | t) }}</p>
     </div>
+  </main>
+
+  <!-- v1.23.0 ZEO Cloud: create a company in an account (plan check, licensed apps) -->
+  <div class="zc-veil" *ngIf="mk" (click)="mk.state === 'ask' && (mk = null)"></div>
+  <div class="zc-dialog" *ngIf="mk" role="dialog" aria-modal="true" aria-labelledby="zc-mk-title">
+    <ng-container *ngIf="mk.state === 'ask'">
+      <h2 id="zc-mk-title">{{ 'Create company' | t }}</h2>
+      <p class="zc-dsub">{{ mk.acc.name }}</p>
+      <label class="zc-dfield"><span>{{ 'Company name' | t }}</span><input type="text" [(ngModel)]="mk.name" maxlength="100" autofocus></label>
+      <label class="zc-dfield"><span>{{ 'Industry' | t }}</span>
+        <select [(ngModel)]="mk.industry"><option *ngFor="let i of industries" [value]="i.code">{{ i.label | t }}</option></select></label>
+      <div class="zc-dfield"><span>{{ 'Apps for this company' | t }}</span>
+        <div class="zc-apps-pick">
+          <label *ngFor="let a of mk.apps" [class.off]="!a.ok"><input type="checkbox" [(ngModel)]="a.on" [disabled]="!a.ok"> {{ a.title | t }}<small *ngIf="a.note">{{ a.note | t }}</small></label>
+        </div>
+        <small class="zc-dnote">{{ 'HR and Settings (employee master) come with any app.' | t }}</small></div>
+      <div class="zc-dnote zc-extra" *ngIf="mk.acc.next_is_extra">{{ mk.acc.create_note }}</div>
+      <div class="zc-msg" *ngIf="mk.error" role="alert">{{ mk.error }}</div>
+      <div class="zc-dact">
+        <button type="button" class="zc-dbtn ghost" (click)="mk = null">{{ 'Cancel' | t }}</button>
+        <button type="button" class="zc-dbtn" (click)="runCreate()" [disabled]="!mk.name.trim() || !picked()">{{ mk.acc.next_is_extra ? ('Create company and charge' | t) : ('Create company' | t) }}</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="mk.state === 'running'">
+      <h2 id="zc-mk-title">{{ 'Creating the company…' | t }}</h2>
+      <p class="zc-dsub">{{ mk.name }}</p>
+      <ol class="zc-steps"><li *ngFor="let st of mkSteps; let i = index" [class.done]="i + 1 < mk.stepNo" [class.now]="i + 1 === mk.stepNo">{{ st | t }}</li></ol>
+      <p class="zc-dnote">{{ 'This takes about a minute.' | t }}</p>
+    </ng-container>
+    <ng-container *ngIf="mk.state === 'done'">
+      <h2 id="zc-mk-title">{{ 'The company is ready' | t }}</h2>
+      <p class="zc-dsub">{{ '{0} is in your list.' | t:mk.name }}</p>
+      <div class="zc-dact"><button type="button" class="zc-dbtn ghost" (click)="mk = null">{{ 'Close' | t }}</button>
+        <button type="button" class="zc-dbtn" (click)="openMade()">{{ 'Open the company' | t }}</button></div>
+    </ng-container>
+    <ng-container *ngIf="mk.state === 'failed'">
+      <h2 id="zc-mk-title">{{ 'The company could not be created' | t }}</h2>
+      <div class="zc-msg" role="alert">{{ mk.error }}</div>
+      <div class="zc-dact"><button type="button" class="zc-dbtn" (click)="mk = null">{{ 'Close' | t }}</button></div>
+    </ng-container>
   </div>
 
+  <!-- v1.22.3: duplicate a company -->
+  <div class="zc-veil" *ngIf="dup" (click)="dup.state === 'ask' && closeDuplicate()"></div>
+  <div class="zc-dialog" *ngIf="dup" role="dialog" aria-modal="true" aria-labelledby="zc-dup-title">
+    <ng-container *ngIf="dup.state === 'ask'">
+      <h2 id="zc-dup-title">{{ 'Duplicate {0}' | t:dup.source.name }}</h2>
+      <p class="zc-dsub">{{ 'ZEO makes a new company with a copy of all the data of this company – employees, payroll, leave, settings and the records of every app. The original does not change.' | t }}</p>
+      <label class="zc-dfield"><span>{{ 'Name of the copy' | t }}</span>
+        <input type="text" [(ngModel)]="dup.name" maxlength="100" (keydown.enter)="runDuplicate()" autofocus></label>
+      <label class="zc-dcheck"><input type="checkbox" [(ngModel)]="dup.neutralize">
+        <span><b>{{ 'Neutralize the copy (recommended for testing)' | t }}</b>
+          <small>{{ 'No e-mails leave ZEO from the copy, the support mailbox is not read and outside AI is off.' | t }}</small></span></label>
+      <div class="zc-msg" *ngIf="dup.error" role="alert">{{ dup.error }}</div>
+      <div class="zc-dact">
+        <button type="button" class="zc-dbtn ghost" (click)="closeDuplicate()">{{ 'Cancel' | t }}</button>
+        <button type="button" class="zc-dbtn" (click)="runDuplicate()" [disabled]="!dup.name.trim()">{{ 'Duplicate' | t }}</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="dup.state === 'running'">
+      <h2 id="zc-dup-title">{{ 'Making the copy…' | t }}</h2>
+      <p class="zc-dsub">{{ '{0} → {1}' | t:dup.source.name:dup.name }}</p>
+      <ol class="zc-steps">
+        <li *ngFor="let st of dupSteps; let i = index" [class.done]="i + 1 < dup.stepNo" [class.now]="i + 1 === dup.stepNo">{{ st | t }}</li>
+      </ol>
+      <p class="zc-dnote">{{ 'A large company can take a few minutes. You can keep this page open.' | t }}</p>
+    </ng-container>
+    <ng-container *ngIf="dup.state === 'done'">
+      <h2 id="zc-dup-title">{{ 'The copy is ready' | t }}</h2>
+      <p class="zc-dsub">{{ '{0} is in your list.' | t:dup.name }}<span *ngIf="dup.neutralize"> {{ 'It does not send e-mails.' | t }}</span></p>
+      <div class="zc-dact">
+        <button type="button" class="zc-dbtn ghost" (click)="closeDuplicate()">{{ 'Close' | t }}</button>
+        <button type="button" class="zc-dbtn" (click)="openNew()">{{ 'Open the copy' | t }}</button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="dup.state === 'failed'">
+      <h2 id="zc-dup-title">{{ 'The copy could not be made' | t }}</h2>
+      <div class="zc-msg" role="alert">{{ dup.error }}</div>
+      <p class="zc-dsub">{{ 'Nothing was created. Try again, or ask your ZEO administrator.' | t }}</p>
+      <div class="zc-dact"><button type="button" class="zc-dbtn" (click)="closeDuplicate()">{{ 'Close' | t }}</button></div>
+    </ng-container>
+  </div>
 
-
-<div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <div class="schema_Sec" >
-
-          <div class="row">
-            <div class="col-md-10">
-              <h1 class="mt-2">Choose company</h1>
-
-            </div>
-
-            <div class="col-md-2">
-              <button type="button" class="btn-Create btn-full btn-success btn" (click)="openPopuss()">Create</button>
-            </div>
-          </div> <hr>
-            
-
-
-
-          <!-- <div class="custom-sel">
-            <label>Select company</label>
-            <select class="form-control" [(ngModel)]="selectedSchema" (change)="selectSchema($event)">
-              <option value="">select</option>
-              <option *ngFor="let schema of schemas" [value]="schema">{{ schema }}</option>
-            </select>
-          </div> -->
-
-          <div class="custom-sel">
-            <label>Select company</label>
-            <select class="form-control" [(ngModel)]="selectedSchema" (change)="selectSchema($event)">
-              <option value="">select</option>
-              <option *ngFor="let schema of schemas" [value]="schema.schema_name">
-                {{ schema.name }}
-              </option>
-            </select>
-          </div>
-          
-          <!-- <button class="btn btn-connect pull-right mt-2" (click)="connect()">Connect</button> -->
-        
-            </div>
-
-       
-
+  <footer class="zc-foot">ZEO · {{ 'Version' | t }} {{ version }}</footer>
 </div>
- 
-</div>
-</div>
-
-     <!-- Loader -->
-     <!-- <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div> -->
-
-    <!-- Loader -->
-    <!-- <div class="loader-container" [class.show]="isLoading">
-      <button class="btn_load loader">
-        <img  src="assets/zeo_logo_new.png" height="70" width="100%" alt="MDB Logo" loading="lazy" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      
-    </button>
-
-    </div> -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>

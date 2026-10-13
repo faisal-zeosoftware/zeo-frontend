@@ -1,356 +1,84 @@
-/* PAGE */
-
-.login-page{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:15px;
-    background:linear-gradient(135deg,#f5f2ff,#ece6ff);
+/* v1.22.2 – ZEO sign-in. Colours from the ZEO logo: plum (z) and dusty rose (eo). */
+:host {
+  --plum: #5b2087;
+  --plum-dark: #461867;
+  --aubergine: #2a1638;
+  --rose: #d7a9a9;
+  --rose-soft: #f4e8e8;
+  --ink: #231b2e;
+  --muted: #6e6578;
+  --line: #e2dde7;
+  --bad: #b3261e;
+  display: block;
 }
 
-/* CONTAINER */
+.zl-page { display: grid; grid-template-columns: minmax(380px, 46%) 1fr; min-height: 100vh; background: #fff; color: var(--ink); }
 
-.login-container{
-    width:1000px;
-    max-width:100%;
-    height:580px;
-    background:#fff;
-    border-radius:20px;
-    overflow:hidden;
-    display:flex;
-    box-shadow:0 15px 40px rgba(0,0,0,.12);
+/* ---------------- form side */
+.zl-form-side { display: flex; align-items: center; justify-content: center; padding: 48px 32px; }
+.zl-form-wrap { width: 100%; max-width: 380px; display: flex; flex-direction: column; }
+.zl-logo { width: 132px; height: auto; margin: 0 0 40px -14px; }
+h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 6px; color: var(--ink); }
+.zl-sub { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+.zl-field { display: block; margin: 0 0 18px; }
+.zl-field > span { display: block; font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.zl-field input { width: 100%; height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px;
+  color: var(--ink); background: #fff; transition: border-color .15s, box-shadow .15s; box-sizing: border-box; }
+.zl-field input:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 3px rgba(91, 32, 135, .14); }
+.zl-field input.bad { border-color: var(--bad); }
+.zl-otp { letter-spacing: .3em; font-size: 20px !important; text-align: center; }
+.zl-pw { position: relative; }
+.zl-pw input { padding-right: 72px; }
+.zl-eye { position: absolute; right: 6px; top: 6px; height: 34px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent;
+  color: var(--plum); font-size: 13px; font-weight: 500; cursor: pointer; }
+.zl-eye:hover { background: var(--rose-soft); }
+
+.zl-btn { width: 100%; height: 48px; margin-top: 8px; border: 0; border-radius: 8px; background: var(--plum); color: #fff; font-size: 15px;
+  font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: background .15s; }
+.zl-btn:hover:not([disabled]) { background: var(--plum-dark); }
+.zl-btn[disabled] { opacity: .75; cursor: progress; }
+.zl-link { margin-top: 14px; align-self: center; border: 0; background: none; color: var(--plum); font-size: 14px; cursor: pointer; padding: 6px 8px; }
+.zl-link:hover { text-decoration: underline; }
+.zl-step { display: flex; flex-direction: column; }
+
+.zl-msg { margin: 0 0 18px; padding: 11px 14px; border-radius: 8px; background: #fdeceb; color: var(--bad); font-size: 14px; line-height: 1.45; }
+.zl-note { margin: 0 0 18px; padding: 11px 14px; border-radius: 8px; background: #eef7f1; color: #1d6b3f; font-size: 14px; }
+
+.zl-spin { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; border-radius: 50%; animation: zl-rot .8s linear infinite; }
+@keyframes zl-rot { to { transform: rotate(360deg); } }
+
+.zl-foot { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; font-size: 12.5px; color: var(--muted); }
+
+/* ---------------- brand side */
+.zl-brand { background: var(--aubergine); color: #f3eef6; display: flex; align-items: center; padding: 64px 7%; position: relative; overflow: hidden; }
+.zl-brand::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--rose); }
+.zl-brand-in { max-width: 560px; }
+.zl-kicker { margin: 0 0 14px; color: var(--rose); font-size: 14px; font-weight: 500; }
+.zl-brand h2 { margin: 0 0 40px; font-size: 34px; line-height: 1.22; font-weight: 400; letter-spacing: -0.015em; color: #fff; }
+.zl-apps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 36px; }
+.zl-apps li { border-top: 1px solid rgba(215, 169, 169, .35); padding-top: 12px; }
+.zl-apps b { display: block; font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+.zl-apps span { display: block; font-size: 13.5px; line-height: 1.5; color: #c9bdd3; }
+.zl-made { margin: 44px 0 0; font-size: 13px; color: #a898b4; }
+
+:host-context([dir='rtl']) .zl-brand::before { left: auto; right: 0; }
+:host-context([dir='rtl']) .zl-pw input { padding-right: 14px; padding-left: 72px; }
+:host-context([dir='rtl']) .zl-eye { right: auto; left: 6px; }
+:host-context([dir='rtl']) .zl-logo { margin: 0 -14px 40px 0; }
+
+.zl-btn:focus-visible, .zl-link:focus-visible, .zl-eye:focus-visible { outline: 2px solid var(--plum); outline-offset: 2px; }
+
+@media (max-width: 900px) {
+  .zl-page { grid-template-columns: 1fr; }
+  .zl-brand { order: 2; padding: 40px 24px; }
+  .zl-brand h2 { font-size: 24px; margin-bottom: 26px; }
+  .zl-apps { grid-template-columns: 1fr; gap: 14px; }
+  .zl-form-side { padding: 32px 20px 40px; min-height: 100vh; }
 }
+@media (prefers-reduced-motion: reduce) { .zl-spin { animation: none; } .zl-field input, .zl-btn { transition: none; } }
 
-/* LEFT SIDE */
-
-.login-left{
-    width:45%;
-    padding:35px 40px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-}
-
-.brand-section{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-.logo{
-    width:60px;
-    margin-bottom:10px;
-}
-
-.brand-section h2{
-    font-size:24px;
-    font-weight:700;
-    color:#5d1e82;
-    margin-bottom:5px;
-}
-
-.brand-section p{
-    color:#888;
-    font-size:13px;
-}
-
-.login-left h3{
-    font-size:26px;
-    margin-bottom:5px;
-    color:#222;
-}
-
-.subtitle{
-    color:#888;
-    margin-bottom:20px;
-    font-size:14px;
-}
-
-/* INPUT */
-
-.input-group{
-    position:relative;
-    margin-bottom:15px;
-}
-
-.input-group i:first-child{
-    position:absolute;
-    left:15px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#888;
-}
-
-.input-group input{
-    width:100%;
-    height:48px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    padding-left:42px;
-    padding-right:42px;
-    outline:none;
-    transition:.3s;
-    font-size:14px;
-}
-
-.input-group input:focus{
-    border-color:#5d1e82;
-    box-shadow:0 0 0 3px rgba(93,30,130,.1);
-}
-
-.eye-icon{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    color:#777;
-}
-
-/* BUTTON */
-
-.btn-login{
-    width:100%;
-    height:48px;
-    border:none;
-    border-radius:10px;
-    background:linear-gradient(
-        135deg,
-        #5d1e82,
-        #8f49b5
-    );
-    color:#fff;
-    font-size:14px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.btn-login:hover{
-    transform:translateY(-2px);
-    box-shadow:0 10px 20px rgba(93,30,130,.25);
-}
-
-/* RIGHT SIDE */
-
-.login-right{
-    width:55%;
-    background:linear-gradient(
-        135deg,
-        #5d1e82,
-        #a569bd
-    );
-    color:#fff;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:30px;
-}
-
-.hero-image{
-    width:65%;
-    max-width:300px;
-    margin-bottom:15px;
-    animation:float 4s ease-in-out infinite;
-}
-
-@keyframes float{
-
-    0%{
-        transform:translateY(0);
-    }
-
-    50%{
-        transform:translateY(-10px);
-    }
-
-    100%{
-        transform:translateY(0);
-    }
-}
-
-.login-right h1{
-    font-size:28px;
-    margin-bottom:10px;
-}
-
-.login-right p{
-    font-size:14px;
-    line-height:1.6;
-    max-width:400px;
-}
-
-/* FEATURES */
-
-.feature-cards{
-    display:flex;
-    gap:12px;
-    margin-top:20px;
-}
-
-.feature-card{
-    width:110px;
-    padding:12px;
-    border-radius:12px;
-    background:rgba(255,255,255,.15);
-    backdrop-filter:blur(10px);
-}
-
-.feature-card i{
-    font-size:22px;
-    margin-bottom:8px;
-}
-
-.feature-card span{
-    font-size:12px;
-}
-
-/* OTP SUCCESS */
-
-.otp-success{
-    text-align:center;
-}
-
-.success-circle{
-    width:70px;
-    height:70px;
-    border-radius:50%;
-    background:#4CAF50;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin:0 auto 15px;
-    font-size:28px;
-}
-
-.otp-success h4{
-    margin-bottom:8px;
-}
-
-.otp-success p{
-    margin-bottom:15px;
-    color:#777;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    background: rgba(255, 255, 255, 0.8);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    z-index: 99999;
-}
-
-.spinner {
-    width: 60px;
-    height: 60px;
-
-    border: 6px solid #e5e5e5;
-    border-top: 6px solid #5d1e82;
-
-    border-radius: 50%;
-
-    animation: spin 1s linear infinite;
-}
-
-.loading-overlay p {
-    margin-top: 15px;
-    color: #5d1e82;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-    .login-container{
-        flex-direction:column;
-        height:auto;
-    }
-
-    .login-right{
-        display:none;
-    }
-
-    .login-left{
-        width:100%;
-        padding:25px;
-    }
-
-    .brand-section{
-        margin-bottom:20px;
-    }
-}
-
-
-.password-group{
-    position:relative;
-    width:100%;
-}
-
-.input-icon{
-    position:absolute;
-    left:15px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#888;
-    z-index:2;
-}
-
-.password-group input{
-    width:100%;
-    height:48px;
-    padding-left:42px;
-    padding-right:45px; /* space for eye icon */
-}
-
-.eye-icon{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    color:#777;
-    z-index:3;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:20px;
-    height:20px;
-}
-
-.eye-icon:hover{
-    color:#5d1e82;
-}
-
-.eye-icon i{
-    font-size:16px;
-    left: 0px;
-}
-/* v1.15.0: language picker on the login page */
-.login-lang{
-    display:flex;
-    justify-content:center;
-    margin-top:10px;
-}
+/* v1.23.0 ZEO Cloud sign-up link */
+.zl-signup { margin: 18px 0 0; font-size: 14px; color: #6e6578; }
+.zl-signup a { color: #5b2087; font-weight: 500; }

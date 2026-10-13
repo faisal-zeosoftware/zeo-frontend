@@ -1,3 +1,4 @@
+import { flagAllows } from './zeo-flags';
 import { ChangeDetectorRef, Directive, Injectable, Input, NgZone, OnDestroy, Pipe, PipeTransform, TemplateRef, ViewContainerRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavigationEnd, Router } from '@angular/router';
@@ -210,7 +211,8 @@ export class CountryPackService implements OnDestroy {
     return String(expr).split(',').map(s => s.trim()).filter(Boolean).every(e => {
       const neg = e.startsWith('!');
       const k = neg ? e.slice(1).trim() : e;
-      const on = k.startsWith('pack:')
+      const fl = flagAllows(k);   // v1.23.0 app: / cloud: flags
+      const on = fl !== null ? fl : k.startsWith('pack:')
         ? k.slice(5).split('|').map(x => x.trim().toUpperCase()).includes(String(this.pack.pack).toUpperCase())
         : this.feature(k);
       return neg ? !on : on;

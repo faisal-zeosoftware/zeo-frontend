@@ -27,14 +27,18 @@ export class SchemaCreationComponent {
   industry_type : string = '';
   // v1.21.0: apps the company uses (Settings › Apps can change them later)
   appChoices = [
-    { key: 'hrms', label: 'HRMS', hint: 'People, time, leave, payroll', on: true },
+    { key: 'hrms', label: 'HR', hint: 'People, time, leave, documents – comes with any app', on: true },
+    { key: 'payroll', label: 'Payroll', hint: 'Salaries, payslips, WPS, gratuity', on: true },   // v1.23.0 own app
     { key: 'projects', label: 'Projects', hint: 'Tickets, AMC, delivery', on: false },
     { key: 'crm', label: 'CRM', hint: 'Contacts, pipelines, deals', on: false },
     { key: 'property', label: 'Property', hint: 'Units, leases, sales', on: false },
     { key: 'maintenance', label: 'Maintenance', hint: 'Work orders, plans', on: false },
     { key: 'hse', label: 'HSE', hint: 'Risk, permits, incidents', on: false },
   ];
-  chosenApps(): string[] { return this.appChoices.filter(a => a.on).map(a => a.key); }
+  chosenApps(): string[] {   // v1.23.0: HR comes with any app
+    const k = this.appChoices.filter(a => a.on).map(a => a.key);
+    return k.length && !k.includes('hrms') ? ['hrms', ...k] : k;
+  }
   address_line1 : string = '';
   address_line2 : string = '';
   financial_year_start_month : string = '';

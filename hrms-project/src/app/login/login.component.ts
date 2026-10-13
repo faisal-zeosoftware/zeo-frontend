@@ -10,6 +10,8 @@ import { UserMasterComponent } from '../user-master/user-master.component';
 import { UserMasterService } from '../user-master/user-master.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
+import { APP_VERSION } from '../shared-ui/version';
+import { i18nT } from '../shared-ui/i18n-core';
 
 
 @Component({
@@ -53,8 +55,14 @@ export class LoginComponent implements OnInit {
       private authService: AuthenticationService,
       private EmployeeService: EmployeeService) { }
 
+  cloudSignup = false;   // v1.23.0 ZEO Cloud: "Start a free trial" link
+
   ngOnInit(): void {
-    
+    try {   // v1.23.0: e-mail from the sign-up page, and the sign-up link when this server runs ZEO Cloud
+      const u = new URLSearchParams(window.location.search).get('u');
+      if (u) { this.username = u; }
+    } catch { /* no URL */ }
+    this.http.get<any>(`${environment.apiBaseUrl}/cloud/api/signup/plans/`).subscribe({ next: r => this.cloudSignup = !!r?.cloud, error: () => undefined });
 
     // v1.15.1: the login page no longer downloads the user list (it was unused and exposed user names before login).
     // user register  section
@@ -87,6 +95,22 @@ export class LoginComponent implements OnInit {
 
   isEssUser: boolean = true; // Default value, adjust based on your logic
 
+  // v1.22.2: messages on the page instead of pop-ups
+  error = '';
+  notice = '';
+  tried = false;
+  version = APP_VERSION;
+  apps = [
+    { name: 'HR and Payroll', text: 'People, attendance, leave, self service, salaries and WPS' },   // v1.23.0 HR free with any app, Payroll its own app
+    { name: 'Projects', text: 'Support tickets with SLA, AMC contracts and delivery' },
+    { name: 'CRM', text: 'Contacts, pipelines, viewings and offers' },
+    { name: 'Property', text: 'Units, leases, cheques, owners and the tenant portal' },
+    { name: 'Maintenance', text: 'Work orders, preventive plans, assets and vendors' },
+    { name: 'HSE', text: 'Permits to work, incidents, inspections and actions' },
+  ];
+  private say(msg: string): void { this.error = i18nT(msg); this.notice = ''; }
+  backToStart(): void { this.step = 1; this.otp = ''; this.error = ''; this.notice = ''; this.password = ''; }
+
 
   step: number = 1;  
   otp: string = '';
@@ -103,11 +127,12 @@ togglePassword() {
   validateCredentials() {
 
     // Basic field validation
+    this.tried = true;
     if (!this.username || !this.password) {
-      if (!this.username) alert('Username field is blank.');
-      if (!this.password) alert('Password field is blank.');
+      this.say(!this.username ? 'Enter your e-mail or employee code.' : 'Enter your password.');
       return;
     }
+    this.error = '';
   
     this.isLoading = true;
   
@@ -147,7 +172,6 @@ togglePassword() {
                   // 1️⃣ SUPERUSER LOGIN → DIRECT (NO OTP)
                   // **************************************************
                   if (isSuperUser === true) {
-                    alert("Admin login successful.");
                     this.router.navigate(['/schema-selection']);
                     return;
                   }
@@ -166,7 +190,7 @@ togglePassword() {
                       return;
                     }
   
-                    alert("No tenant assigned for this employee.");
+                    this.say('No company is set up for your login yet. Ask your HR team.');
                     return;
                   }
   
@@ -181,22 +205,21 @@ togglePassword() {
                 },
                 () => {
                   this.isLoading = false;
-                  alert("Failed to load user details.");
+                  this.say('Your user details could not be loaded. Try again.');
                 }
               );
   
             },
             () => {
               this.isLoading = false;
-              alert("Incorrect username or password.");
+              this.say('The e-mail, employee code or password is not correct.');
             }
           );
   
         },
         () => {
           this.isLoading = false;
-    
-          alert("Invalid username or password");
+          this.say('The e-mail, employee code or password is not correct.');
         }
       );
   }
@@ -216,14 +239,15 @@ togglePassword() {
         () => {
           this.isLoading = false;
 
-          alert("OTP sent to your registered email/phone");
+          this.error = '';
+          this.notice = i18nT('We sent the code to your registered e-mail or phone.');
           this.step = 3;
         },
         () =>
           { 
             this.isLoading = false;
 
-            alert("Failed to send OTP")
+            this.say('The code could not be sent. Try again in a minute.');
           }
       );
   }
@@ -231,7 +255,7 @@ togglePassword() {
   verifyOtp() {
 
     if (!this.userId || !this.otp) {
-      alert("Enter OTP");
+      this.say('Enter the code.');
       return;
     }
     this.isLoading = true;
@@ -254,7 +278,7 @@ togglePassword() {
         },
         () => {
           this.isLoading = false;
-          alert("Invalid OTP");
+          this.say('The code is not correct or has expired.');
         }
       );
   }
@@ -274,10 +298,10 @@ togglePassword() {
         } else if (!isEssUser) {
           this.router.navigate(['/schema-selection']);
         } else {
-          alert("No tenant available for this user");
+          this.say('No company is set up for your login yet. Ask your HR team.');
         }
       },
-      () => alert("Error loading user data")
+      () => this.say('Your user details could not be loaded. Try again.')
     );
   }
 

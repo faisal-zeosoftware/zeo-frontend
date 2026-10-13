@@ -1,3 +1,4 @@
+import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 import { style } from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -75,11 +76,15 @@ export class MainSidebarComponent implements OnDestroy {
     private zlist: ZListService,
     private zrec: ZRecordService,
     private suites: ZSuiteService,
+    private cloud: ZeoCloudService,
   ) {
     // v1.20.0: the main menu shows the modules of one app (HRMS, Projects or Settings)
     this.suites.suite$.subscribe(s => { this.suite = s; this.buildMenu(); });
     // v1.21.0: only the apps active in the company (Settings → Apps); an app switched off moves the user to an active one
-    this.suites.active$.subscribe(a => { if (a) { this.keepActiveSuite(); } });
+    this.suites.active$.subscribe(a => { if (a) { this.buildMenu(); this.keepActiveSuite(); } });
+    // v1.23.0 ZEO Cloud: Subscription / Security for the account owner
+    this.cloud.status$.subscribe(() => this.buildMenu());
+    this.cloud.load();
   }
 
   private keepActiveSuite(): void {

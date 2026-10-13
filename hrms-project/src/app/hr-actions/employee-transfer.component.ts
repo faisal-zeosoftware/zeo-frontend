@@ -165,9 +165,10 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
       <!-- list -->
       <p class="lp-muted" *ngIf="loading">Loading…</p>
       <table class="table" *ngIf="!loading">
-        <thead><tr><th>Employee</th><th>Effective date</th><th>Branch move</th><th>Department move</th><th>Other changes</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Number</th><th>Employee</th><th>Effective date</th><th>Branch move</th><th>Department move</th><th>Other changes</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let r of shown()">
+            <td data-label="Number">{{ r.number }}</td>
             <td data-label="Employee"><a href="" (click)="$event.preventDefault(); openEmp(r)">{{ r.employee }}</a></td>
             <td data-label="Effective date">{{ r.effective_date | date:'dd MMM yyyy' }}</td>
             <td data-label="Branch move" class="ha-move"><ng-container *ngIf="r.to_branch && r.to_branch !== r.from_branch; else same">{{ r.from_branch || '–' }}<span class="arr">→</span>{{ r.to_branch }}</ng-container><ng-template #same>{{ r.from_branch || '–' }}</ng-template></td>

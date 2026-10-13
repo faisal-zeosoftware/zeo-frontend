@@ -1,3 +1,4 @@
+import { ZCloudBannerComponent } from './zeo-cloud/z-cloud-banner.component';
 import { NO_ERRORS_SCHEMA, NgModule  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -533,6 +534,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     COUNTRY_PACK_UI,   // v1.14.0: zc / zmoney pipes, *zCountry
     I18N_UI,           // v1.15.0: t / zdate pipes, <z-lang-picker>
     ZTranslateComponent,   // v1.15.0: <z-translate> on the master screens
+    ZCloudBannerComponent,   // v1.23.0 ZEO Cloud banner
     
     
     BrowserModule,

@@ -1,0 +1,36 @@
+/* v1.23.0 ZEO Cloud screens (Subscription, Security, Console, Sign-up) */
+.zk-wrap { padding: 4px 0 40px; }
+.zk-body { padding: 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+.zk-card { background: #fff; border: 1px solid #e3e5ef; border-radius: 12px; padding: 16px 18px; }
+.zk-card h2 { margin: 0 0 10px; font-size: 15px; font-weight: 600; color: #1d2033; }
+.zk-plan { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.zk-plan .k { font-size: 12.5px; color: #6b7185; }
+.zk-plan .v { font-size: 24px; font-weight: 600; color: #1b1640; display: flex; align-items: center; gap: 10px; }
+.zk-grid4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.zk-num .k { font-size: 12.5px; color: #6b7185; }
+.zk-num .v { font-size: 22px; font-weight: 600; margin-top: 4px; color: #1d2033; }
+.zk-num small { display: block; font-size: 12px; color: #6b7185; margin-top: 2px; }
+.zk-bar { height: 6px; border-radius: 3px; background: #eceaf6; margin-top: 10px; overflow: hidden; }
+.zk-bar i { display: block; height: 6px; background: #5b4ff5; border-radius: 3px; }
+.zk-bar.warn i { background: #c98a00; } .zk-bar.full i { background: #b42318; }
+.zk-st { font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; white-space: nowrap; display: inline-block; }
+.zk-st.trial { background: #e9eef6; color: #2f4a73; } .zk-st.active, .zk-st.licensed, .zk-st.included, .zk-st.paid { background: #e6f3ec; color: #1f6b45; }
+.zk-st.grace, .zk-st.unpaid { background: #fff4dd; color: #8a5a00; } .zk-st.suspended, .zk-st.expired { background: #fdeceb; color: #b3261e; }
+.zk-st.cancelled, .zk-st.none, .zk-st.void { background: #eee; color: #555; }
+.zk-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.zk-table th { text-align: left; font-weight: 500; color: #6b7185; font-size: 12px; padding: 8px 10px; border-bottom: 1px solid #e3e5ef; white-space: nowrap; }
+.zk-table td { padding: 9px 10px; border-bottom: 1px solid #f0f1f6; vertical-align: middle; }
+.zk-table tr.click { cursor: pointer; } .zk-table tr.click:hover td { background: #faf9ff; }
+.zk-table td small { display: block; color: #8a8fa3; font-size: 11.5px; }
+.zk-scroll { overflow-x: auto; }
+.zk-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.zk-sp { flex: 1; }
+.zk-note { font-size: 12.5px; color: #6b7185; line-height: 1.5; }
+.zk-radio { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; font-size: 13.5px; cursor: pointer; }
+.zk-radio input { margin-top: 3px; accent-color: #5b4ff5; }
+.zk-radio b { font-weight: 600; } .zk-radio small { display: block; color: #6b7185; font-size: 12.5px; margin-top: 2px; }
+.zk-in { height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13.5px; background: #fff; }
+.zk-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.zk-app { border: 1px solid #e3e5ef; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.zk-app b { font-size: 14px; font-weight: 600; } .zk-app span { font-size: 12.5px; color: #6b7185; }
+@media (max-width: 640px) { .zk-body { padding: 12px; } .zk-plan .v { font-size: 20px; } }

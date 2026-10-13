@@ -102,16 +102,7 @@
               </label>
               <div class="custom-sel">
                 <select class="form-control" [(ngModel)]="type" [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !type}">
-                  <option value="general_request">General Request</option>
-                  <option value="leave_request">Leave Request</option>
-                  <option value="document_request">Document Request</option>
-                  <option value="advance_salary_request">Advance Salary Request</option>
-                  <option value="air_ticket_request">Air Ticket Request</option>
-                  <option value="loan_request">Loan Request</option>
-                  <option value="asset_request">Asset Request</option>
-                  <option value="resignation_request">Resignation Request</option>
-                  <option value="lateinearlyout_request">Latein Earlyout Request</option>
-                  <option value="payroll_run">PayRoll Run</option>
+                  <option *ngFor="let t of docTypes" [value]="t.value">{{ t.label }}</option>
 
                 </select>
               </div>
@@ -289,16 +280,7 @@
               <label>Type</label>
               <div class="custom-sel">
                 <select class="form-control" [(ngModel)]="editAsset.type" [ngModelOptions]="{standalone: true}">
-                  <option value="general_request">General Request</option>
-                  <option value="leave_request">Leave Request</option>
-                  <option value="document_request">Document Request</option>
-                  <option value="advance_salary_request">Advance Salary Request</option>
-                  <option value="air_ticket_request">Air Ticket Request</option>
-                  <option value="loan_request">Loan Request</option>
-                  <option value="asset_request">Asset Request</option>
-                  <option value="resignation_request">Resignation Request</option>
-                  <option value="lateinearlyout_request">Latein Earlyout Request</option>
-                  <option value="payroll_run">PayRoll Run</option>
+                  <option *ngFor="let t of docTypes" [value]="t.value">{{ t.label }}</option>
 
                 </select>
               </div>

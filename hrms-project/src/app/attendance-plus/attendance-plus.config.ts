@@ -214,6 +214,7 @@ export const CORRECTION_PAGE: PageConfig = {
     + '(old ones kept as history) and the day is recalculated.',
   multipart: true,
   columns: [
+    { key: 'number', label: 'Number' },   // v1.22.1 document number
     { key: 'employee_display', label: 'Employee' }, { key: 'date', label: 'Date', type: 'date' }, { key: 'kind_label', label: 'Type' },
     { key: 'proposed_in_local', label: 'Correct in' }, { key: 'proposed_out_local', label: 'Correct out' }, { key: 'reason', label: 'Reason' },
     { key: 'status_label', label: 'Status', type: 'tag', colorKey: 'status', tagColors: { manager: 'orange', hr: 'blue', approved: 'green', rejected: 'red', cancelled: 'grey' } },

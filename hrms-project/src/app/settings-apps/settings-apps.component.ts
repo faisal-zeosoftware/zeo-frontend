@@ -7,7 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AppSuite, ZSuiteService } from '../shared-ui/z-suite.service';
-import { I18N_UI } from '../shared-ui/i18n.service';
+import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
+import { CloudLicence, CloudStatus, ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 
 interface AppLink { with: string; title: string; what: string; other_active: boolean; on: boolean; }
 interface AppRow {
@@ -34,7 +35,7 @@ interface AppRow {
   <div class="lp-head">
     <div>
       <h1 class="page-title">{{ 'Apps' | t }}</h1>
-      <p class="lp-desc">{{ 'Each app works on its own. Activate the apps this company uses; when two of them are active they link up by themselves. Switching an app off hides it from the menu – its records are kept and come back when you activate it again.' | t }}</p>
+      <p class="lp-desc">{{ 'HR comes with every app; with Payroll the menu is the same as ZEO HRMS.' | t }} {{ 'Each app works on its own. Activate the apps this company uses; when two of them are active they link up by themselves. Switching an app off hides it from the menu – its records are kept and come back when you activate it again.' | t }}</p>
     </div>
   </div>
 
@@ -59,6 +60,8 @@ interface AppRow {
         </div>
         <span class="sa-state" [class.on]="a.active">{{ (!a.installed ? 'Not installed' : a.active ? 'Active' : 'Not active') | t }}</span>
       </header>
+      <!-- v1.23.0 ZEO Cloud: the account's licence for this app -->
+      <p class="sa-lic" *ngIf="lic(a.key) as l" [ngClass]="l.state">{{ licText(a.key) }}</p>
 
       <dl class="sa-facts" *ngIf="a.installed">
         <div><dt>{{ 'Industry' | t }}</dt><dd>{{ a.active || a.industry ? (a.industry_label || a.industry || '–') : '–' }}
@@ -115,10 +118,14 @@ interface AppRow {
       </div>
 
       <footer class="sa-foot" *ngIf="a.installed && canManage && asking !== a.key && leaving !== a.key">
-        <button type="button" class="lp-btn primary" *ngIf="!a.active" (click)="ask(a)">{{ 'Activate' | t }}</button>
+        <button type="button" class="lp-btn primary" *ngIf="!a.active && canLicence(a.key)" (click)="ask(a)">{{ 'Activate' | t }}</button>
+        <ng-container *ngIf="!a.active && !canLicence(a.key)">
+          <button type="button" class="lp-btn" *ngIf="cloudOwner" (click)="requestApp(a)" [disabled]="busy">{{ 'Request' | t }}</button>
+          <span class="sa-hint" *ngIf="!cloudOwner">{{ 'Ask the account owner.' | t }}</span>
+        </ng-container>
         <ng-container *ngIf="a.active">
           <button type="button" class="lp-btn" (click)="open(a)">Open {{ a.title }}</button>
-          <button type="button" class="lp-btn" (click)="leaving = a.key; asking = ''">{{ 'Deactivate' | t }}</button>
+          <button type="button" class="lp-btn" *ngIf="a.key !== 'hrms'" (click)="leaving = a.key; asking = ''">{{ 'Deactivate' | t }}</button>
         </ng-container>
       </footer>
     </section>
@@ -131,7 +138,35 @@ export class SettingsAppsComponent implements OnInit {
   msg = ''; err = false; busy = false;
   asking = ''; leaving = ''; change = false; industry = '';
 
-  constructor(private http: HttpClient, private router: Router, private suites: ZSuiteService, private cd: ChangeDetectorRef) {}
+  cloud: CloudStatus | null = null;   // v1.23.0 ZEO Cloud licences of the account
+  get cloudOwner(): boolean { return !!this.cloud?.owner; }
+
+  constructor(private http: HttpClient, private router: Router, private suites: ZSuiteService, private cd: ChangeDetectorRef,
+              private zc: ZeoCloudService) {
+    this.zc.status$.subscribe(s => { this.cloud = s && s.linked ? s : null; this.cd.markForCheck(); });
+    this.zc.load(true);
+  }
+
+  lic(key: string): CloudLicence | null { return this.cloud?.apps?.[key] || null; }
+  canLicence(key: string): boolean { const l = this.lic(key); return !l || l.state === 'included' || l.state === 'licensed' || l.state === 'trial'; }
+  licText(key: string): string {
+    const l = this.lic(key); if (!l) { return ''; }
+    if (l.state === 'included') { return i18nT('Included – HR comes free with any app.'); }
+    if (l.state === 'none') { return i18nT('Not in your plan.'); }
+    if (l.state === 'expired') { return i18nT('Licence ended {0} – read-only.', [l.valid_until]); }
+    const parts = [l.state === 'trial' ? i18nT('Trial – {0} days left', [l.days_left ?? 0]) : i18nT('Licensed')];
+    if (l.companies) { parts.push(i18nT('{0} of {1} companies used', [l.used ?? 0, l.companies])); }
+    return parts.join(' · ');
+  }
+  async requestApp(a: AppRow): Promise<void> {
+    if (!this.cloud?.account) { return; }
+    this.busy = true;
+    try {
+      await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/cloud/api/accounts/${this.cloud.account.id}/request/`, { what: 'Another app', text: `${a.title}` }));
+      this.say(i18nT('Your request for {0} was sent to Adept.', [a.title]), false);
+    } catch (e: any) { this.say(this.error(e, i18nT('The request could not be sent.')), true); }
+    this.busy = false; this.cd.markForCheck();
+  }
 
   private url(path: string): string {
     let schema = '';
@@ -163,6 +198,7 @@ export class SettingsAppsComponent implements OnInit {
       this.say(`${a.title} is active with the industry ${r.industry_label || r.industry}.` + (added ? ` ${added} setup records were added from the industry pack.` : ''), false);
       this.asking = '';
       this.suites.loadActive(true);
+      this.zc.load(true);
       await this.load();
     } catch (e: any) { this.say(this.error(e, `${a.title} could not be activated.`), true); }
     this.busy = false; this.cd.markForCheck();
@@ -181,7 +217,7 @@ export class SettingsAppsComponent implements OnInit {
   }
 
   open(a: AppRow): void {
-    this.suites.set(a.key as AppSuite);
+    this.suites.set((a.key === 'payroll' ? 'hrms' : a.key) as AppSuite);   // v1.23.0 Payroll lives in the HR menu
     this.router.navigateByUrl(a.page);
   }
 

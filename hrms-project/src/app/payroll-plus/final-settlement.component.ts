@@ -67,6 +67,7 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
           <div class="fs-list" *ngIf="rows.length">
             <button type="button" *ngFor="let r of rows" [class.on]="cur?.id === r.id" (click)="open(r.id)">
               <div class="nm">{{ r.employee }} <span class="lp-muted">{{ r.employee_code }}</span></div>
+              <div class="sub" *ngIf="r.number"><span>{{ r.number }}</span></div>
               <div class="sub"><span>Last day {{ r.last_working_date | date:'dd MMM yyyy' }}</span>
                 <span class="fs-st" [attr.data-s]="r.status" [class.late]="r.overdue">{{ r.overdue ? 'Overdue' : r.status_label }}</span></div>
               <div class="sub"><span>{{ r.designation }}</span><span>{{ r.net | number:'1.2-2' }}</span></div>

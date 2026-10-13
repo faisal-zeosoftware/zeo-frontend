@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { Suite } from './menu-config';
 import { environment } from '../../environments/environment';
+import { ZEO_FLAGS } from './zeo-flags';
 
 export type AppSuite = Exclude<Suite, 'common'>;
 
@@ -27,7 +28,7 @@ export class ZSuiteService {
     if (!schema || (!force && this.loadedFor === schema && this.active$.value)) { return; }
     this.loadedFor = schema;
     this.http.get<{ active: string[] }>(`${environment.apiBaseUrl}/zeo-apps/api/apps/?lite=1&schema=${encodeURIComponent(schema)}`).subscribe({
-      next: r => this.active$.next([...(r.active || []), 'settings']),
+      next: r => { ZEO_FLAGS.apps = [...(r.active || [])]; this.active$.next([...(r.active || []), 'settings']); },
       error: () => this.active$.next(null),
     });
   }

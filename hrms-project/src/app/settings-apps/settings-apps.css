@@ -48,3 +48,10 @@
   .sa-grid { grid-template-columns: 1fr; padding: 14px 16px 0; }
   .sa-company { margin: 14px 16px 0; flex-wrap: wrap; }
 }
+
+/* v1.23.0 ZEO Cloud licence line */
+.sa-lic { margin: 6px 0 0; font-size: 12.5px; padding: 4px 10px; border-radius: 8px; background: #f3f1f9; color: #4a4255; }
+.sa-lic.included, .sa-lic.licensed { background: #e6f3ec; color: #1f6b45; }
+.sa-lic.trial { background: #e9eef6; color: #2f4a73; }
+.sa-lic.none { background: #f3f1f5; color: #6b6577; }
+.sa-lic.expired { background: #fdeceb; color: #b3261e; }

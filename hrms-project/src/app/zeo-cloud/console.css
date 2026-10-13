@@ -1,0 +1,31 @@
+:host { display: block; }
+.cc-page { min-height: 100vh; background: #f6f4f8; color: #231b2e; }
+.cc-top { height: 56px; display: flex; align-items: center; gap: 14px; padding: 0 22px; background: #231b2e; color: #fff; }
+.cc-logo { font-size: 24px; font-weight: 600; letter-spacing: .02em; }
+.cc-tag { font-size: 12px; padding: 3px 10px; border-radius: 10px; background: #5b2087; }
+.cc-back { color: #e3d6ee; font-size: 13.5px; }
+.cc-wrap { display: flex; min-height: calc(100vh - 56px); flex-wrap: wrap; }
+.cc-side { width: 230px; background: #fff; border-right: 1px solid #e7e2ea; padding: 18px 12px; display: flex; flex-direction: column; gap: 2px; box-sizing: border-box; }
+.cc-side a { padding: 9px 12px; border-radius: 8px; color: #4a4255; text-decoration: none; font-size: 14px; }
+.cc-side a.on { background: #efe6f5; color: #5b2087; font-weight: 500; }
+.cc-main { flex: 999 1 560px; min-width: 0; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; }
+.cc-h1 { margin: 0; font-size: 24px; font-weight: 600; }
+.cc-filters { gap: 8px; } .cc-q { width: 320px; max-width: 100%; }
+.cc-chk { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; }
+.cc-tablecard { padding: 6px 8px; }
+.cc-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+.cc-lbl { display: block; font-size: 12px; font-weight: 600; color: #6b7185; margin-bottom: 6px; }
+.cc-tabs { padding: 0; }
+.cc-apps input[type=number] { width: 84px; height: 30px; border: 1px solid #dcdfea; border-radius: 6px; padding: 0 6px; }
+.cc-apps input[type=date] { height: 30px; border: 1px solid #dcdfea; border-radius: 6px; padding: 0 6px; }
+.cc-inline { flex-direction: row !important; align-items: center; gap: 8px !important; }
+.cc-inline input { height: auto !important; }
+.cc-ver { font-size: 12px; color: #8a8fa3; margin-top: 20px; }
+@media (max-width: 760px) { .cc-side { width: 100%; flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid #e7e2ea; padding: 8px; } .cc-main { padding: 16px; } }
+.cc-link { border: 0; background: none; padding: 0 0 0 8px; color: #5b2087; font: inherit; font-size: 12.5px; text-decoration: underline; cursor: pointer; }
+.cc-link:disabled { color: #a49cad; cursor: default; }
+.cc-moving { color: #8a5a00; }
+.cc-err { color: #b0303a; white-space: normal; }
+.cc-log { margin: 0; max-height: 220px; overflow: auto; font-size: 12px; line-height: 18px; background: #faf8fb; border: 1px solid #e7e2ea; border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; }
+.cc-cp .zk-row { gap: 10px; flex-wrap: wrap; }
+.cc-db { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13.5px; }

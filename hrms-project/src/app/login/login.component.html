@@ -1,221 +1,83 @@
-<!-- <div class="login-container">
-    <h2>Login</h2>
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" [(ngModel)]="username" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" [(ngModel)]="password" required>
-      </div>
-      <button type="submit">Login</button>
-    </form>
-  </div>
-   -->
+<!-- v1.22.2: new sign-in page – sign in on the left, the ZEO apps on the right; messages on the page instead of pop-ups -->
+<div class="zl-page" data-no-help>
 
+  <main class="zl-form-side">
+    <div class="zl-form-wrap">
+      <img src="assets/zeo_logo_new.png" class="zl-logo" alt="ZEO">
 
+      <!-- STEP 1: user name and password -->
+      <form *ngIf="step === 1" (ngSubmit)="validateCredentials()" novalidate aria-labelledby="zl-title">
+        <h1 id="zl-title">{{ 'Sign in' | t }}</h1>
+        <p class="zl-sub">{{ 'Staff sign in with their e-mail, employees with their employee code.' | t }}</p>
 
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
 
-<!-- <h1>Lerning</h1>
-<router-outlet></router-outlet> -->
+        <label class="zl-field">
+          <span>{{ 'E-mail or employee code' | t }}</span>
+          <input type="text" name="username" autocomplete="username" [(ngModel)]="username" (input)="error = ''"
+                 [class.bad]="tried && !username" autofocus>
+        </label>
 
+        <label class="zl-field">
+          <span>{{ 'Password' | t }}</span>
+          <div class="zl-pw">
+            <input [type]="showPassword ? 'text' : 'password'" name="password" autocomplete="current-password"
+                   [(ngModel)]="password" (input)="error = ''" [class.bad]="tried && !password">
+            <button type="button" class="zl-eye" (click)="togglePassword()" [attr.aria-label]="(showPassword ? 'Hide password' : 'Show password') | t"
+                    [attr.aria-pressed]="showPassword">{{ (showPassword ? 'Hide' : 'Show') | t }}</button>
+          </div>
+        </label>
 
-
-<!-- <h1 style="text-align: center;">Login</h1> -->
-
-<style>
-  body {
-    overflow: hidden !important;
-  }
-</style>
-
-
-<!-- <div class="buble-one"></div>
-  <div class="buble-two"></div> -->
-
-<div class="login-page">
-
-  <div class="login-container">
-
-    <!-- LEFT SIDE -->
-    <div class="login-left">
-
-      <div class="brand-section">
-
-        <img
-          src="assets/zeo_logo_new.png"
-          class="logo"
-          alt="Logo">
-
-        <h2>ZEO hrms</h2>
-
-        <p>{{ 'Human Resource Management System' | t }}</p>
-
-        <!-- v1.15.0: language before login -->
-        <z-lang-picker class="login-lang" variant="select" [reload]="false"></z-lang-picker>
-
-      </div>
-
-      <!-- STEP 1 -->
-      <form *ngIf="step === 1"
-            (ngSubmit)="validateCredentials()">
-
-        <div class="input-group">
-
-          <i class="fa fa-user"></i>
-
-          <input
-            type="text"
-            [placeholder]="'Username' | t"
-            autocomplete="username"
-            [(ngModel)]="username"
-            [ngModelOptions]="{standalone:true}">
-
-        </div>
-<div class="input-group password-group">
-
-    <i class="fa fa-lock input-icon"></i>
-
-    <input
-        [type]="showPassword ? 'text' : 'password'"
-        [placeholder]="'Password' | t"
-        autocomplete="current-password"
-        [(ngModel)]="password"
-        [ngModelOptions]="{standalone:true}">
-
-    <span
-        class="eye-icon"
-        (click)="togglePassword()">
-
-        <i
-            class="fa"
-            [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" style="left: 0px;">
-        </i>
-
-    </span>
-
-</div>
-
-        <button
-          type="submit"
-          class="btn-login">
-
-          {{ 'Login' | t }}
-
+        <button type="submit" class="zl-btn" [disabled]="isLoading">
+          <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ (isLoading ? 'Signing in…' : 'Sign in') | t }}
         </button>
-
       </form>
 
-      <!-- STEP 2 -->
-      <div
-        *ngIf="step === 2"
-        class="otp-success">
-
-        <div class="success-circle">
-
-          <i class="fa fa-check"></i>
-
-        </div>
-
-        <h4>{{ 'User Validated Successfully' | t }}</h4>
-
-        <p>
-          {{ 'Click below to receive OTP' | t }}
-        </p>
-
-        <button
-          class="btn-login"
-          (click)="sendOtp()">
-
-          {{ 'Send OTP' | t }}
-
+      <!-- STEP 2: user checked, send the one-time code -->
+      <div *ngIf="step === 2" class="zl-step" aria-live="polite">
+        <h1>{{ 'Confirm it is you' | t }}</h1>
+        <p class="zl-sub">{{ 'Your sign-in details are correct. We send a one-time code to your registered e-mail or phone.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <div class="zl-note" *ngIf="notice" role="status">{{ notice }}</div>
+        <button type="button" class="zl-btn" (click)="sendOtp()" [disabled]="isLoading">
+          <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Send the code' | t }}
         </button>
-
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Use another user' | t }}</button>
       </div>
 
-      <!-- STEP 3 -->
-      <form *ngIf="step === 3">
-
-        <h3>{{ 'OTP Verification' | t }}</h3>
-
-        <p class="subtitle">
-          {{ 'Enter OTP sent to your mobile/email' | t }}
-        </p>
-
-        <div class="input-group">
-
-          <i class="fa fa-key"></i>
-
-          <input
-            type="text"
-            [placeholder]="'Enter OTP' | t"
-            [(ngModel)]="otp"
-            [ngModelOptions]="{standalone:true}">
-
-        </div>
-
-        <button
-          class="btn-login"
-          (click)="verifyOtp()">
-
-          {{ 'Verify OTP' | t }}
-
+      <!-- STEP 3: enter the one-time code -->
+      <form *ngIf="step === 3" (ngSubmit)="verifyOtp()" novalidate>
+        <h1>{{ 'Enter the code' | t }}</h1>
+        <p class="zl-sub">{{ 'Type the code we sent to your e-mail or phone.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <div class="zl-note" *ngIf="notice" role="status">{{ notice }}</div>
+        <label class="zl-field">
+          <span>{{ 'One-time code' | t }}</span>
+          <input type="text" name="otp" inputmode="numeric" autocomplete="one-time-code" [(ngModel)]="otp" (input)="error = ''"
+                 class="zl-otp" autofocus>
+        </label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading">
+          <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Verify and continue' | t }}
         </button>
-
+        <button type="button" class="zl-link" (click)="sendOtp()" [disabled]="isLoading">{{ 'Send the code again' | t }}</button>
       </form>
 
+      <p class="zl-signup" *ngIf="cloudSignup && step === 1">{{ 'New to ZEO?' | t }} <a routerLink="/signup">{{ 'Start a free trial' | t }}</a></p>   <!-- v1.23.0 -->
+      <div class="zl-foot">
+        <z-lang-picker class="zl-lang" variant="select" [reload]="false"></z-lang-picker>
+        <span>{{ 'Version' | t }} {{ version }}</span>
+      </div>
     </div>
+  </main>
 
-    <!-- RIGHT SIDE -->
-    <div class="login-right">
-
-      <img
-      src="assets/no-projects.svg"
-        class="hero-image">
-
-      <h1>{{ 'HR Management' | t }}</h1>
-
-      <p>
-        {{ 'Manage Employees, Attendance, Payroll and Performance from one place.' | t }}
-      </p>
-
-      <!-- <div class="feature-cards">
-
-        <div class="feature-card">
-
-          <i class="fa fa-users"></i>
-
-          <span>Employees</span>
-
-        </div>
-
-        <div class="feature-card">
-
-          <i class="fa fa-calendar-check"></i>
-
-          <span>Attendance</span>
-
-        </div>
-
-        <div class="feature-card">
-
-          <i class="fa fa-money-bill"></i>
-
-          <span>Payroll</span>
-
-        </div>
-
-      </div> -->
-
+  <aside class="zl-brand" aria-label="ZEO apps">
+    <div class="zl-brand-in">
+      <p class="zl-kicker">{{ 'One login for the whole company' | t }}</p>
+      <h2>{{ 'People, projects, property and safety – in one place.' | t }}</h2>
+      <ul class="zl-apps">
+        <li *ngFor="let a of apps"><b>{{ a.name | t }}</b><span>{{ a.text | t }}</span></li>
+      </ul>
+      <p class="zl-made">{{ 'Made for companies in the UAE and the GCC – English and Arabic.' | t }}</p>
     </div>
-
-  </div>
-
-</div>
-
-<!-- GLOBAL LOADING SPINNER -->
-<div class="loading-overlay" *ngIf="isLoading">
-  <div class="spinner"></div>
-  <p>{{ 'Please wait...' | t }}</p>
+  </aside>
 </div>

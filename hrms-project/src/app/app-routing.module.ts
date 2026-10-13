@@ -113,7 +113,10 @@ import { ResignationApprovalsComponent } from './resignation-approvals/resignati
 import { ProjectOptionsComponent } from './project-options/project-options.component';
 import { HR_MODULE_ROUTES } from './hr-modules/hr-modules.routes';
 import { SETTINGS_HOME_ROUTES } from './settings-home/settings-home.routes';   // v1.15.1
-import { SETTINGS_APPS_ROUTES } from './settings-apps/settings-apps.component';   // v1.21.0 Settings → Apps
+import { SETTINGS_APPS_ROUTES } from './settings-apps/settings-apps.component';
+import { CLOUD_SETTINGS_ROUTES } from './zeo-cloud/cloud-settings.component';
+import { CONTROL_ROUTES } from './zeo-cloud/console.component';
+import { CloudSignupComponent } from './zeo-cloud/signup.component';   // v1.23.0   // v1.21.0 Settings → Apps
 import { AI_SETTINGS_ROUTES } from './ai-settings/ai-settings.routes';   // v1.16.0
 import { COUNTRY_PACK_ROUTES } from './country-pack/country-pack.routes';   // v1.20.1
 import { LANGUAGE_PACK_ROUTES } from './language-pack/language-pack.routes';   // v1.20.1
@@ -210,6 +213,8 @@ const routes: Routes = [
   { path: 'company-selection', component: CompanySelectionComponent },
   { path: 'main-dashboard', component: MainDashboardComponent },
   { path: 'schema-selection', component: SchemaSelectionComponent, canActivate: [AuthGuard], },
+  { path: 'control', canActivate: [AuthGuard], children: CONTROL_ROUTES },   // v1.23.0 ZEO Cloud – Adept control console
+  { path: 'signup', component: CloudSignupComponent },                       // v1.23.0 ZEO Cloud – sign-up (14-day trial)
   { path: 'employee-schema-selection', component: EmployeeSchemaSelectionComponent, canActivate: [AuthGuard], },
 
 
@@ -306,6 +311,7 @@ const routes: Routes = [
         children: [
           ...SETTINGS_HOME_ROUTES,   // v1.15.1: Settings home (the Settings gear opens it)
           ...SETTINGS_APPS_ROUTES,   // v1.21.0: Settings → Apps (activate apps, industry per app)
+          ...CLOUD_SETTINGS_ROUTES,   // v1.23.0 ZEO Cloud: Subscription and Security (account owner)
           ...AI_SETTINGS_ROUTES,   // v1.16.0: Settings → AI settings
           ...COUNTRY_PACK_ROUTES,   // v1.20.1: Settings → Country settings (was /main-sidebar/country-settings)
           ...LANGUAGE_PACK_ROUTES,   // v1.20.1: Settings → Languages (was /main-sidebar/languages)

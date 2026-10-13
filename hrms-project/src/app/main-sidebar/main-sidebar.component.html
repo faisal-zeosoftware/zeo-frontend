@@ -76,6 +76,7 @@
       <!-- Notification Dropdown (Desktop) -->
       <!-- v1.9.0: Ask ZEO AI – questions about the data in plain language -->
       <li class="nav-item"><z-app-launcher></z-app-launcher></li>   <!-- v1.20.0 HRMS / Projects / Settings -->
+      <li class="nav-item"><z-cloud-banner></z-cloud-banner></li>   <!-- v1.23.0 ZEO Cloud: trial / renewal / grace / read-only -->
       <li class="nav-item"><z-ask></z-ask></li>
       <!-- v1.7.0: activities planned for me on any record -->
       <li class="nav-item" *ngIf="todo$ | async as t">
@@ -380,6 +381,7 @@
       <div class="d-flex align-items-center gap-2">
         <z-app-launcher></z-app-launcher>   <!-- v1.20.0 -->
         <!-- v1.9.0: Ask ZEO AI on phones -->
+        <z-cloud-banner></z-cloud-banner>
         <z-ask></z-ask>
         <z-lang-picker variant="menu"></z-lang-picker>   <!-- v1.15.0 -->
         <!-- ADD THIS: Mobile Logout Icon -->

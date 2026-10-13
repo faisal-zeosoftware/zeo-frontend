@@ -22,7 +22,16 @@ export class DocumentNumberingComponent {
   // v1.15.1: the list shows the type name, not the stored code ("general_request")
   private typeNames: Record<string, string> = { general_request: 'General request', leave_request: 'Leave request', document_request: 'Document request',
     advance_salary_request: 'Advance salary request', air_ticket_request: 'Air ticket request', loan_request: 'Loan request', asset_request: 'Asset request',
-    resignation_request: 'Resignation request', lateinearlyout_request: 'Late in / early out request', payroll_run: 'Payroll run' };
+    resignation_request: 'Resignation request', lateinearlyout_request: 'Late in / early out request', payroll_run: 'Payroll run',
+    // v1.22.1: the other transaction screens
+    expense_trip: 'Business trip', expense_report: 'Expense report', expense_advance: 'Expense advance',
+    profile_change_request: 'Profile change request', letter_request: 'HR letter request', grievance: 'Grievance',
+    asset_return: 'Asset return', asset_transfer: 'Asset transfer', asset_maintenance: 'Asset maintenance', asset_damage: 'Asset damage',
+    asset_loss: 'Asset loss', asset_disposal: 'Asset disposal', manpower_requisition: 'Manpower requisition', job_offer: 'Job offer',
+    attendance_correction: 'Attendance correction', employee_transfer: 'Employee transfer', exit_settlement: 'Final settlement',
+    shift_request: 'Shift request' };
+  /** v1.22.1: the document types offered on the form (same order as the list above) */
+  docTypes = Object.entries(this.typeNames).map(([value, label]) => ({ value, label }));
   zLabel = (v: any): string => this.typeNames[String(v)] || statusLabel(v);
 
 
