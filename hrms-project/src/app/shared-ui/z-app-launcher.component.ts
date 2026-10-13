@@ -69,7 +69,7 @@ const TILE_ICON: Record<string, string> = {
     background: rgba(255,255,255,.06); color: #fff; font: 500 14px Roboto, sans-serif; cursor: pointer; }
   .zal-btn:hover { background: rgba(255,255,255,.12); }
   .zal-btn mat-icon { font-size: 20px; width: 20px; height: 20px; }
-  .zal-panel { position: absolute; top: calc(100% + 10px); left: 0; z-index: 3000; width: min(820px, calc(100vw - 24px)); background: #fff; border-radius: 14px;
+  .zal-panel { position: absolute; top: calc(100% + 10px); left: -50px; z-index: 3000; width: min(820px, calc(100vw - 24px)); background: #fff; border-radius: 14px;
     box-shadow: 0 16px 48px rgba(27,22,64,.22); padding: 16px; color: #1F2433; }
   .zal-suites { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 14px; }
   .zal-suites button { display: flex; align-items: center; gap: 10px; text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid #E3E5EE; background: #fff; cursor: pointer; }
