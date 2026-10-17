@@ -63,7 +63,7 @@
                     <select class="form-control" id="companySelect" [(ngModel)]="selectedCompany" name="company"
                       (change)="onCompanyChange()" [ngModelOptions]="{standalone: true}">
                       <option value="">Select a company</option>
-                      <option *ngFor="let company of companies" [ngValue]="company">{{ company.schema_name }}</option>
+                      <option *ngFor="let company of companies" [ngValue]="company">{{ company.name || company.schema_name }}</option>
                     </select>
                   </div>
                 </div>
@@ -477,7 +477,7 @@
                 <select class="form-control" [(ngModel)]="selectedCompany" name="company"
                   (change)="onCompanyChange()">
                   <option value="">Select a company</option>
-                  <option *ngFor="let company of companies" [ngValue]="company">{{ company.schema_name }}</option>
+                  <option *ngFor="let company of companies" [ngValue]="company">{{ company.name || company.schema_name }}</option>
                 </select>
               </div>
             </div>
@@ -487,9 +487,9 @@
               <div class="custom-sel">
                 <select class="form-control" id="employee" [(ngModel)]="selectedEmp" name="employee"
                   (ngModelChange)="onEmployeeChange()">
-                  <option [ngValue]="null">Select a user</option>
+                  <option [ngValue]="null">{{ employees.length ? 'Select an employee' : (selectedCompany ? 'No employee without a login in this company' : 'Select a company first') }}</option>
                   <option *ngFor="let employee of employees" [ngValue]="employee">
-                    {{ employee.emp_code }}
+                    {{ empLabel(employee) }}
                   </option>
                 </select>
               </div>

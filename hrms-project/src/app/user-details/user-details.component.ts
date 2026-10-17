@@ -387,7 +387,7 @@ verifyOtp() {
    STEP 3 — RESET PASSWORD
 --------------------------------*/
 resetPassword() {
-  this.UserMasterService.resetPassword(this.email, this.newPassword).subscribe(
+  this.UserMasterService.resetPassword(this.email, this.newPassword, this.otp).subscribe(
     () => {
       alert("Password successfully reset!");
       this.closeSettings();

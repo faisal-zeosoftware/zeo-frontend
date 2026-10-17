@@ -85,6 +85,8 @@ export class FieldHelpService {
       document.addEventListener('focusout', this.onBlur, true);
       document.addEventListener('mouseover', this.onHover, { capture: true, passive: true });
       document.addEventListener('keydown', this.onKey, true);
+      document.addEventListener('mousedown', this.onDown, true);   // v1.26.0
+      document.addEventListener('mousedown', this.onDownAlways, true);   // v1.26.0
       window.addEventListener('scroll', this.onMove, { capture: true, passive: true });
       window.addEventListener('resize', this.onMove, { passive: true });
     });
@@ -144,19 +146,40 @@ export class FieldHelpService {
     if (!this.isField(el)) { return; }
     if (!this.enabled) { return; }
     this.target = el;
+    // v1.28.1: the panel no longer opens by itself when a field gets the focus – the team found it in the way.
+    // The field shows its “?” (click it, or press F1) and the panel opens on request only.
+    this.hoverEl = el;
     cancelAnimationFrame(this.raf);
-    this.raf = requestAnimationFrame(() => this.showFor(el));
+    this.raf = requestAnimationFrame(() => this.showIcon(el));
   };
   private onBlur = (ev: FocusEvent) => {
     const next = ev.relatedTarget as HTMLElement | null;
     if (next && (next.closest('.zfh') || this.isField(next))) { return; }
     setTimeout(() => { if (!document.activeElement || !this.isField(document.activeElement) ) { if (!this.panel?.matches(':hover')) { this.hide(); } } }, 150);
   };
+  /** v1.26.0: a click that opens a list (mat-select, drop-down arrow, date picker) hides the panel so it does not cover the options. */
+  private onDown = (ev: MouseEvent) => {
+    const t = ev.target as HTMLElement | null;
+    if (!t || !this.panel || this.panel.style.display === 'none') { return; }
+    if (t.closest('mat-select, .mat-mdc-select, .searchable-arrow, .dropdown-toggle, select, .mat-datepicker-toggle')) { this.hide(); }
+  };
+  private quietUntil = 0;
+  /** v1.26.0: the focus that follows a click on a list comes before the list opens – stay hidden for a moment. */
+  private onDownAlways = (ev: MouseEvent) => {
+    const t = ev.target as HTMLElement | null;
+    if (t && typeof t.closest === 'function' && t.closest('mat-select, .mat-mdc-select, .searchable-arrow, .dropdown-toggle, select, .mat-datepicker-toggle')) {
+      this.quietUntil = Date.now() + 700;
+    }
+  };
   private onKey = (ev: KeyboardEvent) => {
+    // v1.26.0: typing in the field or opening a list hides the panel – it covered the search results / options
+    if (this.panel && this.panel.style.display !== 'none' && this.target && ev.target === this.target
+        && (ev.key.length === 1 || ev.key === 'ArrowDown' || ev.key === 'Enter' || ev.key === ' ')) { this.hide(); return; }
     if (ev.key === 'Escape' && this.panel && this.panel.style.display !== 'none') { this.hide(); }
     else if (ev.key === 'F1' && this.target && this.enabled) { ev.preventDefault(); this.showFor(this.target); }
   };
   private onMove = () => {
+    if (this.panel && this.panel.style.display !== 'none' && this.listOpen(this.target)) { this.hide(); return; }
     if (this.panel && this.panel.style.display !== 'none' && this.target) {
       cancelAnimationFrame(this.rafMove);   // own frame handle: a scroll caused by the focus must not cancel the pending help
       this.rafMove = requestAnimationFrame(() => { if (this.target && this.target.isConnected) { this.place(this.panel!, this.target); } else { this.hide(); } });
@@ -197,7 +220,15 @@ export class FieldHelpService {
     const txt = (n: Element | null) => n ? { english: i18nOriginal(n, 'mat-icon, .material-icons, .zf-req, input, select, textarea, option, button, .zfh-icon'),
       shown: textOf(n), raw: n.textContent || '', req: !!n.querySelector('.zf-req, .required, .text-danger') } : null;
     const lb = el.getAttribute('aria-labelledby');
-    if (lb) { const n = document.getElementById(lb.split(' ')[0]); if (n) { return txt(n)!; } }
+    // v1.26.0: a mat-select without <mat-label> points aria-labelledby at its own value text ("Head Office – Dubai"), which
+    // matched the "head / owner" rule and showed "The person (employee or user) for this role" on a Branch field. Ids that
+    // point inside the field itself are skipped; the caption next to the field is used instead.
+    if (lb) {
+      for (const id of lb.split(' ')) {
+        const n = document.getElementById(id);
+        if (n && !el.contains(n) && !n.closest('.mat-mdc-select-value, .mat-select-value, mat-select')) { return txt(n)!; }
+      }
+    }
     if (el.id) {
       try { const n = document.querySelector(`label[for="${(window as any).CSS?.escape ? CSS.escape(el.id) : el.id}"]`); if (n) { return txt(n)!; } } catch { /* odd id */ }
     }
@@ -337,12 +368,19 @@ export class FieldHelpService {
   }
 
   // ------------------------------------------------------------------ panel
+  /** v1.26.0: an open list (mat-select options, autocomplete, date picker) – the panel would cover it and take its clicks. */
+  private listOpen(el?: HTMLElement | null): boolean {
+    if (el && (el.getAttribute('aria-expanded') === 'true' || el.closest('[aria-expanded="true"]'))) { return true; }
+    return !!document.querySelector('.cdk-overlay-container .mat-mdc-select-panel, .cdk-overlay-container .mat-select-panel, '
+      + '.cdk-overlay-container .mat-mdc-autocomplete-panel, .cdk-overlay-container .mat-datepicker-content');
+  }
+
   async showFor(el: HTMLElement): Promise<void> {
-    if (!this.enabled || !el.isConnected) { return; }
+    if (!this.enabled || !el.isConnected || this.listOpen(el) || Date.now() < this.quietUntil) { return; }
     this.target = el;
     let h = this.helpFor(el);
     if (!h) { await this.load(); if (this.target !== el) { return; } h = this.helpFor(el); }
-    if (!h) { return; }
+    if (!h || this.listOpen(el)) { return; }
     const p = this.ensurePanel();
     const ui = (s: string) => this.cat?.ui?.[s] || s;
     const esc = (s: string) => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);

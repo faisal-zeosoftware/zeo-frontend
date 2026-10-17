@@ -44,6 +44,11 @@ export class EmployeeUserComponent implements OnInit {
     this.companyRegistrationService.getCompany().subscribe(
       (result: any) => {
         this.companies = result;
+        if (!this.selectedCompany) {   // v1.28.1: the open company is selected and its users listed at once
+          const cur = localStorage.getItem('selectedSchema');
+          this.selectedCompany = (result || []).find((c: any) => c.schema_name === cur) || null;
+          if (this.selectedCompany) { this.loadTenantUsers(); }
+        }
       },
       (error: any) => {
         console.error('Error fetching companies:', error);

@@ -229,33 +229,62 @@ if (this.financial_year) {
    
     this.isLoading = true;
 
-    // Make API call
+    // Make API call – v1.26.0: answered at once with a job; the company is created in the background
+    this.jobStep = 'Sending…';
     this.userService.getSchema(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
+      (response: any) => {
+        if (response && response.job) {
+          this.watchJob(response.job);
+          return;
+        }
         this.isLoading = false;
-
-        alert('Company has been Registered! ✅');
-        this.ref.close('Closed using function');
-
-        window.location.reload();
+        this.finishCreated(response?.name || this.name);
       },
       (error) => {
-        console.log('Full Error:', error);
         this.isLoading = false;
-
-      
-        if (error.status === 504 || error.status === 0) {
-          alert('Company created, but server response timeout ⚠️');
-          this.isLoading = false;
-
-        } else {
-          alert(error.error?.detail || 'Registration failed!');
-          this.isLoading = false;
-
-        }
+        this.jobStep = '';
+        const e = error?.error || {};
+        const msgs: string[] = [];
+        if (typeof e === 'string') msgs.push(e);
+        else Object.keys(e).forEach(k => msgs.push(`${k === 'detail' || k === 'error' ? '' : k + ': '}${Array.isArray(e[k]) ? e[k].join(' ') : e[k]}`));
+        alert(msgs.join('\n') || 'The company could not be created. Please try again.');
       }
     );
+  }
+
+  jobStep = '';
+  jobStepNo = 0;
+  jobSteps = 5;
+  private watchJob(job: string, tries = 0): void {
+    this.userService.getCompanyJob(job).subscribe({
+      next: (st: any) => {
+        this.jobStep = st?.step || '';
+        this.jobStepNo = st?.step_no || 0;
+        this.jobSteps = st?.steps || 5;
+        if (st?.state === 'done') {
+          this.isLoading = false;
+          const failed = Object.keys(st.failed || {});
+          this.finishCreated(st.name || this.name, failed.length ? `Not set up: ${failed.join(', ')} – activate them in Settings → Apps.` : '');
+        } else if (st?.state === 'failed') {
+          this.isLoading = false;
+          this.jobStep = '';
+          alert(`The company could not be created: ${st.error || 'unknown error'}`);
+        } else {
+          setTimeout(() => this.watchJob(job, tries + 1), 2500);
+        }
+      },
+      error: () => {
+        if (tries < 240) setTimeout(() => this.watchJob(job, tries + 1), 4000);
+        else { this.isLoading = false; alert('The company is still being created. Refresh the company list in a few minutes.'); }
+      }
+    });
+  }
+
+  private finishCreated(name: string, note = ''): void {
+    this.jobStep = '';
+    alert(`Company "${name}" is ready.${note ? '\n' + note : ''}`);
+    this.ref.close('created');
+    window.location.reload();
   }
   
 

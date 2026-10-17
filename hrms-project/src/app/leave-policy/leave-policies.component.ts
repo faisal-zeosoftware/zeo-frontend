@@ -43,6 +43,8 @@ const BLANK_LINE = {
           <button type="button" class="lp-btn" (click)="openRun('accrual')">Monthly accrual</button>
           <button type="button" class="lp-btn" (click)="openRun('year')">Leave year end</button>
           <button type="button" class="lp-btn" (click)="startLedger()" title="Writes an opening line for every balance that has no ledger yet">Start ledger from balances</button>
+          <label class="lp-btn" title="Excel / CSV: Employee Code + one column per leave type (e.g. Annual Leave), or employee_code, leave_type, days">Load opening balances
+            <input type="file" accept=".xlsx,.xls,.csv" hidden (change)="loadOpenings($event)"></label>
         </div>
       </div>
       <div class="lp-tabs" role="tablist">
@@ -272,7 +274,7 @@ const BLANK_LINE = {
   <div class="lp-modal" (click)="$event.stopPropagation()" role="dialog" aria-label="Load UAE standard setup">
     <header><h2>Load UAE standard setup</h2><button type="button" class="lp-btn" (click)="setup = null">Close</button></header>
     <div class="body">
-      <p class="lp-muted">Adds what is missing – existing leave types and policies are not changed. New leave types get a reporting-manager approval workflow for every branch.</p>
+      <p class="lp-muted">Adds what is missing – existing leave types and policies are not changed. New leave types get a reporting-manager approval workflow for every branch. Company categories that no policy names are given one: labour / worker / skilled / site / driver categories go to Labour, the others to Office staff.</p>
       <table zPlain class="lp-mini"><thead><tr><th>Leave type</th><th>Rule</th><th></th></tr></thead>
         <tbody><tr *ngFor="let t of setup.leave_types"><td>{{ t.name }}</td><td>{{ t.description }}</td><td [class.lp-ok]="t.exists">{{ t.exists ? 'Exists' : 'Will be added' }}</td></tr></tbody></table>
       <table zPlain class="lp-mini" style="margin-top:12px"><thead><tr><th>Policy</th><th>Categories</th><th></th></tr></thead>
@@ -293,7 +295,7 @@ const BLANK_LINE = {
       </div>
       <p class="lp-muted" *ngIf="run.kind === 'accrual'">Credits the days earned in the month (annual leave monthly; sick, casual and study leave at the start of the leave year). Running it again for the same month adds nothing.</p>
       <p class="lp-muted" *ngIf="run.kind === 'year'">Balances above the policy's carry-forward limit are kept and flagged, sent for encashment or lapse – as set per policy line.</p>
-      <p class="lp-muted" *ngIf="run.loading">Calculating…</p>
+      <div class="lp-wait" *ngIf="run.loading || busy"><span class="lp-spin"></span>{{ run.loading ? 'Calculating the lines…' : 'Crediting the balances – this can take a minute for a large company. Keep this window open.' }}</div>
       <table zPlain class="lp-mini" *ngIf="run.rows?.length">
         <thead><tr><th>Employee</th><th>Leave type</th><th *ngIf="run.kind === 'accrual'">Days</th><th *ngIf="run.kind === 'accrual'">Note</th>
           <th *ngIf="run.kind === 'year'">Balance</th><th *ngIf="run.kind === 'year'">Carried forward</th><th *ngIf="run.kind === 'year'">Above the limit</th><th *ngIf="run.kind === 'year'">Action</th></tr></thead>
@@ -306,7 +308,7 @@ const BLANK_LINE = {
     </div>
     <footer><span class="lp-muted" style="margin-right:auto">{{ run.rows?.length || 0 }} lines</span>
       <button type="button" class="lp-btn" (click)="run = null">Cancel</button>
-      <button type="button" class="lp-btn primary" [disabled]="busy || !run.rows?.length" (click)="confirmRun()">{{ run.kind === 'accrual' ? 'Credit these days' : 'Close the leave year' }}</button></footer>
+      <button type="button" class="lp-btn primary" [disabled]="busy || !run.rows?.length" (click)="confirmRun()">{{ busy ? 'Working…' : (run.kind === 'accrual' ? 'Credit these days' : 'Close the leave year') }}</button></footer>
   </div>
 </div>`,
 })
@@ -542,6 +544,7 @@ export class LeavePoliciesComponent implements OnInit {
 
   // ---------------- setup, accrual, year end
   async openSetup(): Promise<void> {
+    this.toBody();
     try { this.setup = await firstValueFrom(this.http.get<any>(this.url('leave-policy/api/uae-setup/'))); } catch (e: any) { this.say(this.err(e), true); }
     this.cd.detectChanges();
   }
@@ -551,11 +554,33 @@ export class LeavePoliciesComponent implements OnInit {
       const r = await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/uae-setup/'), {}));
       this.setup = null; await this.reload();
       try { this.types = await firstValueFrom(this.http.get<any[]>(this.url('calendars/api/leave-type/'))); } catch { /* keep */ }
-      this.say(`Loaded: ${r.created_leave_types.length} leave types, ${r.created_policies.length} policies, ${r.workflows_added} approval workflows added.`);
+      const mapped = (r.categories_mapped || []).map((m: any) => `${m.category} → ${m.policy}`);
+      this.say(`Loaded: ${r.created_leave_types.length} leave types, ${r.created_policies.length} policies, ${r.workflows_added} approval workflows added.`
+        + (mapped.length ? ` Categories given a policy: ${mapped.join(', ')}.` : ''));
+    } catch (e: any) { this.say(this.err(e), true); }
+    this.busy = false; this.cd.detectChanges();
+  }
+  /** v1.26.0: the dialog is moved to <body> – inside the page it sat under the side menu, off centre. */
+  private toBody(): void {
+    setTimeout(() => document.querySelectorAll('.lp-modal-back').forEach(el => { if (el.parentElement !== document.body) document.body.appendChild(el); }));
+  }
+  async loadOpenings(ev: any): Promise<void> {
+    const f: File | undefined = ev?.target?.files?.[0];
+    if (ev?.target) ev.target.value = '';
+    if (!f) return;
+    const today = new Date().toISOString().slice(0, 10);
+    const d = prompt('Opening balance date (YYYY-MM-DD) – usually the day before the leave year or the go-live date', today);
+    if (d === null) return;
+    const fd = new FormData(); fd.append('file', f); fd.append('date', d || today); fd.append('mode', 'set');
+    this.busy = true; this.say('Loading the opening balances…'); this.cd.detectChanges();
+    try {
+      const r = await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/openings/'), fd));
+      this.say(`${r.loaded} opening balance(s) loaded` + (r.error_count ? `; ${r.error_count} row(s) not loaded: ${r.errors.slice(0, 5).join(' · ')}` : '.'), !!r.error_count && !r.loaded);
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();
   }
   openRun(kind: 'accrual' | 'year'): void {
+    this.toBody();
     const d = new Date(); const last = new Date(d.getFullYear(), d.getMonth(), 0);
     const pad = (n: number) => String(n).padStart(2, '0');
     this.run = { kind, month: `${last.getFullYear()}-${pad(last.getMonth() + 1)}`, date: `${d.getFullYear() - (d.getMonth() === 0 ? 1 : 0)}-12-31`, rows: null, loading: false };

@@ -37,6 +37,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { AuthGuard } from './auth.guard';
 import { AuthenticationService } from './login/authentication.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ZBusyInterceptor } from './shared-ui/z-busy.interceptor';   // v1.28.1
+import { ZHttpErrorInterceptor } from './shared-ui/z-http-error.interceptor';   // v1.28.1
 import { AuthInterceptor } from './auth-interceptor.service';
 import { CompanyMasterComponent } from './company-master/company-master.component';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -585,6 +587,8 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     },
     { provide: HTTP_INTERCEPTORS, useClass: ZListRecorderInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: I18nInterceptor, multi: true },   // v1.15.0: X-Language on every API call
+    { provide: HTTP_INTERCEPTORS, useClass: ZBusyInterceptor, multi: true },   // v1.28.1: loading bar for every save / delete
+    { provide: HTTP_INTERCEPTORS, useClass: ZHttpErrorInterceptor, multi: true },   // v1.28.1: server reason added to generic failure messages
     { provide: APP_INITIALIZER, useFactory: startI18n, deps: [I18nService], multi: true },   // v1.15.0: language at start
     { provide: ZRecordServiceToken, useExisting: ZRecordService },
     { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true },

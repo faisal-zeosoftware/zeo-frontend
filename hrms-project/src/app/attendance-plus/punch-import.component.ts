@@ -14,7 +14,7 @@ import { ApApi } from './ap-api';
 <div class="ap-wrap">
   <div class="ap-head">
     <div><h1>Import punches</h1>
-      <p class="ap-desc">CSV or Excel with the columns <b>employee_code, date, time, type</b> (date YYYY-MM-DD, time HH:MM, type in / out / break out / break in /
+      <p class="ap-desc">A daily sheet (employee code, date, actual in, actual out – e.g. a device export) or CSV / Excel with the columns <b>employee_code, date, time, type</b> (date YYYY-MM-DD, time HH:MM, type in / out / break out / break in /
         lunch out / lunch in or empty for automatic). Check the file first; nothing is saved until you press Import. Punches already in the system are skipped.</p></div>
     <div class="ap-tools"><button type="button" class="ap-btn" (click)="template()">Download template</button></div>
   </div>
@@ -68,7 +68,7 @@ export class PunchImportComponent {
     try {
       this.res = await this.api.post('punches/import/', fd);
       this.err = false;
-      this.msg = commit ? `${this.res.totals.imported} punches imported and the days recalculated.` : 'File checked – review the rows below, then import.';
+      this.msg = commit ? `${this.res.totals.imported} punches imported. ${this.res.note || 'The days were recalculated.'}` : `File checked – ${this.res.total_rows || this.res.rows.length} punch rows (${this.res.totals.error} with errors). Review the rows below, then import.`;
     } catch (e) { this.err = true; this.msg = ApApi.err(e, 'The file could not be read.'); }
     this.busy = false; this.cdr.markForCheck();
   }

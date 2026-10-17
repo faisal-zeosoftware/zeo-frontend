@@ -277,6 +277,15 @@ scrollToBottom(): void {
 
 
 
+/** v1.26.0 – refresh the approvals and history in place (each decision reloaded the whole app). */
+refreshApprovals(): void {
+  let ids: number[] = [];
+  try { ids = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'); } catch { ids = []; }
+  const schema = localStorage.getItem('selectedSchema') || '';
+  this.fetchEmployees(schema, ids);
+  this.fetchEmployeesLeaveHistory(schema, ids);
+}
+
 fetchEmployees(schema: string, branchIds: number[]): void {
   this.isLoading = true;
 
@@ -380,6 +389,7 @@ note: string = '';  // To hold the note entered by the user
     this.leaveService.getApprovalDetailsLeave(apiUrl).subscribe(
       (response: any) => {
         this.selectedApproval = response;
+        this.note = ''; this.rejection_reason = ''; this.showRejectionReason = false;   // v1.26.0: no comment left from the last request
         this.isAddFieldsModalOpen = true; // Open the modal
         console.log('detalis',this.selectedApproval)
       },
@@ -429,12 +439,14 @@ note: string = '';  // To hold the note entered by the user
           this.Approvals[approvalIndex].status = 'Approved';
         }
 this.isLoading = false;
-        // Close the modal after successful approval
+        // Close the modal after successful approval – v1.26.0: the list is refreshed in place (no full reload)
         this.isAddFieldsModalOpen = false;
-        window.location.reload();
+        this.note = '';
+        this.refreshApprovals();
       },
       (error) => {
-        console.error('Error approving the approval request:', error);
+        this.isLoading = false;
+        alert(error?.error?.detail || error?.error?.error || (typeof error?.error === 'string' ? error.error : '') || 'The approval could not be saved.');
       }
     );
   }
@@ -443,6 +455,7 @@ this.isLoading = false;
 
 closemarketModal(){
   this.isAddFieldsModalOpen=false;
+  this.note = ''; this.rejection_reason = ''; this.showRejectionReason = false;   // v1.26.0
 }
 
 rejection_reason: string = ''; // New property for rejection reason
@@ -457,11 +470,15 @@ confirmRejection(approvalId: number): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
   // Data to be sent in the request body (including the note and rejection reason)
+  // v1.26.0: one comment box – the comment is the rejection reason (there were two boxes and the reason was lost)
+  const reason = (this.rejection_reason || this.note || '').trim();
+  if (!reason) { alert('Write the reason for the rejection in the comment box.'); return; }
   const approvalData = {
     note: this.note, // The note entered by the user
     status: 'Rejected', // Setting status to "Rejected"
-    rejection_reason: this.rejection_reason, // Adding the rejection reason
+    rejection_reason: reason,
   };
+  this.isLoading = true;
 
   if (selectedSchema) {
     const apiUrl = `${this.apiUrl}/calendars/api/leave-approvals/${approvalId}/reject/?schema=${selectedSchema}`;
@@ -485,10 +502,13 @@ confirmRejection(approvalId: number): void {
         this.rejection_reason = '';
         this.showRejectionReason = false;
         this.isAddFieldsModalOpen = false;
-         window.location.reload();
+        this.isLoading = false;
+        this.note = '';
+        this.refreshApprovals();   // v1.26.0: no full page reload
       },
       (error) => {
-        console.error('Error rejecting the approval request:', error);
+        this.isLoading = false;
+        alert(error?.error?.detail || error?.error?.error || 'The rejection could not be saved.');
       }
     );
   }

@@ -794,7 +794,7 @@ toggleRequestsDropdown() {
   
 
 // doc_number: any = '';
-document_number: number | null = null;
+document_number: string | number | null = null;
 total: any = '';
 branch: any = '';
 request_type: any = '';

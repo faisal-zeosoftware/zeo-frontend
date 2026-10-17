@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';   // v1.26.0
 import { Component , ElementRef, OnInit, Renderer2, ViewChild, inject} from '@angular/core';
 import { ZEmpOrgFieldsComponent } from '../org-structure/z-emp-org-fields.component';   // v1.12.0
 import { ZEmpProfileFieldsComponent } from '../employee-profile/z-emp-profile-fields.component';   // v1.13.0
@@ -193,11 +194,14 @@ ngOnInit(): void {
   this.loadNationality();
   this.loadUsers();
 
+  this.loadReportsTo();   // v1.26.0
+
   // 🔹 Load employee data
   this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
     (Emp: any) => {
 
       this.Emp = Emp;
+      this.loaded = true;   // v1.26.0: Update is enabled only now
       this.EmpD.emp_master = Emp.id;
 
       // Profile picture
@@ -342,7 +346,22 @@ private appendFormData(formData: FormData, key: string, value: any): void {
   }
 }
  
+  // v1.26.0 – Save waited for nothing: pressing it before the employee had loaded sent an empty code / dates
+  loaded = false;
+  reportsToOptions: { id: number; code: string; name: string }[] = [];
+  loadReportsTo(): void {
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any[]>(`${environment.apiBaseUrl}/tools/api/directory/?schema=${encodeURIComponent(schema)}`).subscribe({
+      next: rows => { this.reportsToOptions = (rows || []).filter((r: any) => r.id !== this.data?.employeeId).sort((a: any, b: any) => (a.code || '').localeCompare(b.code || '')); },
+      error: () => { this.reportsToOptions = []; }
+    });
+  }
+
 updateEmp(): void {
+  if (!this.loaded || !this.Emp?.emp_code) {
+    alert('The employee is still loading – please wait a moment and press Update again.');
+    return;
+  }
   // custom fields ticked "Mandatory" in the form designer
   const missing = ZEmpFieldsComponent.missing(this.editCustom, 'value', 'edit');
   if (missing.length) {
@@ -367,10 +386,16 @@ updateEmp(): void {
   }
 
   // ✅ Safe Date Conversion
-  const formatDate = (date: any): string => {
+  const formatDate = (date: any): string => {   // v1.26.0: no time-zone shift, and dd/mm/yyyy understood
     if (!date) return '';
+    if (typeof date === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}/.test(date)) return date.slice(0, 10);
+      const m = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/.exec(date.trim());
+      if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+    }
     const d = new Date(date);
-    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+    if (isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
   // ✅ Helper for safe append
@@ -423,6 +448,7 @@ updateEmp(): void {
   safeAppend('emp_reporting_manager', this.Emp.emp_reporting_manager);
 }
   safeAppend('person_id', this.Emp.person_id);
+  if (this.Emp.emp_reports_to !== undefined) { safeAppend('emp_reports_to', this.Emp.emp_reports_to || ''); }   // v1.26.0
 
   // ✅ Boolean values as 1/0
   safeAppend('is_ess', this.Emp.is_ess ? '1' : '0');

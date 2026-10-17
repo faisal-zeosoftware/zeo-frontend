@@ -60,6 +60,7 @@
                         [ngClass]="{'error-field': registerButtonClicked && !email}">
 
                     <div *ngIf="registerButtonClicked && !email" class="error-message">Email is required.</div>
+                    <small class="text-muted d-block" style="margin-top:4px">If this e-mail already has a ZEO login (for example in another company or account), it is invited instead: the person accepts on their company list and keeps their own password.</small>
                 </div>
 
 

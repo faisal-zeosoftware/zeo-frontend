@@ -1486,12 +1486,8 @@ updateEmployeeSalaryComponent(selectedSchema: string, payload: any): Observable<
       console.error('No schema selected.');
       return throwError('No schema selected.');
     }
-  
-    const requests = payload.map(p =>
-      this.http.put(`${this.apiUrl}/payroll/api/payslip/${p.id}/?schema=${selectedSchema}`, { confirm_status: p.confirm_status })
-    );
-  
-    return forkJoin(requests); // Executes all PUTs in parallel
+    // v1.26.0: one call for all payslips (was one full PUT per payslip)
+    return this.http.post(`${this.apiUrl}/payroll/api/payslip/confirm-bulk/?schema=${selectedSchema}`, { ids: payload.map(p => p.id) });
   }
   
 

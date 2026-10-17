@@ -7,6 +7,8 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 import { APP_VERSION } from '../shared-ui/version';
+import { ZConsoleEnterpriseComponent } from './console-enterprise.component';   // v1.28.0
+import { ZCloudDatabasesComponent } from './databases.component';
 
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 const API = () => `${environment.apiBaseUrl}/cloud/api/console`;
@@ -21,7 +23,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 @Component({
   selector: 'app-cloud-console',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ...I18N_UI],
+  imports: [CommonModule, FormsModule, RouterModule, ZCloudDatabasesComponent, ZConsoleEnterpriseComponent, ...I18N_UI],
   styleUrls: ['../leave-policy/leave-policy.css', './cloud.css', './console.css'],
   template: `
 <div class="cc-page" data-no-help>
@@ -33,6 +35,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
       <a routerLink="/control/plans" [class.on]="view === 'plans'">{{ 'Plans and prices' | t }}</a>
       <a routerLink="/control/unlinked" [class.on]="view === 'unlinked'">{{ 'Companies without an account' | t }}</a>
       <a routerLink="/control/databases" [class.on]="view === 'databases'">{{ 'Databases' | t }}</a>
+      <a routerLink="/control/enterprise" [class.on]="view === 'enterprise'">{{ 'Enterprise' | t }}</a>   <!-- v1.28.0 -->
     </nav>
     <main class="cc-main">
       <div class="lp-msg" *ngIf="msg" [class.err]="bad" role="status">{{ msg }}</div>
@@ -141,7 +144,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
           <div class="zk-card"><div class="zk-scroll"><table class="zk-table">
             <tr><th>{{ 'Company' | t }}</th><th>{{ 'Apps' | t }}</th><th>{{ 'Where' | t }}</th><th></th><th></th></tr>
             <tr *ngFor="let x of c.companies"><td>{{ x.name }}<small>{{ x.schema_name }}</small></td><td>{{ appsOf(x.apps) }}</td>
-              <td>{{ x.where | t }}<small *ngIf="x.db_alias" data-no-translate>{{ x.db_alias }}</small>
+              <td>{{ x.where | t }}<small *ngIf="x.db_alias" data-no-translate>{{ x.db_label || x.db_alias }}</small>
                 <button type="button" class="cc-link" *ngIf="!x.db_alias && c.plan.hosting === 'own' && !moving(x)" (click)="move(x, 'own')" [disabled]="busy">{{ 'Move to own database' | t }}</button>
                 <button type="button" class="cc-link" *ngIf="x.db_alias && !moving(x)" (click)="move(x, 'shared')" [disabled]="busy">{{ 'Move to shared cloud' | t }}</button>
                 <small class="cc-moving" *ngIf="moving(x) as m">{{ 'Moving' | t }}: {{ m.step | t }}</small></td>
@@ -164,12 +167,18 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
           <div class="zk-card"><h2>{{ 'Create a company for this customer' | t }}</h2><div class="lp-form">
             <label class="wide">{{ 'Company name' | t }}<input [(ngModel)]="nc.name" maxlength="100"></label>
             <label>{{ 'Industry' | t }}<select [(ngModel)]="nc.industry"><option *ngFor="let i of industries" [value]="i.code">{{ i.label | t }}</option></select></label>
+            <label *ngIf="(c.databases?.length || 0) > 1">{{ 'Database' | t }}<select [(ngModel)]="nc.db"><option value="">{{ 'Default' | t }}</option><option *ngFor="let d of c.databases" [value]="d.key">{{ d.title }}</option></select></label>
             <div class="wide"><span class="cc-lbl">{{ 'Apps' | t }}</span><div class="lp-catpick"><label *ngFor="let k of paidApps" [class.on]="nc.apps.includes(k)"><input type="checkbox" [checked]="nc.apps.includes(k)" (change)="toggle(nc.apps, k)"> {{ title(k) | t }}</label></div></div></div>
             <div class="zk-row"><span class="zk-note" *ngIf="job">{{ jobText }}</span><span class="zk-sp"></span>
               <button type="button" class="lp-btn primary" (click)="makeCompany()" [disabled]="busy || !!job || !nc.name.trim() || !nc.apps.length">{{ 'Create company' | t }}</button></div></div>
           <div class="zk-card" *ngIf="unlinked.length"><h2>{{ 'Link an existing company' | t }}</h2>
             <div class="zk-row"><select class="zk-in" [(ngModel)]="linkId"><option [ngValue]="0">{{ 'Choose a company' | t }}</option><option *ngFor="let u of unlinked" [ngValue]="u.id">{{ u.name }} ({{ u.schema_name }})</option></select>
               <button type="button" class="lp-btn" (click)="link()" [disabled]="busy || !linkId">{{ 'Link' | t }}</button></div></div>
+        </ng-container>
+
+        <!-- v1.26.0: several own databases for a Premium account, duplicate a database -->
+        <ng-container *ngIf="tab === 'Databases'">
+          <z-cloud-databases [accountId]="c.id"></z-cloud-databases>
         </ng-container>
 
         <ng-container *ngIf="tab === 'Apps'">
@@ -197,13 +206,20 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
             <label>{{ 'Period from' | t }}<input type="date" [(ngModel)]="inv.period_from"></label>
             <label>{{ 'Period to (new renewal date when paid)' | t }}<input type="date" [(ngModel)]="inv.period_to"></label>
             <label>{{ 'Odoo reference' | t }}<input [(ngModel)]="inv.odoo_ref"></label>
-            <label class="wide cc-inline"><input type="checkbox" [(ngModel)]="inv.paid"> {{ 'Already paid' | t }}</label></div>
-            <div class="zk-row"><span class="zk-sp"></span><button type="button" class="lp-btn primary" (click)="addInvoice()" [disabled]="busy || !inv.number.trim()">{{ 'Add invoice' | t }}</button></div></div>
+            <label class="wide cc-inline"><input type="checkbox" [(ngModel)]="inv.paid"> {{ 'Already paid' | t }}</label>
+            <!-- v1.28.0 Odoo link -->
+            <label class="wide cc-inline" *ngIf="c.odoo"><input type="checkbox" [(ngModel)]="inv.to_odoo"> {{ 'Make it in Odoo – posted, with the online payment link for the owner (empty invoice number = next ZEO number; Odoo adds its own)' | t }}</label></div>
+            <p class="zk-note" *ngIf="!c.odoo">{{ 'Odoo is not linked: set ZEO_ODOO_URL, ZEO_ODOO_DB, ZEO_ODOO_LOGIN and ZEO_ODOO_API_KEY in .env to send invoices to Odoo and offer online payment.' | t }}</p>
+            <div class="zk-row"><span class="zk-sp"></span><button type="button" class="lp-btn primary" (click)="addInvoice()" [disabled]="busy || (!inv.number.trim() && !inv.to_odoo)">{{ 'Add invoice' | t }}</button></div></div>
           <div class="zk-card"><div class="zk-scroll"><table class="zk-table">
             <tr><th>{{ 'Invoice' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Period' | t }}</th><th>{{ 'Amount' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
             <tr *ngFor="let i of c.invoices"><td>{{ i.number }}<small *ngIf="i.odoo_ref">{{ i.odoo_ref }}</small></td><td>{{ i.issued_on }}</td><td>{{ i.period_from || '' }} – {{ i.period_to || '' }}</td>
               <td>{{ i.amount | number:'1.2-2' }} {{ i.currency }}</td><td><span class="zk-st" [ngClass]="i.state">{{ (i.state === 'paid' ? 'Paid' : 'Unpaid') | t }}</span><small *ngIf="i.paid_on">{{ i.paid_on }}</small></td>
-              <td><button type="button" class="lp-btn" *ngIf="i.state === 'unpaid'" (click)="paid(i)" [disabled]="busy">{{ 'Mark as paid' | t }}</button></td></tr>
+              <td class="cc-inv-act"><span class="zk-note" *ngIf="i.odoo_state">{{ 'Odoo' | t }}: {{ i.odoo_state }}</span>
+                <a class="lp-btn" *ngIf="i.pay_url" [href]="i.pay_url" target="_blank" rel="noopener">{{ 'Payment page' | t }}</a>
+                <button type="button" class="lp-btn" *ngIf="c.odoo && i.state === 'unpaid' && !i.in_odoo && !i.odoo_ref" (click)="odoo(i, 'push')" [disabled]="busy">{{ 'Send to Odoo' | t }}</button>
+                <button type="button" class="lp-btn" *ngIf="c.odoo && i.state === 'unpaid' && (i.in_odoo || i.odoo_ref)" (click)="odoo(i, 'sync')" [disabled]="busy">{{ 'Check payment in Odoo' | t }}</button>
+                <button type="button" class="lp-btn" *ngIf="i.state === 'unpaid'" (click)="paid(i)" [disabled]="busy">{{ 'Mark as paid' | t }}</button></td></tr>
             <tr *ngIf="!c.invoices.length"><td colspan="6" class="zk-note">{{ 'No invoices yet.' | t }}</td></tr>
           </table></div></div>
         </ng-container>
@@ -216,10 +232,13 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         </ng-container>
       </ng-container>
 
+      <!-- ===== Enterprise requests and licences (v1.28.0) ===== -->
+      <z-console-enterprise *ngIf="view === 'enterprise' && !denied"></z-console-enterprise>
+
       <!-- ===== databases (v1.24.0) ===== -->
       <ng-container *ngIf="view === 'databases' && !denied">
         <h1 class="cc-h1">{{ 'Databases' | t }}</h1>
-        <p class="zk-note">{{ 'The main database holds the shared cloud (Standard and Advance companies) and the accounts, users and plans. Every Premium account gets its own database.' | t }}</p>
+        <p class="zk-note">{{ 'The main database holds the shared cloud (Standard and Advance companies) and the accounts, users and plans. Every Premium account gets its own database, and can add more or duplicate one (customer → Databases).' | t }}</p>
         <div class="zk-card"><div class="zk-scroll"><table class="zk-table">
           <tr><th>{{ 'Database' | t }}</th><th>{{ 'Customer' | t }}</th><th>{{ 'Server' | t }}</th><th>{{ 'Companies' | t }}</th><th>{{ 'Size' | t }}</th><th>{{ 'Status' | t }}</th></tr>
           <tr *ngIf="dbs.main"><td><b data-no-translate>{{ dbs.main.name }}</b><small>{{ 'Main database – shared cloud' | t }}</small></td><td>–</td><td>{{ '(main server)' | t }}</td><td>{{ dbs.main.companies }}</td><td>{{ dbs.main.size_mb | number:'1.0-0' }} MB</td><td><span class="zk-st active">{{ 'Ready' | t }}</span></td></tr>
@@ -236,11 +255,12 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <h1 class="cc-h1">{{ 'Plans and prices' | t }}</h1>
         <p class="zk-note">{{ 'Defaults for new accounts; each account can be changed on its customer page. Empty = unlimited.' | t }}</p>
         <div class="zk-card"><div class="zk-scroll"><table class="zk-table cc-apps">
-          <tr><th>{{ 'Plan' | t }}</th><th>{{ 'Included companies' | t }}</th><th>{{ 'Company cap' | t }}</th><th>{{ 'Extra companies' | t }}</th><th>{{ 'Employees' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Storage GB' | t }}</th><th>{{ 'Price / year' | t }}</th><th>{{ 'Extra company' | t }}</th><th>{{ 'App / company' | t }}</th><th>{{ 'On sign-up' | t }}</th><th></th></tr>
+          <tr><th>{{ 'Plan' | t }}</th><th>{{ 'Included companies' | t }}</th><th>{{ 'Company cap' | t }}</th><th>{{ 'Extra companies' | t }}</th><th>{{ 'Employees' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Storage GB' | t }}</th><th>{{ 'Extra database / year' | t }}</th><th>{{ 'Price / year' | t }}</th><th>{{ 'Extra company' | t }}</th><th>{{ 'App / company' | t }}</th><th>{{ 'On sign-up' | t }}</th><th></th></tr>
           <tr *ngFor="let p of plans"><td><b data-no-translate>{{ p.name }}</b><small>{{ p.hosting_label | t }}{{ p.group_features ? ' · ' + ('group features' | t) : '' }}</small></td>
             <td><input type="number" min="1" [(ngModel)]="p.included_companies"></td><td><input type="number" min="1" [(ngModel)]="p.max_companies"></td>
             <td><input type="checkbox" [(ngModel)]="p.extra_companies"></td>
             <td><input type="number" min="0" [(ngModel)]="p.max_employees"></td><td><input type="number" min="0" [(ngModel)]="p.max_users"></td><td><input type="number" min="0" [(ngModel)]="p.storage_gb"></td>
+            <td><input type="number" min="0" [(ngModel)]="p.database_price" [disabled]="p.hosting !== 'own'"></td>
             <td><input type="number" min="0" [(ngModel)]="p.price_year"></td><td><input type="number" min="0" [(ngModel)]="p.extra_company_price"></td><td><input type="number" min="0" [(ngModel)]="p.app_price"></td>
             <td><input type="checkbox" [(ngModel)]="p.active"></td><td><button type="button" class="lp-btn" (click)="savePlan(p)" [disabled]="busy">{{ 'Save' | t }}</button></td></tr>
         </table></div></div>
@@ -263,9 +283,9 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   view = 'customers'; denied = false; msg = ''; bad = false; busy = false; loaded = false; version = APP_VERSION;
   list: any[] = []; counts: any = {}; plans: any[] = []; industries: any[] = []; unlinked: any[] = [];
   q = ''; fPlan = ''; fStatus = ''; fSoon = false;
-  c: any = null; ed: any = {}; tab = 'Overview'; tabs = ['Overview', 'Companies', 'Apps', 'Invoices', 'History'];
+  c: any = null; ed: any = {}; tab = 'Overview'; tabs = ['Overview', 'Companies', 'Databases', 'Apps', 'Invoices', 'History'];
   appRows: any[] = []; paidApps = PAID;
-  nw: any = this.blank(); nc: any = { name: '', industry: 'OTH', apps: [] }; inv: any = this.blankInv(); linkId = 0;
+  nw: any = this.blank(); nc: any = { name: '', industry: 'OTH', apps: [], db: '' }; inv: any = this.blankInv(); linkId = 0;
   job = ''; jobText = ''; private poll: any = null; private sub: any;
   moves: any[] = []; dbs: any = {}; cp: any = { open: false, plan: '' }; private mpoll: any = null;   // v1.24.0
 
@@ -285,7 +305,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void { this.sub?.unsubscribe(); if (this.poll) { clearInterval(this.poll); } if (this.mpoll) { clearInterval(this.mpoll); } }
 
   private blank(): any { return { name: '', owner_name: '', owner_email: '', trn: '', country: 'United Arab Emirates', plan: 'advance', start_mode: 'trial', start: '', max_employees: null, max_users: null, storage_gb: null, apps: [] as string[], company: '', industry: 'OTH' }; }
-  private blankInv(): any { return { number: '', amount: null, currency: 'AED', period_from: '', period_to: '', odoo_ref: '', paid: false }; }
+  private blankInv(): any { return { number: '', amount: null, currency: 'AED', period_from: '', period_to: '', odoo_ref: '', paid: false, to_odoo: false }; }
 
   async common(): Promise<void> {
     try {
@@ -370,7 +390,8 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   private show(c: any): void {
     this.c = c;
     this.ed = { plan: c.plan.code, trial_ends: c.trial_ends, renews_on: c.renews_on, grace_days: c.grace_days, extra_companies: c.extra_companies,
-      max_employees: c.max_employees, max_users: c.max_users, storage_gb: c.storage_gb, allowed_email_domain: c.allowed_email_domain, notes: c.notes };
+      max_employees: c.max_employees, max_users: c.max_users, storage_gb: c.storage_gb, allowed_email_domain: c.allowed_email_domain, notes: c.notes,
+    };
     this.appRows = PAID.map(k => {
       const l = c.apps[k] || {}; const st = l.state || 'none';
       return { app: k, licensed: st !== 'none', trial: st === 'trial', companies: l.companies ?? null, users: l.users ?? null, valid_until: l.valid_until || '', price: null, used: l.used, state: st };
@@ -443,6 +464,18 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
     catch (e) { this.say(err(e, T('Not saved.')), true); }
     this.busy = false;
   }
+  /** v1.28.0 – send the invoice to Odoo, or read its payment state there. */
+  async odoo(i: any, action: 'push' | 'sync'): Promise<void> {
+    this.busy = true;
+    try {
+      const r: any = await firstValueFrom(this.http.post(`${API()}/invoices/${i.id}/odoo/`, { action }));
+      this.show(r);
+      const now = (r.invoices || []).find((x: any) => x.id === i.id) || {};
+      this.say(action === 'push' ? T('Invoice {0} is in Odoo as {1}.', i.number, now.odoo_ref || '') :
+        (now.state === 'paid' ? T('Paid in Odoo – invoice {0} is paid.', i.number) : T('Not paid yet in Odoo ({0}).', now.odoo_state || '–')), false);
+    } catch (e) { this.say(err(e, T('Odoo could not be reached.')), true); }
+    this.busy = false;
+  }
   async archive(x: any): Promise<void> {
     this.busy = true;
     try { this.show(await firstValueFrom(this.http.post(`${API()}/customers/${this.c.id}/companies/`, { company: x.id, archive: !x.archived }))); }
@@ -466,7 +499,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
           this.jobText = T('Creating {0}: {1}', this.nc.name, T(s.step || ''));
           if (s.state !== 'running') {
             clearInterval(this.poll); this.poll = null; this.job = '';
-            if (s.state === 'done') { this.say(T('{0} is ready.', this.nc.name), false); this.nc = { name: '', industry: 'OTH', apps: [] }; this.loadOne(this.c.id); }
+            if (s.state === 'done') { this.say(T('{0} is ready.', this.nc.name), false); this.nc = { name: '', industry: 'OTH', apps: [], db: '' }; this.loadOne(this.c.id); }
             else { this.say(s.error || T('The company could not be created.'), true); }
           }
         } catch { /* keep trying */ }
@@ -490,4 +523,5 @@ export const CONTROL_ROUTES: Routes = [
   { path: 'plans', component: CloudConsoleComponent, data: { view: 'plans', title: 'Plans and prices' } },
   { path: 'unlinked', component: CloudConsoleComponent, data: { view: 'unlinked', title: 'Companies without an account' } },
   { path: 'databases', component: CloudConsoleComponent, data: { view: 'databases', title: 'Databases' } },   // v1.24.0
+  { path: 'enterprise', component: CloudConsoleComponent, data: { view: 'enterprise', title: 'Enterprise' } },   // v1.28.0
 ];

@@ -278,7 +278,7 @@
 
 
     <!-- Conditionally hide this section based on the is_compensatory value -->
-<div class="col-md-4" *ngIf="!is_compensatory">
+<div class="col-md-4" *ngIf="!editAsset.is_compensatory">
 <label>Leave type</label>
 <div class="custom-sel">
 <select
@@ -288,7 +288,7 @@ name="request_type"
 [(ngModel)]="editAsset.request_type"
 [ngModelOptions]="{ standalone: true }"
 >
-<option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">
+<option *ngFor="let leavetype of LeaveTypes" [ngValue]="leavetype.id">
 {{ leavetype.name }}
 </option>
 </select>

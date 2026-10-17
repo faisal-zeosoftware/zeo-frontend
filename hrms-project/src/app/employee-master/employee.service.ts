@@ -32,6 +32,9 @@ export class EmployeeService {
 private selectedSchemaSource = new BehaviorSubject<string>(localStorage.getItem('selectedSchema') || '');
 selectedSchema$ = this.selectedSchemaSource.asObservable();
 
+/** v1.28.1: re-emit the current selection so the employee list fetches again (after an edit / add / transfer). */
+refresh(): void { this.selectedBranchesSource.next([...this.selectedBranchesSource.value]); }
+
 updateSchemaAndBranches(schema: string, branchIds: number[]) {
   // Update the BehaviorSubjects so components listen for the change
   this.selectedSchemaSource.next(schema);

@@ -1,3 +1,4 @@
+import { zToast } from '../shared-ui/z-toast';   // v1.26.0
 import { environment } from '../../environments/environment';   // v1.13.1
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild, inject } from '@angular/core';
@@ -437,7 +438,16 @@ if (this.userId !== null) {
       return;
     }
   
-    const payrollRunId = this.PaySlipsConfrimed?.[0]?.payroll_run?.id;
+    // v1.26.0: the newest run in the final pay sheet (the list is ordered by run now – [0] was the oldest); when the
+    // sheet holds several runs the user picks one
+    const runs = Array.from(new Map((this.PaySlipsConfrimed || []).filter((p: any) => p?.payroll_run?.id)
+      .map((p: any) => [p.payroll_run.id, p.payroll_run])).values()).sort((a: any, b: any) => b.id - a.id) as any[];
+    let payrollRunId = runs[0]?.id;
+    if (runs.length > 1) {
+      const pick = prompt('Export which payroll run?\n' + runs.map((r, i) => `${i + 1}. ${r.name || ''} (${r.month}/${r.year})`).join('\n'), '1');
+      if (pick === null) { return; }
+      payrollRunId = runs[Math.max(0, Math.min(runs.length - 1, (parseInt(pick, 10) || 1) - 1))]?.id;
+    }
   
     if (!payrollRunId) {
       alert('No payroll run available for detailed payslip export.');
@@ -461,6 +471,7 @@ if (this.userId !== null) {
         }
   
         this.buildDetailedPayslipExcel(data, payrollRunId);
+        zToast(`Detailed payslips downloaded – ${data.length} employees.`, 'ok');   // v1.26.0: say what happened
       },
       error: (error: any) => {
         this.isLoading = false;
@@ -781,8 +792,8 @@ requestPayRoll(): void {
   this.leaveService.requestPayroll(payload).subscribe({
     next: (response) => {
       this.isLoading = false;
-      alert('Payroll has been added');
-      window.location.reload();
+      alert('Payroll has been run – check the Trial pay sheet.');
+      this.refreshLists();   // v1.26.0: no full page reload
     },
     error: (error) => {
       this.isLoading = false;
@@ -1241,6 +1252,22 @@ loadEmp(callback?: Function): void {
 
   
 
+    /** v1.26.0 – totals row of the trial pay sheet */
+    trialTotal(key: string): number {
+      return (this.filteredTrialPaySlips || []).reduce((a: number, p: any) => a + (Number(p?.[key]) || 0), 0);
+    }
+
+    /** v1.26.0 – reload the three lists in place (the screen used to reload the whole app after every action). */
+    refreshLists(): void {
+      const schema = localStorage.getItem('selectedSchema') || '';
+      let ids: number[] = [];
+      try { ids = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'); } catch { ids = []; }
+      if (!ids?.length) { ids = (this.selectedBranches || []).map((x: any) => Number(x)).filter((x: number) => x > 0); }
+      this.fetchPayrollRun(schema, ids);
+      this.fetchLoadPaySlip(schema, ids);
+      this.fetchLoadConfrimedPayslip(schema, ids);
+    }
+
     fetchPayrollRun(schema: string, branchIds: number[]): void {
       this.isLoading = true;
       this.leaveService.getPayrollNew(schema, branchIds).subscribe({
@@ -1264,8 +1291,7 @@ loadEmp(callback?: Function): void {
           () => {
             // Filter out the deleted payroll from the list
             this.Payrolls = this.Payrolls.filter(p => p.id !== payrollId);
-            console.log('Payroll deleted successfully');
-            window.location.reload();
+            this.refreshLists();   // v1.26.0: no full page reload
           },
           (error) => {
             console.error('Failed to delete payroll', error);
@@ -1975,13 +2001,12 @@ confirmSelectedPayslips() {
         p.selected = false;
       }
       this.masterSelected = false;
-      alert('Selected payslips confirmed successfully.')
-        window.location.reload();
+      alert(response?.message || 'Selected payslips confirmed.');
+      this.refreshLists();   // v1.26.0: no full page reload
     },
     
     (error: any) => {
-      console.error('Error confirming payslips:', error);
-      alert('Failed to confirm payslips.');
+      alert(error?.error?.detail || 'Failed to confirm payslips.');
     }
   );
 }

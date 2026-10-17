@@ -518,10 +518,20 @@ export class UesrEmployeeComponent implements OnInit {
 
   loadCompanies(): void {
     this.companyRegistrationService.getCompany().subscribe(
-      (result: any) => { this.companies = result; },
+      (result: any) => {
+        this.companies = result;
+        // v1.28.1: the company that is open is selected and its employees are listed at once (the list stayed empty
+        // until a company was picked by hand)
+        if (!this.selectedCompany) {
+          const cur = localStorage.getItem('selectedSchema');
+          this.selectedCompany = (result || []).find((c: any) => c.schema_name === cur) || null;
+          if (this.selectedCompany) { this.fetchEmployees(); }
+        }
+      },
       (error: any) => { console.error('Error fetching companies:', error); }
     );
   }
+  empLabel(e: any): string { return [e.emp_code, [e.emp_first_name, e.emp_last_name].filter(Boolean).join(' ')].filter(Boolean).join(' – '); }
 
   loadUsers(): void {
     this.companyRegistrationService.getUsers().subscribe(

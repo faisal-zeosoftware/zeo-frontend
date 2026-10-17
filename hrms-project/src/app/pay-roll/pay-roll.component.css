@@ -2127,3 +2127,10 @@ table.styled-table td {
 .run-ctl{margin-top:4px;font-size:11px;line-height:1.35;color:#5d6670;min-width:170px;max-width:230px;white-space:normal;overflow-wrap:anywhere}
 .run-warn{display:inline-block;margin:2px 4px 0 0;padding:1px 7px;border-radius:9px;background:#eef1f4;color:#33414d;cursor:help}
 .run-warn[data-l=error]{background:#fdeceb;color:#9b2c24}.run-warn[data-l=warning]{background:#fff4dc;color:#7a5600}
+/* v1.26.0 – trial pay sheet: readable amounts, employee name, compact components, totals */
+.pay-amt { min-width: 120px; text-align: right; }
+.pay-num { text-align: right; white-space: nowrap; }
+.pay-emp-name { font-size: 12px; color: #4a4766; }
+.pay-comp summary { cursor: pointer; color: #5b4fe0; white-space: nowrap; }
+.pay-comp ul { margin: 6px 0 0; padding-left: 16px; }
+.pay-total td { background: #f4f3fb; border-top: 2px solid #d8d6ec; }

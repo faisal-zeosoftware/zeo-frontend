@@ -56,8 +56,15 @@ export class ZListService {
   /** Best matching list API for the rows shown in a table (by comparing cell text with API values). */
   endpointFor(rowTexts: string[][]): string | null {
     const route = location.pathname;
+    // v1.26.0: an empty list can be imported too (before, Import appeared only once the list had a record, so the first
+    // branch / department / category had to be typed). The empty table belongs to the list API that answered with no rows.
+    rowTexts = (rowTexts || []).filter(r => r.filter(t => t && t.trim()).length >= 2);   // "No records found" rows are not data
+    if (!rowTexts.length) {
+      const empty = this.recorded.filter(r => r.route === route && !r.items.length && !/\/(branch|brnch|country|state|currency|users?)\b/i.test(r.path));
+      return empty.length ? empty[empty.length - 1].path : null;
+    }
     const cands = this.recorded.filter(r => r.route === route && r.items.length);
-    if (!cands.length || !rowTexts.length) { return null; }
+    if (!cands.length) { return null; }
     const sample = rowTexts.slice(0, 40);
     let best: RecordedList | null = null; let bestScore = 0;
     for (const c of cands) {

@@ -283,6 +283,8 @@
 <div class="loader-container" [class.show]="isLoading">
   <div class="loader-wrapper">
     <div class="loader"></div>
-    <h4 class="loading-text">Please wait, company is being created...</h4>
+    <h4 class="loading-text">Please wait, the company is being created…</h4>
+    <p class="loading-text" *ngIf="jobStep" style="font-size:14px;margin-top:6px">{{ jobStep }}<span *ngIf="jobStepNo"> · step {{ jobStepNo }} of {{ jobSteps }}</span></p>
+    <p class="loading-text" style="font-size:12px;opacity:.75">You can keep this window open – it usually takes 1–3 minutes.</p>
   </div>
 </div>

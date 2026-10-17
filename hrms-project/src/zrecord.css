@@ -324,3 +324,10 @@ button.zdo-kpi:disabled { cursor: default; opacity: 1; }
 .zd-rules > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
 .zd-rules[open] > summary { margin-bottom: 8px; }
 .zd-aff { margin: 6px 0 0; padding-left: 18px; font-weight: 400; }
+
+/* v1.28.1 one footer row for every pop-up form: Cancel first, then Add / Update, right-aligned */
+.zr-footer { display: flex !important; justify-content: flex-end !important; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; width: 100%; }
+.zr-footer > button, .zr-footer > .btn { float: none !important; margin: 0 !important; min-width: 96px; width: auto !important; flex: 0 0 auto; }
+.zr-footer > [class*="col-"] { flex: 0 0 auto !important; max-width: none !important; width: auto !important; padding: 0 !important; }
+.zr-footer > [class*="col-"] > button { width: auto !important; margin: 0 !important; min-width: 96px; }
+.zr-footer::after, .zr-footer::before { display: none !important; }

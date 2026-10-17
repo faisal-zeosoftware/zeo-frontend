@@ -12,10 +12,19 @@ import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
   imports: [CommonModule, RouterModule, ...I18N_UI],
   template: `
 <ng-container *ngIf="st?.banner as b">
+  <!-- v1.28.0 Enterprise licence of this server -->
+  <ng-container *ngIf="st?.licence as l">
+    <a class="zcb" *ngIf="l.admin" [ngClass]="'zcb-' + b.kind" routerLink="/main-sidebar/settings/licence" [title]="b.text" [attr.aria-label]="b.text">
+      <span class="zcb-dot" aria-hidden="true"></span><span class="zcb-t">{{ licShort(l.status) }}</span></a>
+    <span class="zcb" *ngIf="!l.admin" [ngClass]="'zcb-' + b.kind" [title]="b.text" role="status" [attr.aria-label]="b.text">
+      <span class="zcb-dot" aria-hidden="true"></span><span class="zcb-t">{{ licShort(l.status) }}</span></span>
+  </ng-container>
+  <ng-container *ngIf="!st?.licence">
   <a class="zcb" *ngIf="st?.owner" [ngClass]="'zcb-' + b.kind" routerLink="/main-sidebar/settings/subscription" [title]="b.text" [attr.aria-label]="b.text">
     <span class="zcb-dot" aria-hidden="true"></span><span class="zcb-t">{{ short(b.kind) }}</span></a>
   <span class="zcb" *ngIf="!st?.owner" [ngClass]="'zcb-' + b.kind" [title]="b.text + ' ' + ('Contact the account owner.' | t)" role="status" [attr.aria-label]="b.text">
     <span class="zcb-dot" aria-hidden="true"></span><span class="zcb-t">{{ short(b.kind) }}</span></span>
+  </ng-container>
 </ng-container>`,
   styles: [`
 :host { display: inline-flex; }
@@ -36,6 +45,11 @@ export class ZCloudBannerComponent implements OnInit, OnDestroy {
     this.cloud.load();
   }
   ngOnDestroy(): void { this.sub?.unsubscribe(); }
+  /** v1.28.0 – the licence chip. */
+  licShort(status: string): string {
+    return i18nT(({ evaluation: 'Licence: evaluation', expiring: 'Licence ends soon', grace: 'Licence ended – grace period',
+                    expired: 'Read-only – licence ended', missing: 'Read-only – no licence', not_yet: 'Licence not started' } as any)[status] || 'Licence');
+  }
   /** The short text in the top bar; the full sentence is the tooltip (and the screen-reader label). */
   short(kind: string): string {
     const st = this.st; const n = st?.days_left ?? 0;

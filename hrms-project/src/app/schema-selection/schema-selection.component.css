@@ -164,3 +164,20 @@
 .zc-wh { font-style: normal; font-size: 11.5px; padding: 2px 8px; border-radius: 10px; background: #f6f4f8; color: #6e6578; }
 .zc-wh.own { background: #efe6f5; color: #5b2087; font-weight: 500; }
 .zc-mv { font-style: normal; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 10px; background: #fdf3e1; color: #8a5a00; }
+
+/* v1.26.0 invitations of this login to other companies */
+.zc-notice.ok{background:#e9f7ef;border-color:#bfe5cf;color:#1d6b43}
+.zc-invites{display:grid;gap:10px;margin:0 0 18px}
+.zc-invite{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 16px;border:1px solid #d9d4fb;background:#f7f5ff;border-radius:12px}
+.zc-invite-t{display:grid;gap:3px;min-width:0}
+.zc-invite-t small{color:#5b5873;font-size:12.5px}
+.zc-invite-t .zc-invite-err{color:#c62828}
+.zc-invite-a{display:flex;gap:8px}
+
+/* v1.27.0 group view */
+.zc-gv { display: flex; align-items: center; gap: 14px; padding: 12px 16px; margin: 0 0 10px; border: 1px solid #d9d4fb; border-radius: 12px; background: #f6f4ff; color: inherit; text-decoration: none; }
+.zc-gv:hover { border-color: #5b4fe0; background: #f0edff; }
+.zc-gv:focus-visible { outline: 2px solid #5b4fe0; outline-offset: 2px; }
+.zc-gv b { display: block; font-weight: 600; color: #2d238f; } .zc-gv small { display: block; font-size: 12.5px; color: #5a5f73; }
+.zc-gv-i { width: 40px; height: 40px; border-radius: 10px; background: #5b4fe0; color: #fff; display: grid; place-items: center; flex: none; font-size: 18px; }
+.zc-gv-go { margin-left: auto; font-size: 22px; color: #5b4fe0; }

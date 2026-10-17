@@ -105,7 +105,7 @@ export class ZRecordInjector {
       host.setAttribute('data-record', `${endpoint}#${id ?? 'new'}`);
       const exBody = !append && box.matches('.ex-modal') ? box.querySelector(':scope > .body') as HTMLElement | null : null;   // v1.22.0
       const footer = append || exBody ? null : this.footerOf(box);
-      if (footer && footer.parentElement) { footer.parentElement.insertBefore(host, footer); }
+      if (footer && footer.parentElement) { footer.parentElement.insertBefore(host, footer); if (mode === 'form') { this.tidyFooter(box, footer, host); } }
       else {
         const body = append ? box : exBody || (box.querySelector('.modal-body, .modal-body-custom, mat-dialog-content, .mat-mdc-dialog-content, .hr-modal-body, form') as HTMLElement | null) || box;
         body.appendChild(host);
@@ -120,6 +120,31 @@ export class ZRecordInjector {
       ref.changeDetectorRef.detectChanges();
       this.mounted.push({ ref, host, box });
     });
+  }
+
+  /** v1.28.1: Add / Update and Cancel / Close in ONE right-aligned row at the bottom of every pop-up form.
+   *  Many older screens keep Cancel in a row of its own above the fields' end, so the two buttons sat far apart. */
+  private tidyFooter(box: HTMLElement, footer: HTMLElement, host: HTMLElement): void {
+    try {
+      const isCancel = (b: Element) => /^(cancel|close|back)$/i.test((b.textContent || '').trim());
+      const strays = (Array.from(box.querySelectorAll('button')) as HTMLElement[])
+        .filter(b => isCancel(b) && !footer.contains(b) && !b.closest('.zr-host, .modal-header, .hr-modal-header, [mat-dialog-title], .ex-head') && !b.classList.contains('close') && !b.classList.contains('btn-close'));
+      for (const b of strays) {
+        const row = b.parentElement;
+        footer.insertBefore(b, footer.firstChild);
+        if (row && row !== box && !row.querySelector('button, input, select, textarea, z-record-panel') && !(row.textContent || '').trim()) { row.remove(); }
+      }
+      // a Bootstrap grid footer (row > col-md-8 empty + col-md-2 Cancel + col-md-2 Add): the buttons go straight into the
+      // row and the empty columns are dropped, so the row itself becomes the one button line
+      if (/(^|\s)col(-[a-z]+)?(-\d+)?(\s|$)/.test(footer.className) && footer.parentElement && footer.parentElement.classList.contains('row')) {
+        const row = footer.parentElement;
+        Array.from(row.querySelectorAll('button')).forEach(b => row.appendChild(b));
+        Array.from(row.children).forEach(c => { if (c.tagName !== 'BUTTON' && c.tagName !== 'Z-RECORD-PANEL' && !c.querySelector('button, input, select, textarea, z-record-panel') && !(c.textContent || '').trim()) { c.remove(); } });
+        if (host.parentElement === row) { row.parentElement?.insertBefore(host, row); }   // the record panel stays above the button line
+        footer = row;
+      }
+      footer.classList.add('zr-footer');
+    } catch { /* never break the screen */ }
   }
 
   private footerOf(box: HTMLElement): HTMLElement | null {

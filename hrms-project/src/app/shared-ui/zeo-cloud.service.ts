@@ -14,6 +14,7 @@ export interface CloudStatus {
   account?: { id: number; name: string; plan: string; plan_code: string; group_features: boolean };
   status?: string; read_only?: boolean; days_left?: number | null; until?: string | null;
   banner?: { kind: string; text: string } | null; apps?: Record<string, CloudLicence>; extra?: boolean;
+  licence?: { status: string; admin: boolean; read_only: boolean };   // v1.28.0 Enterprise server
 }
 
 @Injectable({ providedIn: 'root' })
@@ -29,7 +30,7 @@ export class ZeoCloudService {
     if (!schema || (!force && this.loadedFor === schema && this.status$.value)) { return; }
     this.loadedFor = schema;
     this.http.get<CloudStatus>(`${environment.apiBaseUrl}/cloud/api/status/?schema=${encodeURIComponent(schema)}`).subscribe({
-      next: r => { ZEO_FLAGS.cloudLinked = !!r.linked; ZEO_FLAGS.cloudOwner = !!(r.linked && r.owner); this.status$.next(r); },
+      next: r => { ZEO_FLAGS.cloudLinked = !!r.linked; ZEO_FLAGS.cloudOwner = !!(r.linked && r.owner); ZEO_FLAGS.licenceAdmin = !!r.licence?.admin; this.status$.next(r); },
       error: () => { ZEO_FLAGS.cloudLinked = false; ZEO_FLAGS.cloudOwner = false; this.status$.next({ cloud: false, linked: false }); },
     });
   }

@@ -33,8 +33,10 @@ export class ErService {
   /** Download a file through the API (keeps the login header) and open it. */
   async open(path: string, name = 'file.pdf'): Promise<void> {
     const b = await firstValueFrom(this.http.get(this.url(path.replace(/^\//, '')), { responseType: 'blob' }));
-    const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.download = name; a.click();
-    setTimeout(() => URL.revokeObjectURL(u), 30000);
+    // v1.28.1: the link is put in the page before the click (Firefox / Safari ignore a click on a detached link) and no
+    // new tab is asked for, so the browser's download starts in every browser
+    const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = name; a.style.display = 'none';
+    document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 30000);
   }
 
   lookups(): Promise<any> {
@@ -50,7 +52,8 @@ export class ErService {
   options(f: ErField, look: any): { value: any; label: string }[] {
     if (f.options) { return f.options; }
     const map: Record<string, string> = { 'Core.Nationality': 'nationalities', 'Core.ReligionMaster': 'religions', 'Core.cntry_mstr': 'countries',
-      'Core.state_mstr': 'states', 'EmpManagement.document_type': 'document_types' };
+      'Core.state_mstr': 'states', 'EmpManagement.document_type': 'document_types',
+      'Core.LanguageSkill': 'languages', 'Core.MarketingSkill': 'marketing_skills', 'Core.ProgrammingLanguageSkill': 'programming_skills' };   // v1.28.1
     return (look && f.source && look[map[f.source]]) || [];
   }
 

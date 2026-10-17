@@ -17,10 +17,14 @@ interface MyCompany {
 interface CloudAcc {
   id: number; name: string; role: 'owner' | 'member'; plan: string; plan_code: string; status: string; read_only: boolean;
   days_left: number | null; group_features: boolean; can_create: boolean; next_is_extra: boolean; create_note: string;
+  databases?: { key: string; label: string; default: boolean }[];   // v1.26.0 Premium: own databases to create the company in
 }
+/** v1.26.0 invitation of this login to another company */
+interface Invite { id: number; company: string; account: string; invited_by: string; is_superuser: boolean; busy?: boolean; error?: string; }
 interface MakeJob {
   acc: CloudAcc; name: string; industry: string; apps: { key: string; title: string; ok: boolean; on: boolean; note: string }[];
   state: 'ask' | 'running' | 'done' | 'failed'; error: string; job: string; schema: string; stepNo: number; companyId: number | null;
+  db: string;
 }
 
 interface DupJob {
@@ -56,10 +60,13 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
   // v1.23.0 ZEO Cloud
   accounts: CloudAcc[] = [];
   notices: { id: number; text: string }[] = [];
+  groupKeys: Record<string, boolean> = {};   // v1.27.0 group views this person may open
   platformAdmin = false;
   mk: MakeJob | null = null;
   mkSteps = ['Creating the company', 'Setting up the apps', 'Giving access', 'Finishing'];
   industries: { code: string; label: string }[] = [];
+  invites: Invite[] = [];   // v1.26.0
+  invitedMsg = '';
 
   constructor(private http: HttpClient, private authService: AuthenticationService, private dialog: MatDialog) {}
 
@@ -75,7 +82,11 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
         this.me = r.user || null;
         this.canCreate = !!r.can_create;
         this.accounts = r.accounts || [];
-        this.notices = r.notices || [];
+        this.http.get<any>(`${environment.apiBaseUrl}/group/api/`).subscribe({   // v1.27.0
+          next: g => { this.groupKeys = {}; (g.groups || []).filter((x: any) => x.features).forEach((x: any) => this.groupKeys[x.key] = true); },
+          error: () => { this.groupKeys = {}; } });
+        this.notices = (r.notices || []).filter((n: any, i: number, a: any[]) => a.findIndex(x => x.text === n.text) === i);   // v1.26.0: the same notice once
+        this.invites = r.invites || [];
         this.platformAdmin = !!r.platform_admin;
         const list: MyCompany[] = r.companies || [];
         // the company opened last comes first; the others by name
@@ -215,7 +226,8 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
 
   askCreate(a: CloudAcc): void {
     const titles: Record<string, string> = { payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property', maintenance: 'Maintenance', hse: 'HSE' };
-    this.mk = { acc: a, name: '', industry: 'OTH', apps: [], state: 'ask', error: '', job: '', schema: '', stepNo: 1, companyId: null };
+    const db = (a.databases || []).find(d => d.default)?.key || '';
+    this.mk = { acc: a, name: '', industry: 'OTH', apps: [], state: 'ask', error: '', job: '', schema: '', stepNo: 1, companyId: null, db };
     if (!this.industries.length) {
       this.http.get<any>(`${environment.apiBaseUrl}/cloud/api/signup/plans/`).subscribe({ next: r => this.industries = r.industries || [] });
     }
@@ -243,7 +255,7 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     if (this.companies.some(c => c.name.trim().toLowerCase() === name.toLowerCase())) { m.error = i18nT('A company with this name already exists.'); return; }
     m.error = ''; m.state = 'running'; m.stepNo = 1;
     this.http.post<any>(`${environment.apiBaseUrl}/cloud/api/accounts/${m.acc.id}/companies/`,
-      { name, industry: m.industry, apps: m.apps.filter(a => a.on).map(a => a.key) }).subscribe({
+      { name, industry: m.industry, apps: m.apps.filter(a => a.on).map(a => a.key), db: m.db || undefined }).subscribe({
       next: r => { m.job = r.job; m.schema = r.schema; this.watchMake(m); },
       error: (e: HttpErrorResponse) => { m.state = 'ask'; m.error = i18nT(e.error?.detail || 'The company could not be created. Try again.'); },
     });
@@ -270,6 +282,20 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     this.mk = null;
     this.open(c);
   }
+
+  /** v1.26.0: accept or decline an invitation – on accept the company is added to this login and shows in the list. */
+  answerInvite(i: Invite, action: 'accept' | 'decline'): void {
+    i.busy = true; i.error = '';
+    this.http.post<any>(`${environment.apiBaseUrl}/users/api/invites/${i.id}/`, { action }).subscribe({
+      next: r => {
+        this.invites = this.invites.filter(x => x !== i);
+        if (action === 'accept') { this.invitedMsg = r.detail || i18nT('{0} was added to your companies.', [i.company]); this.fresh = r.schema_name || ''; this.load(true); }
+      },
+      error: (e: HttpErrorResponse) => { i.busy = false; i.error = e.error?.detail || i18nT('Not done. Try again.'); },
+    });
+  }
+
+  dbLabel(m: MakeJob): string { return (m.acc.databases || []).find(d => d.key === m.db)?.label || ''; }
 
   openPopuss(): void {
     const ref = this.dialog.open(SchemaCreationComponent, { width: '80%', height: '700px' });

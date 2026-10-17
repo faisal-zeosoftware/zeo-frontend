@@ -262,7 +262,10 @@ export class LanguageSettingsComponent implements OnInit, OnDestroy {
     this.used = {};
     for (const l of s.languages) { this.used[l.code] = l.in_company || l.is_source; }
     this.defaultLang = s.default_lang;
-    this.langs = s.languages.map(l => ({ code: l.code, english_name: l.english_name, name: l.name, dir: l.dir }));
+    // v1.28.1: the translations drop-down offers only active languages with a loaded pack
+    // (no test / legacy locales without terms)
+    this.langs = s.languages.filter(l => l.is_source || l.terms_total > 0)
+      .map(l => ({ code: l.code, english_name: l.english_name, name: l.name, dir: l.dir }));
     this.savedState = this.state();
   }
 

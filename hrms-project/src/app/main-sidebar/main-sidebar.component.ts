@@ -1,3 +1,4 @@
+import { FlowService } from '../zeo-flow/flow.service';   // v1.29.0
 import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 import { style } from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
@@ -43,6 +44,7 @@ export class MainSidebarComponent implements OnDestroy {
   LoanReqNot: any[] = [];
   AdvancesalaryReqNot: any[] = [];
   LateInEarlyOutReqNot: any[] = [];
+  FlowNot: any[] = [];   // v1.29.0 automation (workflow rules, approvals)
   DelegationNot: any[] = [];
   DelegationResponseNot: any[] = [];
 
@@ -77,6 +79,7 @@ export class MainSidebarComponent implements OnDestroy {
     private zrec: ZRecordService,
     private suites: ZSuiteService,
     private cloud: ZeoCloudService,
+    private flow: FlowService,   // v1.29.0
   ) {
     // v1.20.0: the main menu shows the modules of one app (HRMS, Projects or Settings)
     this.suites.suite$.subscribe(s => { this.suite = s; this.buildMenu(); });
@@ -375,7 +378,16 @@ export class MainSidebarComponent implements OnDestroy {
       this.loadLoanReqNotifications();
       this.loadAdvancesalaryReqNotifications();
       this.loadLateinEarlyOutNotifications();
+      this.loadFlowNotifications();
     });
+  }
+
+  /** v1.29.0: notifications written by the automation rules and the approval engine (any app). */
+  loadFlowNotifications(): void {
+    this.flow.get('notifications/', { unread: 1 }).then((r: any) => {
+      this.FlowNot = (r?.rows || []).map((n: any) => ({ ...n, message: n.title ? `${n.title} – ${n.message}` : n.message, is_read: n.is_read }));
+      this.combineNotifications();
+    }).catch(() => { this.FlowNot = []; this.combineNotifications(); });
   }
 
   loadAdvancesalaryReqNotifications(callback?: Function): void {
@@ -657,6 +669,7 @@ export class MainSidebarComponent implements OnDestroy {
       ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
       ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false })),
       ...this.LateInEarlyOutReqNot.map(item => ({ ...item, type: 'lateinearlyrequest' as const, highlighted: false })),
+      ...this.FlowNot.map(item => ({ ...item, type: 'automation' as const, highlighted: false })),   // v1.29.0
     ];
 
     this.AllNotifications = allItems
@@ -672,10 +685,43 @@ export class MainSidebarComponent implements OnDestroy {
     this.notificationCount = this.AllNotifications.length;
   }
 
+  private markNotificationRead(noti: any): void {
+    const notiKey = `${noti.type}-${noti.id}`;
+    const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+    readNotifications[notiKey] = true;
+    localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+    this.AllNotifications = this.AllNotifications.filter(n => n !== noti);
+    this.notificationCount = this.AllNotifications.length;
+
+    // Close mobile dropdown after clicking
+    this.isMobileNotificationOpen = false;
+  }
+
   onNotificationClick(noti: any): void {
     noti.highlighted = true;
     setTimeout(() => (noti.highlighted = false), 1000);
 
+    // v1.28.1: an employee (self-service login) has no approvals pages – their notifications ("your request was
+    // approved") open their own request lists in Self service instead of an empty approvals screen
+    if (this.userDetails?.is_ess && !this.userDetails?.is_superuser) {
+      const ess: Record<string, string> = {
+        leave: '/main-sidebar/self-service/leave', expdocument: '/main-sidebar/self-service/documents', docrequest: '/main-sidebar/self-service/documents',
+        generalrequest: '/main-sidebar/self-service/claims', loanrequest: '/main-sidebar/self-service/claims', advancesalaryrequest: '/main-sidebar/self-service/claims',
+        airticketrequest: '/main-sidebar/self-service/claims', assetrequest: '/main-sidebar/self-service/claims', resignationrequest: '/main-sidebar/self-service/home',
+        lateinearlyrequest: '/main-sidebar/attendance-plus/my-attendance',
+      };
+      this.markNotificationRead(noti);
+      this.router.navigateByUrl(ess[noti.type] || '/main-sidebar/self-service/home');
+      return;
+    }
+
+    if (noti.type === 'automation') {   // v1.29.0: the rule says where to go (the record, or the approvals page)
+      this.flow.post('notifications/', { ids: [noti.id] }).catch(() => { /* ignore */ });
+      this.markNotificationRead(noti);
+      this.router.navigateByUrl(noti.link || '/main-sidebar/automation/approvals');
+      return;
+    }
     switch (noti.type) {
       case 'expdocument':
         this.router.navigate(['/main-sidebar/sub-sidebar/document-expired']);
@@ -711,16 +757,7 @@ export class MainSidebarComponent implements OnDestroy {
         return;
     }
 
-    const notiKey = `${noti.type}-${noti.id}`;
-    const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
-    readNotifications[notiKey] = true;
-    localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
-
-    this.AllNotifications = this.AllNotifications.filter(n => n !== noti);
-    this.notificationCount = this.AllNotifications.length;
-
-    // Close mobile dropdown after clicking
-    this.isMobileNotificationOpen = false;
+    this.markNotificationRead(noti);
   }
 
   markAllAsRead(event: Event): void {
@@ -745,6 +782,19 @@ export class MainSidebarComponent implements OnDestroy {
 
   toggleSchema(index: number, event: Event): void {
     event.stopPropagation();
+    // v1.26.0: a click on another company's name opens that company with all its branches at once (before it only
+    // unfolded the branch list and a branch had to be ticked – about 12 s for a switch); the arrow still only unfolds
+    const data = this.userDetailss?.[index];
+    const onArrow = !!(event.target as HTMLElement)?.closest?.('mat-icon');
+    if (data && !onArrow && data.schema_name !== this.selectedSchema) {
+      this.selectedSchema = data.schema_name;
+      this.selectedBranchIds = (data.branches || []).map((b: any) => b.id);
+      localStorage.setItem('selectedSchema', this.selectedSchema ?? '');
+      localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
+      this.expandedSchemaIndex = index;
+      this.applySelection();
+      return;
+    }
     this.expandedSchemaIndex = this.expandedSchemaIndex === index ? -1 : index;
   }
 
@@ -767,6 +817,7 @@ export class MainSidebarComponent implements OnDestroy {
   }
 
   isLoadingEss: boolean = false;
+  private applyTimer: any = null;
 
   toggleBranchSelection(data: any, branch: any, event: Event): void {
     event.stopPropagation();
@@ -784,10 +835,11 @@ export class MainSidebarComponent implements OnDestroy {
       this.selectedBranchIds.push(branch.id);
     }
     localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
-    setTimeout(() => {
+    clearTimeout(this.applyTimer);   // v1.26.0: one apply after the last tick (was a fixed 1 s wait per tick)
+    this.applyTimer = setTimeout(() => {
       this.applySelection();
       this.isLoadingEss = false;
-    }, 1000);
+    }, 400);
   }
 
   applySelection(): void {
@@ -798,6 +850,15 @@ export class MainSidebarComponent implements OnDestroy {
     );
     this.isCompanyDropdownOpen = false;
     this.isMobileCompanyDropdownOpen = false;
+    this.reopenPage();
+  }
+
+  /** v1.28.1: after a company / branch change the open page is re-created (same URL, no full reload) so lists, forms
+   *  and dropdowns show the new selection at once – before, most pages read the selection only when they opened. */
+  private reopenPage(): void {
+    const url = this.router.url;
+    if (!url || url.startsWith('/login')) { return; }
+    this.router.navigateByUrl('/main-sidebar/_reload', { skipLocationChange: true }).then(() => this.router.navigateByUrl(url));
   }
 
   showsidebar: boolean = true;
@@ -891,7 +952,8 @@ export class MainSidebarComponent implements OnDestroy {
       'assetrequest': 'Asset Request',
       'airticketrequest': 'AirTicket Request',
       'advancesalaryrequest': 'Advance Salary Request',
-      'lateinearlyrequest': 'Late In / Early Out Request'
+      'lateinearlyrequest': 'Late In / Early Out Request',
+      'automation': 'Automation'
     };
     return labels[type] || 'Notification';
   }

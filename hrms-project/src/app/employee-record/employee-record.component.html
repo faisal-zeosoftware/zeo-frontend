@@ -98,6 +98,7 @@
                      (input)="e ? maskIn(f, e) : touch(f)" (blur)="dup && dupCheck(f.key, v[f.key])">
             </ng-container>
             <small class="er-err" *ngIf="err?.[f.key]">{{ err[f.key] }}</small>
+            <small class="er-muted small" *ngIf="!err?.[f.key] && maskNote[f.key]">{{ maskNote[f.key] }}</small>
             <small class="er-dup" *ngIf="dup && dupes[f.key]?.length">Already used by <a *ngFor="let m of dupes[f.key]" (click)="openEmp(m.employee_id)">{{ m.employee }} ({{ m.code }})</a></small>
           </div>
         </ng-template>
@@ -126,6 +127,7 @@
                       <ng-container *ngSwitchCase="'file'"><a *ngIf="x.file" [href]="x.file" target="_blank" rel="noopener">{{ x.file_name || 'View' }}</a><span *ngIf="!x.file" class="er-muted">No file</span></ng-container>
                       <ng-container *ngSwitchCase="'mode'">{{ payMode(x[c.key]) }}</ng-container>
                       <ng-container *ngSwitchCase="'money'">{{ money(x[c.key]) }}</ng-container>
+                      <ng-container *ngSwitchCase="'pct'"><span class="er-bar"><i [style.width.%]="+x[c.key] || 0"></i></span> {{ x[c.key] ?? '–' }}{{ isNum(x[c.key]) ? '%' : '' }}</ng-container>
                       <ng-container *ngSwitchDefault>{{ x[c.key] ?? '–' }}</ng-container>
                     </td>
                     <td class="act" *ngIf="r.can_edit || tk === 'files'">
@@ -194,11 +196,14 @@
           <ng-container *ngTemplateOutlet="tbl; context: { tk: 'emergency', cols: [{key:'name',label:'Name',kind:'contact'},{key:'relation',label:'Relation'},{key:'mobile',label:'Mobile'},{key:'alt_phone',label:'Other phone'},{key:'email',label:'E-mail'}] }"></ng-container>
           <ng-container *ngTemplateOutlet="tbl; context: { tk: 'family', cols: [{key:'ef_member_name',label:'Name'},{key:'emp_relation',label:'Relation'},{key:'ef_date_of_birth',label:'Date of birth (age)',kind:'dob'},{key:'visa_badge',label:'Visa expiry',kind:'badge'},{key:'eid_badge',label:'Emirates ID expiry',kind:'badge'},{key:'insured',label:'Insured',kind:'yes'},{key:'ef_company_expence',label:'Company expense',num:true,kind:'money'}] }"></ng-container>
           <ng-container *ngTemplateOutlet="tbl; context: { tk: 'qualifications', cols: [{key:'emp_qualification',label:'Qualification'},{key:'emp_qf_subject',label:'Subject'},{key:'emp_qf_instituition',label:'Institution'},{key:'emp_qf_year',label:'Year'},{key:'grade',label:'Grade'},{key:'attested',label:'Attestation',kind:'attest'}] }"></ng-container>
-          <section class="er-card er-sec" id="card-skills">
-            <div class="er-sec-h"><h2>Languages and skills <span class="er-count">{{ r.skills.length }}</span></h2><button type="button" class="er-link" *ngIf="r.can_edit" (click)="action('classic')">Edit in classic view</button></div>
-            <div class="er-table-wrap" *ngIf="r.skills.length"><table class="er-table"><thead><tr><th>Type</th><th>Skill</th><th>Level</th></tr></thead>
-              <tbody><tr *ngFor="let s of r.skills"><td>{{ s.type }}</td><td>{{ s.skill }}</td><td><span class="er-bar"><i [style.width.%]="+s.level || 0"></i></span> {{ s.level }}{{ isNum(s.level) ? '%' : '' }}</td></tr></tbody></table></div>
-            <p class="z-empty" *ngIf="!r.skills.length">No languages or skills yet</p>
+          <!-- v1.28.1: languages and skills are edited here (were: classic view only, where adding did not work) -->
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'languages', cols: [{key:'skill',label:'Language'},{key:'level',label:'Level',kind:'pct'}] }"></ng-container>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'programming', cols: [{key:'skill',label:'Skill'},{key:'level',label:'Level',kind:'pct'}] }"></ng-container>
+          <ng-container *ngTemplateOutlet="tbl; context: { tk: 'marketing', cols: [{key:'skill',label:'Skill'},{key:'level',label:'Level',kind:'pct'}] }"></ng-container>
+          <section class="er-card er-sec" id="card-skills" *ngIf="learningSkills().length">
+            <div class="er-sec-h"><h2>Training skills <span class="er-count">{{ learningSkills().length }}</span></h2></div>
+            <div class="er-table-wrap"><table class="er-table"><thead><tr><th>Category</th><th>Skill</th><th>Level</th></tr></thead>
+              <tbody><tr *ngFor="let s of learningSkills()"><td>{{ s.type }}</td><td>{{ s.skill }}</td><td>{{ s.level }}</td></tr></tbody></table></div>
           </section>
         </ng-container>
 
@@ -213,13 +218,13 @@
               <div><dt>Confirmed on</dt><dd>{{ dmy(em.confirmed_on) }}</dd></div><div><dt>Leaving date</dt><dd>{{ dmy(em.date_of_leaving) }}</dd></div>
               <div *ngIf="em.decided_by_name"><dt>Decided by</dt><dd>{{ em.decided_by_name }}</dd></div>
               <div><dt>{{ t('Unpaid days before go-live') }}</dt><dd>{{ +em.unpaid_days_before_golive || 0 }}
-                <button type="button" class="er-link" *ngIf="r.can_edit && unpaidEdit === null" (click)="unpaidEdit = +em.unpaid_days_before_golive || 0" [attr.aria-label]="t('Change')">✎</button></dd></div>
+                <button type="button" class="er-link" *ngIf="r.can_edit && !unpaidOpen" (click)="unpaidOpen = true; unpaidEdit = +em.unpaid_days_before_golive || 0" [attr.aria-label]="t('Change')">✎</button></dd></div>
             </dl>
             <!-- v1.20.2: unpaid leave / absence from the systems used before ZEO – not service for the gratuity -->
-            <form class="er-form" *ngIf="unpaidEdit !== null" (ngSubmit)="unpaidSave()">
+            <form class="er-form" *ngIf="unpaidOpen" (ngSubmit)="unpaidSave()">
               <div class="er-f"><label for="up-d">{{ t('Unpaid days before ZEO go-live') }}</label><input id="up-d" type="number" min="0" step="0.5" [(ngModel)]="unpaidEdit" name="unpaid"></div>
               <div class="er-f wide er-muted">{{ t('Unpaid leave and absence from earlier systems – not counted as service for the gratuity.') }}</div>
-              <div class="er-form-act"><button type="button" class="er-btn" (click)="unpaidEdit = null">{{ t('Cancel') }}</button>
+              <div class="er-form-act"><button type="button" class="er-btn" (click)="unpaidOpen = false">{{ t('Cancel') }}</button>
                 <button type="submit" class="er-btn primary">{{ t('Save') }}</button></div>
             </form>
             <div class="er-form-act left" *ngIf="r.can_edit && em.can_decide && !probation">
@@ -262,7 +267,9 @@
                 <p class="er-docno er-mono">{{ x.number || '–' }}</p>
                 <dl class="er-kv tight">
                   <div *ngIf="x.issue_date !== undefined && x.fields.length"><dt>Issued</dt><dd>{{ dmy(x.issue_date) }}</dd></div>
-                  <div *ngIf="x.fields.length"><dt>Expires</dt><dd>{{ dmy(x.expiry_date) }}</dd></div>
+                  <div *ngIf="x.fields.length && x.expiry_date !== undefined"><dt>Expires</dt><dd>{{ dmy(x.expiry_date) }}</dd></div>
+                  <!-- v1.28.1: every field of the card is shown, not only number / issued / expires -->
+                  <div *ngFor="let f of extraFields(x)"><dt>{{ f.label }}</dt><dd>{{ extraValue(x, f) }}</dd></div>
                 </dl>
                 <div class="er-form-act left" *ngIf="r.can_edit && x.fields.length">
                   <button type="button" class="er-btn sm" (click)="edit(x.key)">{{ x.number ? 'Edit' : 'Add' }}</button>
@@ -272,7 +279,8 @@
               </ng-container>
               <form *ngIf="editing === x.key" class="er-form one" (ngSubmit)="saveCard(x.key)">
                 <ng-container *ngFor="let f of cardFields(x.key)"><ng-container *ngTemplateOutlet="field; context: { f: f, v: draft, err: draftErr, dup: true }"></ng-container></ng-container>
-                <div class="er-form-act"><button type="button" class="er-btn" (click)="cancel()">Cancel</button><button type="submit" class="er-btn primary" [disabled]="saving">Save</button></div>
+                <p class="er-muted small" *ngIf="!cardFields(x.key).length">Loading the form…</p>
+                <div class="er-form-act"><button type="button" class="er-btn" (click)="cancel()">Cancel</button><button type="submit" class="er-btn primary" [disabled]="saving || !cardFields(x.key).length">Save</button></div>
               </form>
             </section>
           </div>

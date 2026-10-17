@@ -109,7 +109,41 @@ export class LoginComponent implements OnInit {
     { name: 'HSE', text: 'Permits to work, incidents, inspections and actions' },
   ];
   private say(msg: string): void { this.error = i18nT(msg); this.notice = ''; }
+  /** v1.28.1: employees land on the same Home as everyone (the classic employee dashboard stays at /employee-dashboard
+   *  for loans, advances and air tickets). A full load, like the staff company list, so every service starts with the
+   *  employee's company (a router navigate left the top bar at "Select Company" and the Home empty). */
+  private openEssHome(tenant: any): void {
+    try {
+      if (tenant?.id) { localStorage.setItem('selectedSchemaId', String(tenant.id)); }
+      const ids = (tenant?.branches || []).map((b: any) => b.id).filter((x: any) => x);
+      if (ids.length) { localStorage.setItem('selectedBranchIds', JSON.stringify(ids)); }
+    } catch { /* storage blocked */ }
+    window.location.href = '/main-sidebar/home';
+  }
   backToStart(): void { this.step = 1; this.otp = ''; this.error = ''; this.notice = ''; this.password = ''; }
+
+  // ---- v1.28.1: forgot password (e-mail → code → new password)
+  forgotEmail = ''; forgotPassword = ''; forgotPassword2 = '';
+  startForgot(): void { this.step = 10; this.error = ''; this.notice = ''; this.otp = ''; this.forgotEmail = this.username.includes('@') ? this.username.trim() : ''; }
+  forgotSend(): void {
+    const e = (this.forgotEmail || '').trim();
+    if (!e || !e.includes('@')) { this.error = i18nT('Enter the e-mail address of your user.'); return; }
+    this.isLoading = true; this.error = ''; this.notice = '';
+    this.UserMasterService.sendResetOtp(e).subscribe({
+      next: () => { this.isLoading = false; this.step = 11; this.notice = i18nT('A code was sent to {0}. It is valid for 10 minutes.', [e]); },
+      error: (err) => { this.isLoading = false; this.error = err?.error?.error || err?.error?.detail || i18nT('The code could not be sent. Check the e-mail address.'); },
+    });
+  }
+  forgotReset(): void {
+    if (!this.otp.trim()) { this.error = i18nT('Enter the code from the e-mail.'); return; }
+    if ((this.forgotPassword || '').length < 8) { this.error = i18nT('The new password must have at least 8 characters.'); return; }
+    if (this.forgotPassword !== this.forgotPassword2) { this.error = i18nT('The two passwords are not the same.'); return; }
+    this.isLoading = true; this.error = ''; this.notice = '';
+    this.UserMasterService.resetPassword(this.forgotEmail.trim(), this.forgotPassword, this.otp.trim()).subscribe({
+      next: () => { this.isLoading = false; this.backToStart(); this.username = this.forgotEmail.trim(); this.notice = i18nT('Your password was changed. Sign in with the new password.'); },
+      error: (err) => { this.isLoading = false; this.error = err?.error?.error || err?.error?.detail || i18nT('The password could not be changed.'); },
+    });
+  }
 
 
   step: number = 1;  
@@ -185,8 +219,7 @@ togglePassword() {
                       const tenant = tenants[0];
                       const selectedSchema = tenant.schema_name;
                       localStorage.setItem('selectedSchema', selectedSchema);
-  
-                      this.router.navigate(['/employee-dashboard']);
+                      this.openEssHome(tenant);
                       return;
                     }
   
@@ -293,8 +326,7 @@ togglePassword() {
         if (isEssUser && tenants.length > 0) {
           const tenant = tenants[0];
           localStorage.setItem('selectedSchema', tenant.schema_name);
-  
-          this.router.navigate(['/employee-dashboard']);
+          this.openEssHome(tenant);
         } else if (!isEssUser) {
           this.router.navigate(['/schema-selection']);
         } else {

@@ -114,7 +114,13 @@ export class UserCreationComponent {
     };
   
     this.UserMasterService.registeruser(companyData).subscribe(
-      (response) => {
+      (response: any) => {
+        // v1.26.0: the e-mail already has a ZEO login – it was invited to the chosen companies instead of failing
+        if (response?.invited) {
+          alert(response.detail || 'This e-mail already has a ZEO login. An invitation was sent; the company is added when they accept it.');
+          this.ref.close('invited');
+          return;
+        }
         console.log('Registration successful', response);
   
         alert('User has been Registered and logged in!');

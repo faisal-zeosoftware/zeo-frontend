@@ -25,7 +25,7 @@
                     [ngModelOptions]="{standalone: true}"
                     (change)="onCompanyChange()">
               <option value="">Select a company</option>
-              <option *ngFor="let company of companies" [ngValue]="company">{{ company.schema_name }}</option>
+              <option *ngFor="let company of companies" [ngValue]="company">{{ company.name || company.schema_name }}</option>
             </select>
           </div>
         </div>

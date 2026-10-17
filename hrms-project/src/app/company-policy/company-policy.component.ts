@@ -1,4 +1,7 @@
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { zToast } from '../shared-ui/z-toast';
+import { i18nT } from '../shared-ui/i18n-core';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
@@ -348,13 +351,26 @@ getCompanyPolicies(
 
 
     downloadPolicy(policyUrl: string, fileName: string): void {
-      this.http.get(policyUrl, { responseType: 'blob' }).subscribe((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.click();
-        window.URL.revokeObjectURL(url);
+      // v1.28.1: the file is read from the API server (same origin / https as the API, so a "http://" media address of
+      // a server behind https is not blocked as mixed content and a relative address works), the link is put in the
+      // page before the click, and a failure is shown instead of nothing happening
+      let url = policyUrl || '';
+      try {
+        const api = new URL(environment.apiBaseUrl, location.href);
+        const u = new URL(url, api);
+        if (u.pathname.startsWith('/media/') || u.host === api.host) { u.protocol = api.protocol; u.host = api.host; }
+        url = u.toString();
+      } catch { /* keep as is */ }
+      if (!url) { zToast(i18nT('This policy has no file.'), 'err'); return; }
+      this.http.get(url, { responseType: 'blob' }).subscribe({
+        next: (blob) => {
+          const o = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = o; a.download = fileName || 'policy.pdf'; a.style.display = 'none';
+          document.body.appendChild(a); a.click();
+          setTimeout(() => { a.remove(); window.URL.revokeObjectURL(o); }, 30000);
+        },
+        error: () => zToast(i18nT('The policy file could not be downloaded. Check that the file was uploaded and that the server\'s media folder is reachable.'), 'err'),
       });
     }
 

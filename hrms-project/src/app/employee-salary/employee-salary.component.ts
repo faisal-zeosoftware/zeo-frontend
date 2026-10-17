@@ -1,3 +1,4 @@
+import { uploadErrorText } from '../shared-ui/z-toast';   // v1.26.0
 import { Component, ViewChild , OnDestroy, OnInit } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -372,14 +373,12 @@ CreatePayStructure(): void {
     this.http.post(`${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`, formData)
       .subscribe((response) => {
         // Handle successful upload
-        console.log('bulkupload upload successful', response);
-        alert('bulkupload upload successful');
+        alert((response as any)?.message || 'Salaries uploaded.');
         window.location.reload();
 
       }, (error) => {
         this.isLoading = false;
-        console.error('Salary upload failed', error);
-        alert('Salary upload failed!');
+        alert('Salary upload – nothing was saved:\n' + uploadErrorText(error, 'Salary upload failed.'));
       });
       }
 

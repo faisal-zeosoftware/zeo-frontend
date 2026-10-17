@@ -29,9 +29,30 @@
     <div class="zc-notice" *ngFor="let n of notices" role="status">{{ n.text }}
       <button type="button" class="zc-x" (click)="seenNotices()" [attr.aria-label]="'Close' | t">×</button></div>
 
+    <!-- v1.26.0: invitations of this login to other companies (one login works for every company it is invited to) -->
+    <div class="zc-notice ok" *ngIf="invitedMsg" role="status">{{ invitedMsg }}
+      <button type="button" class="zc-x" (click)="invitedMsg = ''" [attr.aria-label]="'Close' | t">×</button></div>
+    <section class="zc-invites" *ngIf="invites.length" [attr.aria-label]="'Invitations' | t">
+      <div class="zc-invite" *ngFor="let i of invites">
+        <span class="zc-invite-t"><b>{{ 'Invitation to {0}' | t:i.company }}</b>
+          <small>{{ (i.invited_by ? ('From {0}' | t:i.invited_by) : '') }}{{ i.account ? ' · ' + i.account : '' }}{{ i.is_superuser ? ' · ' + ('as administrator' | t) : '' }}</small>
+          <small>{{ 'Your login and password stay the same. Nothing is shared with the company before you accept.' | t }}</small>
+          <small class="zc-invite-err" *ngIf="i.error" role="alert">{{ i.error }}</small></span>
+        <span class="zc-invite-a">
+          <button type="button" class="zc-dbtn ghost" (click)="answerInvite(i, 'decline')" [disabled]="i.busy">{{ 'Decline' | t }}</button>
+          <button type="button" class="zc-dbtn" (click)="answerInvite(i, 'accept')" [disabled]="i.busy">{{ 'Accept' | t }}</button></span>
+      </div>
+    </section>
+
     <ul class="zc-list" *ngIf="loading" aria-busy="true">
       <li class="zc-row zc-skel" *ngFor="let i of [1,2,3]"><span class="zc-mark"></span><span class="zc-lines"><i></i><i></i></span></li>
     </ul>
+
+    <!-- v1.27.0: a server of its own (Enterprise) – every company is one group -->
+    <a class="zc-gv" *ngIf="!loading && groupKeys['server']" [routerLink]="['/group', 'server']">
+      <span class="zc-gv-i" aria-hidden="true">▦</span>
+      <span><b>{{ 'Group view – all companies' | t }}</b><small>{{ 'Group dashboard, approvals of every company, group reports, copy settings, transfers' | t }}</small></span>
+      <span class="zc-gv-go" aria-hidden="true">›</span></a>
 
     <!-- v1.23.0 ZEO Cloud: companies grouped by account – own account first, then the accounts the user is a member of -->
     <ng-container *ngIf="!loading">
@@ -43,6 +64,11 @@
             <span class="zc-st" *ngIf="a.status !== 'active'" [ngClass]="a.status">{{ statusLabel(a) }}</span></div>
           <button type="button" class="zc-create small" *ngIf="a.can_create" (click)="askCreate(a)">{{ 'Create company' | t }}</button>
         </div>
+        <!-- v1.27.0: the group view of the account (Premium / Enterprise: owner, Group HR head, Group viewer) -->
+        <a class="zc-gv" *ngIf="g.acc && groupKeys['acc' + g.acc.id]" [routerLink]="['/group', 'acc' + g.acc.id]">
+          <span class="zc-gv-i" aria-hidden="true">▦</span>
+          <span><b>{{ 'Group view' | t }}</b><small>{{ 'Group dashboard, approvals of every company, group reports, copy settings, transfers' | t }}</small></span>
+          <span class="zc-gv-go" aria-hidden="true">›</span></a>
         <div class="zc-locked" *ngIf="g.acc && g.acc.role === 'owner' && !g.acc.group_features && g.list.length > 1">
           <span class="zc-locked-i" aria-hidden="true">▦</span>
           <span><b>{{ 'All companies – group view' | t }}</b><small>{{ 'Available in Premium: group dashboard, one approval inbox, group reports, transfers between companies' | t }}</small></span>
@@ -97,6 +123,9 @@
       <label class="zc-dfield"><span>{{ 'Company name' | t }}</span><input type="text" [(ngModel)]="mk.name" maxlength="100" autofocus></label>
       <label class="zc-dfield"><span>{{ 'Industry' | t }}</span>
         <select [(ngModel)]="mk.industry"><option *ngFor="let i of industries" [value]="i.code">{{ i.label | t }}</option></select></label>
+      <label class="zc-dfield" *ngIf="(mk.acc.databases?.length || 0) > 1"><span>{{ 'Database' | t }}</span>
+        <select [(ngModel)]="mk.db"><option *ngFor="let d of mk.acc.databases" [value]="d.key">{{ d.label }}{{ d.default ? ' – ' + ('default' | t) : '' }}</option></select>
+        <small class="zc-dnote">{{ 'Your Premium account has several own databases – the company is made in the one you choose.' | t }}</small></label>
       <div class="zc-dfield"><span>{{ 'Apps for this company' | t }}</span>
         <div class="zc-apps-pick">
           <label *ngFor="let a of mk.apps" [class.off]="!a.ok"><input type="checkbox" [(ngModel)]="a.on" [disabled]="!a.ok"> {{ a.title | t }}<small *ngIf="a.note">{{ a.note | t }}</small></label>
@@ -111,7 +140,7 @@
     </ng-container>
     <ng-container *ngIf="mk.state === 'running'">
       <h2 id="zc-mk-title">{{ 'Creating the company…' | t }}</h2>
-      <p class="zc-dsub">{{ mk.name }}</p>
+      <p class="zc-dsub">{{ mk.name }}<ng-container *ngIf="dbLabel(mk)"> · {{ dbLabel(mk) }}</ng-container></p>
       <ol class="zc-steps"><li *ngFor="let st of mkSteps; let i = index" [class.done]="i + 1 < mk.stepNo" [class.now]="i + 1 === mk.stepNo">{{ st | t }}</li></ol>
       <p class="zc-dnote">{{ 'This takes about a minute.' | t }}</p>
     </ng-container>

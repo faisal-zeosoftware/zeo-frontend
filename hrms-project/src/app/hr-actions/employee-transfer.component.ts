@@ -32,6 +32,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { employeeUrl } from '../shared-ui/z-nav';
+import { EmployeeService } from '../employee-master/employee.service';
 
 interface Plan { changes: { area: string; what: string; from: string; to: string }[]; warnings: string[]; blockers: string[]; stays: string[]; }
 interface SalRow { code: string; amount: number | null; }
@@ -235,6 +236,7 @@ export class EmployeeTransferComponent implements OnInit {
   orgFields: { field: string; label: string; endpoint: string }[] = [];
   orgOpts: Record<string, any[]> = {};
 
+  private empSvc = inject(EmployeeService);
   constructor(private http: HttpClient, private rec: ZRecordService, private router: Router, private cd: ChangeDetectorRef) {}
   private url(p: string, q = ''): string { return `${this.rec.api}/${p}?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}${q}`; }
   private err(e: any, d = 'It could not be done.'): string {
@@ -344,7 +346,7 @@ export class EmployeeTransferComponent implements OnInit {
       const d = await firstValueFrom(this.http.post<any>(this.url('hr-actions/api/transfers/'), this.body()));
       if (d?.status === 'done') { this.say(`Transfer done for ${who}:`, false, d.done || []); }
       else { this.say(`Transfer of ${who} scheduled for ${this.form.effective_date.split('-').reverse().join('/')} – it is carried out on that day.`); }
-      this.closeNew(); await this.load();
+      this.closeNew(); this.lookupsLoaded = false; this.empSvc.refresh(); await this.load();   // v1.28.1: directory and employee list show the new branch at once
     } catch (e: any) {
       if (e?.error?.plan) { this.setPlan(e.error.plan); }
       this.say(this.err(e, 'The transfer could not be saved.'), true);
@@ -361,7 +363,7 @@ export class EmployeeTransferComponent implements OnInit {
     try {
       const d = await firstValueFrom(this.http.post<any>(this.url(`hr-actions/api/transfers/${r.id}/${action}/`), {}));
       if (action === 'apply') { this.say(`Transfer done for ${r.employee}:`, false, d?.done || []); } else { this.say(`Transfer of ${r.employee} cancelled.`); }
-      this.detail = null; await this.load();
+      this.detail = null; this.lookupsLoaded = false; this.empSvc.refresh(); await this.load();   // v1.28.1
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();
   }

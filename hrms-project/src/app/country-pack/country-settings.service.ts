@@ -43,5 +43,7 @@ export class CountrySettingsApi {
     return this.http.patch<CpSettings>(`${this.api}settings/${this.q()}`, body);
   }
 
-  applyDefaults(): Observable<CpApplyResult> { return this.http.post<CpApplyResult>(`${this.api}apply-defaults/${this.q()}`, {}); }
+  applyDefaults(pack?: string | null): Observable<CpApplyResult> {   // v1.26.0: the pack on screen is saved and used
+    return this.http.post<CpApplyResult>(`${this.api}apply-defaults/${this.q()}`, pack === undefined ? {} : { pack_override: pack || '' });
+  }
 }

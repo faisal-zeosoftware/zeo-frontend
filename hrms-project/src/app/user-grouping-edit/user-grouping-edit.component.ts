@@ -479,6 +479,7 @@ ngOnInit(): void {
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           this.processPermissionsLocal(result);
+          this.buildExtraGroups(result);   // v1.28.1: everything the named sections do not cover
           this.updateAllMasterCheckboxes();
           this.syncAllUIStates();
   
@@ -739,8 +740,68 @@ ngOnInit(): void {
         ...this.GrouppermissionsResignationReqTemp, ...this.GrouppermissionsLinEoutReqTemp,
         ...this.GrouppermissionsShifts, ...this.GrouppermissionsShiftPattern, ...this.GrouppermissionsShiftEmployee, ...this.GrouppermissionsShiftOverRide,
         ...this.GrouppermissionsEmpOver, ...this.GrouppermissionsOverTimePolicy, ...this.GrouppermissionsOvertimeRule
-      ].map(p => p.id);
+      ,
+      ...([] as any[]).concat(...this.extraGroups.map(g => g.perms))
+    ].map(p => p.id);
     }
+
+  // ---------------------------------------------------------------------------------------------------- v1.28.1
+  // "All modules": every permission of the company that the hand-made sections above do not show (Assets Plus, Time &
+  // Attendance Plus, Shift planner, Performance, Recruitment, Learning, Expenses, Payroll Plus, HSE, CRM, Property …),
+  // grouped by app and model from the server's permission names. Before, those rights could only be given to a
+  // superuser, so the related menus (Geo fence, Face register, calendars, Assets, Shift management …) stayed hidden.
+  extraGroups: { app: string; model: string; label: string; perms: any[] }[] = [];
+  extraSearch = '';
+  private static APP_LABELS: Record<string, string> = {
+    AssetPlus: 'Assets', AttendancePlus: 'Time & Attendance', ShiftPlanner: 'Shift planner', PerformanceManagement: 'Performance',
+    RecruitmentManagement: 'Recruitment', LearningPlus: 'Learning', LearningManagement: 'Learning', ExpenseManagement: 'Expenses',
+    PayrollPlus: 'Payroll', PayrollManagement: 'Payroll', LeavePolicy: 'Leave', calendars: 'Leave & calendars', EmpManagement: 'Employees',
+    EmployeeProfile: 'Employees', OrganisationManager: 'Organisation', OrgStructure: 'Organisation', UserManagement: 'Users',
+    HRActions: 'HR actions', CountryPack: 'Country settings', LanguagePack: 'Languages', Translations: 'Languages', DataTools: 'Customisation',
+    DashboardManagement: 'Dashboards', SavedViews: 'Saved views', SelfService: 'Self service', Chatter: 'Notes & activities',
+    ZeoHSE: 'HSE', ZeoCRM: 'CRM', ZeoProjects: 'Projects', ProjectManagement: 'Projects', ProjectControl: 'Project control',
+    ZeoMaintenance: 'Maintenance', ZeoGroup: 'Property', ZeoApps: 'Apps', ZeoCloud: 'ZEO Cloud', ZeoLicence: 'Licence', AISettings: 'AI settings',
+    AccessControl: 'Access control', Core: 'Core data', auth: 'System', tenants: 'System', ZeoMobile: 'Mobile', ZeoFlow: 'Automation',
+  };
+  buildExtraGroups(all: any[]): void {
+    const placed = new Set(this.allPermissions);
+    const byKey = new Map<string, { app: string; model: string; label: string; perms: any[] }>();
+    const technical = new Set(['admin', 'auth', 'authtoken', 'contenttypes', 'sessions', 'django_celery_beat', 'django_celery_results', 'token_blacklist',
+      'tenants', 'ZeoCloud', 'ZeoLicence', 'ZeoMobile', 'Chatter', 'SavedViews', 'AccessControl', 'otp', 'sites']);
+    for (const p of all) {
+      if (placed.has(p.id) || !p.codename) { continue; }
+      const app = String(p.app || p.content_type?.app_label || '');
+      if (technical.has(app)) { continue; }   // framework tables – nothing a company administrator assigns
+      const model = String(p.model || p.codename.replace(/^[a-z]+_/, ''));
+      const key = app + '|' + model;
+      if (!byKey.has(key)) {
+        const name = String(p.name || '');
+        const modelLabel = name.replace(/^Can (add|change|delete|view|import|export|approve|run|manage)\s+/i, '') || model.replace(/_/g, ' ');
+        byKey.set(key, { app: UserGroupingEditComponent.APP_LABELS[app] || app, model, label: modelLabel.charAt(0).toUpperCase() + modelLabel.slice(1), perms: [] });
+      }
+      byKey.get(key)!.perms.push(p);
+    }
+    const order = ['add', 'change', 'delete', 'view'];
+    const rank = (c: string) => { const i = order.findIndex(o => c.startsWith(o + '_')); return i < 0 ? 9 : i; };
+    this.extraGroups = Array.from(byKey.values()).map(g => ({ ...g, perms: g.perms.sort((a, b) => rank(a.codename) - rank(b.codename) || a.codename.localeCompare(b.codename)) }))
+      .sort((a, b) => a.app.localeCompare(b.app) || a.label.localeCompare(b.label));
+  }
+  extraApps(): string[] { return Array.from(new Set(this.extraGroupsShown().map(g => g.app))); }
+  extraGroupsShown(): { app: string; model: string; label: string; perms: any[] }[] {
+    const q = this.extraSearch.trim().toLowerCase();
+    return q ? this.extraGroups.filter(g => (g.app + ' ' + g.label + ' ' + g.perms.map(p => p.codename + ' ' + (p.name || '')).join(' ')).toLowerCase().includes(q)) : this.extraGroups;
+  }
+  extraGroupsOf(app: string): { app: string; model: string; label: string; perms: any[] }[] { return this.extraGroupsShown().filter(g => g.app === app); }
+  extraLabel(p: any): string {
+    const c = String(p.codename || '');
+    if (c.startsWith('add_')) { return 'Add'; } if (c.startsWith('change_')) { return 'Edit'; } if (c.startsWith('delete_')) { return 'Delete'; } if (c.startsWith('view_')) { return 'View'; }
+    const n = String(p.name || c).replace(/^Can\s+/i, ''); return n.charAt(0).toUpperCase() + n.slice(1);
+  }
+  extraAllChecked(g: { perms: any[] }): boolean { return g.perms.length > 0 && g.perms.every(p => this.selectedPermissions.includes(p.id)); }
+  extraIndeterminate(g: { perms: any[] }): boolean { return this.isGroupIndeterminate(g.perms); }
+  onExtraGroupToggle(g: { perms: any[] }, checked: boolean): void { this.toggleMasterGroup(checked, g.perms); this.syncAllUIStates(); }
+  onExtraToggle(p: any): void { this.togglePermission(p.id); this.syncAllUIStates(); }
+  extraCount(): number { return this.extraGroups.reduce((n, g) => n + g.perms.length, 0); }
   
     onSelectAllPermissions(event: any): void {
       const checked = event.checked;

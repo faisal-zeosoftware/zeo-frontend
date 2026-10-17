@@ -102,6 +102,9 @@
             <button type="button" class="sidebar-item" [class.active]="activeTab === 'shifts'" (click)="setActiveTab('shifts')">
               Shift management
             </button>
+            <button type="button" class="sidebar-item" [class.active]="activeTab === 'more'" (click)="setActiveTab('more')">
+              All other modules <span class="badge bg-light text-dark ms-1" *ngIf="extraCount()">{{ extraCount() }}</span>
+            </button>
           </div>
         </div>
 
@@ -3263,6 +3266,30 @@
             </div>
 
             <!-- 17. Shift Management Tab -->
+            <!-- v1.28.1: every permission the named sections do not cover (Assets, Time & Attendance, Shift planner, Performance, Recruitment, HSE, CRM …) -->
+            <div *ngIf="activeTab === 'more'" class="fade-in-tab">
+              <div class="section-header-banner">
+                <span class="banner-title">All other modules</span>
+                <input type="search" class="form-control" style="max-width:320px;margin-inline-start:auto" placeholder="Find a permission or module…" [(ngModel)]="extraSearch" [ngModelOptions]="{ standalone: true }">
+              </div>
+              <p class="text-muted small px-3">Rights of the newer modules, grouped by module. Tick a row to give all four rights of that record type.</p>
+              <div class="child_per" *ngFor="let app of extraApps()">
+                <h6 class="px-3 pt-2 mb-1" style="font-weight:600">{{ app }}</h6>
+                <div class="row permission-row" *ngFor="let g of extraGroupsOf(app)">
+                  <div class="col-md-3">
+                    <mat-checkbox [checked]="extraAllChecked(g)" [indeterminate]="extraIndeterminate(g)" (change)="onExtraGroupToggle(g, $event.checked)">{{ g.label }}</mat-checkbox>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="selection_checkmark_sec"><div class="all_selection_Sec"><div class="row">
+                      <div class="col-md-3" *ngFor="let permission of g.perms">
+                        <mat-checkbox [value]="permission.id" (change)="onExtraToggle(permission)" [checked]="selectedPermissions.includes(permission.id)" [title]="permission.codename">{{ extraLabel(permission) }}</mat-checkbox>
+                      </div>
+                    </div></div></div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-muted px-3" *ngIf="!extraGroupsShown().length">Nothing matches.</p>
+            </div>
             <div *ngIf="activeTab === 'shifts'" class="fade-in-tab">
               <div class="section-header-banner">
                 <mat-checkbox [(ngModel)]="Shiftchecked" (change)="selectShift()" (change)="updateShiftCheckbox()" [indeterminate]="isShiftInderminate()" [ngModelOptions]="{ standalone: true }">

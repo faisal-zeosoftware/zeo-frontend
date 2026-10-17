@@ -251,7 +251,17 @@ export function readSheet(file: File): Promise<{ headers: string[]; rows: any[] 
     fr.onerror = () => reject(new Error('Could not read the file.'));
     fr.onload = () => {
       try {
-        const wb = XLSX.read(new Uint8Array(fr.result as ArrayBuffer), { type: 'array', cellDates: false, raw: false });
+        // v1.26.0: CSV files are read as UTF-8 (with or without BOM; Windows-1252 only when the bytes are not UTF-8) – a CSV
+        // without BOM turned "–" into "â€“" and Arabic names into question marks
+        const bytes = new Uint8Array(fr.result as ArrayBuffer);
+        let wb: any;
+        if (/\.(csv|txt)$/i.test(file.name)) {
+          let text: string;
+          try { text = new TextDecoder('utf-8', { fatal: true }).decode(bytes); } catch { text = new TextDecoder('windows-1252').decode(bytes); }
+          wb = XLSX.read(text.replace(/^\ufeff/, ''), { type: 'string', cellDates: false, raw: true });
+        } else {
+          wb = XLSX.read(bytes, { type: 'array', cellDates: false, raw: false });
+        }
         const ws = wb.Sheets[wb.SheetNames[0]];
         const aoa: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: '' });
         const headers = (aoa[0] || []).map((h: any) => String(h).trim());

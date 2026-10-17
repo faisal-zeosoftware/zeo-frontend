@@ -15,6 +15,7 @@ import { ErService, avatarColour, badgeClass, dmy, erPage } from './er.service';
 import { zToast } from '../shared-ui/z-toast';
 import { i18nT } from '../shared-ui/i18n-core';
 import { CreateEmployeeComponent } from '../create-employee/create-employee.component';
+import { ZEmployeeImportComponent } from '../shared-ui/z-employee-import.component';   // v1.26.0
 
 type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
 
@@ -45,7 +46,7 @@ type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
     <div class="er-menu-wrap">
       <button type="button" class="er-btn icon" (click)="menu = menu === 'more' ? '' : 'more'; $event.stopPropagation()" aria-label="More actions">⋯</button>
       <div class="er-menu" *ngIf="menu === 'more'" (click)="$event.stopPropagation()">
-        <button type="button" (click)="goClassic()">Import (classic list)</button>
+        <button type="button" (click)="openImport()">Import employees</button>
         <button type="button" (click)="exportCsv(shown)">Export Excel (CSV)</button>
         <button type="button" (click)="printList()">Export PDF</button>
         <button type="button" (click)="menu = 'cols'">Column chooser</button>
@@ -348,6 +349,12 @@ export class EmployeeListComponent implements OnInit {
   open(r: any, edit = false): void { this.router.navigate([erPage(r.id)], edit ? { queryParams: { edit: 1 } } : {}); }
   transfer(r: any): void { this.router.navigate(['/main-sidebar/sub-sidebar/employee-transfer'], { queryParams: { employee: r.id } }); }
   goClassic(): void { this.router.navigate(['/main-sidebar/sub-sidebar/employee-master-classic']); }
+  /** v1.26.0: the new employee import, right here (was: go to the classic list). */
+  openImport(): void {
+    this.menu = '';
+    this.dialog.open(ZEmployeeImportComponent, { width: '900px', maxWidth: '96vw', maxHeight: '92vh', autoFocus: false })
+      .afterClosed().subscribe(r => { if (r === 'imported') { this.load(); } });
+  }
   create(): void {
     const ref = this.dialog.open(CreateEmployeeComponent, { width: 'min(1180px, 96vw)', maxWidth: '96vw', height: '90vh', panelClass: 'er-create-dialog' });
     ref.afterClosed().subscribe(() => this.load());

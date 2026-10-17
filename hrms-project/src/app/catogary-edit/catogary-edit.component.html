@@ -42,10 +42,10 @@
 <div class="col-md-6" >
                
     <label>Description</label>
-   <input type="text"  class="form-control" required id="ctgry_description" name="ctgry_description"  [(ngModel)]="category.ctgry_description"  placeholder="Enter Description "
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !ctgry_description}">
+   <input type="text"  class="form-control" id="ctgry_description" name="ctgry_description"  [(ngModel)]="category.ctgry_description"  placeholder="Enter Description "
+    [ngModelOptions]="{standalone: true}" >
    
-   <div *ngIf="registerButtonClicked && !ctgry_description" class="error-message">Description is required.</div>
+
 </div>
 
 

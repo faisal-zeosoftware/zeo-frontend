@@ -11,6 +11,7 @@
         <p class="zl-sub">{{ 'Staff sign in with their e-mail, employees with their employee code.' | t }}</p>
 
         <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <div class="zl-note" *ngIf="notice" role="status">{{ notice }}</div>
 
         <label class="zl-field">
           <span>{{ 'E-mail or employee code' | t }}</span>
@@ -31,6 +32,34 @@
         <button type="submit" class="zl-btn" [disabled]="isLoading">
           <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ (isLoading ? 'Signing in…' : 'Sign in') | t }}
         </button>
+        <button type="button" class="zl-link" (click)="startForgot()">{{ 'Forgot password?' | t }}</button>   <!-- v1.28.1 -->
+      </form>
+
+      <!-- v1.28.1: forgot password – e-mail → code → new password (staff with an e-mail; employees ask HR) -->
+      <form *ngIf="step === 10" (ngSubmit)="forgotSend()" novalidate>
+        <h1>{{ 'Forgot password' | t }}</h1>
+        <p class="zl-sub">{{ 'Enter the e-mail address of your user. We send a code to it. Employees who sign in with a code ask HR to reset the password.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <label class="zl-field"><span>{{ 'E-mail' | t }}</span>
+          <input type="email" name="femail" autocomplete="email" [(ngModel)]="forgotEmail" (input)="error = ''" autofocus></label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading"><span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Send the code' | t }}</button>
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Back to sign in' | t }}</button>
+      </form>
+      <form *ngIf="step === 11" (ngSubmit)="forgotReset()" novalidate>
+        <h1>{{ 'Choose a new password' | t }}</h1>
+        <p class="zl-sub">{{ 'Type the code we sent to {0} and your new password (at least 8 characters).' | t:[forgotEmail] }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <div class="zl-note" *ngIf="notice" role="status">{{ notice }}</div>
+        <label class="zl-field"><span>{{ 'Code from the e-mail' | t }}</span>
+          <input type="text" name="fotp" inputmode="numeric" autocomplete="one-time-code" class="zl-otp" [(ngModel)]="otp" (input)="error = ''" autofocus></label>
+        <label class="zl-field"><span>{{ 'New password' | t }}</span>
+          <div class="zl-pw"><input [type]="showPassword ? 'text' : 'password'" name="fpass" autocomplete="new-password" [(ngModel)]="forgotPassword" (input)="error = ''">
+            <button type="button" class="zl-eye" (click)="togglePassword()">{{ (showPassword ? 'Hide' : 'Show') | t }}</button></div></label>
+        <label class="zl-field"><span>{{ 'New password again' | t }}</span>
+          <input [type]="showPassword ? 'text' : 'password'" name="fpass2" autocomplete="new-password" [(ngModel)]="forgotPassword2" (input)="error = ''"></label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading"><span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Set the new password' | t }}</button>
+        <button type="button" class="zl-link" (click)="forgotSend()" [disabled]="isLoading">{{ 'Send the code again' | t }}</button>
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Back to sign in' | t }}</button>
       </form>
 
       <!-- STEP 2: user checked, send the one-time code -->

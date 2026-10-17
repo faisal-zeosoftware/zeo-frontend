@@ -214,7 +214,10 @@ const routes: Routes = [
   { path: 'main-dashboard', component: MainDashboardComponent },
   { path: 'schema-selection', component: SchemaSelectionComponent, canActivate: [AuthGuard], },
   { path: 'control', canActivate: [AuthGuard], children: CONTROL_ROUTES },   // v1.23.0 ZEO Cloud – Adept control console
+  { path: 'group', canActivate: [AuthGuard], loadComponent: () => import('./zeo-group/group.component').then(m => m.GroupComponent) },        // v1.27.0 group view
+  { path: 'group/:key', canActivate: [AuthGuard], loadComponent: () => import('./zeo-group/group.component').then(m => m.GroupComponent) },
   { path: 'signup', component: CloudSignupComponent },                       // v1.23.0 ZEO Cloud – sign-up (14-day trial)
+  { path: 'm', loadChildren: () => import('./zeo-mobile/m.routes').then(m => m.MOBILE_ROUTES) },   // v1.25.0 mobile app
   { path: 'employee-schema-selection', component: EmployeeSchemaSelectionComponent, canActivate: [AuthGuard], },
 
 
@@ -312,6 +315,7 @@ const routes: Routes = [
           ...SETTINGS_HOME_ROUTES,   // v1.15.1: Settings home (the Settings gear opens it)
           ...SETTINGS_APPS_ROUTES,   // v1.21.0: Settings → Apps (activate apps, industry per app)
           ...CLOUD_SETTINGS_ROUTES,   // v1.23.0 ZEO Cloud: Subscription and Security (account owner)
+          { path: 'licence', loadComponent: () => import('./zeo-licence/licence.component').then(m => m.LicenceComponent), data: { title: 'Licence' } },   // v1.28.0 Enterprise licence
           ...AI_SETTINGS_ROUTES,   // v1.16.0: Settings → AI settings
           ...COUNTRY_PACK_ROUTES,   // v1.20.1: Settings → Country settings (was /main-sidebar/country-settings)
           ...LANGUAGE_PACK_ROUTES,   // v1.20.1: Settings → Languages (was /main-sidebar/languages)
@@ -1064,6 +1068,8 @@ const routes: Routes = [
         component: FiscalYearComponent,
       },
 
+      { path: 'automation', component: SettingsComponent, loadChildren: () => import('./zeo-flow/zeo-flow.routes').then(m => m.FLOW_ROUTES) },   // v1.29.0 workflow automation (Settings shell = sub-sidebar with the Automation menu)
+      { path: '_reload', children: [] },   // v1.28.1: blank stop used to re-open the current page after a company / branch change
       // v1.15.1: unknown addresses under /main-sidebar/ show "Page not found" inside the app (menu stays)
       { path: '**', component: NotFoundComponent },
     ]

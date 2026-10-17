@@ -63,7 +63,7 @@
             <div class="col-md-6" >
                
                 <label>Document number</label>
-               <input type="number"  class="form-control" required id="documentData.emp_doc_number" name="documentData.emp_doc_number"  [(ngModel)]="documentData.emp_doc_number"  
+               <input type="text"  class="form-control" required id="documentData.emp_doc_number" name="documentData.emp_doc_number"  [(ngModel)]="documentData.emp_doc_number"  
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_doc_number}">
                
                <div *ngIf="registerButtonClicked && !emp_doc_number" class="error-message">Description is required.</div>

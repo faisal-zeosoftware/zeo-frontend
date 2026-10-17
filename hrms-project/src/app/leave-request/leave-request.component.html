@@ -244,7 +244,7 @@
                 <label></label>
                 <div class="check-box-selection-sec form-control mt-3">
                   <div class="mat-set">
-                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Half day</mat-checkbox>
                   </div>
                 </div>
               </div>
@@ -448,7 +448,7 @@
       <label></label>
       <div class="check-box-selection-sec form-control mt-3">
         <div class="mat-set">
-          <mat-checkbox [(ngModel)]="editAsset.dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+          <mat-checkbox [(ngModel)]="editAsset.dis_half_day" [ngModelOptions]="{standalone: true}">Half day</mat-checkbox>
         </div>
       </div>
     </div>
@@ -524,7 +524,7 @@
             <tr *ngFor="let docs of pagedLeaveRequests;let i = index">
               <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
               <td data-label="Document Number">{{ docs.document_number }}</td>
-              <td data-label="Employee">{{ docs.employee }}</td>
+              <td data-label="Employee">{{ docs.employee }}<div style="font-size:12px;color:#4a4766">{{ docs.employee_name }}</div></td>
               <td data-label="Start date">{{ docs.start_date }}</td>
               <td data-label="End date">{{ docs.end_date }}</td> 
               <td data-label="Total Days">{{ docs.number_of_days }}</td> 

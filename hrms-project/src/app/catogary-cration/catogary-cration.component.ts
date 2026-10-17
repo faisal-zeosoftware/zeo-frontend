@@ -87,18 +87,10 @@ branch: any[] = [];
 registerCatogary(): void {
   this.registerButtonClicked = true;
 
-  // Basic front-end validation
-  if (!this.ctgry_title || !this.ctgry_description || !this.ctgry_code) {
-    if (!this.ctgry_title) {
-      alert('Category Name field is blank.');
-    }
-    if (!this.ctgry_code) {
-      alert('Category Code field is blank.');
-    }
-    if (!this.ctgry_description) {
-      alert('Category Description field is blank.');
-    }
-    return; // Stop further execution if validation fails
+  // v1.26.0: only the name is required (code and description are optional, as on the server); the message shows next
+  // to the field instead of a pop-up that was easy to miss
+  if (!this.ctgry_title) {
+    return; // the template shows "Category name is required." under the field
   }
 
   const companyData = {

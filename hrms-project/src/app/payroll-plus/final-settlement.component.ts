@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
+import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';
 
 @Component({
@@ -146,9 +147,11 @@ export class FinalSettlementComponent implements OnInit {
   constructor(private http: HttpClient, private rec: ZRecordService, private cd: ChangeDetectorRef) {}
   private url(p: string, q = ''): string { return `${this.rec.api}/payroll-plus/api/${p}?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}${q}`; }
   private say(m: string, err = false): void { this.msg = m; this.msgErr = err; this.cd.detectChanges(); }
-  private err(e: any): string {
-    const d = e?.error; if (!d) { return 'It could not be done.'; }
-    return d.detail + (d.errors ? ' ' + Object.values(d.errors).join(' ') : '');
+  private err(e: any): string {   // v1.28.1: never "undefined" – the server's reason, whatever shape it has
+    const d = e?.error;
+    if (d && typeof d === 'object' && typeof d.detail === 'string') { return d.detail + (d.errors ? ' ' + Object.values(d.errors).join(' ') : ''); }
+    const t = httpErrorText(e);
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) + (t.endsWith('.') ? '' : '.') : 'It could not be done.';
   }
   ngOnInit(): void { this.load(); }
   async load(): Promise<void> {

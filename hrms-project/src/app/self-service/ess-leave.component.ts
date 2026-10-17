@@ -101,7 +101,8 @@ export class EssLeaveComponent implements OnInit {
       const rows = Array.isArray(list) ? list : list.results || [];
       this.rows = rows.filter((r: any) => !this.empCode || r.employee === this.empCode).sort((a: any, b: any) => (b.start_date || '').localeCompare(a.start_date || ''));
       this.balances = (bal.leave_balance || []).filter((b: any) => b.include_dashboard !== false);
-      this.types = bal.available_leave_types || [];
+      const ok: number[] | undefined = bal.applicable_type_ids;   // v1.26.0: the employee's policy types only (gender rule applied)
+      this.types = (bal.available_leave_types || []).filter((t: any) => !ok || ok.includes(t.id));
       this.msg = '';
     } catch (e: any) { this.msg = EssApiService.error(e, 'Could not load your leave.'); }
     this.loading = false; this.cd.detectChanges();

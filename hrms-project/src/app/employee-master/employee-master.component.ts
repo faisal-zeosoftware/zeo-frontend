@@ -1,3 +1,4 @@
+import { ZEmployeeImportComponent } from '../shared-ui/z-employee-import.component';   // v1.26.0
 import { Component,OnInit, ElementRef, Renderer2, ViewChild,  EventEmitter, Output, inject } from '@angular/core';
 import { EmpOrgColumnsService } from '../org-structure/emp-org-columns.service';   // v1.12.0
 import { EmpProfileColumnsService } from '../employee-profile/emp-profile-columns.service';   // v1.13.0
@@ -681,7 +682,7 @@ saveAsExcelFile(buffer: any, fileName: string): void {
       this.dialog.open(CreateEmployeeComponent,{
         width:'80%',
         height:'500px',
-      })
+      }).afterClosed().subscribe(() => this.EmployeeService.refresh());   // v1.28.1
     }
 
     openEditEmpPopuss(employeeId: number):void{
@@ -692,9 +693,7 @@ saveAsExcelFile(buffer: any, fileName: string): void {
         
       });
   
-      dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
-      });
+      dialogRef.afterClosed().subscribe(() => this.EmployeeService.refresh());   // v1.28.1: list shows the change at once
     }
 
 
@@ -710,6 +709,13 @@ saveAsExcelFile(buffer: any, fileName: string): void {
 
 OpenBulkuploadModal():void{
   this.isBulkuploadEmployeeModalOpen = true;
+}
+
+// v1.26.0: new employee import (background job, good rows imported, errors listed / downloadable, more columns)
+openEmployeeImport(): void {
+  this.isBulkuploadEmployeeModalOpen = false;
+  this.dialog.open(ZEmployeeImportComponent, { width: '900px', maxWidth: '96vw', maxHeight: '92vh', autoFocus: false })
+    .afterClosed().subscribe(r => { if (r === 'imported') { window.location.reload(); } });
 }
 
 

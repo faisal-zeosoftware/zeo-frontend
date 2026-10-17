@@ -1,3 +1,4 @@
+import { Capacitor } from '@capacitor/core';   // v1.25.0
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -26,6 +27,13 @@ export class AppComponent {
     injector.start();
     let last = 0;
     router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => { if (Date.now() - last > 60000) { last = Date.now(); rec.refreshTodo(); } });
+    // v1.25.0 mobile app: the phone app starts with its own screens (/m); the web sign-in page is never shown there
+    if (Capacitor.isNativePlatform()) {
+      router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
+        const u = String(e.urlAfterRedirects || '');
+        if (u === '/' || u.startsWith('/login') || u.startsWith('/schema-selection')) { router.navigateByUrl(u.startsWith('/schema-selection') ? '/m/companies' : '/m'); }
+      });
+    }
   }
 
 ngOnInit() {

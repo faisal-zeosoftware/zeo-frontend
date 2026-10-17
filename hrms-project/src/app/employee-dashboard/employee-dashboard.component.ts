@@ -1264,7 +1264,8 @@ loadEmpLeaveBalance(selectedSchema: string, empId: number): void {
 
       // Filter available leave types based on the employee's leave balance
       const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
-      this.LeaveTypes = this.allLeaveTypes.filter(lt => leaveTypeNames.includes(lt.name));
+      const ok: number[] | undefined = (data as any)?.applicable_type_ids;   // v1.26.0: per-event / unpaid types too
+      this.LeaveTypes = this.allLeaveTypes.filter(lt => ok ? ok.includes(lt.id) : leaveTypeNames.includes(lt.name));
 
       console.log('Filtered Leave Types:', this.LeaveTypes);
     },
@@ -1858,7 +1859,7 @@ async EmployeePunchingOut(): Promise<void> {
   
 
 // doc_number: any = '';
-document_number: number | null = null;
+document_number: string | number | null = null;
 total: any = '';
 branch: any = '';
 request_type: any = '';

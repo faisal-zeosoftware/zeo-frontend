@@ -217,6 +217,7 @@
                     'error-field': registerButtonClicked && !asset_type,
                   }"
                 >
+                  <option value="" disabled selected hidden>{{ AssetTypes?.length ? 'Select asset type' : 'No asset types yet' }}</option>
                   <option
                     *ngFor="let employees of AssetTypes"
                     [value]="employees.id"
@@ -225,6 +226,9 @@
                   </option>
                 </select>
               </div>
+              <!-- v1.28.1: an empty list says where asset types are created instead of showing a blank box -->
+              <small class="text-muted" *ngIf="AssetTypes && !AssetTypes.length">No asset types have been created for this company yet – add them under
+                <a routerLink="/main-sidebar/asset-options/asset-type">Assets › Setup › Asset types</a> (Create), then come back to this request.</small>
               <div
                 *ngIf="registerButtonClicked && !asset_type"
                 class="error-message"

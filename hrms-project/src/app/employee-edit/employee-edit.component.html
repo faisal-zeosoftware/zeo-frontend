@@ -291,6 +291,15 @@
   </option>
 
 </select>
+<small class="text-muted">A user with a login. Without one, choose “Reports to” below – approvals then go to that employee's login, or to branch HR.</small>
+</div>
+<!-- v1.26.0: line manager as an employee (no login needed) -->
+<div class="custom-sel mt-2">
+  <label>Reports to (employee)</label>
+  <select class="form-control" [(ngModel)]="Emp.emp_reports_to" [ngModelOptions]="{standalone: true}">
+    <option [ngValue]="null">-- None --</option>
+    <option *ngFor="let m of reportsToOptions" [ngValue]="m.id">{{ m.code }} – {{ m.name }}</option>
+  </select>
 </div>
                     
 
@@ -772,7 +781,7 @@
 
         </div>
         <div class="col-md-2">
-            <button   mat-raised-button color="primary" class="pull-right btn-full mt-4" type="submit" (click)="updateEmp()" >Update</button>
+            <button   mat-raised-button color="primary" class="pull-right btn-full mt-4" type="submit" [disabled]="!loaded" (click)="updateEmp()" >{{ loaded ? 'Update' : 'Loading…' }}</button>
 
         </div>
     </div>

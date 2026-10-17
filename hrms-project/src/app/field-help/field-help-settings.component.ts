@@ -23,8 +23,8 @@ import { I18N_UI, i18nLang } from '../shared-ui/i18n.service';
 <div class="container fh">
   <div class="comapny_section">
     <div class="header_section"><h1 class="page-title">Field help</h1>
-      <p class="fh-muted">When you put the cursor in a field, a help panel shows what the field means, its format, an example, its rules and UAE notes.
-        Mouse users can also click the small “?” on a field. Press Esc to close the panel, F1 to open it again.</p></div>
+      <p class="fh-muted">Every field shows a small “?” when you point at it or put the cursor in it. Click the “?” (or press F1) and a help panel
+        shows what the field means, its format, an example, its rules and UAE notes. Press Esc to close the panel.</p></div>
 
     <section class="fh-card">
       <label class="fh-switch"><input type="checkbox" [checked]="on" (change)="toggle($any($event.target).checked)" data-no-help>

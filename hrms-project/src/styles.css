@@ -9,11 +9,10 @@
   --main-color:  #4f46e5;
 }
 
-html, body { 
-  height: 100%; 
-  margin: 0;
-  overflow: hidden; /* Prevents global double-scrollbar bug */
-}
+html { height: 100%; margin: 0; overflow: hidden; }
+/* v1.28.1 the page itself may scroll again (To-do, Calendar, My policies, Organisation chart, company list …);
+   screens with a sub-sidebar are exactly one viewport high, so they still scroll inside .sub-content-area only */
+body { height: 100%; margin: 0; overflow-x: hidden; overflow-y: auto; }
 body { 
   margin: 0; 
   font-family: Roboto, "Helvetica Neue", sans-serif; 
@@ -790,3 +789,11 @@ mat-sidenav-container {
 .sub-sidenav nav.sidebar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
+
+/* v1.28.1 pages routed straight under the main menu (no sub-sidebar) keep clear of the fixed left rail */
+@media (min-width: 992px) {
+  body:has(#sidebarMenu.menu-close) app-main-sidebar > :is(app-unified-calendar, z-todo, z-org-chart, app-my-policies) { display: block; padding-inline-start: 36px; }
+  body:has(#sidebarMenu.menu-open) app-main-sidebar > :is(app-unified-calendar, z-todo, z-org-chart, app-my-policies) { display: block; padding-inline-start: 236px; }
+}
+/* v1.28.1 the unfolded main menu (235 px) no longer covers the sub-sidebar */
+@media (min-width: 992px) { body:has(#sidebarMenu.menu-open) .sub-sidebar { padding-left: 207px; } }

@@ -427,7 +427,7 @@ normalizeBranch() {
 
   mapLeaveTypeNameToId() {
 
-  if (!this.LeaveTypes || !this.editAsset?.request_type) return;
+  if (!this.LeaveTypes || !this.editAsset?.request_type || typeof this.editAsset.request_type === 'number') return;
 
   const lv = this.LeaveTypes.find(
     (l: any) => l.name === this.editAsset.request_type
@@ -709,6 +709,9 @@ openEditModal(asset: any): void {
   this.isEditModalOpen = true;
 
   this.editAsset.is_compensatory = !!this.editAsset.is_compensatory;
+  // v1.26.0: the list now sends the ids – the dialog opens filled in (it showed an empty leave type and branch)
+  if (asset.request_type_id) { this.editAsset.request_type = asset.request_type_id; }
+  if (Array.isArray(asset.branch_ids)) { this.editAsset.branch = [...asset.branch_ids]; }
 
   // Load leave types first
   this.LoadLeavetype(() => {

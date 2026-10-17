@@ -185,13 +185,17 @@ export class CountrySettingsComponent implements OnInit {
   }
 
   async applyDefaults(): Promise<void> {
-    if (this.dirty() && !confirm('You have unsaved changes. Apply the defaults of the saved pack anyway?')) { return; }
+    // v1.26.0: unsaved changes (e.g. a new pack) are saved first, so the defaults of the pack on screen are applied
+    if (this.dirty()) {
+      await this.save();
+      if (this.err) { return; }
+    }
     this.busy = this.applying = true; this.msg = '';
     try {
-      this.result = await firstValueFrom(this.api.applyDefaults());
+      this.result = await firstValueFrom(this.api.applyDefaults(this.pack || null));
       this.msg = this.result.message; this.err = false;
-      const keep = this.dirty() ? null : this.snapshot();
-      if (keep !== null) { this.fill(await firstValueFrom(this.api.settings())); }
+      this.fill(await firstValueFrom(this.api.settings()));
+      (this.cp as any)?.reload?.();
     } catch (e: any) {
       this.fail(e, 'The country defaults could not be applied.');
     }

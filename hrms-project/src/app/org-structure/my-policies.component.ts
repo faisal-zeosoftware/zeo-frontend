@@ -68,9 +68,11 @@ export class MyPoliciesComponent implements OnInit {
   async openFile(p: any): Promise<void> {
     try {
       const blob = await firstValueFrom(this.http.get(this.url(`my-policies/${p.id}/file/`), { responseType: 'blob' }));
+      // v1.28.1: a download link instead of window.open (pop-up blockers stop a window opened after the file arrived)
       const u = URL.createObjectURL(blob);
-      window.open(u, '_blank');
-      setTimeout(() => URL.revokeObjectURL(u), 60000);
+      const a = document.createElement('a'); a.href = u; a.download = (p.title || 'policy') + (blob.type === 'application/pdf' ? '.pdf' : ''); a.style.display = 'none';
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 60000);
     } catch { this.msg = 'The document could not be opened. Ask HR for a copy.'; this.err = true; this.cd.markForCheck(); }
   }
 

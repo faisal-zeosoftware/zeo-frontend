@@ -1,0 +1,196 @@
+<div class="zg-page">
+  <header class="zg-top">
+    <a routerLink="/schema-selection" class="zg-logo-l"><img src="assets/zeo_logo_new.png" class="zg-logo" alt="ZEO"></a>
+    <div class="zg-title" *ngIf="group">
+      <b>{{ group.name }}</b>
+      <span>{{ 'Group view' | t }} · {{ group.companies.length === 1 ? ('1 company' | t) : ('{0} companies' | t:group.companies.length) }} · {{ roleLabel(group.role) }}</span>
+    </div>
+    <a routerLink="/schema-selection" class="zg-back">{{ 'Company list' | t }}</a>
+  </header>
+
+  <nav class="zg-tabs" *ngIf="group?.features" role="tablist">
+    <button type="button" role="tab" *ngFor="let t of shownTabs()" [class.on]="tab === t.key" [attr.aria-selected]="tab === t.key" (click)="open(t.key)">{{ t.label | t }}</button>
+  </nav>
+
+  <main class="zg-main">
+    <div class="zg-err" *ngIf="error" role="alert">{{ error }}</div>
+
+    <!-- ================= dashboard -->
+    <section *ngIf="tab === 'dashboard' && group?.features">
+      <div class="zg-head"><h1>{{ 'Group dashboard' | t }}</h1>
+        <button type="button" class="zg-btn" (click)="loadDash(true)" [disabled]="busy">{{ busy ? ('Updating…' | t) : ('Update now' | t) }}</button></div>
+      <p class="zg-muted">{{ 'Every company of the group, side by side. Figures are kept for 15 minutes – Update now reads them again.' | t }}</p>
+      <ng-container *ngIf="dash">
+        <div class="zg-kpis">
+          <div class="zg-kpi"><b>{{ dash.total.employees }}</b><span>{{ 'Employees' | t }}</span></div>
+          <div class="zg-kpi"><b>{{ dash.total.joiners }} / {{ dash.total.leavers }}</b><span>{{ 'Joined / left this month' | t }}</span></div>
+          <div class="zg-kpi"><b>{{ dash.total.on_leave }}</b><span>{{ 'On leave today' | t }}</span></div>
+          <div class="zg-kpi"><b>{{ money(dash.total.payroll_gross) }}</b><span>{{ 'Gross pay, last payroll' | t }}</span></div>
+          <div class="zg-kpi" [class.warn]="dash.total.documents_30 > 0"><b>{{ dash.total.documents_30 }}</b><span>{{ 'Documents expiring in 30 days' | t }}</span></div>
+          <div class="zg-kpi" [class.warn]="dash.total.approvals > 0"><b>{{ dash.total.approvals }}</b><span>{{ 'Requests waiting for approval' | t }}</span></div>
+        </div>
+        <div class="zg-table"><table>
+          <thead><tr><th>{{ 'Company' | t }}</th><th class="n">{{ 'Employees' | t }}</th><th class="n">{{ 'Joined' | t }}</th><th class="n">{{ 'Left' | t }}</th>
+            <th class="n">{{ 'On leave today' | t }}</th><th>{{ 'Last payroll' | t }}</th><th class="n">{{ 'Gross pay' | t }}</th><th class="n">{{ 'Documents (30 days)' | t }}</th><th class="n">{{ 'Waiting for approval' | t }}</th><th></th></tr></thead>
+          <tbody>
+            <tr *ngFor="let c of dash.companies">
+              <td><b>{{ c.company }}</b><div class="zg-err-s" *ngIf="c.error">{{ c.error }}</div></td>
+              <td class="n">{{ c.employees }}</td><td class="n">{{ c.joiners }}</td><td class="n">{{ c.leavers }}</td><td class="n">{{ c.on_leave }}</td>
+              <td>{{ c.payroll_month || '–' }}</td><td class="n">{{ c.payroll_month ? money(c.payroll_gross) : '–' }}</td>
+              <td class="n">{{ c.documents_30 }}</td><td class="n">{{ c.approvals }}</td>
+              <td class="r"><button type="button" class="zg-link" *ngIf="group.role !== 'viewer'" (click)="openCompany(c.schema_name)">{{ 'Open' | t }}</button></td>
+            </tr>
+          </tbody>
+          <tfoot><tr><td>{{ 'Group total' | t }}</td><td class="n">{{ dash.total.employees }}</td><td class="n">{{ dash.total.joiners }}</td><td class="n">{{ dash.total.leavers }}</td>
+            <td class="n">{{ dash.total.on_leave }}</td><td></td><td class="n">{{ money(dash.total.payroll_gross) }}</td><td class="n">{{ dash.total.documents_30 }}</td><td class="n">{{ dash.total.approvals }}</td><td></td></tr></tfoot>
+        </table></div>
+      </ng-container>
+      <p class="zg-muted" *ngIf="!dash && busy">{{ 'Reading the companies…' | t }}</p>
+    </section>
+
+    <!-- ================= approvals -->
+    <section *ngIf="tab === 'inbox'">
+      <div class="zg-head"><h1>{{ 'Waiting for my approval' | t }}</h1><button type="button" class="zg-btn" (click)="loadInbox()" [disabled]="busy">{{ 'Refresh' | t }}</button></div>
+      <p class="zg-muted">{{ 'Requests of every company of the group where you approve. Open takes you to the request in its company.' | t }}</p>
+      <p class="zg-empty" *ngIf="inbox && !inbox.items.length">{{ 'Nothing is waiting for your approval.' | t }}</p>
+      <div class="zg-table" *ngIf="inbox?.items.length"><table>
+        <thead><tr><th>{{ 'Company' | t }}</th><th>{{ 'Type' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Request' | t }}</th><th>{{ 'Waiting' | t }}</th><th></th></tr></thead>
+        <tbody><tr *ngFor="let i of inbox.items">
+          <td>{{ i.company }}</td><td>{{ i.module_label || i.module }}</td><td>{{ i.employee }}<div class="zg-muted s">{{ i.employee_code }}</div></td>
+          <td>{{ i.summary }}<div class="zg-muted s" *ngIf="i.document_number">{{ i.document_number }}</div></td><td>{{ age(i.date) }}</td>
+          <td class="r"><button type="button" class="zg-btn pri sm" (click)="openApproval(i)">{{ 'Open' | t }}</button></td>
+        </tr></tbody>
+      </table></div>
+    </section>
+
+    <!-- ================= notifications -->
+    <section *ngIf="tab === 'feed'">
+      <div class="zg-head"><h1>{{ 'Notifications' | t }} <span class="zg-pill" *ngIf="feed?.unread">{{ feed.unread }}</span></h1>
+        <button type="button" class="zg-btn" (click)="readAll()" *ngIf="feed?.unread">{{ 'Mark all as read' | t }}</button></div>
+      <p class="zg-empty" *ngIf="feed && !feed.items.length">{{ 'No notifications.' | t }}</p>
+      <ul class="zg-feed" *ngIf="feed?.items.length">
+        <li *ngFor="let n of feed.items" [class.unread]="!n.is_read">
+          <span class="zg-co">{{ n.company }}</span>
+          <div><b>{{ n.title }}</b><p>{{ n.message }}</p><small>{{ n.created_at | zdate:'datetime' }}<span *ngIf="n.branch"> · {{ n.branch }}</span></small></div>
+          <button type="button" class="zg-link" (click)="openCompany(n.schema_name)">{{ 'Open company' | t }}</button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ================= reports -->
+    <section *ngIf="tab === 'reports'">
+      <div class="zg-head"><h1>{{ 'Group reports' | t }}</h1></div>
+      <div class="zg-form">
+        <label>{{ 'Report' | t }}<select [(ngModel)]="rkey"><option *ngFor="let r of reports" [value]="r.key">{{ r.title }}</option></select></label>
+        <label>{{ 'From' | t }}<input type="date" [(ngModel)]="rfrom"></label>
+        <label>{{ 'To' | t }}<input type="date" [(ngModel)]="rto"></label>
+        <button type="button" class="zg-btn pri" (click)="runReport()" [disabled]="rbusy">{{ rbusy ? ('Running…' | t) : ('Run' | t) }}</button>
+        <button type="button" class="zg-btn" (click)="excel()" *ngIf="rep">{{ 'Excel' | t }}</button>
+      </div>
+      <ng-container *ngIf="rep">
+        <p class="zg-muted">{{ rep.title }} · {{ rep.count }} {{ 'rows' | t }}<span *ngFor="let p of rep.per_company"> · {{ p.company }}: {{ p.count }}</span></p>
+        <div class="zg-err" *ngFor="let e of rep.errors">{{ e.company }}: {{ e.error }}</div>
+        <div class="zg-table tall"><table>
+          <thead><tr><th *ngFor="let c of rep.columns" [class.n]="isNum(c)">{{ c.label }}</th></tr></thead>
+          <tbody><tr *ngFor="let r of rep.rows | slice:0:1000"><td *ngFor="let c of rep.columns" [class.n]="isNum(c)">{{ cell(r, c) }}</td></tr></tbody>
+          <tfoot *ngIf="rep.rows.length"><tr><td *ngFor="let c of rep.columns; let i = index" [class.n]="isNum(c)">{{ i === 0 ? ('Total' | t) : (rep.totals[c.key] !== undefined ? cell(rep.totals, c) : '') }}</td></tr></tfoot>
+        </table></div>
+        <p class="zg-muted" *ngIf="rep.rows.length > 1000">{{ 'The first 1,000 rows are shown – Excel has them all.' | t }}</p>
+      </ng-container>
+    </section>
+
+    <!-- ================= copy settings -->
+    <section *ngIf="tab === 'copy'">
+      <div class="zg-head"><h1>{{ 'Copy settings to companies' | t }}</h1></div>
+      <p class="zg-muted">{{ 'Company-wide settings of one company are copied to the others. A setting is matched by its code or name; Add missing only never changes what a company already has.' | t }}</p>
+      <div class="zg-cols">
+        <div class="zg-card">
+          <label class="zg-lab">{{ 'Copy from' | t }}<select [(ngModel)]="cpSource"><option *ngFor="let c of group.companies" [value]="c.schema_name">{{ c.name }}</option></select></label>
+          <div class="zg-lab">{{ 'What' | t }}</div>
+          <label class="zg-chk" *ngFor="let k of kinds"><input type="checkbox" [(ngModel)]="cpKinds[k.key]"> {{ k.label }}</label>
+        </div>
+        <div class="zg-card">
+          <div class="zg-lab">{{ 'Copy to' | t }}</div>
+          <label class="zg-chk" *ngFor="let c of others(cpSource)"><input type="checkbox" [(ngModel)]="cpTargets[c.schema_name]"> {{ c.name }}</label>
+          <div class="zg-lab">{{ 'Settings the company already has' | t }}</div>
+          <label class="zg-chk"><input type="radio" name="ow" [value]="false" [(ngModel)]="cpOverwrite"> {{ 'Add missing only (keep theirs)' | t }}</label>
+          <label class="zg-chk"><input type="radio" name="ow" [value]="true" [(ngModel)]="cpOverwrite"> {{ 'Update them to match' | t }}</label>
+        </div>
+      </div>
+      <div class="zg-act"><button type="button" class="zg-btn pri" (click)="copy()" [disabled]="busy">{{ busy ? ('Copying…' | t) : ('Copy' | t) }}</button></div>
+      <div class="zg-table" *ngIf="cpResult"><table>
+        <thead><tr><th>{{ 'Company' | t }}</th><th>{{ 'Setting' | t }}</th><th class="n">{{ 'Added' | t }}</th><th class="n">{{ 'Updated' | t }}</th><th class="n">{{ 'Kept' | t }}</th><th>{{ 'Note' | t }}</th></tr></thead>
+        <tbody><tr *ngFor="let r of resultRows(cpResult.result)">
+          <td>{{ r.company }}</td><td>{{ kindLabel(r.kind) }}</td><td class="n">{{ r.r.added }}</td><td class="n">{{ r.r.updated }}</td><td class="n">{{ r.r.kept }}</td>
+          <td><span class="zg-err-s" *ngIf="r.r.error">{{ r.r.error }}</span>{{ r.r.note }}</td></tr></tbody>
+      </table></div>
+      <h2 *ngIf="cpHistory.length">{{ 'Earlier copies' | t }}</h2>
+      <div class="zg-table" *ngIf="cpHistory.length"><table>
+        <thead><tr><th>{{ 'When' | t }}</th><th>{{ 'From' | t }}</th><th>{{ 'To' | t }}</th><th>{{ 'What' | t }}</th><th>{{ 'By' | t }}</th></tr></thead>
+        <tbody><tr *ngFor="let h of cpHistory | slice:0:10"><td>{{ h.at | zdate:'datetime' }}</td><td>{{ h.source }}</td><td>{{ h.targets.join(', ') }}</td>
+          <td>{{ kindsText(h.kinds) }}{{ h.overwrite ? ' · ' + ('updated' | t) : '' }}</td><td>{{ h.by }}</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <!-- ================= transfers -->
+    <section *ngIf="tab === 'transfer'">
+      <div class="zg-head"><h1>{{ 'Move an employee to a sister company' | t }}</h1></div>
+      <p class="zg-muted">{{ 'The employee is made in the new company with the same personal data, bank account and salary; the service date can be kept. The record in the old company is closed and both get a note.' | t }}</p>
+      <div class="zg-ok" *ngIf="trResult" role="status">{{ trResult }}</div>
+      <div class="zg-cols">
+        <div class="zg-card">
+          <label class="zg-lab">{{ 'From company' | t }}<select [(ngModel)]="trSource" (ngModelChange)="trEmp = null; trForm = null; searchEmps()"><option *ngFor="let c of group.companies" [value]="c.schema_name">{{ c.name }}</option></select></label>
+          <label class="zg-lab">{{ 'Employee' | t }}<input type="search" [(ngModel)]="trQuery" (keyup.enter)="searchEmps()" (search)="searchEmps()" [placeholder]="'Code or name – Enter to search' | t"></label>
+          <ul class="zg-pick">
+            <li *ngFor="let e of trEmps"><button type="button" [class.on]="trEmp?.id === e.id" (click)="pickEmp(e)"><b>{{ e.emp_code }}</b> {{ e.name }}</button></li>
+          </ul>
+        </div>
+        <div class="zg-card">
+          <label class="zg-lab">{{ 'To company' | t }}<select [(ngModel)]="trTarget" (ngModelChange)="loadForm()"><option value="">–</option><option *ngFor="let c of others(trSource)" [value]="c.schema_name">{{ c.name }}</option></select></label>
+          <ng-container *ngIf="trForm">
+            <p class="zg-sum"><b>{{ trForm.employee.name }}</b> ({{ trForm.employee.emp_code }}) · {{ 'joined' | t }} {{ trForm.employee.joined | zdate }}<br>
+              {{ trForm.employee.branch }} · {{ trForm.employee.department }} · {{ trForm.employee.designation }}<br>
+              <span class="zg-muted">{{ '{0} salary lines, {1} bank accounts' | t:trForm.employee.salary_lines:trForm.employee.bank_accounts }}{{ trForm.employee.has_login ? ' · ' + ('self-service login moves along' | t) : '' }}</span></p>
+            <div class="zg-grid">
+              <label>{{ 'Branch' | t }}<select [(ngModel)]="trOpts.branch"><option [ngValue]="null">–</option><option *ngFor="let o of trForm.target.branches" [ngValue]="o.id">{{ o.name }}</option></select></label>
+              <label>{{ 'Department' | t }}<select [(ngModel)]="trOpts.department"><option [ngValue]="null">–</option><option *ngFor="let o of trForm.target.departments" [ngValue]="o.id">{{ o.name }}</option></select></label>
+              <label>{{ 'Designation' | t }}<select [(ngModel)]="trOpts.designation"><option [ngValue]="null">–</option><option *ngFor="let o of trForm.target.designations" [ngValue]="o.id">{{ o.name }}</option></select></label>
+              <label>{{ 'Category' | t }}<select [(ngModel)]="trOpts.category"><option [ngValue]="null">–</option><option *ngFor="let o of trForm.target.categories" [ngValue]="o.id">{{ o.name }}</option></select></label>
+              <label>{{ 'Employee code there' | t }}<input [(ngModel)]="trOpts.emp_code"></label>
+              <label>{{ 'Date of the move' | t }}<input type="date" [(ngModel)]="trOpts.effective_date"></label>
+            </div>
+            <label class="zg-chk"><input type="checkbox" [(ngModel)]="trOpts.keep_service_date"> {{ 'Keep the service date (joining date {0}) – gratuity and leave by service continue' | t:(trForm.employee.joined | zdate) }}</label>
+            <label class="zg-chk"><input type="checkbox" [(ngModel)]="trOpts.copy_salary"> {{ 'Copy the salary (components by code; missing ones are added)' | t }}</label>
+            <div class="zg-act"><button type="button" class="zg-btn pri" (click)="doTransfer()" [disabled]="busy">{{ busy ? ('Moving…' | t) : ('Move to {0}' | t:trForm.target.company) }}</button></div>
+          </ng-container>
+          <p class="zg-muted" *ngIf="!trForm">{{ 'Choose the employee and the company.' | t }}</p>
+        </div>
+      </div>
+      <h2 *ngIf="trHistory.length">{{ 'Transfers' | t }}</h2>
+      <div class="zg-table" *ngIf="trHistory.length"><table>
+        <thead><tr><th>{{ 'Employee' | t }}</th><th>{{ 'From' | t }}</th><th>{{ 'To' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Service date' | t }}</th><th>{{ 'Status' | t }}</th><th>{{ 'By' | t }}</th></tr></thead>
+        <tbody><tr *ngFor="let h of trHistory">
+          <td>{{ h.name }}<div class="zg-muted s">{{ h.emp_code }} → {{ h.target_code }}</div></td><td>{{ h.source }}</td><td>{{ h.target }}</td><td>{{ h.effective_date | zdate }}</td>
+          <td>{{ h.keep_service_date ? ('kept' | t) : ('new' | t) }}</td><td><span class="zg-st" [ngClass]="h.state">{{ h.state === 'done' ? ('Done' | t) : ('Failed' | t) }}</span><div class="zg-err-s" *ngIf="h.error">{{ h.error }}</div></td><td>{{ h.by }}</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <!-- ================= roles -->
+    <section *ngIf="tab === 'roles'">
+      <div class="zg-head"><h1>{{ 'Group roles' | t }}</h1></div>
+      <p class="zg-muted">{{ 'Group HR head: every company of the group, with HR Manager rights in the companies they do not work in yet, the approval inbox, copy settings and transfers. Group viewer: the group dashboard and reports only.' | t }}</p>
+      <div class="zg-form">
+        <label>{{ 'User' | t }}<select [(ngModel)]="roleUser"><option value="">–</option><option *ngFor="let m of members" [ngValue]="m.id">{{ m.email }}</option></select></label>
+        <label>{{ 'Role' | t }}<select [(ngModel)]="roleKind"><option value="hr_head">{{ 'Group HR head' | t }}</option><option value="viewer">{{ 'Group viewer' | t }}</option></select></label>
+        <button type="button" class="zg-btn pri" (click)="addRole()" [disabled]="busy || !roleUser">{{ 'Give the role' | t }}</button>
+        <span class="zg-ok-s" *ngIf="roleMsg">{{ roleMsg }}</span>
+      </div>
+      <p class="zg-empty" *ngIf="!roles.length">{{ 'No group roles yet – the owner has every group right.' | t }}</p>
+      <div class="zg-table" *ngIf="roles.length"><table>
+        <thead><tr><th>{{ 'User' | t }}</th><th>{{ 'Role' | t }}</th><th>{{ 'Given by' | t }}</th><th>{{ 'Since' | t }}</th><th></th></tr></thead>
+        <tbody><tr *ngFor="let r of roles"><td>{{ r.email }}</td><td>{{ r.role_label }}</td><td>{{ r.by }}</td><td>{{ r.created_at | zdate }}</td>
+          <td class="r"><button type="button" class="zg-link warn" (click)="removeRole(r)" [disabled]="busy">{{ 'Remove' | t }}</button></td></tr></tbody>
+      </table></div>
+    </section>
+  </main>
+</div>

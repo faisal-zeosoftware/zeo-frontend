@@ -303,7 +303,8 @@ const formData = new FormData();
 
       console.log('Leave request successful:', response);
       alert('Leave Request has been sent successfully!');
-      window.location.reload();
+      this.iscreateLoanApp = false;
+      this.reloadRequests();   // v1.26.0: no full page reload
     },
     (error) => {
 
@@ -363,10 +364,9 @@ onEmployeeChange() {
       this.allLeaveTypes = data.available_leave_types;
 
       const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
-
-      this.LeaveTypes = this.allLeaveTypes.filter(lt =>
-        leaveTypeNames.includes(lt.name)
-      );
+      // v1.26.0: every type of the employee's leave policy (maternity, parental, bereavement, unpaid … have no balance row)
+      const ok: number[] | undefined = data.applicable_type_ids;
+      this.LeaveTypes = this.allLeaveTypes.filter(lt => ok ? ok.includes(lt.id) : leaveTypeNames.includes(lt.name));
 
       console.log('LeaveTypes loaded:', this.LeaveTypes);
     },
@@ -387,10 +387,8 @@ onEmployeeChangeEdit() {
       this.allLeaveTypes = data.available_leave_types;
 
       const names = this.leaveBalances.map((x: any) => x.leave_type);
-
-      this.LeaveTypes = this.allLeaveTypes.filter((x: any) =>
-        names.includes(x.name)
-      );
+      const ok: number[] | undefined = data.applicable_type_ids;   // v1.26.0
+      this.LeaveTypes = this.allLeaveTypes.filter((x: any) => ok ? ok.includes(x.id) : names.includes(x.name));
 
       const leave = this.LeaveTypes.find((x: any) =>
         x.name === leaveName
@@ -519,6 +517,13 @@ mapLeaveTypeNameToId() {
 
 isLoading: boolean = false;
 
+
+/** v1.26.0 – refresh the request list in place (each save reloaded the whole app, ≈10 s). */
+reloadRequests(): void {
+  let ids: number[] = [];
+  try { ids = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'); } catch { ids = []; }
+  this.fetchEmployeesLeaveApprovalLevel(localStorage.getItem('selectedSchema') || '', ids);
+}
 
 fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
   this.isLoading = true;
@@ -653,7 +658,7 @@ selectedEmployeeIds.forEach(categoryId => {
 
  if (completed === total) {
       alert(' Request  deleted successfully');
-      window.location.reload();
+      this.reloadRequests();   // v1.26.0
  }
 
     },
@@ -694,7 +699,7 @@ updateAssetType(): void {
     () => {
       alert('Updated successfully!');
       this.closeEditModal();
-      window.location.reload();
+      this.reloadRequests();   // v1.26.0
     },
     (error) => {
       console.error(error);

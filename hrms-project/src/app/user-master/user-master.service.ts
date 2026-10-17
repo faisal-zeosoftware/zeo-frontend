@@ -99,6 +99,11 @@ export class UserMasterService {
   //   );
  
   // }
+  // v1.26.0: company creation runs in the background – progress of the job
+  getCompanyJob(job: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/api/company-jobs/${job}/`);
+  }
+
   getSchema(companyData: FormData): Observable<any> {
     const url = `${this.apiUrl}/users/api/company/`;
 
@@ -425,9 +430,9 @@ verifyResetOtp(email: string, otp: string): Observable<any> {
 }
 
 // STEP 3 — RESET PASSWORD
-resetPassword(email: string, newPassword: string): Observable<any> {
+resetPassword(email: string, newPassword: string, otp = ''): Observable<any> {
   const url = `${this.apiUrl}/users/reset-password/`;
-  const body = { email: email, new_password: newPassword };
+  const body = { email: email, new_password: newPassword, otp };   // v1.28.1: the e-mailed code is required
 
   return this.http.post(url, body).pipe(
     catchError(error => throwError(() => error))

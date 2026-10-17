@@ -154,6 +154,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { title: 'Approvals', items: [
             { label: 'General approvals', link: M + 'general-sidebar/approvals', icon: 'fact_check', perms: ['view_approval', 'approver_approval'] },
             { label: 'Document approvals', link: M + 'general-sidebar/document-request-approval', icon: 'fact_check', perms: ['view_documentapproval', 'approver_documentapproval'] },
+            { label: 'Workflow approvals', hint: 'Approval requests of the automation rules (any app)', link: M + 'automation/approvals', icon: 'how_to_reg' },   // v1.29.0
           ] },
           { title: 'Setup', collapsed: true, items: [
             { label: 'Request types', link: M + 'general-sidebar/request-type', icon: 'list_alt', perms: ['view_requesttype'] },
@@ -243,10 +244,10 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { title: 'Setup', collapsed: true, items: [
             { label: 'Leave policies (UAE)', hint: 'Employee-wise leave policies, accrual and leave year end', link: M + 'leave-options/leave-policies', icon: 'policy', perms: ['view_leave_type', 'view_leavepolicy'] },
             { label: 'Leave types', link: M + 'leave-options/leave-master', icon: 'category', perms: ['view_leave_type'] },
-            { label: 'Leave entitlements', hint: 'Older per-leave-type rules, used only for leave types that no leave policy covers', link: M + 'leave-options/leave-policy', icon: 'rule', perms: ['view_leave_type'] },   // v1.15.1 (was "Leave policy")
+            { label: 'Leave entitlements (old)', hint: 'Older per-leave-type rules, used only for leave types that no leave policy covers – use Leave policies (UAE)', link: M + 'leave-options/leave-policy', icon: 'rule', perms: ['view_leave_type'] },   // v1.15.1 (was "Leave policy")
             { label: 'Approval levels', link: M + 'leave-options/leave-approval-level', icon: 'approval', perms: ['view_leaveapprovallevels'] },
             { label: 'Escalation', link: M + 'leave-options/leave-escalation', icon: 'trending_up', perms: ['view_leave_escalation'] },
-            { label: 'Accrual test', link: M + 'leave-options/leave-accrual', icon: 'published_with_changes', perms: ['view_leave_accrual_transaction'] },
+            // v1.26.0: "Accrual test" (developer tool) removed from the menu – the address still opens for support
           ] },
         ],
       },
@@ -820,6 +821,23 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'AI settings', hint: 'Built-in (free) or an external AI for Ask ZEO and documents', link: M + 'settings/ai-settings', icon: 'smart_toy', perms: ['*admin'] },   // v1.16.0
           ] },
       ] },
+      // v1.29.0: workflow automation – rules, approvals, scheduled actions, logs (My approvals is open to every user)
+      { key: 'st-flow', label: 'Automation', icon: 'bolt', parents: ['automation'], sections: [
+        { title: 'Overview', items: [
+            { label: 'Dashboard', hint: 'Rules, runs, failures, pending approvals', link: M + 'automation', icon: 'space_dashboard', perms: ['view_workflow'] },
+            { label: 'My approvals', hint: 'Requests waiting for your decision', link: M + 'automation/approvals', icon: 'how_to_reg' },
+          ] },
+        { title: 'Build', items: [
+            { label: 'Workflow rules', hint: 'Trigger → conditions → actions, for every app', link: M + 'automation/rules', icon: 'account_tree', perms: ['view_workflow'] },
+            { label: 'Approval flows', hint: 'Levels, approvers, deadlines, escalation', link: M + 'automation/approval-flows', icon: 'fact_check', perms: ['view_approvalflow'] },
+            { label: 'Notification templates', hint: 'E-mail and in-app texts with variables', link: M + 'automation/templates', icon: 'mail', perms: ['view_flowtemplate'] },
+          ] },
+        { title: 'Monitor', items: [
+            { label: 'Execution log', hint: 'Every run, action results, errors, retries', link: M + 'automation/runs', icon: 'receipt_long', perms: ['view_workflowrun'] },
+            { label: 'Scheduled actions', hint: 'Waits, delayed starts, overdue', link: M + 'automation/scheduled', icon: 'schedule_send', perms: ['view_scheduledaction'] },
+            { label: 'Configuration changes', hint: 'Who changed which rule, when', link: M + 'automation/audit', icon: 'history', perms: ['view_flowaudit'] },
+          ] },
+      ] },
       // v1.21.0: which apps the company uses, with the industry of each
       { key: 'st-apps', label: 'Apps', icon: 'apps', sections: [
         { title: 'Apps', items: [
@@ -831,6 +849,12 @@ export const MAIN_GROUPS: MenuGroup[] = [
         { title: 'Account', items: [
             { label: 'Subscription', hint: 'Plan, apps, limits and usage, renewal, invoices', link: M + 'settings/subscription', icon: 'workspace_premium', country: 'cloud:owner' },
             { label: 'Security', hint: 'Who can be a user: any e-mail or only company e-mails', link: M + 'settings/security', icon: 'shield', country: 'cloud:owner' },
+          ] },
+      ] },
+      // v1.28.0 Enterprise: the licence file of this server (server administrators)
+      { key: 'st-licence', label: 'Licence', icon: 'verified', country: 'licence:admin', sections: [
+        { title: 'Licence', items: [
+            { label: 'Licence', hint: 'Installation ID, licence file, limits and usage, renewal', link: M + 'settings/licence', icon: 'verified', country: 'licence:admin' },
           ] },
       ] },
       { key: 'st-users', label: 'Users & rights', icon: 'manage_accounts', sections: [

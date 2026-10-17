@@ -128,3 +128,8 @@
 .lp-steptable input[type=number] { width: 104px; height: 30px; border: 1px solid #dcdfea; border-radius: 6px; padding: 0 6px; font-size: 12.5px; }
 .lp-steptable .lp-base td { color: #6b7185; }
 .lp-small { font-size: 12.5px; margin: 8px 0 0; }
+/* v1.26.0 – progress while the accrual runs; the dialog is on <body> now, above the side menu */
+.lp-modal-back { z-index: 3000; padding: 40px 16px 16px; }
+.lp-wait { display: flex; align-items: center; gap: 10px; margin: 10px 0; color: #4a4766; }
+.lp-spin { width: 16px; height: 16px; border: 2px solid #d8d6ec; border-top-color: #5b4fe0; border-radius: 50%; animation: lpspin .8s linear infinite; }
+@keyframes lpspin { to { transform: rotate(360deg); } }

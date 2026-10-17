@@ -4,9 +4,11 @@
    Tablet: 641–991 px · Phone: up to 640 px
    ===================================================================== */
 
-/* ---------- tablet: wide lists scroll inside their own box (desktop unchanged) ---------- */
-@media (min-width: 641px) and (max-width: 991.98px) {
-  .zl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+/* ---------- wide lists scroll inside their own box – tablet and desktop (v1.28.1: was tablet only, so on a 1024–1366 px
+   laptop a list with many columns, e.g. Encashment approvals, ran out of its card and off the page) ---------- */
+@media (min-width: 641px) {
+  .zl-scroll, .table-responsive, .com_list > .table-container, .com_list > .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+  .com_list, .card-body, .ex-body, .zr-box { max-width: 100%; }
 }
 
 /* ---------- tablet: keep real tables (the old rules turned them into cards) ---------- */

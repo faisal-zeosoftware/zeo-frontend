@@ -671,7 +671,7 @@
 
         </mat-tab>
 
-        <mat-tab label="Trail Pay Sheet">
+        <mat-tab label="Trial pay sheet">
 
           <div class="tab_boddy mt-4" style="padding: 10px;">
 
@@ -935,53 +935,59 @@
                     </td>
 
                     <td data-label="No">{{ i + 1 }}</td>
-                    <td data-label="Employee Code">{{ payslip.employee }}</td>
+                    <td data-label="Employee Code">{{ payslip.employee_code || payslip.employee }}<div class="pay-emp-name">{{ payslip.employee_name }}</div></td>
                     <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
                     <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
                     <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-                    <td data-label="Gross Salary">
-                      <input type="number" placeholder="{{ payslip.gross_salary }}" [(ngModel)]="payslip.gross_salary"
-                        (ngModelChange)="markAsEdited(payslip)" class="form-control">
-                    </td>
+                    <!-- v1.26.0: gross is the sum of the components – shown, not typed over (audit); amounts no longer cut off -->
+                    <td data-label="Gross Salary" class="pay-num">{{ payslip.gross_salary | number:'1.2-2' }}</td>
                     <td data-label="Total Additions">
                       <input type="number" placeholder="{{ payslip.total_additions }}"
                         [(ngModel)]="payslip.total_additions" (ngModelChange)="markAsEdited(payslip)"
-                        class="form-control">
+                        class="form-control pay-amt">
                     </td>
                     <td data-label="Total Deductions">
                       <input type="number" placeholder="{{ payslip.total_deductions }}"
                         [(ngModel)]="payslip.total_deductions" (ngModelChange)="markAsEdited(payslip)"
-                        class="form-control">
+                        class="form-control pay-amt">
                     </td>
-                    <td data-label="Net Salary">
-                      <input type="number" placeholder="{{ payslip.net_salary }}" [(ngModel)]="payslip.net_salary"
-                        (ngModelChange)="markAsEdited(payslip)" class="form-control">
-                    </td>
+                    <td data-label="Net Salary" class="pay-num"><b>{{ payslip.net_salary | number:'1.2-2' }}</b></td>
                     <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
                     <td data-label="Working Days">{{ payslip.total_working_days }}</td>
                     <td data-label="Days Worked">{{ payslip.days_worked }}</td>
 
                     <td data-label="Status">
                       <span class="pill" [ngClass]="{
-          'pill green': payslip.status === 'approved',
-          'pill blue': payslip.status === 'processed',
-          'pill yellow': payslip.status === 'pending',
-          'pill red': payslip.status === 'rejected'
+          'pill green': (payslip.status || '').toLowerCase() === 'approved',
+          'pill blue': (payslip.status || '').toLowerCase() === 'processed',
+          'pill yellow': (payslip.status || '').toLowerCase() === 'pending',
+          'pill red': (payslip.status || '').toLowerCase() === 'rejected'
         }">
                         {{ payslip.status }}
                       </span>
                     </td>
 
                     <td data-label="Components">
+                      <details class="pay-comp"><summary>{{ payslip.components?.length || 0 }} components</summary>
                       <ul>
                         <li *ngFor="let comp of payslip.components">
                           <strong>{{ comp.component_name }}</strong>
                           ({{ comp.component_type }}): {{ comp.payslip_amount }}
                         </li>
-                      </ul>
+                      </ul></details>
                     </td>
                   </tr>
                 </tbody>
+                <tfoot *ngIf="filteredTrialPaySlips?.length">
+                  <tr class="pay-total">
+                    <td></td><td colspan="5"><b>Total · {{ filteredTrialPaySlips.length }} payslips</b></td>
+                    <td class="pay-num"><b>{{ trialTotal('gross_salary') | number:'1.2-2' }}</b></td>
+                    <td class="pay-num"><b>{{ trialTotal('total_additions') | number:'1.2-2' }}</b></td>
+                    <td class="pay-num"><b>{{ trialTotal('total_deductions') | number:'1.2-2' }}</b></td>
+                    <td class="pay-num"><b>{{ trialTotal('net_salary') | number:'1.2-2' }}</b></td>
+                    <td colspan="5"></td>
+                  </tr>
+                </tfoot>
 
               </table>
             </div>
@@ -1286,7 +1292,7 @@
                   <tbody class="text-table-body">
                     <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)" style="cursor: pointer;">
                       <td data-label="No">{{ i + 1 }}</td>
-                      <td data-label="Employee Code">{{ payslip.employee }}</td>
+                      <td data-label="Employee Code">{{ payslip.employee_code || payslip.employee }}<div class="pay-emp-name">{{ payslip.employee_name }}</div></td>
                       <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
                       <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
                       <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>

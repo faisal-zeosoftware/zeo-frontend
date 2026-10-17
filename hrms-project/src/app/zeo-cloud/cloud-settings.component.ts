@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
+import { ZCloudDatabasesComponent } from './databases.component';
 import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 
@@ -17,7 +18,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 @Component({
   selector: 'app-cloud-subscription',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ...I18N_UI],
+  imports: [CommonModule, FormsModule, RouterModule, ZCloudDatabasesComponent, ...I18N_UI],
   styleUrls: ['../leave-policy/leave-policy.css', './cloud.css'],
   template: `
 <div class="container zk-wrap" data-no-help>
@@ -68,17 +69,22 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
       <div class="zk-card"><h2>{{ 'Companies' | t }}</h2>
         <div class="zk-scroll"><table class="zk-table">
           <tr><th>{{ 'Company' | t }}</th><th>{{ 'Apps' | t }}</th><th>{{ 'Where' | t }}</th><th></th></tr>
-          <tr *ngFor="let c of a.companies"><td>{{ c.name }}</td><td>{{ appsOf(c.apps) }}</td><td>{{ c.where | t }}</td>
+          <tr *ngFor="let c of a.companies"><td>{{ c.name }}</td><td>{{ appsOf(c.apps) }}</td><td>{{ c.where | t }}<small *ngIf="c.db_alias && a.databases?.length > 1"> · {{ c.db_label }}</small></td>
             <td><span class="zk-st trial" *ngIf="c.extra">{{ 'extra company' | t }}</span><span class="zk-st none" *ngIf="c.archived">{{ 'archived' | t }}</span></td></tr>
         </table></div>
       </div>
+      <!-- v1.26.0 Premium: several own databases, duplicate a database -->
+      <z-cloud-databases *ngIf="a.limits.own_databases" [accountId]="a.id"></z-cloud-databases>
       <div class="zk-card"><h2>{{ 'Invoices' | t }}</h2>
         <p class="zk-note" *ngIf="!a.invoices.length">{{ 'No invoices yet. Invoices are sent by Adept.' | t }}</p>
+        <p class="zk-note" *ngIf="hasPayLink()">{{ 'Pay online opens the invoice on the payment page of Adept. The subscription is renewed automatically once the payment is received.' | t }}</p>
         <div class="zk-scroll" *ngIf="a.invoices.length"><table class="zk-table">
-          <tr><th>{{ 'Invoice' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Period' | t }}</th><th>{{ 'Amount' | t }}</th><th>{{ 'Status' | t }}</th></tr>
+          <tr><th>{{ 'Invoice' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Period' | t }}</th><th>{{ 'Amount' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
           <tr *ngFor="let i of a.invoices"><td>{{ i.number }}</td><td>{{ i.issued_on | date:'d MMM y' }}</td>
             <td>{{ i.period_from ? (i.period_from | date:'d MMM y') + ' – ' + (i.period_to | date:'d MMM y') : '–' }}</td>
-            <td>{{ i.amount | number:'1.2-2' }} {{ i.currency }}</td><td><span class="zk-st" [ngClass]="i.state">{{ (i.state === 'paid' ? 'Paid' : i.state === 'void' ? 'Void' : 'Unpaid') | t }}</span></td></tr>
+            <td>{{ i.amount | number:'1.2-2' }} {{ i.currency }}</td><td><span class="zk-st" [ngClass]="i.state">{{ (i.state === 'paid' ? 'Paid' : i.state === 'void' ? 'Void' : 'Unpaid') | t }}</span><small *ngIf="i.odoo_ref">{{ i.odoo_ref }}</small></td>
+            <!-- v1.28.0 online payment on Adept's Odoo page (cards, bank transfer) – ZEO never sees card data -->
+            <td><a class="lp-btn primary" *ngIf="i.state === 'unpaid' && i.pay_url" [href]="i.pay_url" target="_blank" rel="noopener">{{ 'Pay online' | t }}</a></td></tr>
         </table></div>
       </div>
     </ng-container>
@@ -88,7 +94,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 export class CloudSubscriptionComponent implements OnInit, OnDestroy {
   a: any = null; msg = ''; bad = false; busy = false; asking = false;
   appKeys = ['hrms', 'payroll', 'projects', 'crm', 'property', 'maintenance', 'hse'];
-  whats = ['Bigger plan', 'More employees', 'More users', 'Another app', 'Extra company', 'More storage', 'Other'];
+  whats = ['Bigger plan', 'More employees', 'More users', 'Another app', 'Extra company', 'More storage', 'Pay for a database', 'Enterprise (own servers)', 'Other'];   // v1.28.0 Enterprise always through Adept
   req = { what: 'Bigger plan', text: '' };
   private sub?: Subscription;
   constructor(private http: HttpClient, private cloud: ZeoCloudService) {}
@@ -101,6 +107,7 @@ export class CloudSubscriptionComponent implements OnInit, OnDestroy {
     try { this.a = await firstValueFrom(this.http.get(`${API()}/accounts/${id}/subscription/`)); }
     catch (e) { this.say(err(e, T('The subscription could not be loaded.')), true); }
   }
+  hasPayLink(): boolean { return (this.a?.invoices || []).some((i: any) => i.state === 'unpaid' && i.pay_url); }
   async send(): Promise<void> {
     this.busy = true;
     try { await firstValueFrom(this.http.post(`${API()}/accounts/${this.a.id}/request/`, this.req)); this.asking = false; this.req.text = ''; this.say(T('Your request was sent to Adept.'), false); }

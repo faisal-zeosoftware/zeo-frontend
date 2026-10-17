@@ -70,8 +70,8 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
 
   Catogaries: any[] = [];
 
-  Documentfolders: any[] | null = null;
-  
+  Documentfolders: any[] | null = null;;
+
   isLoading = false;
 
   expandedFolderIndex: number | null = null;

@@ -13,6 +13,7 @@ import { UserCreationComponent } from '../user-creation/user-creation.component'
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { Router } from '@angular/router';
 import { SessionService } from '../login/session.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-user-master',
@@ -64,6 +65,7 @@ showSearchOptions = true;
 
 
     ngOnInit(): void {
+      this.loadInvites();   // v1.26.0
     
       // this.loadUsers();
 
@@ -269,10 +271,26 @@ filterEmployees() {
 
 
     openPopus(){
-      this.dialog.open(UserCreationComponent,{
+      const ref = this.dialog.open(UserCreationComponent,{
         width:'80%',
         height:'500px',
-      })
+      });
+      ref.afterClosed().subscribe(r => { if (r === 'invited') { this.loadInvites(); } });   // v1.26.0
+    }
+
+    /** v1.26.0 – e-mails that already had a ZEO login were invited; they join when they accept on their company list. */
+    invites: any[] = [];
+    loadInvites(): void {
+      const sch = localStorage.getItem('selectedSchema') || '';
+      if (!sch) { return; }
+      this.http.get<any[]>(`${environment.apiBaseUrl}/users/api/invites/?schema=${encodeURIComponent(sch)}`).subscribe({
+        next: r => this.invites = Array.isArray(r) ? r : [], error: () => this.invites = [] });
+    }
+    cancelInvite(i: any): void {
+      if (!confirm(i18nT('Cancel the invitation of {0}?', [i.email || i.username]))) { return; }
+      this.http.post(`${environment.apiBaseUrl}/users/api/invites/${i.id}/`, { action: 'cancel' }).subscribe({
+        next: () => this.invites = this.invites.filter(x => x !== i),
+        error: (e) => alert(e?.error?.detail || i18nT('Not cancelled.')) });
     }
 
 

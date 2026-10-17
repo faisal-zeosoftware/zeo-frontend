@@ -619,10 +619,10 @@
                       >
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllBranchesSelected()"
-                          [indeterminate]="isSomeBranchesSelected()"
+                          [checked]="isAllEditBranchesSelected()"
+                          [indeterminate]="isSomeEditBranchesSelected()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllBranches()"
+                          (change)="toggleAllEditBranches()"
                         >
                           Select All
                         </mat-checkbox>
@@ -669,10 +669,10 @@
                       >
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllDepartmentsSelected()"
-                          [indeterminate]="isSomeDepartmentsSelected()"
+                          [checked]="isAllEditDepartmentsSelected()"
+                          [indeterminate]="isSomeEditDepartmentsSelected()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllDepartments()"
+                          (change)="toggleAllEditDepartments()"
                         >
                           Select All
                         </mat-checkbox>
@@ -719,10 +719,10 @@
                       >
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllCategoriesSelected()"
-                          [indeterminate]="isSomeCategoriesSelected()"
+                          [checked]="isAllEditCategoriesSelected()"
+                          [indeterminate]="isSomeEditCategoriesSelected()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllCategories()"
+                          (change)="toggleAllEditCategories()"
                         >
                           Select All
                         </mat-checkbox>
@@ -770,10 +770,10 @@
                       >
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllDesignationsSelected()"
-                          [indeterminate]="isSomeDesignationsSelected()"
+                          [checked]="isAllEditDesignationsSelected()"
+                          [indeterminate]="isSomeEditDesignationsSelected()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllDesignations()"
+                          (change)="toggleAllEditDesignations()"
                         >
                           Select All
                         </mat-checkbox>

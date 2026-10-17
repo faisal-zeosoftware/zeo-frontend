@@ -268,6 +268,13 @@ getObjectKeys(obj: any): string[] {
 }
 
 
+/** v1.26.0 – columns of the employee rows (EDR), also when the file has none yet. */
+edrKeys(): string[] {
+  const e = this.sifData?.edr;
+  return e && e.length ? Object.keys(e[0]) : ['Type', 'Person ID', 'Routing Code', 'IBAN Number', 'Pay Start Date', 'Pay End Date',
+    'Number of Days', 'Fixed Income', 'Variable Income', 'Days on Leave'];
+}
+
 getUnifiedSIFKeys(): string[] {
   if (!this.sifData) return [];
 
@@ -453,28 +460,7 @@ downloadSIFFile(): void {
 
   const lines: string[] = [];
 
-  // Optional readability header — remove before submitting to bank
-  const headerRow = [
-    'Type', 'Person ID', 'Routing Code', 'IBAN Number',
-    'Pay Start Date', 'Pay End Date', 'Number of Days',
-    'Fixed Income', 'Variable Income', 'Days on Leave'
-  ];
-  lines.push(headerRow.join(','));
-
-  // --- HDR record ---
-  const hdr = data.hdr;
-  lines.push([
-    'HDR',
-    hdr['Sender ID'] || '',
-    hdr['Employer ID'] || '',
-    hdr['Routing Code'] || '',
-    hdr['IBAN Number'] || '',
-    hdr['File Creation Date'] || '',
-    hdr['Salary Year'] || '',
-    hdr['Salary Month'] || '',
-    hdr['Total Employees'] || data.edr?.length || '',
-    hdr['Total Salary Amount'] || '',
-  ].join(','));
+  // v1.26.0: the UAE SIF file is EDR lines + one SCR line – no title line and no HDR line (banks reject both)
 
   // --- EDR records ---
   data.edr.forEach((edr: any) => {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, shareReplay } from 'rxjs/operators';
 import { EmployeeDetailsComponent } from '../employee-details/employee-details.component';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
@@ -123,13 +123,21 @@ export class AuthenticationService {
     return JSON.parse(atob(payload));
   }
 
+  // v1.28.1: most screens call this two or three times while they open (rights checks) – one request is shared
+  // for a few seconds and served from memory; a save that changes the login (users screen) calls forgetUserData().
+  private userDataCache = new Map<number, { at: number; obs: Observable<any> }>();
   getUserData(userId: number): Observable<any> {
+    const hit = this.userDataCache.get(userId);
+    if (hit && Date.now() - hit.at < 8000) { return hit.obs; }
     const url = `${this.apiUrl}/api/user/${userId}/`;
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.getAuthToken()}`
     });
-    return this.http.get(url, { headers });
+    const obs = this.http.get(url, { headers }).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.userDataCache.set(userId, { at: Date.now(), obs });
+    return obs;
   }
+  forgetUserData(): void { this.userDataCache.clear(); }
 
   getDesignationsPermission(selectedSchema: string): Observable<any> {
 
@@ -213,6 +221,7 @@ export class AuthenticationService {
 
 
   logout(): Observable<any> {
+    this.forgetUserData();
        this.clearTokens();
 
     localStorage.removeItem(this.tokenKey);

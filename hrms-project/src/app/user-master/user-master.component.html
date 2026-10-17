@@ -41,6 +41,23 @@
             </tbody>
         </table>
         </div>
+       <!-- v1.26.0: e-mails that already had a ZEO login were invited – they join when they accept -->
+       <div class="mt-3 um-table" *ngIf="invites.length">
+        <h2 style="font-size:16px;font-weight:600;margin:16px 0 8px;color:#24223a">{{ 'Invitations waiting for an answer' | t }}</h2>
+        <table class="table" zPlain>
+            <thead><tr><th>E-mail</th><th>Type</th><th>Invited by</th><th>Sent</th><th style="width:120px"></th></tr></thead>
+            <tbody>
+                <tr *ngFor="let i of invites">
+                    <td>{{ i.email || i.username }}</td>
+                    <td>{{ i.is_superuser ? 'Administrator' : i.is_staff ? 'Staff' : 'User' }}</td>
+                    <td>{{ i.invited_by || '–' }}</td>
+                    <td>{{ i.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
+                    <td class="text-end"><button type="button" class="um-act um-del" title="Cancel the invitation" *ngIf="hasAddPermission" (click)="cancelInvite(i)"><mat-icon>close</mat-icon></button></td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="text-muted" style="font-size:12.5px">They already have a ZEO login, so they were invited instead of getting a new one. The company is added to their login when they press Accept on their company list.</p>
+       </div>
        <div>
         <!-- <div class="col-md-4" routerLink="/main-sidebar/settings/user-details">
 

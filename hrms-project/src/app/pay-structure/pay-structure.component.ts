@@ -497,8 +497,8 @@ CreatePayStructure(): void {
       console.log('Registration successful:', response);
 
       alert('Pay Structure has been added');
-
-      window.location.reload();
+      this.iscreateovertimepolicy = false;
+      this.reloadList();   // v1.26.0: no full page reload
     },
     (error) => {
       console.error('Create Pay Structure failed:', error);
@@ -614,6 +614,13 @@ loadOvertimepolicy(callback?: Function): void {
   //   }
 
     isLoading: boolean = false;
+
+/** v1.26.0 – refresh the pay structure list in place (every save used to reload the whole app). */
+reloadList(): void {
+  let ids: number[] = [];
+  try { ids = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'); } catch { ids = []; }
+  this.fetchEmployees(localStorage.getItem('selectedSchema') || '', ids);
+}
 
 fetchEmployees(schema: string, branchIds: number[]): void {
   this.isLoading = true;
@@ -1089,7 +1096,7 @@ updatePayStr(): void {
     (response) => {
       alert('Pay Structure updated successfully!');
       this.closeEditModal();
-      window.location.reload();
+      this.reloadList();   // v1.26.0: no full page reload
     },
     (error) => {
       console.error('Update failed', error);
@@ -1130,7 +1137,7 @@ updatePayStr(): void {
 
             if (completed === total) {          
             alert(' Overtime policy deleted successfully');
-            window.location.reload();
+            this.reloadList();   // v1.26.0: no full page reload
             }
 
           },
@@ -1173,7 +1180,7 @@ updatePayStr(): void {
       (response) => {
         alert('OverTime Policy updated successfully!');
         this.closeEditModal();
-        window.location.reload();
+        this.reloadList();   // v1.26.0: no full page reload
       },
       (error) => {
         console.error('Error updating Policy:', error);

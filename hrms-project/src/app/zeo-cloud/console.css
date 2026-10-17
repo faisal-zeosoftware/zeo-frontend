@@ -20,6 +20,7 @@
 .cc-apps input[type=date] { height: 30px; border: 1px solid #dcdfea; border-radius: 6px; padding: 0 6px; }
 .cc-inline { flex-direction: row !important; align-items: center; gap: 8px !important; }
 .cc-inline input { height: auto !important; }
+.cc-apps { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 6px; }   /* v1.28.0 licence apps in one row */
 .cc-ver { font-size: 12px; color: #8a8fa3; margin-top: 20px; }
 @media (max-width: 760px) { .cc-side { width: 100%; flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid #e7e2ea; padding: 8px; } .cc-main { padding: 16px; } }
 .cc-link { border: 0; background: none; padding: 0 0 0 8px; color: #5b2087; font: inherit; font-size: 12.5px; text-decoration: underline; cursor: pointer; }
@@ -29,3 +30,7 @@
 .cc-log { margin: 0; max-height: 220px; overflow: auto; font-size: 12px; line-height: 18px; background: #faf8fb; border: 1px solid #e7e2ea; border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; }
 .cc-cp .zk-row { gap: 10px; flex-wrap: wrap; }
 .cc-db { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 13.5px; }
+.cc-inv-act { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; }   /* v1.28.0 */
+
+.cc-id { white-space: nowrap; font-size: 12px; }   /* v1.28.0 installation IDs on one line */
+.cc-nw { white-space: nowrap; }

@@ -27,6 +27,9 @@ const TABLES: Record<string, Table> = {
   qualifications: { key: 'qualifications', group: 'qualifications', title: 'Qualifications', noun: 'qualification', add: 'Add qualification', empty: 'No qualifications yet', edit: 'Edit qualification', another: '+ Add another qualification', remove: 'Remove this qualification', added: '{0} qualifications added', saved: 'Qualification saved' },
   experience: { key: 'experience', group: 'experience', title: 'Job history', noun: 'previous job', add: 'Add previous job', empty: 'No previous jobs yet', edit: 'Edit previous job', another: '+ Add another previous job', remove: 'Remove this previous job', added: '{0} previous jobs added', saved: 'Previous job saved' },
   bank: { key: 'bank', group: 'bank', title: 'Bank accounts', noun: 'bank account', add: 'Add bank account', empty: 'No bank account yet', edit: 'Edit bank account', another: '+ Add another bank account', remove: 'Remove this bank account', added: '{0} bank accounts added', saved: 'Bank account saved' },
+  languages: { key: 'languages', group: 'languages', title: 'Languages', noun: 'language', add: 'Add language', empty: 'No languages yet', edit: 'Edit language', another: '+ Add another language', remove: 'Remove this language', added: '{0} languages added', saved: 'Language saved' },   // v1.28.1
+  marketing: { key: 'marketing', group: 'marketing', title: 'Marketing skills', noun: 'marketing skill', add: 'Add marketing skill', empty: 'No marketing skills yet', edit: 'Edit marketing skill', another: '+ Add another marketing skill', remove: 'Remove this skill', added: '{0} skills added', saved: 'Skill saved' },
+  programming: { key: 'programming', group: 'programming', title: 'Programming skills', noun: 'programming skill', add: 'Add programming skill', empty: 'No programming skills yet', edit: 'Edit programming skill', another: '+ Add another programming skill', remove: 'Remove this skill', added: '{0} skills added', saved: 'Skill saved' },
   files: { key: 'files', group: 'documents', title: 'Document files', noun: 'document', add: 'Upload document', empty: 'No document files yet', edit: 'Edit document', another: '+ Upload another document', remove: 'Remove this document', added: '{0} documents uploaded', saved: 'Document saved' },
 };
 // which group / card holds each missing item of the completeness check
@@ -49,6 +52,13 @@ const JOB_FIELDS: ErField[] = [
   { key: 'barcode_number', label: 'Card / barcode number', type: 'text' }, { key: 'person_id', label: 'MOHRE person code', type: 'text', placeholder: '14 characters' },
   { key: 'emp_ot_applicable', label: 'Overtime applies', type: 'bool' }, { key: 'is_ess', label: 'Self-service user', type: 'bool' },
 ];
+
+const MASK_NOTES: Record<string, string> = {
+  route_code: 'Digits only – the UAE WPS routing code is the 9-digit bank routing number (letters are not accepted by the WPS file).',
+  emirates_id: 'Emirates ID: 15 digits (784-YYYY-NNNNNNN-N).',
+  iban_number: 'IBAN: letters and digits only, no spaces.',
+  person_id: 'MOHRE person code: digits only.',
+};
 
 @Component({
   selector: 'app-employee-record',
@@ -73,6 +83,8 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   prevId: number | null = null; nextId: number | null = null;
   probation: any = null;      // {act, date, to_date, reason, note, last_day}
   unpaidEdit: number | null = null;   // v1.20.2: unpaid days before go-live (gratuity service)
+  draftStart: any = {};
+  unpaidOpen = false;   // v1.28.1: the form stays open while the number is cleared (a null model closed it – looked like “going back”)
   dupes: Record<string, any[]> = {};
   dmy = dmy; money = money; num = num; badgeClass = badgeClass; t = i18nT;
   private sub?: Subscription;
@@ -171,13 +183,27 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     this.editing = ''; this.dirty = false; this.draft = {}; this.draftErr = {};
     return true;
   }
-  edit(card: string, fields?: ErField[]): void {
+  async edit(card: string, fields?: ErField[]): Promise<void> {
     if (this.editing && this.editing !== card && !this.leaveEdit()) { return; }
+    if (!this.look) {   // v1.28.1: the field lists come from record-lookups – wait for them (slow server) instead of opening an empty form
+      try { this.look = await this.api.lookups(); } catch { zToast(i18nT('The form could not be loaded. Please try again.'), 'err'); return; }
+    }
     const src = this.cardValues(card);
     const fl = fields || this.cardFields(card);
     this.draft = {}; fl.forEach(f => this.draft[f.key] = src?.[f.key] ?? (f.type === 'bool' ? false : ''));
-    if (card === 'renew') { this.draft = {}; }
+    this.draftStart = { ...this.draft };   // v1.28.1: only what the user changed is sent
+    if (card === 'renew') { this.draft = {}; this.draftStart = {}; }
     this.editing = card; this.draftErr = {}; this.dirty = false;
+  }
+  extraFields(x: any): ErField[] {
+    const skip = new Set([...Object.keys(x.numbers || {}), ...(x.fields || []).filter((k: string) => /_(issue_date|expiry_date|start|end)$/.test(k) || k === 'insurance_expiry_date')]);
+    return this.fieldsOf('identity', (x.fields || []).filter((k: string) => !skip.has(k)));
+  }
+  extraValue(x: any, f: ErField): string {
+    const v = x.extra?.[f.key];
+    if (v === '' || v === null || v === undefined) { return '–'; }
+    if (f.type === 'look' || f.type === 'fk') { const o = this.optionsOf(f).find(o => String(o.value) === String(v)); return o ? o.label : String(v); }
+    return String(v);
   }
   cardFields(card: string): ErField[] {
     if (card === 'job') { return JOB_FIELDS; }
@@ -189,13 +215,21 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   touch(f: ErField): void {
     this.dirty = true;
     const m = maskFor(f.key);
-    if (m && typeof this.draft[f.key] === 'string') { this.draft[f.key] = m(this.draft[f.key]); }
+    if (m && typeof this.draft[f.key] === 'string') {
+      const before = this.draft[f.key], after = m(before);
+      this.draft[f.key] = after;
+      this.maskNote[f.key] = after !== before ? MASK_NOTES[f.key] || '' : '';
+    }
   }
   cancel(): void { this.editing = ''; this.dirty = false; this.draft = {}; this.draftErr = {}; }
   async saveCard(card: string): Promise<void> {
     this.saving = true; this.draftErr = {};
-    const data = { ...this.draft };
+    const data: any = {};
+    // v1.28.1: send only the fields the user changed – an old value that no longer passes a check (e.g. an imported
+    // company e-mail without an @) must not block saving the mobile number next to it
+    Object.keys(this.draft).forEach(k => { if (!(k in this.draftStart) || this.draft[k] !== this.draftStart[k] || card === 'job') { data[k] = this.draft[k]; } });
     Object.keys(data).forEach(k => { if (data[k] === '') { data[k] = null; } if (k === 'iban_number' && data[k]) { data[k] = String(data[k]).replace(/\s/g, ''); } });
+    if (!Object.keys(data).length) { this.editing = ''; this.dirty = false; this.saving = false; return; }
     try {
       if (card === 'job') {
         await this.api.put(`employee-profile/api/record/${this.id}/job/`, data);
@@ -236,7 +270,13 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   openEmp(id: number): void { this.router.navigate([erPage(id)]); }
 
   // ---------------------------------------------------------------- tables and the side panel
-  rows(t: string): any[] { return (this.d && this.d[t]) || []; }
+  rows(t: string): any[] {
+    if (t === 'languages' || t === 'marketing' || t === 'programming') {   // v1.28.1 the three classic skill kinds share r.skills
+      const kind = t === 'languages' ? 'language' : t;
+      return ((this.d && this.d.skills) || []).filter((x: any) => x.kind === kind);
+    }
+    return (this.d && this.d[t]) || [];
+  }
   panelFields(t: Table): ErField[] {
     let f = this.fieldsOf(t.group);
     if (t.key === 'experience') { f = f.filter(x => x.key !== 'emp_jh_years_experiance'); }
@@ -268,7 +308,16 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
       experience: ['emp_jh_company_name', 'emp_jh_from_date'], bank: ['bank_name'], files: ['document_type'] } as any)[t.key] || [];
   }
   canSave(): boolean { return !!this.panel && this.panel.entries.every((e: any) => this.required(this.panel.table).every(k => e.values[k] !== '' && e.values[k] !== null && e.values[k] !== undefined)); }
-  maskIn(f: ErField, e: any): void { const m = maskFor(f.key); if (m && typeof e.values[f.key] === 'string') { e.values[f.key] = m(e.values[f.key]); } }
+  maskNote: Record<string, string> = {};
+  // v1.28.1: when a mask drops what was typed (letters in the 9-digit WPS routing code, spaces in an IBAN) the screen says so
+  maskIn(f: ErField, e: any): void {
+    const m = maskFor(f.key);
+    if (m && typeof e.values[f.key] === 'string') {
+      const before = e.values[f.key], after = m(before);
+      e.values[f.key] = after;
+      this.maskNote[f.key] = after !== before ? MASK_NOTES[f.key] || '' : '';
+    }
+  }
   fileFor(e: any, ev: any): void { e.file = ev.target.files?.[0] || null; }
   closePanel(): void { this.panel = null; }
   computed(t: Table, v: any): string {
@@ -308,7 +357,8 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (!p.entries.length) { if (again) { this.openPanel(p.table.key); } else { this.panel = null; } }
     this.cd.markForCheck();
   }
-  rowLabel(tk: string, r: any): string { return r.ef_member_name || r.name || r.emp_jh_company_name || r.emp_qualification || r.bank_name || r.type || r.emp_doc_number || ''; }
+  learningSkills(): any[] { return ((this.d && this.d.skills) || []).filter((x: any) => x.kind === 'learning'); }
+  rowLabel(tk: string, r: any): string { return r.ef_member_name || r.name || r.emp_jh_company_name || r.emp_qualification || r.bank_name || r.skill || r.type || r.emp_doc_number || ''; }
   async removeRow(tk: string, r: any): Promise<void> {
     const t = TABLES[tk];
     if (!confirm(i18nT('Remove {0}?', [this.rowLabel(tk, r) || i18nT(t.noun)]))) { return; }
@@ -320,7 +370,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   async unpaidSave(): Promise<void> {
     try {
       await this.api.put(`employee-profile/api/employment/${this.id}/`, { unpaid_days_before_golive: +(this.unpaidEdit || 0) });
-      zToast(this.t('Saved'), 'ok'); this.unpaidEdit = null; await this.load();
+      zToast(this.t('Saved'), 'ok'); this.unpaidEdit = null; this.unpaidOpen = false; await this.load();
     } catch (e) { zToast(ErService.error(e), 'err'); }
   }
 

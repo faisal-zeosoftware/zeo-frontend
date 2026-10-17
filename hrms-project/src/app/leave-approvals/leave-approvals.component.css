@@ -851,3 +851,8 @@ input:focus-visible {
 /* v1.18.0: roster / staffing conflict */
 .roster-conflict{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:8px 10px;border-radius:8px;background:#fff4dc;color:#6b4c00;font-size:13px;line-height:1.4}
 .roster-conflict i{margin-top:2px}
+/* v1.26.0 – facts of the request in the approval dialog */
+.apr-facts { width: 100%; margin: 8px 0 12px; font-size: 14px; border-collapse: collapse; }
+.apr-facts th { width: 140px; color: #4a4766; font-weight: 600; padding: 4px 8px 4px 0; vertical-align: top; text-align: left; }
+.apr-facts td { padding: 4px 0; }
+.apr-muted { color: #8a87a6; font-size: 12px; margin-left: 6px; }

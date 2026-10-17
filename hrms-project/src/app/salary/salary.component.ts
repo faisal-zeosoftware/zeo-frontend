@@ -1,3 +1,5 @@
+import { cpPack } from '../shared-ui/country-pack.service';   // v1.26.0
+import { uploadErrorText } from '../shared-ui/z-toast';
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -465,7 +467,7 @@ this.loadDeparmentBranch();
   }
 
 
-payrollCategories = [
+allPayrollCategories = [
   { value: 'basic', label: 'Basic Salary' },
   { value: 'hra', label: 'HRA' },
   { value: 'education_allowance', label: 'Education Allowance' },
@@ -488,6 +490,11 @@ payrollCategories = [
   { value: 'esi', label: 'ESI' },
   { value: 'tax', label: 'Tax' }
 ];
+  // v1.26.0: Provident Fund / ESI / Tax (India) are not offered in GCC companies (shown only when a component already uses them)
+  get payrollCategories() {
+    const gcc = ['AE', 'SA', 'QA', 'OM', 'BH', 'KW'].includes(String(cpPack()?.pack || 'AE').toUpperCase());
+    return this.allPayrollCategories.filter(c => !gcc || !['pf', 'esi', 'tax'].includes(c.value) || c.value === this.editAsset?.payroll_category);
+  }
 
   // LoadSalaryCom(selectedSchema: string) {
   //   this.leaveService.getSalaryCom(selectedSchema).subscribe(
@@ -830,12 +837,12 @@ mapBranchNameToId() {
       `${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`,
       formData
     ).subscribe({
-      next: () => {
-        alert('Employee Salary uploaded successfully');
+      next: (r: any) => {
+        alert(r?.message || 'Employee salaries uploaded.');
         window.location.reload();
       },
-      error: () => {
-        alert('Upload failed');
+      error: (err: any) => {
+        alert('Salary upload – nothing was saved:\n' + uploadErrorText(err, 'Upload failed.'));
       }
     });
   }
@@ -1037,7 +1044,7 @@ openEditModal(asset: any): void {
   }
   
   getCategoryLabel(value: string): string {
-    const category = this.payrollCategories.find(c => c.value === value);
+    const category = this.allPayrollCategories.find(c => c.value === value);
     return category ? category.label : (value || '-');
   }
 

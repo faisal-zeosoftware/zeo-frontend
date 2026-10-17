@@ -178,3 +178,14 @@ table td .mat-mdc-fab, table td .mat-mdc-mini-fab { width: 32px !important; heig
 table td .mat-mdc-fab mat-icon, table td .mat-mdc-mini-fab mat-icon { font-size: 18px; width: 18px; height: 18px; color: #4338ca !important; }
 table td .mat-mdc-fab:hover, table td .mat-mdc-mini-fab:hover { background: #e0e7ff !important; }
 .apr-list .apr-link { color: #4338ca !important; }
+
+/* v1.28.1: every drop-down list shows its arrow again. Bootstrap 5 draws the arrow only on .form-select; the classic
+   screens use select.form-control, which Bootstrap 5 renders as a plain box (no arrow, so it did not look like a list). */
+select.form-control:not([multiple]):not([size]) {
+  -webkit-appearance: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%235B4FE0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 10px center !important; background-size: 14px 14px !important;
+  padding-right: 32px !important;
+}
+html[dir=rtl] select.form-control:not([multiple]):not([size]) { background-position: left 10px center !important; padding-right: .75rem !important; padding-left: 32px !important; }
+select.form-control:not([multiple]):not([size]):disabled { background-color: #F3F3F8; }

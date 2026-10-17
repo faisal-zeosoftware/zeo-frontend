@@ -65,7 +65,7 @@
       <!-- v1.20.1: approvals as a standard list (search, filters, group by, export from the list bar) -->
   <table class="table zl-apr-table">
     <thead>
-      <tr><th>Request</th><th>Employee</th><th>Start date</th><th>End date</th><th>Level</th><th>Reason</th><th>Status</th><th style="width:150px"></th></tr>
+      <tr><th>Request</th><th>Employee</th><th>Leave type</th><th>Start date</th><th>End date</th><th>Days</th><th>Level</th><th>Reason</th><th>Approver comment</th><th>Status</th><th style="width:150px"></th></tr>
     </thead>
     <tbody>
       <tr *ngFor="let apr of filteredApprovals">
@@ -74,10 +74,13 @@
           <span>{{ rc.text }}</span>
         </div></td>
         <td>{{ apr.request_details?.employee_name || apr.request_details?.employee || apr.employee_id || '—' }}</td>
+        <td>{{ apr.request_details?.leave_type_name || apr.request_details?.leave_type || '—' }}</td>
         <td>{{ apr.request_details?.start_date | date:'dd MMM yyyy' }}</td>
         <td>{{ apr.request_details?.end_date | date:'dd MMM yyyy' }}</td>
+        <td>{{ apr.request_details?.days ?? apr.request_details?.number_of_days ?? '—' }}</td>
         <td>{{ apr.level }}</td>
-        <td>{{ apr.note || '—' }}</td>
+        <td>{{ apr.request_details?.reason || '—' }}</td>
+        <td>{{ apr.rejection_reason || apr.note || '—' }}</td>
         <td><span
             class="status-badge"
             [ngClass]="{
@@ -459,13 +462,24 @@
             {{ selectedApproval.level }}
           </h6>
 
+          <!-- v1.26.0: what is being approved -->
+          <table zPlain class="apr-facts" *ngIf="selectedApproval.request_details as rd">
+            <tr><th>Employee</th><td>{{ rd.employee_name || rd.employee }} <span class="apr-muted">{{ rd.employee }}</span></td></tr>
+            <tr><th>Leave type</th><td>{{ rd.leave_type_name || rd.leave_type }}</td></tr>
+            <tr><th>Dates</th><td>{{ rd.start_date | date:'dd MMM yyyy' }} – {{ rd.end_date | date:'dd MMM yyyy' }} · {{ rd.days ?? rd.number_of_days }} day(s)<span *ngIf="rd.dis_half_day"> · half day</span></td></tr>
+            <tr *ngIf="rd.balance !== null && rd.balance !== undefined"><th>Balance now</th><td>{{ rd.balance }} day(s)</td></tr>
+            <tr><th>Reason</th><td>{{ rd.reason || '—' }}</td></tr>
+            <tr *ngIf="rd.document_url"><th>Document</th><td><a [href]="rd.document_url" target="_blank" rel="noopener">Open the attachment</a></td></tr>
+            <tr *ngIf="selectedApproval.rejection_reason"><th>Rejection reason</th><td>{{ selectedApproval.rejection_reason }}</td></tr>
+          </table>
 
-          <!-- Comment -->
+          <ng-container *ngIf="(selectedApproval.status || '').toLowerCase() === 'pending'">
+          <!-- Comment (v1.26.0: one box – it is also the rejection reason) -->
 
           <textarea
             class="form-control"
             [(ngModel)]="note"
-            placeholder="Add a comment here..."
+            placeholder="Comment (required when you reject)…"
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
 
@@ -480,50 +494,19 @@
             </div>
             <div class="col-md-3"></div>
             <div class="col-md-3">
-              <button type="button" class="btn btn-danger btn-full" (click)="rejectApproval(selectedApproval.id)">
+              <button type="button" class="btn btn-danger btn-full" [disabled]="isLoading" (click)="confirmRejection(selectedApproval.id)">
                 Reject
               </button>
             </div>
             <div class="col-md-3">
-              <button type="button" class="btn btn-success btn-full" (click)="approveApproval(selectedApproval.id)">
+              <button type="button" class="btn btn-success btn-full" [disabled]="isLoading" (click)="approveApproval(selectedApproval.id)">
                 Approve
               </button>
             </div>
           </div>
 
 
-          <!-- Rejection Reason -->
-
-          <div *ngIf="showRejectionReason">
-
-            <textarea
-              class="form-control mt-3"
-              [(ngModel)]="rejection_reason"
-              placeholder="Add a Rejection Reason..."
-              [ngModelOptions]="{ standalone: true }"
-            ></textarea>
-
-          </div>
-
-
-          <!-- Confirm Rejection -->
-
-          <div
-            class="mt-2"
-            *ngIf="showRejectionReason"
-          >
-
-            <button
-              type="button"
-              class="btn btn-danger"
-              (click)="confirmRejection(selectedApproval.id)"
-            >
-
-              Confirm rejection
-
-            </button>
-
-          </div>
+          </ng-container>
 
         </div>
 

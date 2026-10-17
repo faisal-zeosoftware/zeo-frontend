@@ -11,7 +11,8 @@ import { combineLatest } from 'rxjs';
 import { LeaveService } from '../leave-master/leave.service';
 import { forkJoin } from 'rxjs';
 
-import { Chart, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js';
+
 import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
 import { HttpClient } from '@angular/common/http';   // v1.16.0
 import { firstValueFrom } from 'rxjs';
@@ -28,7 +29,8 @@ Chart.register(...registerables);
   templateUrl: './dashboard-contents.component.html',
   styleUrl: './dashboard-contents.component.css'
 })
-export class DashboardContentsComponent implements OnInit, OnDestroy {
+export class DashboardContentsComponent implements OnInit, OnDestroy {
+
   statusLabel = statusLabel;   // v1.15.1: readable status ("In progress", not "In_progress")
   /** v1.16.0: period of the attendance chart (its own, default today) and the figures behind its bars */
   chartPeriod: DashPeriod | null = null;
@@ -230,7 +232,7 @@ EssUser(): void {
 
     // ⏳ Simulate loading time before navigation
     setTimeout(() => {
-      const url = '/employee-dashboard';
+      const url = '/main-sidebar/home';   // v1.28.1
       this.router.navigate([url]);
     }, 2000); // Show loader for 2 seconds
   } else {

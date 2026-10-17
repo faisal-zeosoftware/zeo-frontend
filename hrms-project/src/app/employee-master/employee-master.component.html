@@ -66,7 +66,7 @@
 
                            <span *ngIf="!hasDeletePermission"></span>
 
-                           <button type="button" class="btn-Edit btn-secondary  btn"  (click)="OpenBulkuploadModal()" *ngIf="hasImportPermission">
+                           <button type="button" class="btn-Edit btn-secondary  btn"  (click)="openEmployeeImport()" *ngIf="hasImportPermission">
                             <span class="header-btn-icon">
                              <mat-icon>system_update_alt
                         </mat-icon></span> Import</button>
@@ -379,7 +379,7 @@
 
                     <div class="col-md-4">
                         <div class="vn-wisteria  vn-blue" >
-                            <a class="btn-wrap" (click)="toggleUploadForm()">
+                            <a class="btn-wrap" (click)="openEmployeeImport()">
                                 EMPLOYEE BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
                               </a>                            </div>
                         </div>

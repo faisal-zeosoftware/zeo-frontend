@@ -41,7 +41,27 @@ const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
       <div class="su-plans" role="radiogroup" [attr.aria-label]="'Plan' | t">
         <button type="button" class="su-plan" *ngFor="let p of plans" [class.on]="f.plan === p.code" (click)="f.plan = p.code" role="radio" [attr.aria-checked]="f.plan === p.code">
           <b data-no-translate>{{ p.name }}</b><span>{{ planNote(p) }}</span><small>{{ p.price_year ? (p.price_year | number:'1.0-0') + ' / ' + ('year' | t) : ('Price on request' | t) }}</small></button>
-        <div class="su-plan su-ent"><b data-no-translate>Enterprise</b><span>{{ 'Own servers – contact Adept' | t }}</span></div>
+        <!-- v1.28.0 Enterprise is never self-service: the client asks Adept -->
+        <button type="button" class="su-plan su-ent" [class.on]="!!ent" (click)="openEnt()"><b data-no-translate>Enterprise</b><span>{{ 'Own servers – ask Adept' | t }}</span><small>{{ 'Request' | t }}</small></button>
+      </div>
+      <div class="su-entform" *ngIf="ent" role="region" [attr.aria-label]="'Enterprise request' | t">
+        <h2>{{ 'ZEO Enterprise – your own servers' | t }}</h2>
+        <p class="su-sub">{{ 'Enterprise runs on servers of your own, with a licence from Adept. Tell us about your company – Adept will contact you.' | t }}</p>
+        <ng-container *ngIf="!ent.done">
+          <div class="su-grid">
+            <label>{{ 'Company' | t }}<input [(ngModel)]="ent.company" maxlength="200"></label>
+            <label>{{ 'Your name' | t }}<input [(ngModel)]="ent.name" maxlength="150"></label>
+            <label>{{ 'E-mail' | t }}<input type="email" [(ngModel)]="ent.email" maxlength="254"></label>
+            <label>{{ 'Phone' | t }}<input [(ngModel)]="ent.phone" maxlength="40"></label>
+            <label>{{ 'Employees' | t }}<input type="number" min="1" [(ngModel)]="ent.employees"></label>
+            <label>{{ 'Companies' | t }}<input type="number" min="1" [(ngModel)]="ent.companies"></label>
+          </div>
+          <label class="su-wide">{{ 'Anything else (servers, timeline, apps)' | t }}<textarea [(ngModel)]="ent.message" maxlength="2000" rows="3"></textarea></label>
+          <p class="su-err" *ngIf="ent.error" role="alert">{{ ent.error }}</p>
+          <div class="su-act"><button type="button" class="su-btn ghost" (click)="ent = null">{{ 'Cancel' | t }}</button>
+            <button type="button" class="su-btn" (click)="sendEnt()" [disabled]="ent.busy">{{ ent.busy ? ('Sending…' | t) : ('Send to Adept' | t) }}</button></div>
+        </ng-container>
+        <p class="su-ok" *ngIf="ent.done" role="status">{{ ent.done }}</p>
       </div>
       <h2>{{ 'Apps – select at least one' | t }}</h2>
       <div class="su-apps">
@@ -82,7 +102,19 @@ export class CloudSignupComponent implements OnInit, OnDestroy {
   plans: any[] = []; apps: any[] = []; industries: any[] = [];
   f = { company: '', industry: 'OTH', plan: 'advance', apps: [] as string[], name: '', email: '', password: '' };
   state = 'running'; stepNo = 1; private poll: any = null;
+  ent: any = null;   // v1.28.0 Enterprise request
   constructor(private http: HttpClient, private router: Router) {}
+  openEnt(): void {
+    this.ent = this.ent || { company: this.f.company, name: this.f.name, email: this.f.email, phone: '', employees: null, companies: null, message: '', busy: false, error: '', done: '' };
+  }
+  async sendEnt(): Promise<void> {
+    const e = this.ent; e.busy = true; e.error = '';
+    try {
+      const r: any = await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/licence/api/enterprise-request/`, e));
+      e.done = r.detail;
+    } catch (x: any) { e.error = x?.error?.detail || i18nT('The request could not be sent.'); }
+    e.busy = false;
+  }
   async ngOnInit(): Promise<void> {
     try {
       const r: any = await firstValueFrom(this.http.get(`${environment.apiBaseUrl}/cloud/api/signup/plans/`));
