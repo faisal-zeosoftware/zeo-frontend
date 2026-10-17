@@ -40,7 +40,8 @@ export class AssetRequestComponent {
 
 
   Users:any []=[];
-  AssetTypes: any[] | null = null;
+  AssetTypes:any []=[];
+
 
   Assets:any []=[];
   Employees:any []=[];
