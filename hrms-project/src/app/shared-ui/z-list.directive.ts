@@ -1171,7 +1171,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     let ready: any[] = [];
     const res = modal.querySelector('.zl-result') as HTMLElement;
     const go = modal.querySelector('[data-go]') as HTMLButtonElement;
-    const close = () => modal.remove();
+    let imported = false;   // v1.37.1: the list reloads however the window is closed (X, outside click, Escape) once rows were imported
+    const close = () => { modal.remove(); if (imported) { location.reload(); } };
     modal.addEventListener('click', async (e) => {
       const t = e.target as HTMLElement;
       if (t === modal || t.closest('[data-close]')) { close(); return; }
@@ -1183,8 +1184,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
             const bad = (r.results || []).filter((x: any) => !x.ok);
             res.innerHTML = `<div class="zl-sum ok">${T('{0} of {1} rows imported.', [r.ok, r.total])}</div>${this.problemTable(bad)}
               <p class="zl-muted">${T('The list refreshes when you close this window.')}</p>`;
-            go.textContent = T('Imported'); ready = [];
-            modal.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => location.reload(), { once: true }));
+            go.textContent = T('Imported'); ready = []; imported = true;
           },
           error: (err: any) => { res.innerHTML = `<div class="zl-sum bad">${esc(err?.error?.detail || T('Import failed.'))}</div>`; go.textContent = T('Import'); go.disabled = false; },
         });

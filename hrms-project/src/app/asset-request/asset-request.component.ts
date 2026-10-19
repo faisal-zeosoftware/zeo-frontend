@@ -346,10 +346,7 @@ onBranchChange(event: any): void {
     );
 
     if (selectedBranch) {
-      this.filteredEmployees = this.Employees.filter(emp =>
-        emp.emp_branch_id == selectedBranch.id ||
-        emp.emp_branch_id == selectedBranch.branch_name
-      );
+      this.filteredEmployees = this.employeesOfBranch(selectedBranch);
     } else {
       this.filteredEmployees = [];
     }
@@ -470,6 +467,24 @@ onBranchChange(event: any): void {
 }
 
         
+/** v1.37.1: the employees of one branch – the API gives emp_branch_id as an id, an object or a name depending on the screen */
+employeesOfBranch(b: any): any[] {
+  if (!b) { return this.Employees; }
+  const id = Number(b.id); const name = String(b.branch_name || '').toLowerCase();
+  return (this.Employees || []).filter((emp: any) => {
+    const v = emp.emp_branch_id ?? emp.branch ?? emp.emp_branch;
+    if (v === null || v === undefined || v === '') { return false; }
+    if (typeof v === 'object') { return Number(v.id) === id || String(v.branch_name || '').toLowerCase() === name; }
+    return Number(v) === id || String(v).toLowerCase() === name;
+  });
+}
+/** v1.37.1: the dropdown follows the branch already selected when the form opens (it used to show everyone until the branch was changed) */
+applyBranchFilter(): void {
+  const sel = Array.isArray(this.branch) ? this.branch[0] : this.branch;
+  const b = (this.branches || []).find((x: any) => Number(x.id) === Number(sel));
+  this.filteredEmployees = b ? this.employeesOfBranch(b) : this.Employees;
+}
+
 loadEmployees(callback?: Function): void {
 
   const selectedSchema = this.authService.getSelectedSchema();
@@ -481,6 +496,7 @@ loadEmployees(callback?: Function): void {
 
         this.Employees = result;
         this.filteredEmployees = result;
+        this.applyBranchFilter();
 
         if (this.isEditModalOpen) {
           this.mapEmployeeToId();
@@ -515,6 +531,8 @@ loadEmployees(callback?: Function): void {
     this.branch = [this.branches[0].id];
 
   }
+  this.employee = '';
+  this.applyBranchFilter();   // v1.37.1: only the employees of the selected branch
 
       }
     

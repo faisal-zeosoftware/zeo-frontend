@@ -146,7 +146,7 @@ export class DocumentRequestApprovalsComponent {
                     this.hasDeletePermission = this.checkGroupPermission('delete_documentapproval', groupPermissions);
                     console.log('Has delete permission:', this.hasDeletePermission);
 
-                    this.hasViewPermission = this.checkGroupPermission('view_documentapproval', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_documentapproval', groupPermissions) || this.checkGroupPermission('approver_documentapproval', groupPermissions) || this.checkGroupPermission('role_line_manager', groupPermissions);   // v1.37.1: named approvers and line managers
                     console.log('Has view permission:', this.hasViewPermission);
                   } else {
                     console.debug('No permission groups for this user.');   // v1.17.0 (audit M12): normal for an employee, not an error

@@ -292,7 +292,7 @@
                     <th>Branch </th>
                     <th>Description </th>
       
-                    <th>Action</th>
+                    <th>Action <mat-checkbox *ngIf="Delete" [checked]="allSelected" (change)="toggleSelectAllEmployees()" title="Select all" aria-label="Select all"></mat-checkbox></th>
                    
                   </tr>
                 </thead>

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { ModuleOptionsComponent, ModuleMenuItem } from '../hr-modules/module-options/module-options.component';
+import { ModuleMenuItem } from '../hr-modules/module-options/module-options.component';
+import { ZModuleShellComponent } from '../shared-ui/z-module-shell.component';
 import { AssetHomeComponent } from './asset-home.component';
 import { AssetRegisterComponent } from './asset-register.component';
 import { AssetDetailComponent } from './asset-detail.component';
@@ -31,7 +32,7 @@ const queue = (path: string) => ({ path, component: AssetQueueComponent, data: {
 export const ASSET_PLUS_ROUTES: Routes = [
   {
     path: 'asset-plus',
-    component: ModuleOptionsComponent,
+    component: ZModuleShellComponent,   // v1.37.1: the full Assets menu of shared-ui/menu-config.ts (requests, approvals, setup) – was a short list of its own
     data: { title: 'Assets', base: '/main-sidebar/asset-plus', menu: ASSET_PLUS_MENU },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },

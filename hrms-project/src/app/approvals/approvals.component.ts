@@ -363,7 +363,7 @@ export class ApprovalsComponent {
                     this.checkGroupPermission(
                       'view_approval',
                       groupPermissions
-                    );
+                    ) || this.checkGroupPermission('approver_approval', groupPermissions) || this.checkGroupPermission('role_line_manager', groupPermissions);   // v1.37.1: named approvers and line managers see their approvals
 
 
                   console.log(

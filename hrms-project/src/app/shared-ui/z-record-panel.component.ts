@@ -43,10 +43,10 @@ const ACT_TYPES = [
       </div>
       <p class="zr-muted" *ngIf="!fields.length && !owned">No extra fields yet. Use “Design this form” to add fields such as a cost centre, a contract file or a rating.</p>
       <p class="zr-muted" *ngIf="!fields.length && owned">{{ ownerTitle }} fields have one designer: the fields you add there appear in this form with the other {{ ownerTitle.toLowerCase() }} details (reopen the form after designing).</p>
-      <ng-container *ngFor="let g of visibleGroups()">
+      <ng-container *ngFor="let g of visibleGroups(); trackBy: trackGroup">
         <div class="zr-sec" *ngIf="g.section">{{ g.section }}</div>
         <div class="zr-grid">
-          <z-field-input *ngFor="let f of g.fields" [field]="f" [value]="values[f.name]" [error]="errors[f.name] || ''" [disabled]="locked(f)" [wide]="f.field_type === 'textarea' || f.field_type === 'multiselect'"
+          <z-field-input *ngFor="let f of g.fields; trackBy: trackField" [field]="f" [value]="values[f.name]" [error]="errors[f.name] || ''" [disabled]="locked(f)" [wide]="f.field_type === 'textarea' || f.field_type === 'multiselect'"
                          [upload]="id ? uploader(f.name) : undefined" (valueChange)="change(f, $event)"></z-field-input>
         </div>
       </ng-container>
@@ -239,7 +239,18 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
     const r = f.rules || {};
     return visibleOn(r, this.id ? 'edit' : 'create') && (!this.ess || visibleOn(r, 'ess')) && showIfOk(r, vals);
   }
-  visibleGroups() { const vals = this.valueMap(); return bySection(this.fields.filter(f => this.shown(f, vals))); }
+  // v1.37.1: the same group objects while the shown fields do not change – a new array on every change detection
+  // re-created the inputs, so a Yes / No tick (and a file pick) was lost right after the click
+  private _vg: { key: string; groups: any[] } | null = null;
+  visibleGroups() {
+    const vals = this.valueMap();
+    const shown = this.fields.filter(f => this.shown(f, vals));
+    const key = shown.map(f => `${f.id ?? ''}:${f.name}`).join('|');
+    if (!this._vg || this._vg.key !== key) { this._vg = { key, groups: bySection(shown) }; }
+    return this._vg.groups;
+  }
+  trackField(_: number, f: DesignField): string { return `${f.id ?? ''}:${f.name}`; }
+  trackGroup(_: number, g: any): string { return g.section || ''; }
   locked(f: DesignField): boolean { return this.ess && !!f.rules?.ess_read_only; }
   /** Problems of the shown, changeable fields (the interceptor asks before the screen saves). */
   problems(): string[] {
@@ -311,6 +322,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
     if (this.owned) { fields = []; }   // v1.16.0: shown by the form itself from its own designer (never twice)
     this.fields = fields;
     this.groups = bySection(fields);
+    this._vg = null;
     for (const k of Object.keys(this.values)) { delete this.values[k]; }
     Object.assign(this.values, values);
   }

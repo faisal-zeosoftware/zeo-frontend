@@ -14,6 +14,16 @@ import { DepartmentServiceService } from '../department-master/department-servic
 
 
 
+
+/** v1.37.1: the server's reason, readable (it used to be swallowed – the user saw nothing happen). */
+function apiErrorText(error: any): string {
+  const d = error?.error;
+  if (!d) { return error?.message || error?.statusText || 'Request failed'; }
+  if (typeof d === 'string') { return d.slice(0, 300); }
+  if (d.detail) { return String(d.detail); }
+  return Object.entries(d).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(' ') : typeof v === 'object' ? JSON.stringify(v) : v}`).join('\n');
+}
+
 @Component({
   selector: 'app-document-request-level',
   templateUrl: './document-request-level.component.html',
@@ -597,6 +607,7 @@ if (this.approval_type === 'multi_approval') {
     },
     (error) => {
       console.error(error);
+      alert('The approval level could not be saved.\n\n' + apiErrorText(error));
     }
   );
 }

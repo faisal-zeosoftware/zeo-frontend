@@ -13,7 +13,7 @@ import { EXPENSE_ROUTES } from '../expense/expense.routes';   // v1.11.0
 import { ORG_STRUCTURE_ROUTES } from '../org-structure/org-structure.routes';   // v1.12.0
 import { SHIFT_PLANNER_ROUTES } from '../shift-planner/shift-planner.routes';   // v1.12.0
 import { ZeoAiComponent } from '../zeo-ai/zeo-ai.component';   // v1.37.0 AI assistants
-import { ZeoAiShellComponent } from '../zeo-ai/zeo-ai-shell.component';
+import { ZModuleShellComponent } from '../shared-ui/z-module-shell.component';   // v1.37.1 generic module frame (menu-config sidebar)
 import { ATTENDANCE_PLUS_ROUTES } from '../attendance-plus/attendance-plus.routes';   // v1.12.0
 import { ASSET_PLUS_ROUTES } from '../asset-plus/asset-plus.routes';   // v1.12.0
 import { EMPLOYEE_PROFILE_ROUTES } from '../employee-profile/employee-profile.routes';   // v1.13.0
@@ -86,7 +86,7 @@ const page = (path: string, config: any) => ({ path, component: CrudPageComponen
 export const HR_MODULE_ROUTES: Routes = [
   { path: 'manager-dashboard', component: ManagerDashboardComponent },
   { path: 'ceo-dashboard', component: CeoDashboardComponent },          // v1.11.0
-  { path: 'unified-calendar', component: UnifiedCalendarComponent },    // v1.11.0
+  { path: 'unified-calendar', component: ZModuleShellComponent, data: { title: 'Calendar' }, children: [{ path: '', component: UnifiedCalendarComponent }] },    // v1.11.0; v1.37.1: with the Calendars menu (weekend / holiday calendars)
   ...EXPENSE_ROUTES,                                                    // v1.11.0
   // v1.15.1: one "My policies" page – /main-sidebar/my-policies (the copy inside Organisation redirects there)
   moved('org-structure/my-policies', '/main-sidebar/my-policies'),
@@ -101,7 +101,7 @@ export const HR_MODULE_ROUTES: Routes = [
   { path: 'zeo-maintenance', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_APP_LAZY) },
   { path: 'zeo-assets', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_ASSETS_LAZY) },   // v1.33.0
   { path: 'zeo-people', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_PEOPLE_LAZY) },   // v1.36.0
-  { path: 'zeo-ai', component: ZeoAiShellComponent, children: [{ path: '', redirectTo: 'payroll', pathMatch: 'full' }, { path: ':tab', component: ZeoAiComponent }] },   // v1.37.0 AI assistants
+  { path: 'zeo-ai', component: ZModuleShellComponent, data: { title: 'AI assistants' }, children: [{ path: '', redirectTo: 'payroll', pathMatch: 'full' }, { path: ':tab', component: ZeoAiComponent }] },   // v1.37.0 AI assistants
   { path: 'zeo-hse', loadChildren: () => import('../zeo-hse/zeo-hse.routes').then(m => m.ZEO_HSE_LAZY) },
   ...EMPLOYEE_PROFILE_ROUTES,                                           // v1.13.0
   ...SELF_SERVICE_ROUTES,                                               // v1.13.0

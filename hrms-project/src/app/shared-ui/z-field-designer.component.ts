@@ -18,7 +18,7 @@ import { DesignField, DesignerAdapter, FIELD_TYPES, SHOW_OPS, VISIBLE_PLACES, by
       <header class="zd-h">
         <div><h3 id="zd-title">Form designer{{ adapter ? ' · ' + adapter.title : '' }}</h3><span class="zr-muted">{{ subtitle }}</span></div>
         <span class="zr-grow"></span>
-        <button type="button" class="zr-ic" (click)="close()" aria-label="Close"><mat-icon>close</mat-icon></button>
+        <button type="button" class="zr-btn sm zd-close" (click)="close()" aria-label="Close"><mat-icon>close</mat-icon>Close</button>
       </header>
       <div class="zd-body">
         <!-- field list -->

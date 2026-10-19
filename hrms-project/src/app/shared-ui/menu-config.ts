@@ -71,7 +71,17 @@ export const MAIN_GROUPS: MenuGroup[] = [
   {
     // v1.20.0: shown in every app, after its first entry
     title: 'Overview', suite: 'common', apps: [
-      { key: 'cal', label: 'Calendar', icon: 'calendar_month', link: M + 'unified-calendar', parents: ['unified-calendar'] },   // v1.11.0
+      { key: 'cal', label: 'Calendar', icon: 'calendar_month', parents: ['unified-calendar'], sections: [   // v1.11.0; v1.37.1: the weekend and holiday calendars live here (were under Time & Attendance)
+        { title: 'Calendar', items: [
+          { label: 'Calendar', hint: 'Leave, holidays, shifts, birthdays, activities', link: M + 'unified-calendar', icon: 'calendar_month' },
+        ] },
+        { title: 'Calendars', items: [
+          { label: 'Weekend calendar', link: M + 'settings/weekcalendar', icon: 'weekend', perms: ['view_weekend_calendar'] },
+          { label: 'Assign weekends', link: M + 'settings/assign-weekcalendar', icon: 'event_repeat', perms: ['view_assign_weekend'] },
+          { label: 'Holiday calendar', link: M + 'settings/holiday-calendar', icon: 'celebration', perms: ['view_holiday_calendar'] },
+          { label: 'Assign holidays', link: M + 'settings/assign-holiday-calendar', icon: 'event_available', perms: ['view_assign_holiday'] },
+        ] },
+      ] },
       { key: 'todo', label: 'My To-do', icon: 'task_alt', link: M + 'todo', parents: ['todo'] },
     ],
   },
@@ -182,7 +192,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
   {
     title: 'Time', apps: [
       {
-        key: 'attendance', label: 'Time & Attendance', icon: 'schedule', parents: ['attendance-sidebar', 'shift-options', 'attendance-plus'],
+        key: 'attendance', label: 'Attendance', icon: 'schedule', parents: ['attendance-sidebar', 'shift-options', 'attendance-plus'],   // v1.37.1: was "Time & Attendance"
         sections: [
           { title: 'My attendance', items: [   // v1.12.0
             { label: 'My attendance', hint: 'Punch in / out, breaks, my month, corrections', link: M + 'attendance-plus/my-attendance', icon: 'fingerprint' },
@@ -213,10 +223,6 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Shift patterns', link: M + 'shift-options/shift-pattern', icon: 'date_range', perms: ['view_shiftpattern'] },
             { label: 'Employee shifts', link: M + 'shift-options/shift-employee', icon: 'badge', perms: ['view_employeeshiftschedule'] },
             { label: 'Shift override', link: M + 'shift-options/shift-override', icon: 'edit_calendar', perms: ['view_shiftoverride'] },
-            { label: 'Weekend calendar', link: M + 'settings/weekcalendar', icon: 'weekend', perms: ['view_weekend_calendar'] },
-            { label: 'Assign weekends', link: M + 'settings/assign-weekcalendar', icon: 'event_repeat', perms: ['view_assign_weekend'] },
-            { label: 'Holiday calendar', link: M + 'settings/holiday-calendar', icon: 'celebration', perms: ['view_holiday_calendar'] },
-            { label: 'Assign holidays', link: M + 'settings/assign-holiday-calendar', icon: 'event_available', perms: ['view_assign_holiday'] },
           ] },
           { title: 'Setup', collapsed: true, items: [
             { label: 'Attendance rules', link: M + 'attendance-plus/rules', icon: 'rule', perms: ['change_attendance'] },   // v1.12.0

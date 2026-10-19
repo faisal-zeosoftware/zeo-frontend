@@ -797,3 +797,7 @@ mat-sidenav-container {
 }
 /* v1.28.1 the unfolded main menu (235 px) no longer covers the sub-sidebar */
 @media (min-width: 992px) { body:has(#sidebarMenu.menu-open) .sub-sidebar { padding-left: 207px; } }
+
+/* v1.37.1: dialog titles – one font and size on every screen (several component styles used "font-family: math",
+   which browsers render as a serif, and varying sizes) */
+.modal h2, .modal-content h2 { font-family: Roboto, "Helvetica Neue", sans-serif !important; font-size: 17px !important; font-weight: 600 !important; text-transform: none !important; }

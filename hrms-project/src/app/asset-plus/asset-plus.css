@@ -49,3 +49,4 @@
 table.ap-reg tr.click { cursor: pointer; }
 table.ap-queue td.money, table.ap-reg td.money { text-align: right; font-weight: 600; white-space: nowrap; }
 .ap-due{color:#9b2c24}
+.ap-actions { white-space: nowrap; } .ap-actions .ex-btn + .ex-btn { margin-left: 6px; }   /* v1.37.1 */

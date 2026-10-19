@@ -45,7 +45,7 @@ import { AssetFormComponent } from './asset-form.component';
       <p class="ex-muted" *ngIf="loading">Loading…</p>
       <!-- v1.16.0: a table, so the list tools (search, filters, group by, columns, saved views, exports) work here too -->
       <table class="table ap-reg" *ngIf="!loading && rows.length">
-        <thead><tr><th>Code</th><th>Asset</th><th>Type</th><th>Serial number</th><th>Branch</th><th>Held by</th><th>Warranty ends</th><th>Book value</th><th>Status</th><th>Condition</th></tr></thead>
+        <thead><tr><th>Code</th><th>Asset</th><th>Type</th><th>Serial number</th><th>Branch</th><th>Held by</th><th>Warranty ends</th><th>Book value</th><th>Status</th><th>Condition</th><th *ngIf="rights.master_change || rights.master_delete">Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let a of rows" class="click" (click)="open(a.id)">
             <td><span class="ap-code">{{ a.code }}</span></td>
@@ -58,6 +58,11 @@ import { AssetFormComponent } from './asset-form.component';
             <td class="money">{{ a.book_value !== undefined && a.book_value !== null ? m(a.book_value, a.currency) : '' }}</td>
             <td><span class="ex-tag" [ngClass]="cls(a.status)">{{ a.status_label }}</span></td>
             <td>{{ a.condition === 'healthy' ? 'Healthy' : a.condition === 'minor_damage' ? 'Minor damage' : a.condition === 'major_damage' ? 'Major damage' : a.condition }}</td>
+            <td *ngIf="rights.master_change || rights.master_delete" class="ap-actions" (click)="$event.stopPropagation()">
+              <!-- v1.37.1: edit and delete from the list (they were only on the asset's page) -->
+              <button type="button" class="ex-btn sm" *ngIf="rights.master_change && a.status !== 'disposed'" (click)="edit(a)">Edit</button>
+              <button type="button" class="ex-btn sm danger" *ngIf="rights.master_delete && !a.holder" (click)="remove(a)" title="Only an asset without any history can be deleted. Dispose of it otherwise.">Delete</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -65,7 +70,8 @@ import { AssetFormComponent } from './asset-form.component';
     </div>
   </div>
 </div>
-<app-asset-form *ngIf="creating" (closed)="creating = false" (saved)="created($event)"></app-asset-form>`,
+<app-asset-form *ngIf="creating" (closed)="creating = false" (saved)="created($event)"></app-asset-form>
+<app-asset-form *ngIf="editingAsset" [asset]="editingAsset" (closed)="editingAsset = null" (saved)="editingAsset = null; load(); note('Asset saved.')"></app-asset-form>`,
 })
 export class AssetRegisterComponent implements OnInit {
   rows: any[] = [];
@@ -117,6 +123,18 @@ export class AssetRegisterComponent implements OnInit {
   }
 
   open(id: number): void { this.router.navigate([ASSET_BASE, 'register', id]); }
+  editingAsset: any = null;
+  note(m: string): void { this.msg = m; this.msgErr = false; this.cd.markForCheck(); }
+  /** v1.37.1: edit from the list – the form wants the full record (profile, custom fields) */
+  async edit(a: any): Promise<void> {
+    try { this.editingAsset = await this.api.get(`assets/${a.id}/`); this.cd.markForCheck(); }
+    catch (e: any) { this.msg = AssetApiService.error(e, 'The asset could not be opened.'); this.msgErr = true; this.cd.markForCheck(); }
+  }
+  async remove(a: any): Promise<void> {
+    if (!confirm(`Delete ${a.code} – ${a.name}? Only an asset without allocations, requests or maintenance can be deleted.`)) return;
+    try { await this.api.delete(`assets/${a.id}/`); this.note('Asset deleted.'); await this.load(); }
+    catch (e: any) { this.msg = AssetApiService.error(e, 'The asset could not be deleted.'); this.msgErr = true; this.cd.markForCheck(); }
+  }
   m(v: any, c?: string): string { return money(v, c || undefined); }   // v1.14.0: else company currency
   lbl(s: string): string { return STATUS_LABEL[s] || s; }
   cls(s: string): string { return STATUS_CLASS[s] || ''; }

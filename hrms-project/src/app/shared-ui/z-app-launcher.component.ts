@@ -38,7 +38,7 @@ const TILE_ICON: Record<string, string> = {
     </button>
     <div class="zal-panel" *ngIf="open" role="dialog" [attr.aria-label]="'Apps and modules' | t">
       <div class="zal-suites" role="tablist">
-        <button type="button" role="tab" *ngFor="let s of shownSuites()" [class.on]="view === s.key" [attr.aria-selected]="view === s.key" (click)="view = s.key; q = ''">
+        <button type="button" role="tab" *ngFor="let s of shownSuites()" [class.on]="view === s.key" [attr.aria-selected]="view === s.key" (click)="openSuite(s.key)">
           <mat-icon aria-hidden="true">{{ s.icon }}</mat-icon><span><b>{{ s.label | t }}</b><small>{{ s.hint | t }}</small></span>
         </button>
       </div>
@@ -142,6 +142,12 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   shownSuites() {
     // v1.21.0: only the apps active in the company (Settings → Apps) and with at least one module the user may open
     return this.suites.filter(s => this.ss.isActive(s.key) && (s.key === this.suite || this.tiles(s.key).some(t => t.key !== 'cal' && t.key !== 'todo')));
+  }
+  /** v1.37.1: clicking an app opens it (its home page) – it used to only show the app's modules in the panel. */
+  openSuite(key: AppSuite): void {
+    this.view = key; this.q = '';
+    const home = this.tiles(key).find(t => t.key !== 'cal' && t.key !== 'todo') || this.tiles(key)[0];
+    if (home) { this.go(home.link, key, home.key); }
   }
   suiteLabel(s: AppSuite): string { return SUITES.find(x => x.key === s)?.label || 'HRMS'; }
   private mark(): void { this.current = appForUrl(this.router.url)?.key || ''; }
