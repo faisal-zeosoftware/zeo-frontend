@@ -113,7 +113,10 @@ interface FeatureRow { key: string; title: string; help: string; on: boolean; de
           </ul>
         </ng-container>
         <p class="lp-muted cp-note">“Apply country defaults” adds the pack’s document types and the country rule set, adds leave types only when the company has none,
-          and sets the weekend of the rule set on the default weekend calendar if it was never changed. Nothing you set up is changed or removed; you can run it again.</p>
+          and sets the weekend of the rule set on the default weekend calendar if it was never changed. Nothing you set up is changed or removed; you can run it again.
+          <br>v1.31.0: it also loads the country’s <b>statutory payroll schemes</b> (GPSSA / GOSI / GRSIA / PASI / SIO / PIFSS, EPF / ESI / professional tax / TDS for India) with their salary components,
+          switches off the standard schemes of another country, and the public holidays and labour-law rule set of the pack (UAE, Saudi Arabia, Qatar, Oman, Bahrain, Kuwait, India).
+          Rates are as published – verify them in Payroll → Setup → <a routerLink="/main-sidebar/salary-options/statutory-schemes">Statutory schemes</a> before the first run.</p>
       </ng-container>
     </div>
   </div>

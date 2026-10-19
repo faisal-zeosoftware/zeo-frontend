@@ -402,6 +402,8 @@
         
         
                 </div>
+      <!-- v1.31.0: optional legal / registration details (side table, captions per country pack) -->
+      <z-company-profile *ngIf="isEditModalOpen" [schema]="editAsset?.schema_name || editAsset?.schema || null"></z-company-profile>
       <div class="row" *ngIf="hasAddPermission">
           <div class="col-md-8">
   

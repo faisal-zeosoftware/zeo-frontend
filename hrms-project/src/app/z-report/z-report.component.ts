@@ -12,6 +12,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { employeeUrl, recordUrl, reportLink } from '../shared-ui/z-nav';
 import { CountryPackService, cpServerFields } from '../shared-ui/country-pack.service';   // v1.14.0
 import { I18N_UI, i18nLocalize, i18nT } from '../shared-ui/i18n.service';   // v1.15.0
+import { ZLocationService } from '../shared-ui/z-location.service';   // v1.31.1 location level
 
 interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; }
 
@@ -61,7 +62,12 @@ export class ZReportComponent implements OnInit, OnDestroy {
   @ViewChildren(ZListDirective) private lists?: QueryList<ZListDirective>;   // v1.16.0: e-mail what the list shows
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient, private rec: ZRecordService,
-              private emp: EmployeeService, private cd: ChangeDetectorRef, private cp: CountryPackService) {}
+              private emp: EmployeeService, private cd: ChangeDetectorRef, private cp: CountryPackService, public zloc: ZLocationService) {}
+
+  // v1.31.1 location level: a pick on the report page (empty = the header switcher's selection)
+  locPick: number[] = [];
+  locToggle(id: number): void { const i = this.locPick.indexOf(id); if (i > -1) { this.locPick.splice(i, 1); } else { this.locPick.push(id); } this.run(); }
+  private locQ(): string { return this.locPick.length ? `&location=${this.locPick.join(',')}` : ''; }
 
   ngOnInit(): void {
     this.subs.push(combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([p, q]) => {
@@ -113,6 +119,7 @@ export class ZReportComponent implements OnInit, OnDestroy {
     if (this.from && this.to) { q += `&from=${this.from}&to=${this.to}`; }
     if (branches.length) { q += `&branch=${branches.join(',')}`; }
     if (this.asOf) { q += `&as_of=${this.asOf}`; }
+    q += this.locQ();
     try {
       const d = await firstValueFrom(this.http.get<any>(`${this.rec.api}/dashboard/api/reports/${this.key}/${q}`));
       if (seq !== this.seq) { return; }
@@ -148,6 +155,7 @@ export class ZReportComponent implements OnInit, OnDestroy {
     if (this.from && this.to) { q += `&from=${this.from}&to=${this.to}`; }
     if (branches.length) { q += `&branch=${branches.join(',')}`; }
     if (this.asOf) { q += `&as_of=${this.asOf}`; }
+    q += this.locQ();
     try {
       // v1.16.0: the file follows the screen – filters, sort, visible columns and group by (a column per group level)
       const shown = this.lists?.first?.csvNow() || null;

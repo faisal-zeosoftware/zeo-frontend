@@ -257,7 +257,8 @@ export class ZaHomeComponent implements OnInit {
             <label class="ck" *ngIf="f.type === 'bool'"><input type="checkbox" [(ngModel)]="s[f.name]"> {{ f.label }}</label>
             <label *ngIf="f.type === 'choice'">{{ f.label }}<select [(ngModel)]="s[f.name]"><option *ngFor="let c of f.choices" [value]="c.value">{{ c.label }}</option></select></label>
             <label *ngIf="f.type === 'json'">{{ f.label }}<input [ngModel]="(s[f.name] || []).join(', ')" (ngModelChange)="s[f.name] = nums($event)" placeholder="90, 60, 30, 7"></label>
-            <label *ngIf="!['bool','choice','json'].includes(f.type)">{{ f.label }}<input [type]="f.type === 'int' || f.type === 'decimal' ? 'number' : 'text'" [(ngModel)]="s[f.name]"></label>
+            <label *ngIf="f.type === 'textarea'" class="wide">{{ f.label }}<textarea rows="3" [(ngModel)]="s[f.name]"></textarea></label>
+            <label *ngIf="!['bool','choice','json','textarea'].includes(f.type)">{{ f.label }}<input [type]="f.type === 'int' || f.type === 'decimal' ? 'number' : 'text'" [(ngModel)]="s[f.name]" [step]="f.type === 'decimal' ? 'any' : null"></label>
           </ng-container>
         </div>
         <h3 style="margin-top:16px">Wording</h3>

@@ -40,6 +40,12 @@ const P_STEPS = ['#5B4FE0', '#8B82EA', '#B5AFF2', '#DCD9FA'];   // one hue, dark
             <option *ngFor="let b of d.branches" [value]="b.id">{{ b.name }}</option>
           </select>
         </label>
+        <label *ngIf="(d?.locations?.length || 0) > 0">{{ 'Location' | t }}
+          <select [(ngModel)]="location" (change)="load()">
+            <option value="">{{ 'As in the header' | t }}</option>
+            <option *ngFor="let l of d.locations" [value]="l.id">{{ l.name }}</option>
+          </select>
+        </label>
       </div>
     </header>
     <!-- v1.16.0: period of the dashboard (and a chip per card), drag & drop, sizes -->
@@ -229,6 +235,7 @@ export class CeoDashboardComponent implements OnInit {
   error = '';
   loading = false;
   branch: any = '';
+  location: any = '';   // v1.31.1 location level
   readonly purple = PURPLE;
   readonly amber = AMBER;
   readonly steps = P_STEPS;
@@ -255,6 +262,7 @@ export class CeoDashboardComponent implements OnInit {
     const q: any = {};
     if (p) { q.from = p.from; q.to = p.to; }
     if (this.branch) { q.branch = this.branch; }
+    if (this.location) { q.location = this.location; }   // v1.31.1
     if (card) { q.card = card; }
     return q;
   }

@@ -142,6 +142,8 @@
               
            </div>
 
+           <!-- v1.31.0: optional registration / site details of the branch -->
+           <z-branch-profile *ngIf="Emp?.id" [branchId]="Emp.id"></z-branch-profile>
            <div class="row">
             <div class="col-md-8"></div>
             <div class="col-md-2">

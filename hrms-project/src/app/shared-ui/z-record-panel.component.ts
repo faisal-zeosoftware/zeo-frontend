@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { empFieldAdapter } from './emp-field-adapter';
 import { assetFieldAdapter } from './asset-field-adapter';   // v1.16.0
+import { ZLocationService } from './z-location.service';   // v1.30.0 location level
 
 interface FeedItem { kind: 'note' | 'change' | 'created' | 'deleted'; at: string; who: string; body?: string; changes?: any[]; attachments?: any[]; id?: number; mine?: boolean; }
 
@@ -54,6 +55,21 @@ const ACT_TYPES = [
         <button type="button" class="zr-btn primary" [disabled]="saving" (click)="saveNow()">{{ saving ? 'Saving…' : 'Save extra fields' }}</button>
       </div>
       <div class="zr-err" *ngIf="formError" role="alert">{{ formError }}</div>
+    </div>
+
+    <!-- v1.30.0 location level: the location this record belongs to -->
+    <div class="zr-loc" *ngIf="loc?.applies">
+      <mat-icon>place</mat-icon>
+      <span class="zr-loc-lab">{{ loc.label }}:</span>
+      <ng-container *ngIf="!locEditing"><b>{{ loc.location || '–' }}</b>
+        <button type="button" class="zr-link" *ngIf="loc.can_change" (click)="locEditing = true">{{ loc.location ? 'Change' : 'Set' }}</button></ng-container>
+      <ng-container *ngIf="locEditing">
+        <select class="zr-loc-sel" [value]="loc.location_id ?? ''" (change)="locSet($any($event.target).value)">
+          <option value="">–</option>
+          <option *ngFor="let o of loc.options" [value]="o.id">{{ o.name }}</option>
+        </select>
+        <button type="button" class="zr-link" (click)="locEditing = false">Cancel</button>
+      </ng-container>
     </div>
 
     <!-- chatter -->
@@ -188,7 +204,29 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
   /** v1.12.0: self-service employee (no back-office rights): read-only and hidden fields apply. */
   ess = false;
 
-  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private el: ElementRef<HTMLElement>, private http: HttpClient, private zl: ZListService) {}
+  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private el: ElementRef<HTMLElement>, private http: HttpClient, private zl: ZListService,
+              private zloc: ZLocationService) {}
+
+  // ---------------------------------------------------------------- v1.30.0 location level
+  loc: any = null; locEditing = false;
+  private async locLoad(model: string | null): Promise<void> {
+    this.loc = null; this.locEditing = false;
+    if (!model || !this.id || !this.zloc.enabled) { return; }
+    try {
+      this.loc = await firstValueFrom(this.http.get<any>(`${environment.apiBaseUrl}/org-structure/api/record-location/`,
+        { params: { schema: localStorage.getItem('selectedSchema') || '', model, id: this.id } }));
+    } catch { this.loc = null; }
+    this.cd.detectChanges();
+  }
+  async locSet(v: string): Promise<void> {
+    if (!this.loc) { return; }
+    try {
+      const r = await firstValueFrom(this.http.put<any>(`${environment.apiBaseUrl}/org-structure/api/record-location/`,
+        { model: this.loc.model, id: this.id, location: v || null }, { params: { schema: localStorage.getItem('selectedSchema') || '' } }));
+      this.loc.location_id = r.location_id; this.loc.location = r.location || '';
+    } catch (e: any) { alert(e?.error?.detail || 'Could not change the location.'); }
+    this.locEditing = false; this.cd.detectChanges();
+  }
 
   /** Values by field name and label (for "show only if"). */
   private valueMap(): Record<string, any> {
@@ -248,6 +286,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
         this.activities = r.activities || [];
         this.me = r.me; this.admin = r.admin;
         this.feed = this.buildFeed(r);
+        this.locLoad(r.model || null).then(() => { if (this.loc) { this.loc.model = r.model; } });
         this.canDesign = await this.designAllowed();
       } else if (this.endpoint) {
         const r = await firstValueFrom(this.rec.fields(this.endpoint));

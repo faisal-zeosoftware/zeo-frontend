@@ -23,6 +23,12 @@
           <button type="button" class="zq-run" (click)="run()" [disabled]="!asOf || loading">{{ 'Run' | t }}</button>
         </span>
       </div>
+      <!-- v1.31.1 location level: the report's locations (defaults to the header switcher; a pick here runs the report for those only) -->
+      <div class="zq-period" *ngIf="zloc.enabled && zloc.snapshot.locations.length">
+        <span class="zq-plabel">{{ zloc.snapshot.label | t }}</span>
+        <button type="button" [class.on]="!locPick.length" (click)="locPick = []; run()">{{ zloc.selectedIds.length ? ('As in the header' | t) : ('All' | t) }}</button>
+        <button type="button" *ngFor="let l of zloc.snapshot.locations" [class.on]="locPick.includes(l.id)" (click)="locToggle(l.id)">{{ l.name }}</button>
+      </div>
       <div class="zq-period" *ngIf="hasPeriod">
         <span class="zq-plabel">{{ 'Period' | t }}</span>
         <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l | t }}</button>

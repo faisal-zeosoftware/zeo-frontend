@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ASSET_BASE, AssetApiService, CONDITIONS, EVENT_ICON, STATUS_CLASS, STATUS_LABEL, isImage, money, today } from './asset-api.service';
 import { AssetFormComponent } from './asset-form.component';
 import { Bar, code39 } from './barcode';
+import { ZaApiService } from '../zeo-apps/za-api.service';   // v1.33.0 link to Asset Management
 
 type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | 'schedule' | 'damage' | 'loss' | 'dispose' | 'label' | 'upload' | 'verify';
 
@@ -25,7 +26,8 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <h1 class="page-title" *ngIf="a">{{ a.name }} <span class="ap-code">{{ a.code }}</span></h1>
           <p class="ex-desc" *ngIf="a">{{ a.asset_type_name }} · SN {{ a.serial_number }}<span *ngIf="a.model"> · {{ a.model }}</span>
             · <span class="ex-tag" [ngClass]="cls(a.status)">{{ a.status_label }}</span>
-            <span class="ex-flag warn" *ngIf="a.condition !== 'healthy'">{{ cond(a.condition) }}</span></p>
+            <span class="ex-flag warn" *ngIf="a.condition !== 'healthy'">{{ cond(a.condition) }}</span>
+            <a class="ex-link ap-noprint" *ngIf="amCard" (click)="openAm()" style="margin-left:8px;cursor:pointer">Open in Asset Management ›</a></p>
         </div>
         <div class="ex-actions ap-noprint" *ngIf="a">
           <ng-container *ngIf="a.status !== 'disposed'">
@@ -351,7 +353,17 @@ export class AssetDetailComponent implements OnInit {
     close: 'Save', schedule: 'Add plan', damage: 'Report damage', loss: 'Report', dispose: 'Send for approval', upload: 'Upload', verify: 'Record the check' };
   private closing: any = null;
 
-  constructor(private api: AssetApiService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
+  constructor(private api: AssetApiService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef, private za: ZaApiService) {}
+  /** v1.33.0: the same asset in the Asset Management app (only when that app is active and the user may see it). */
+  amCard: number | null = null;
+  private async findAm(): Promise<void> {
+    try {
+      const r: any = await this.za.for('zeo-assets').get('r/asset/', { q: this.a.code, limit: 5 });
+      this.amCard = (r?.results || []).find((x: any) => x.code === this.a.code)?.id || null;
+    } catch { this.amCard = null; }
+    this.cd.markForCheck();
+  }
+  openAm(): void { if (this.amCard) this.router.navigate(['/main-sidebar/zeo-assets/r/asset', this.amCard]); }
 
   async ngOnInit(): Promise<void> {
     this.id = +(this.route.snapshot.paramMap.get('id') || 0);
@@ -368,6 +380,7 @@ export class AssetDetailComponent implements OnInit {
     try {
       this.a = await this.api.get(`assets/${this.id}/`);
       this.bc = code39(this.a.barcode || this.a.code);
+      this.findAm();
       const q = { asset: this.id };
       const safe = (p: Promise<any>) => p.catch(() => []);
       const [h, f, al, tr, mt, sc, dm, ls] = await Promise.all([

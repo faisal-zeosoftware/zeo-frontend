@@ -1,4 +1,5 @@
 import { FlowService } from '../zeo-flow/flow.service';   // v1.29.0
+import { ZLocation, ZLocationService, ZLocationState } from '../shared-ui/z-location.service';   // v1.30.0
 import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 import { style } from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
@@ -80,7 +81,11 @@ export class MainSidebarComponent implements OnDestroy {
     private suites: ZSuiteService,
     private cloud: ZeoCloudService,
     private flow: FlowService,   // v1.29.0
+    private zloc: ZLocationService,   // v1.30.0 location level
   ) {
+    this.zloc.state$.subscribe(st => { this.locState = st; this.locGroups = this.zloc.groups(); });
+    this.zloc.selected$.subscribe(ids => (this.locSelected = ids));
+    this.zloc.current$.subscribe(id => (this.locCurrent = id));
     // v1.20.0: the main menu shows the modules of one app (HRMS, Projects or Settings)
     this.suites.suite$.subscribe(s => { this.suite = s; this.buildMenu(); });
     // v1.21.0: only the apps active in the company (Settings → Apps); an app switched off moves the user to an active one
@@ -309,11 +314,13 @@ export class MainSidebarComponent implements OnDestroy {
       if (schema) {
         this.loadAllNotifications(schema);
       }
+      this.zloc.load(schema, true).subscribe();   // v1.30.0: the locations of this company
     });
 
     this.EmployeeService.selectedBranches$.subscribe(branches => {
       this.selectedBranchIds = branches;
     });
+    this.zloc.load(this.selectedSchema).subscribe();
 
     this.hideButton = this.EmployeeService.getHideButton();
     this.buildMenu();
@@ -859,6 +866,34 @@ export class MainSidebarComponent implements OnDestroy {
     const url = this.router.url;
     if (!url || url.startsWith('/login')) { return; }
     this.router.navigateByUrl('/main-sidebar/_reload', { skipLocationChange: true }).then(() => this.router.navigateByUrl(url));
+  }
+
+  // ---------------------------------------------------------------- v1.30.0 location level switcher
+  locState: ZLocationState = { enabled: false, required: false, numbering: false, restrict: false, label: 'Location', locations: [], allowed: null, current: null, own: null };
+  locGroups: { branch_id: number | null; branch_name: string; items: ZLocation[] }[] = [];
+  locSelected: number[] = [];
+  locCurrent: number | null = null;
+
+  locToggle(l: ZLocation, ev: Event): void {
+    ev.stopPropagation();
+    this.zloc.toggle(l.id);
+    clearTimeout(this.applyTimer);
+    this.applyTimer = setTimeout(() => this.reopenPage(), 400);
+  }
+
+  locSetCurrent(l: ZLocation, ev: Event): void {
+    ev.stopPropagation();
+    this.zloc.setCurrent(l.id);
+    if (this.locSelected.length && !this.locSelected.includes(l.id)) { this.zloc.toggle(l.id); }
+    clearTimeout(this.applyTimer);
+    this.applyTimer = setTimeout(() => this.reopenPage(), 400);
+  }
+
+  locClear(ev: Event): void {
+    ev.stopPropagation();
+    this.zloc.clear();
+    clearTimeout(this.applyTimer);
+    this.applyTimer = setTimeout(() => this.reopenPage(), 400);
   }
 
   showsidebar: boolean = true;

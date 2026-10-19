@@ -11,7 +11,7 @@ import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 
 const API = () => `${environment.apiBaseUrl}/cloud/api`;
-const APP_TITLES: Record<string, string> = { hrms: 'HR', payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property', maintenance: 'Maintenance', hse: 'HSE' };
+const APP_TITLES: Record<string, string> = { hrms: 'HR', payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property', maintenance: 'Maintenance', assets: 'Asset Management', hse: 'HSE' };
 function err(e: any, fb: string): string { const b = e?.error; return b?.detail || (typeof b === 'string' && b.length < 300 ? b : fb); }
 
 /** v1.23.0 – Settings → Subscription (account owner): plan, status, usage against the limits, apps, companies, invoices, requests. */
@@ -93,7 +93,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 })
 export class CloudSubscriptionComponent implements OnInit, OnDestroy {
   a: any = null; msg = ''; bad = false; busy = false; asking = false;
-  appKeys = ['hrms', 'payroll', 'projects', 'crm', 'property', 'maintenance', 'hse'];
+  appKeys = ['hrms', 'payroll', 'projects', 'crm', 'property', 'maintenance', 'assets', 'hse'];
   whats = ['Bigger plan', 'More employees', 'More users', 'Another app', 'Extra company', 'More storage', 'Pay for a database', 'Enterprise (own servers)', 'Other'];   // v1.28.0 Enterprise always through Adept
   req = { what: 'Bigger plan', text: '' };
   private sub?: Subscription;

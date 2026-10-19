@@ -15,15 +15,19 @@ import { OrgHierarchyComponent } from './org-hierarchy.component';
 import { PolicyAckComponent } from './policy-ack.component';
 import { MyPoliciesComponent } from './my-policies.component';
 import { CountryPoliciesComponent } from './country-policies.component';
+import { LocationAccessComponent, LocationControlComponent, LocationNumberingComponent } from './location-level.component';   // v1.30.0
 import { COST_CENTER_ORG_PAGE, DIVISION_PAGE, EMPLOYMENT_TYPE_PAGE, GRADE_PAGE, LOCATION_PAGE, POSITION_PAGE, SECTION_PAGE } from './org-structure.config';
 
 /** menu item that only shows while its organisation setting is on */
-export interface OrgMenuItem extends ModuleMenuItem { org?: OrgKey; }
+export interface OrgMenuItem extends ModuleMenuItem { org?: OrgKey; fixed?: boolean; }   // fixed: label not renamed by the org label
 
 export const ORG_STRUCTURE_MENU: OrgMenuItem[] = [
   { path: 'settings', label: 'Settings', icon: 'tune', model: 'dept_master' },
   { path: 'employees', label: 'Employee organisation', icon: 'account_tree', model: 'emp_master' },
   { path: 'locations', label: 'Locations', icon: 'place', model: 'dept_master', org: 'locations' },
+  { path: 'location-level', label: 'Location level', icon: 'layers', model: 'dept_master', org: 'locations', fixed: true },   // v1.30.0
+  { path: 'location-access', label: 'Location access', icon: 'admin_panel_settings', model: 'dept_master', org: 'locations', fixed: true },
+  { path: 'location-numbering', label: 'Location numbering', icon: 'pin', model: 'dept_master', org: 'locations', fixed: true },
   { path: 'divisions', label: 'Divisions', icon: 'domain', model: 'dept_master', org: 'divisions' },
   { path: 'sections', label: 'Sections', icon: 'view_module', model: 'dept_master', org: 'sections' },
   { path: 'cost-centers', label: 'Cost centres', icon: 'savings', model: 'dept_master', org: 'cost_centers' },
@@ -59,7 +63,7 @@ export class OrgStructureOptionsComponent extends ModuleOptionsComponent impleme
         this.permsSvc.canView(i.model, i.selfService).subscribe(v => (this.visible[i.path] = v && on));
         const base = ORG_STRUCTURE_MENU.find(m => m.path === i.path)!.label;
         const lab = this.org.label(i.org, s);
-        i.label = lab && !base.toLowerCase().startsWith(lab.toLowerCase()) ? lab + (/(s|re)$/.test(lab) ? '' : 's') : base;
+        i.label = !i.fixed && lab && !base.toLowerCase().startsWith(lab.toLowerCase()) ? lab + (/(s|re)$/.test(lab) ? '' : 's') : base;
       }
     });
     this.org.load().subscribe();
@@ -84,6 +88,9 @@ export const ORG_STRUCTURE_ROUTES: Routes = [
       { path: 'settings', component: OrgSettingsComponent },
       { path: 'employees', component: OrgAssignComponent },
       page('locations', LOCATION_PAGE),
+      { path: 'location-level', component: LocationControlComponent },      // v1.30.0
+      { path: 'location-access', component: LocationAccessComponent },
+      { path: 'location-numbering', component: LocationNumberingComponent },
       page('divisions', DIVISION_PAGE),
       page('sections', SECTION_PAGE),
       page('cost-centers', COST_CENTER_ORG_PAGE),

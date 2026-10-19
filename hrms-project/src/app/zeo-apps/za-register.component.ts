@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0
 import { ZaApiService, ZaClient, appOf, base, day, money, stClass, today, when } from './za-api.service';
+import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
 
 /** One input of a kit form or action: text, number, date, choice, record picker (own app or a linked app), several records, yes/no,
  *  JSON lists (lines or a small table), a checklist to tick, inspection results. v1.18.0 */
@@ -13,6 +14,7 @@ import { ZaApiService, ZaClient, appOf, base, day, money, stClass, today, when }
   standalone: true,
   imports: [CommonModule, FormsModule],
   styleUrls: ['../expense/expense.css', './za.css'],
+  styles: ['.wide { grid-column: 1 / -1; } .za-items .hs-scroll { overflow-x: auto; }'],   // v1.33.0: wide inputs span the form (the form grid is in the parent component)
   template: `
 <ng-container [ngSwitch]="kind">
   <label *ngSwitchCase="'bool'" class="ck"><input type="checkbox" [ngModel]="!!value" (ngModelChange)="set($event)"> {{ f.label }}</label>
@@ -42,6 +44,58 @@ import { ZaApiService, ZaClient, appOf, base, day, money, stClass, today, when }
         <td><input type="number" [(ngModel)]="p.amount" (ngModelChange)="set(value)" style="width:110px"></td><td><input type="date" [(ngModel)]="p.due" (ngModelChange)="set(value)"></td>
         <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)">×</button></td></tr></table>
     <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ label: '', percent: null, amount: null, due: '' }]))">+ Add instalment</button>
+  </div>
+  <div *ngSwitchCase="'items'" class="wide za-items">
+    <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
+    <div class="hs-scroll"><table class="hs-table" zPlain>
+      <tr><th style="min-width:140px">Product</th><th style="min-width:120px">Description</th><th class="r">Qty</th><th>Unit</th><th class="r">Unit price</th><th class="r">Disc %</th><th>Tax</th><th class="r">Net</th><th></th></tr>
+      <tr *ngFor="let it of value || []; let i = index">
+        <td><select [(ngModel)]="it.product" (ngModelChange)="pick(it, $event)"><option [ngValue]="null">– free text –</option>
+          <option *ngFor="let o of opts" [ngValue]="o.id">{{ o.label }}</option></select></td>
+        <td><input [(ngModel)]="it.description" (ngModelChange)="set(value)" placeholder="Description"></td>
+        <td><input type="number" step="any" [(ngModel)]="it.qty" (ngModelChange)="set(value)" style="width:60px" class="r"></td>
+        <td><input [(ngModel)]="it.uom" (ngModelChange)="set(value)" style="width:52px" placeholder="PCS"></td>
+        <td><input type="number" step="any" [(ngModel)]="it.unit_price" (ngModelChange)="set(value)" style="width:88px" class="r"></td>
+        <td><input type="number" step="any" [(ngModel)]="it.discount_pct" (ngModelChange)="set(value)" style="width:56px" class="r"></td>
+        <td><select [(ngModel)]="it.tax" (ngModelChange)="set(value)" style="min-width:88px"><option [ngValue]="null">–</option>
+          <option *ngFor="let t of taxes" [ngValue]="t.id">{{ t.label }}</option></select></td>
+        <td class="r" style="white-space:nowrap">{{ lineNet(it) }}</td>
+        <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)" aria-label="Remove">×</button></td></tr>
+    </table></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ product: null, description: '', qty: 1, uom: '', unit_price: null, discount_pct: 0, tax: defaultTax() }]))">+ Add line</button>
+      <span class="hs-muted">Net before tax: <b>{{ netTotal() }}</b> · tax and totals are worked out on save</span>
+    </div>
+  </div>
+  <div *ngSwitchCase="'questions'" class="wide za-items">
+    <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
+    <div class="hs-scroll"><table class="hs-table" zPlain><tr><th>#</th><th style="min-width:260px">Question</th><th>Type</th><th style="min-width:140px">Options (A|B|C)</th><th>Required</th><th></th></tr>
+      <tr *ngFor="let q of value || []; let i = index"><td>{{ i + 1 }}</td><td><input [(ngModel)]="q.text" (ngModelChange)="set(value)"></td>
+        <td><select [(ngModel)]="q.type" (ngModelChange)="set(value)"><option value="rating">Rating 1–5</option><option value="yesno">Yes / no</option><option value="choice">Choice</option><option value="text">Free text</option></select></td>
+        <td><input [(ngModel)]="q.options" (ngModelChange)="set(value)" [disabled]="q.type !== 'choice'"></td>
+        <td style="text-align:center"><input type="checkbox" [(ngModel)]="q.required" (ngModelChange)="set(value)"></td>
+        <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)" aria-label="Remove">×</button></td></tr></table></div>
+    <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ text: '', type: 'rating', options: '', required: true }]))">+ Add question</button>
+  </div>
+  <div *ngSwitchCase="'fields'" class="wide za-items">
+    <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
+    <div class="hs-scroll"><table class="hs-table" zPlain><tr><th style="min-width:110px">Name (key)</th><th style="min-width:180px">Label</th><th>Type</th><th style="min-width:140px">Options (A|B|C)</th><th>Required</th><th></th></tr>
+      <tr *ngFor="let q of value || []; let i = index"><td><input [(ngModel)]="q.name" (ngModelChange)="set(value)" placeholder="reason"></td><td><input [(ngModel)]="q.label" (ngModelChange)="set(value)"></td>
+        <td><select [(ngModel)]="q.type" (ngModelChange)="set(value)"><option value="text">Text</option><option value="textarea">Long text</option><option value="number">Number</option><option value="date">Date</option><option value="choice">Choice</option><option value="yesno">Yes / no</option><option value="file">File</option></select></td>
+        <td><input [(ngModel)]="q.options" (ngModelChange)="set(value)" [disabled]="q.type !== 'choice'"></td>
+        <td style="text-align:center"><input type="checkbox" [(ngModel)]="q.required" (ngModelChange)="set(value)"></td>
+        <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)" aria-label="Remove">×</button></td></tr></table></div>
+    <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ name: 'field' + ((value || []).length + 1), label: '', type: 'text', options: '', required: false }]))">+ Add field</button>
+  </div>
+  <div *ngSwitchCase="'steps'" class="wide za-items">
+    <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
+    <div class="hs-scroll"><table class="hs-table" zPlain><tr><th>Done</th><th style="min-width:140px">Area</th><th style="min-width:220px">Action</th><th>Kind</th><th>Due</th><th></th></tr>
+      <tr *ngFor="let q of value || []; let i = index"><td style="text-align:center"><input type="checkbox" [(ngModel)]="q.done" (ngModelChange)="set(value)"></td>
+        <td><input [(ngModel)]="q.area" (ngModelChange)="set(value)"></td><td><input [(ngModel)]="q.action" (ngModelChange)="set(value)"></td>
+        <td><select [(ngModel)]="q.kind" (ngModelChange)="set(value)"><option value="training">Training</option><option value="coaching">Coaching</option><option value="project">Project / assignment</option><option value="reading">Reading / e-learning</option><option value="other">Other</option></select></td>
+        <td><input type="date" [(ngModel)]="q.due" (ngModelChange)="set(value)"></td>
+        <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)" aria-label="Remove">×</button></td></tr></table></div>
+    <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ area: '', action: '', kind: 'training', due: '', done: false }]))">+ Add action</button>
   </div>
   <div *ngSwitchCase="'checklist'" class="wide">
     <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
@@ -83,10 +137,17 @@ export class ZaFieldComponent implements OnChanges {
     }
     if (t.startsWith('opt:')) { this.kind = 'fk'; opt = t.slice(4); }
     else if (t.startsWith('opt-multi:')) { this.kind = 'm2m'; opt = t.slice(10); }
-    else if (t === 'json') this.kind = this.f.name === 'plan' ? 'plan' : 'lines';
+    else if (t === 'json') this.kind = this.f.name === 'plan' ? 'plan' : this.f.name === 'items' ? 'items' : ({ questions: 'questions', fields: 'fields', steps: 'steps' } as any)[this.f.name] || 'lines';
     else { this.kind = t; this.choices = this.f?.choices || []; if (t === 'fk' || t === 'm2m') opt = this.f.options; }
     if (this.kind === 'results' && !this.value && this.ctx?.results) this.set(JSON.parse(JSON.stringify(this.ctx.results)));
     if (this.kind === 'checklist' && !Array.isArray(this.value)) this.set((this.ctx?.checklist || []).map((c: any, i: number) => c.done ? i : -1).filter((i: number) => i >= 0));
+    if (['questions', 'fields', 'steps'].includes(this.kind)) { if (!Array.isArray(this.value)) this.set([]); return; }   // v1.36.0 People editors
+    if (this.kind === 'items') {   // v1.33.0 quotation / sales order lines
+      [this.opts, this.taxes] = await Promise.all([this.api.options('products').catch(() => []), this.api.options('tax-codes').catch(() => [])]);
+      this.prods = {};
+      if (!Array.isArray(this.value)) this.set([]);
+      return;
+    }
     if (opt) {
       const parent = this.ctx && this.kindOf ? `${this.kindOf}:${this.ctx.id}` : '';
       this.opts = await (parent && t.startsWith('opt') ? this.api.get(`options/${opt}/`, { parent }) : this.api.options(opt)).catch(() => []);
@@ -99,6 +160,27 @@ export class ZaFieldComponent implements OnChanges {
   toggle(id: number): void { const v = [...(this.value || [])]; const i = v.indexOf(id); i >= 0 ? v.splice(i, 1) : v.push(id); this.set(v); }
   filtered(): any[] { const q = this.filter.toLowerCase(); return q ? this.opts.filter(o => o.label.toLowerCase().includes(q) || o.id === this.value) : this.opts; }
   lines(t: string): string[] { return t.split('\n').map(x => x.trim()).filter(x => x); }
+
+  // v1.33.0 line items
+  taxes: any[] = [];
+  prods: Record<number, any> = {};
+  defaultTax(): number | null { const t = this.taxes.find(x => /default/i.test(x.label)) || this.taxes[0]; return t ? t.id : null; }
+  async pick(it: any, id: number | null): Promise<void> {
+    it.product = id;
+    if (id) {
+      try {
+        const p = this.prods[id] || (this.prods[id] = await this.api.get(`r/product/${id}/`));
+        it.description = p.description || p.name || it.description;
+        it.unit_price = p.sale_price;
+        it.uom = (p.uom_label || '').replace(/.*\((.*)\)$/, '$1') || it.uom;
+        it.tax = p.tax ?? it.tax;
+        it.product_label = p.name;
+      } catch { /* keep what was typed */ }
+    }
+    this.set(this.value);
+  }
+  lineNet(it: any): string { const g = Number(it.qty || 0) * Number(it.unit_price || 0); return money(g - g * Number(it.discount_pct || 0) / 100); }
+  netTotal(): string { return money((this.value || []).reduce((s: number, it: any) => s + Number(it.qty || 0) * Number(it.unit_price || 0) * (1 - Number(it.discount_pct || 0) / 100), 0)); }
 }
 
 /** Create / change form of a register. */
@@ -237,14 +319,15 @@ export class ZaActionComponent implements OnInit {
   }
 }
 
-const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order: 'status_label', unit: 'status_label', lease: 'status_label', reservation: 'status_label' };
+const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order: 'status_label', unit: 'status_label', lease: 'status_label', reservation: 'status_label',
+  lead: 'status_label', quotation: 'status_label', sales_order: 'status_label' };   // v1.33.0 leads, quotations and orders have a board too
 
 /** Any register of a kit app: list (table or board) with filters and Excel export; record page with details, workflow actions,
  *  linked records in the other apps, children, files and history. Route: /main-sidebar/<app>/r/<kind>[/<id>]. */
 @Component({
   selector: 'app-za-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZaFormComponent, ZaActionComponent, ZListDirective],
+  imports: [CommonModule, FormsModule, ZaFormComponent, ZaActionComponent, ZListDirective, ZaAssetSideComponent],
   styleUrls: ['../expense/expense.css', './za.css'],
   template: `
 <div class="container">
@@ -255,7 +338,9 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
         <div class="ex-head">
           <div><h1 class="page-title">{{ term(reg.plural) }}</h1><p class="ex-desc">{{ reg.help }}</p></div>
           <div class="ex-actions">
-            <span class="hs-tabs2" *ngIf="boardKey"><button type="button" [class.on]="!board" (click)="showBoard(false)">List</button><button type="button" [class.on]="board" (click)="showBoard(true)">Board</button></span>
+            <span class="hs-tabs2" *ngIf="boardKey || kind === 'activity'"><button type="button" [class.on]="!board && !cal" (click)="cal = false; showBoard(false)">List</button>
+              <button type="button" *ngIf="boardKey" [class.on]="board" (click)="cal = false; showBoard(true)">Board</button>
+              <button type="button" *ngIf="kind === 'activity'" [class.on]="cal" (click)="showCal()">Calendar</button></span>
             <button type="button" class="ex-btn primary" *ngIf="reg.can_create" (click)="creating = true">+ New {{ term(reg.label).toLowerCase() }}</button>
           </div>
         </div>
@@ -267,13 +352,24 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
       </div>
       <div class="com_list mt-4">
         <p class="ex-muted" *ngIf="loading">Loading…</p>
-        <div class="za-kanban" *ngIf="!loading && board">
+        <!-- v1.33.0 month calendar of activities (by due date) -->
+        <div *ngIf="!loading && cal" class="za-cal-wrap">
+          <div class="ex-head" style="margin-bottom:8px"><div><b>{{ calTitle() }}</b></div><div class="ex-actions">
+            <button type="button" class="ex-btn sm" (click)="calMove(-1)">‹</button><button type="button" class="ex-btn sm" (click)="calToday()">Today</button><button type="button" class="ex-btn sm" (click)="calMove(1)">›</button></div></div>
+          <div class="za-cal"><div class="h" *ngFor="let w of ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']">{{ w }}</div>
+            <div class="c" *ngFor="let c of calCells()" [class.off]="!c.inMonth" [class.today]="c.today">
+              <div class="n">{{ c.day }}</div>
+              <div class="e" *ngFor="let r of c.rows" (click)="open(r.id)" [class.done]="r.status === 'done'" [class.late]="r.status === 'open' && c.past" [title]="r.subject">
+                <span class="k">{{ (r.kind_label || '').slice(0, 1) }}</span> {{ r.subject }}<span class="t" *ngIf="r.due_at"> {{ r.due_at.slice(11, 16) }}</span></div></div></div>
+        </div>
+        <div class="za-kanban" *ngIf="!loading && board && !cal">
           <div class="za-col" *ngFor="let g of groups()"><h4>{{ g.key || '–' }} <span>{{ g.rows.length }}</span></h4>
             <div class="za-tile" *ngFor="let r of g.rows" (click)="open(r.id)"><b>{{ r._title }}</b><div class="m">{{ r._subtitle }}</div>
-              <div class="m" *ngIf="r.value">{{ money(r.value) }}</div><div class="m" *ngIf="r.owner_label">{{ r.owner_label }}</div>
+              <div class="m" *ngIf="r.value">{{ money(r.value) }}</div><div class="m" *ngIf="r.total">{{ money(r.total) }}</div><div class="m" *ngIf="r.owner_label">{{ r.owner_label }}</div>
+              <div class="m" *ngIf="r.score !== undefined"><span class="hs-b" [ngClass]="r.rating === 'hot' ? 'bad' : r.rating === 'warm' ? 'wait' : ''">{{ r.rating_label || '' }}</span> score {{ r.score }}</div>
               <div class="m" *ngIf="r.technician_label">{{ r.technician_label }}</div></div></div>
         </div>
-        <div class="hs-scroll" *ngIf="!loading && !board">
+        <div class="hs-scroll" *ngIf="!loading && !board && !cal">
           <ng-container *ngFor="let k of [reg.kind]">
           <!-- v1.22.0: the HRMS list – search, filters (Branch…), group by, export, columns, views, saved views -->
           <table class="hs-table za-list">
@@ -327,6 +423,25 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
               <table class="hs-table" zPlain><tr><th>Item</th><th>Result</th><th>Note</th><th class="r">Cost</th></tr>
                 <tr *ngFor="let r of d.results"><td>{{ r.item }}</td><td><span class="hs-b" [ngClass]="r.ok === true ? 'ok' : r.ok === false ? 'bad' : ''">{{ r.ok === true ? 'OK' : r.ok === false ? 'Not OK' : '–' }}</span></td>
                   <td>{{ r.note }}</td><td class="r">{{ r.cost ? money(r.cost) : '' }}</td></tr></table></div>
+            <!-- v1.36.0 People -->
+            <div class="hs-card" *ngIf="d.answers?.length"><h3>Answers</h3>
+              <dl class="hs-kv"><ng-container *ngFor="let a of d.answers"><dt>{{ a.label }}</dt><dd style="white-space:pre-wrap">{{ a.type === 'yesno' ? (a.value ? 'Yes' : 'No') : (a.value || '–') }}</dd></ng-container></dl></div>
+            <div class="hs-card" *ngIf="d.summary?.competencies?.length"><h3>360° summary <span class="hs-b ok" *ngIf="d.overall">overall {{ d.overall }}</span></h3>
+              <div class="hs-scroll"><table class="hs-table" zPlain><tr><th>Competency</th><th class="r">Self</th><th class="r">Manager</th><th class="r">Peers</th><th class="r">Reports</th><th class="r">Others</th><th class="r">Weighted</th></tr>
+                <tr *ngFor="let c of d.summary.competencies"><td>{{ c.name }} <span class="hs-muted">· {{ c.group }}</span></td><td class="r">{{ c.by_relation.self ?? '' }}</td><td class="r">{{ c.by_relation.manager ?? '' }}</td>
+                  <td class="r">{{ c.by_relation.peer ?? '' }}</td><td class="r">{{ c.by_relation.subordinate ?? '' }}</td><td class="r">{{ c.by_relation.customer ?? '' }}</td><td class="r"><b>{{ c.avg ?? '' }}</b></td></tr></table></div>
+              <div class="hs-kv3" style="margin-top:10px"><div *ngFor="let k of objKeys(d.summary.counts)"><small>{{ d.summary.counts[k].label }}</small><b>{{ d.summary.counts[k].done }} / {{ d.summary.counts[k].total }} answered</b></div></div>
+              <h4 *ngIf="d.summary.strengths?.length" style="margin:12px 0 4px">Strengths</h4><div class="hs-ev" *ngFor="let x of d.summary.strengths"><div class="t">{{ x.text }}</div><div class="m">{{ x.who || x.relation }}</div></div>
+              <h4 *ngIf="d.summary.improve?.length" style="margin:12px 0 4px">What could improve</h4><div class="hs-ev" *ngFor="let x of d.summary.improve"><div class="t">{{ x.text }}</div><div class="m">{{ x.who || x.relation }}</div></div>
+              <h4 *ngIf="d.summary.answers?.length" style="margin:12px 0 4px">Open questions</h4><div class="hs-ev" *ngFor="let x of d.summary.answers"><div class="t"><i>{{ x.q }}</i><br>{{ x.text }}</div><div class="m">{{ x.who || x.relation }}</div></div></div>
+            <div class="hs-card" *ngIf="d.steps?.length"><h3>Actions · {{ d.progress || 0 }}%</h3><div class="za-bar"><span [style.width.%]="d.progress || 0"></span></div>
+              <div class="za-check" *ngFor="let x of d.steps" style="margin-top:6px"><span>{{ x.done ? '☑' : '☐' }}</span> <b>{{ x.area }}</b> – {{ x.action }} <span class="hs-muted">{{ x.kind }}{{ x.due ? ' · due ' + dd(x.due) : '' }}</span></div></div>
+            <div class="hs-card" *ngIf="d.questions?.length && kind === 'survey'"><h3>Questions</h3><ol style="padding-left:18px;font-size:13.5px"><li *ngFor="let q of d.questions">{{ q.text }} <span class="hs-muted">({{ q.type }})</span></li></ol></div>
+            <div class="hs-card" *ngIf="d.items?.length"><h3>Lines</h3>
+              <div class="hs-scroll"><table class="hs-table" zPlain><tr><th>#</th><th>Product / description</th><th class="r">Qty</th><th>Unit</th><th class="r">Unit price</th><th class="r">Disc %</th><th class="r">Tax %</th><th class="r">Net</th><th class="r">Total</th></tr>
+                <tr *ngFor="let l of d.items; let i = index"><td>{{ i + 1 }}</td><td><b>{{ l.product_label }}</b><div class="hs-muted" *ngIf="l.description && l.description !== l.product_label">{{ l.description }}</div>
+                  <span class="hs-b bad" *ngIf="l.below_min">below minimum price</span></td>
+                  <td class="r">{{ l.qty }}</td><td>{{ l.uom }}</td><td class="r">{{ money(l.unit_price) }}</td><td class="r">{{ l.discount_pct || '' }}</td><td class="r">{{ l.tax_rate }}</td><td class="r">{{ money(l.net) }}</td><td class="r">{{ money(l.total) }}</td></tr></table></div></div>
             <div class="hs-card" *ngIf="d.lines?.length"><h3>Statement lines</h3>
               <table class="hs-table" zPlain><tr><th>Date</th><th>Unit</th><th>Line</th><th class="r">Amount</th></tr>
                 <tr *ngFor="let l of d.lines"><td>{{ dd(l.date) }}</td><td>{{ l.unit }}</td><td>{{ l.text }}</td><td class="r" [style.color]="l.amount < 0 ? '#b42318' : null">{{ money(l.amount) }}</td></tr></table></div>
@@ -341,6 +456,29 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
             </div>
           </div>
           <div class="hs-side">
+            <za-asset-side *ngIf="app === 'zeo-assets'" [kind]="kind" [d]="d" [api]="api" style="display:contents"></za-asset-side>
+            <div class="hs-card" *ngIf="d.sign_page || d.take_page || d.results_page || d.my_sheet || d.points_available !== undefined || d.rate !== undefined"><h3>{{ kind === 'survey' ? 'Survey' : kind === 'review_360' ? 'Review' : kind === 'reward' ? 'Points' : 'Signing' }}</h3>
+              <div class="hs-kv3" *ngIf="d.rate !== undefined"><div><small>Responses</small><b>{{ d.responses }} / {{ d.invited }}</b></div><div><small>Rate</small><b>{{ d.rate }}%</b></div><div><small>Questions</small><b>{{ d.question_count }}</b></div></div>
+              <div class="hs-kv3" *ngIf="d.reviewers_total !== undefined"><div><small>Reviewers answered</small><b>{{ d.reviewers_done }} / {{ d.reviewers_total }}</b></div></div>
+              <p *ngIf="d.points_available !== undefined">Available: <b>{{ d.points_available }}</b> points</p>
+              <div class="hs-acts" style="margin-top:6px">
+                <button type="button" class="ex-btn primary sm" *ngIf="d.can_sign && d.sign_page" (click)="go(d.sign_page)">Sign now</button>
+                <button type="button" class="ex-btn sm" *ngIf="d.signed_file" (click)="api.file('sign/' + id + '/document/', d.number + '-signed.pdf', { signed: 1 })">Signed PDF</button>
+                <button type="button" class="ex-btn primary sm" *ngIf="d.can_take && d.take_page" (click)="go(d.take_page)">Take the survey</button>
+                <button type="button" class="ex-btn sm" *ngIf="d.results_page && reg.manages" (click)="go(d.results_page)">Results</button>
+                <button type="button" class="ex-btn primary sm" *ngIf="d.my_sheet" (click)="go(d.my_sheet)">Give my review</button></div>
+              <p class="hs-muted" *ngIf="d.public_link" style="font-size:12px;margin-top:6px">Outside signer link: {{ d.public_link }}</p></div>
+            <div class="hs-card" *ngIf="d.totals"><h3>Totals · {{ d.totals.currency }}</h3>
+              <dl class="hs-kv"><dt>Subtotal</dt><dd>{{ money(d.totals.subtotal) }}</dd><dt *ngIf="d.totals.discount">Discount</dt><dd *ngIf="d.totals.discount">-{{ money(d.totals.discount) }}</dd>
+                <dt>Tax</dt><dd>{{ money(d.totals.tax) }}</dd><dt><b>Total</b></dt><dd><b>{{ money(d.totals.total) }}</b></dd></dl>
+              <p class="hs-note err" *ngIf="d.approval_note && d.status === 'approval'">{{ d.approval_note }}</p>
+              <button type="button" class="ex-btn sm" *ngIf="d.pdf" (click)="pdf()" style="margin-top:6px">PDF</button></div>
+            <div class="hs-card" *ngIf="d.attainment"><h3>Attainment</h3>
+              <div class="hs-kv3"><div><small>Target</small><b>{{ money(d.attainment.target) }}</b></div><div><small>Actual</small><b>{{ money(d.attainment.actual) }}</b></div>
+                <div><small>%</small><b [style.color]="d.attainment.pct >= 100 ? '#1f7a4d' : null">{{ d.attainment.pct }}%</b></div></div>
+              <div class="za-bar"><span [style.width.%]="d.attainment.pct > 100 ? 100 : d.attainment.pct"></span></div></div>
+            <div class="hs-card" *ngIf="d.forecast"><h3>Forecast</h3>
+              <div class="hs-kv3"><div><small>Probability</small><b>{{ d.forecast.probability }}%</b></div><div><small>Weighted</small><b>{{ money(d.forecast.weighted) }}</b></div></div></div>
             <div class="hs-card" *ngIf="d.money"><h3>Money</h3>
               <div class="hs-kv3"><div><small>Billed</small><b>{{ money(d.money.billed) }}</b></div><div><small>Paid</small><b>{{ money(d.money.paid) }}</b></div>
                 <div><small>Overdue</small><b [style.color]="d.money.overdue ? '#b42318' : null">{{ money(d.money.overdue) }}</b></div></div></div>
@@ -479,11 +617,35 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
 
   stageOpts: any[] = [];
 
+  // v1.33.0 calendar of activities
+  cal = false;
+  calMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  async showCal(): Promise<void> { this.cal = true; this.board = false; this.openOnly = false; await this.load(); }
+  calTitle(): string { return this.calMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }); }
+  calMove(n: number): void { this.calMonth = new Date(this.calMonth.getFullYear(), this.calMonth.getMonth() + n, 1); }
+  calToday(): void { this.calMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1); }
+  calCells(): any[] {
+    const first = new Date(this.calMonth.getFullYear(), this.calMonth.getMonth(), 1);
+    const start = new Date(first); start.setDate(first.getDate() - ((first.getDay() + 6) % 7));
+    const t = new Date(); const tk = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    const byDay: Record<string, any[]> = {};
+    for (const r of this.rows) { if (r.due_at) { const k = String(r.due_at).slice(0, 10); (byDay[k] = byDay[k] || []).push(r); } }
+    const out: any[] = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i);
+      const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      out.push({ day: d.getDate(), inMonth: d.getMonth() === this.calMonth.getMonth(), today: k === tk, past: k < tk,
+        rows: (byDay[k] || []).sort((a, b) => String(a.due_at).localeCompare(String(b.due_at))) });
+    }
+    return out;
+  }
+
   columns(): string[] {
     if (this.kind === 'opportunity') {
       const p = (this.fopts['pipeline'] || []).find(x => String(x.id) === String(this.flt['pipeline']));
       return p ? this.stageOpts.filter(s => s.label.startsWith(p.label + ' ›')).map(s => s.label) : [];
     }
+    if (this.kind === 'lead') return ['New', 'Working', 'Nurturing', 'Qualified', 'Converted', 'Disqualified'].filter(l => !this.openOnly || !['Converted', 'Disqualified'].includes(l));
     const st = (this.reg?.filters || []).find((f: any) => f.name === 'status');
     return st ? st.choices.map((c: any) => c.label).filter((l: string) => !this.openOnly || !['Closed', 'Cancelled', 'Lost', 'Ended', 'Expired'].includes(l)) : [];
   }
@@ -516,14 +678,15 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
   viewFields(): any[] {
     const seen = new Set<string>();
     return [...this.reg.cols, ...this.reg.form, ...(this.d?.info || [])]
-      .filter((f: any) => f.type !== 'json' && f.name !== 'status' && f.name !== 'review_status' && !seen.has(f.name) && seen.add(f.name)
+      .filter((f: any) => (f.type !== 'json' || f.name === 'tags') && f.name !== 'status' && f.name !== 'review_status' && !seen.has(f.name) && seen.add(f.name)
         && (f.required || this.show(this.d, f) !== ''));   // empty optional fields are left out of the record page
   }
 
   linkList(): { k: string; v: string }[] {
     const l = this.d?.links || {};
     const names: Record<string, string> = { unit: 'Unit', reservation: 'Reservation', renewal_lease: 'Lease to renew', inspection: 'Inspection',
-      crm: 'CRM opportunity', bill: 'Billing record', first_contact_due: 'First contact due', first_contacted_at: 'First contact' };
+      crm: 'CRM opportunity', bill: 'Billing record', first_contact_due: 'First contact due', first_contacted_at: 'First contact',
+      previous: 'Revised from', sales_order: 'Sales order', quotation: 'Quotation', sign_request: 'Signature' };
     return Object.entries(l).filter(([k, v]) => v && k !== 'late').map(([k, v]) => ({ k: names[k] || k, v: /_(due|at)$/.test(k) ? when(v) : String(v) }));
   }
 
@@ -554,6 +717,15 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
     if (!fl?.length) return;
     try { this.d = await this.api.post(`r/${this.kind}/${this.id}/files/`, ZaApiService.form({ portal }, Array.from(fl))); this.ok = 'File attached.'; }
     catch (e) { this.msg = ZaApiService.error(e); }
+  }
+
+  go(url: string): void { this.router.navigateByUrl(url); }   // v1.36.0
+  objKeys(o: any): string[] { return Object.keys(o || {}); }
+
+  pdf(): void {   // v1.33.0 quotation / sales order PDF
+    const name = `${this.d?.number || this.kind}.pdf`;
+    const path = this.kind === 'quotation' ? `quotation/${this.id}/pdf/` : `sales-order/${this.id}/pdf/`;
+    this.api.file(path, name).catch(e => this.msg = ZaApiService.error(e));
   }
 
   excel(): void {

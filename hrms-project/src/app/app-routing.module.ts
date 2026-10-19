@@ -128,6 +128,8 @@ import { ResignationApprovedListComponent } from './resignation-approved-list/re
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
 import { FinalSettlementComponent } from './payroll-plus/final-settlement.component';   // v1.18.0
 import { PayrollControlsComponent } from './payroll-plus/payroll-controls.component';   // v1.18.0
+import { StatutorySchemesComponent } from './payroll-plus/statutory-schemes.component';   // v1.31.0
+import { AccountingComponent } from './payroll-plus/accounting.component';   // v1.35.0
 import { GratuityComponent } from './gratuity/gratuity.component';
 import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
 import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
@@ -617,6 +619,8 @@ const routes: Routes = [
             component: WpsComponent,
           },
           { path: 'payroll-controls', component: PayrollControlsComponent },   // v1.18.0
+          { path: 'statutory-schemes', component: StatutorySchemesComponent },   // v1.31.0
+          { path: 'accounting', component: AccountingComponent },   // v1.35.0 accounting integration
 
           {
             path: 'advance-salary-approval-level',

@@ -8,11 +8,13 @@ export const ZA_APPS: Record<string, { title: string; icon: string }> = {
   'zeo-crm': { title: 'CRM', icon: 'handshake' },
   'zeo-property': { title: 'Property', icon: 'apartment' },
   'zeo-maintenance': { title: 'Maintenance', icon: 'build' },
+  'zeo-assets': { title: 'Asset Management', icon: 'inventory_2' },   // v1.33.0
+  'zeo-people': { title: 'People', icon: 'diversity_3' },   // v1.36.0
 };
 
 /** The app (slug) of a page URL: /main-sidebar/zeo-crm/... → zeo-crm. */
 export function appOf(url: string): string {
-  const m = /\/(zeo-crm|zeo-property|zeo-maintenance)(\/|$|\?)/.exec(url || '');
+  const m = /\/(zeo-crm|zeo-property|zeo-maintenance|zeo-assets|zeo-people)(\/|$|\?)/.exec(url || '');
   return m ? m[1] : 'zeo-crm';
 }
 
@@ -44,6 +46,9 @@ export class ZaClient {
   registers(refresh = false): Promise<any[]> { return this.cached('regs', 'registers/', refresh); }
   options(name: string, refresh = false): Promise<any[]> { return this.cached('opt:' + name, `options/${name}/`, refresh); }
   clear(): void { this.cache = {}; }
+
+  /** v1.33.0: a file from the API as a Blob (PDF labels, floor plan images). */
+  blob(path: string, query: Record<string, any> = {}): Promise<Blob> { return firstValueFrom(this.http.get(this.url(path, query), { responseType: 'blob' })); }
 
   async file(path: string, name: string, query: Record<string, any> = {}): Promise<void> {
     const blob = await firstValueFrom(this.http.get(this.url(path, query), { responseType: 'blob' }));
@@ -95,9 +100,17 @@ export const money = (v: any): string => (v === null || v === undefined || v ===
 /** Status → badge colour class (za.css / hs-b). */
 export function stClass(s: string): string {
   if (!s) return '';
-  if (['closed', 'approved', 'won', 'done', 'paid', 'cleared', 'settled', 'active', 'let', 'sold', 'signed', 'handed_over', 'accepted', 'posted', 'reviewed', 'available', 'converted', 'issued_ok', 'working'].includes(s)) return 'ok';
-  if (['lost', 'rejected', 'cancelled', 'bounced', 'void', 'expired', 'terminated', 'faulty', 'no_show'].includes(s)) return 'bad';
-  if (['approval', 'pending', 'to_review', 'quoting', 'notice', 'reserved', 'draft', 'scheduled', 'planned', 'sent', 'part_paid', 'on_hold', 'received', 'inspected'].includes(s)) return 'wait';
-  if (['open', 'new', 'assigned', 'in_progress', 'deposited', 'issued', 'maintenance'].includes(s)) return 'work';
+  if (['found', 'confirmed', 'returned'].includes(s)) return 'ok';                       // v1.33.0 Asset Management
+  if (['missing', 'damaged', 'disposed', 'reversed'].includes(s)) return 'bad';
+  if (['cwip', 'review', 'misplaced', 'unexpected', 'requested'].includes(s)) return 'wait';
+  if (['counting', 'checked_out', 'handed_over'].includes(s)) return 'work';
+  if (['waiting', 'resolved'].includes(s)) return 'wait';   // v1.34.0
+  if (['published', 'shared', 'given', 'ended'].includes(s)) return 'ok';   // v1.36.0 People
+  if (['requested', 'submitted', 'nurture', 'collecting'].includes(s)) return 'wait';
+  if (['declined', 'dropped'].includes(s)) return 'bad';
+  if (['closed', 'approved', 'won', 'done', 'paid', 'cleared', 'settled', 'active', 'let', 'sold', 'signed', 'handed_over', 'accepted', 'posted', 'reviewed', 'available', 'converted', 'issued_ok', 'working', 'delivered', 'invoiced', 'qualified'].includes(s)) return 'ok';
+  if (['lost', 'rejected', 'cancelled', 'bounced', 'void', 'expired', 'terminated', 'faulty', 'no_show', 'disqualified'].includes(s)) return 'bad';
+  if (['approval', 'pending', 'to_review', 'quoting', 'notice', 'reserved', 'draft', 'scheduled', 'planned', 'sent', 'part_paid', 'on_hold', 'received', 'inspected', 'nurture'].includes(s)) return 'wait';
+  if (['open', 'new', 'assigned', 'in_progress', 'deposited', 'issued', 'maintenance', 'confirmed', 'progress'].includes(s)) return 'work';
   return '';
 }

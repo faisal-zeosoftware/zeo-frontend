@@ -329,6 +329,9 @@
                 </div>
               </div>
             </div>
+            <!-- v1.30.0 location level: the locations of the selected branches -->
+            <ng-container *ngTemplateOutlet="locPicker"></ng-container>
+
           </div>
         </div>
       </li>
@@ -627,6 +630,9 @@
                 </div>
               </div>
             </div>
+            <!-- v1.30.0 location level: the locations of the selected branches -->
+            <ng-container *ngTemplateOutlet="locPicker"></ng-container>
+
           </div>
         </div>
       </div>
@@ -693,3 +699,30 @@
 <div class="loader-container" [class.show]="isLoading">
   <div class="loader"></div>
 </div>
+
+<!-- v1.30.0 location level: switcher template (desktop and mobile dropdown) -->
+<ng-template #locPicker>
+  <div class="loc-picker" *ngIf="locState.enabled && locGroups.length">
+    <div class="menu-header loc-head">
+      <mat-icon style="color:#b8730f">place</mat-icon>
+      <span>{{ locState.label | t }}s</span>
+      <a class="loc-all" *ngIf="locSelected.length" (click)="locClear($event)">{{ 'All' | t }}</a>
+    </div>
+    <div class="loc-groups">
+      <ng-container *ngFor="let g of locGroups">
+        <div class="loc-branch" *ngIf="!selectedBranchIds.length || g.branch_id == null || selectedBranchIds.includes(g.branch_id)">
+          <div class="loc-branch-name">{{ g.branch_name }}</div>
+          <div class="branch-option loc-option" *ngFor="let l of g.items" (click)="locToggle(l, $event)" [class.loc-current]="locCurrent === l.id">
+            <div class="branch-left d-flex align-items-center gap-2">
+              <mat-icon style="color:blue" class="check-box">{{ locSelected.includes(l.id) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+              <span class="branch-name" [class.selected-text]="locSelected.includes(l.id)">{{ l.name }}</span>
+            </div>
+            <button type="button" class="loc-work" [class.on]="locCurrent === l.id" (click)="locSetCurrent(l, $event)"
+                    [title]="'New records are made in this location' | t">{{ locCurrent === l.id ? ('Working here' | t) : ('Work here' | t) }}</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <p class="loc-hint">{{ 'Ticked locations filter every list; the working location is used for new records and their document numbers.' | t }}</p>
+  </div>
+</ng-template>

@@ -97,7 +97,7 @@ export function renderAnswer(md: string): string {
       <div class="za-empty" *ngIf="!msgs.length">
         <p class="za-lead" *ngIf="suite === 'hrms' || suite === 'settings' || !suite">Ask about employees, leave, attendance, payroll, loans, documents, assets, requests, appraisals, recruitment or training.</p>
         <p class="za-lead" *ngIf="suite === 'hse'">Ask about incidents, near misses, permits to work, risk assessments, inspections, corrective actions and audits.</p>
-        <p class="za-lead" *ngIf="suite === 'crm' || suite === 'property' || suite === 'maintenance'">Ask about employees, payroll, projects and HSE. Records of this app are in its home page and lists.</p>
+        <p class="za-lead" *ngIf="suite === 'crm' || suite === 'property' || suite === 'maintenance' || suite === 'assets' || suite === 'people'">Ask about employees, payroll, projects and HSE. Records of this app are in its home page and lists.</p>
         <p class="za-lead" *ngIf="suite === 'projects'">Ask about support tickets, SLA, AMC contracts and renewals, projects, milestones, tasks and work logs.</p>
         <button type="button" class="za-sug" *ngFor="let s of suggestions" (click)="send(s)">{{ s }}</button>
       </div>

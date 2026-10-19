@@ -12,8 +12,8 @@ import { ZCloudDatabasesComponent } from './databases.component';
 
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 const API = () => `${environment.apiBaseUrl}/cloud/api/console`;
-const TITLES: Record<string, string> = { hrms: 'HR', payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property', maintenance: 'Maintenance', hse: 'HSE' };
-const PAID = ['payroll', 'projects', 'crm', 'property', 'maintenance', 'hse'];
+const TITLES: Record<string, string> = { hrms: 'HR', payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property', maintenance: 'Maintenance', assets: 'Asset Management', hse: 'HSE' };
+const PAID = ['payroll', 'projects', 'crm', 'property', 'maintenance', 'assets', 'hse'];
 function err(e: any, fb: string): string { const b = e?.error; return b?.detail || (typeof b === 'string' && b.length < 300 ? b : fb); }
 
 /**

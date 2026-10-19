@@ -24,15 +24,17 @@ export interface MenuApp {
   country?: string;              // v1.14.0: country condition, like MenuItem.country
 }
 /** v1.20.0: the three apps of ZEO – HRMS, Projects and Settings. 'common' apps (Calendar, My To-do) appear in each of them. */
-export type Suite = 'hrms' | 'projects' | 'crm' | 'property' | 'maintenance' | 'hse' | 'settings' | 'common';
+export type Suite = 'hrms' | 'projects' | 'crm' | 'property' | 'maintenance' | 'assets' | 'people' | 'hse' | 'settings' | 'common';
 export interface SuiteDef { key: Exclude<Suite, 'common'>; label: string; icon: string; hint: string; }
 export const SUITES: SuiteDef[] = [
   { key: 'hrms', label: 'HRMS', icon: 'groups', hint: 'People, time, pay, assets and talent' },
   { key: 'projects', label: 'Projects', icon: 'account_tree', hint: 'Support tickets, customers and AMC, delivery' },
   // v1.21.0: CRM, Property, Maintenance and HSE – each works on its own; when two are active their links switch on
-  { key: 'crm', label: 'CRM', icon: 'handshake', hint: 'Contacts, pipelines, opportunities, viewings, offers' },
+  { key: 'crm', label: 'CRM', icon: 'handshake', hint: 'Leads, accounts, opportunities, quotations, sales orders' },
   { key: 'property', label: 'Property', icon: 'apartment', hint: 'Buildings, units, leases, sales, billing, portals' },
   { key: 'maintenance', label: 'Maintenance', icon: 'build', hint: 'Work orders, preventive plans, assets, inspections' },
+  { key: 'assets', label: 'Asset Management', icon: 'inventory_2', hint: 'Asset register, labels, counts, depreciation, maintenance, helpdesk, spare parts' },   // v1.33.0
+  { key: 'people', label: 'People', icon: 'diversity_3', hint: 'Benefits, e-signature, forms, surveys, recognition, chat, 360° reviews' },   // v1.36.0
   { key: 'hse', label: 'HSE', icon: 'health_and_safety', hint: 'Risk, permits, incidents, inspections, CAPA' },
   { key: 'settings', label: 'Settings', icon: 'settings', hint: 'Company, branches, users and rights, e-mail' },
 ];
@@ -44,6 +46,7 @@ const H = '/main-sidebar/zeo-hse/';        // v1.21.0 HSE app (add-on 1.17.0, me
 const CRM = '/main-sidebar/zeo-crm/';      // v1.21.0 CRM app (add-on 1.18.0, merged)
 const PR = '/main-sidebar/zeo-property/';  // v1.21.0 Property app
 const MN = '/main-sidebar/zeo-maintenance/';   // v1.21.0 Maintenance app
+const AM = '/main-sidebar/zeo-assets/';        // v1.33.0 Asset Management app
 // role permissions (codenames on each app's settings model, given by the "<App> – <role>" permission groups)
 const HSE_STAFF = ['hse_manager', 'hse_officer', 'hse_site_manager', 'hse_permit_issuer', 'hse_area_authority', 'hse_gas_tester', 'hse_supervisor',
                    'hse_occ_health', 'hse_quality_manager', 'hse_env_officer', 'hse_infection_control', 'hse_auditor', 'hse_moc_coordinator', 'hse_senior_mgmt'];
@@ -51,6 +54,15 @@ const HSE_ENV = ['hse_env_officer', 'hse_manager', 'hse_officer', 'hse_senior_mg
 const CRM_ALL = ['crm_manager', 'crm_team_lead', 'crm_agent', 'crm_viewer'];
 const PROP_ALL = ['prop_manager', 'prop_leasing', 'prop_sales', 'prop_contracts', 'prop_finance', 'prop_commission', 'prop_viewer'];
 const MNT_ALL = ['mnt_manager', 'mnt_coordinator', 'mnt_technician', 'mnt_viewer'];
+const AST_ALL = ['ast_manager', 'ast_coordinator', 'ast_finance', 'ast_auditor', 'ast_viewer'];
+const PP = '/main-sidebar/zeo-people/';        // v1.36.0 People app
+const PP_STAFF = ['ppl_manager', 'ppl_benefits', 'ppl_hr', 'ppl_viewer'];
+const PP_HR = ['ppl_manager', 'ppl_hr'];
+const AST_OPS = ['ast_manager', 'ast_coordinator'];
+const AST_MNT = ['ast_manager', 'ast_maint_planner', 'ast_coordinator', 'ast_technician', 'ast_viewer'];   // v1.34.0 release 2
+const AST_DESK = ['ast_manager', 'ast_helpdesk', 'ast_maint_planner', 'ast_coordinator', 'ast_technician', 'ast_viewer'];
+const AST_STORE = ['ast_manager', 'ast_storekeeper', 'ast_maint_planner', 'ast_technician', 'ast_coordinator', 'ast_viewer', 'ast_finance'];
+const AST_FIN = ['ast_manager', 'ast_finance', 'ast_viewer', 'ast_auditor'];
 const RC = '/main-sidebar/report-options/r/';
 const PJ_SUPPORT = ['view_ticket', 'work_ticket', 'assign_ticket'];
 const PJ_ANY = ['view_ticket', 'work_ticket', 'assign_ticket', 'view_amccontract', 'view_project', 'view_projectprofile', 'view_projectfinance'];   // v1.22.0: reports of every app in the HRMS report centre
@@ -260,8 +272,12 @@ export const MAIN_GROUPS: MenuGroup[] = [
         sections: [
           { title: 'Daily work', items: [
             { label: 'Payroll runs', link: M + 'salary-options/pay-roll', icon: 'payments', perms: ['view_payrollrun'] },
+            { label: 'AI payroll auditor', hint: 'Audit a run before approval – every exception explained', link: M + 'zeo-ai/payroll-auditor', icon: 'fact_check', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.37.0
             { label: 'Payslip approvals', link: M + 'salary-options/payslip-approval', icon: 'receipt_long', perms: ['view_payslipapproval', 'approver_payslipapproval'] },
             { label: 'WPS file', link: M + 'salary-options/wps', icon: 'account_balance', perms: ['view_wps'], country: 'wps_sif' },   // v1.14.0
+          ] },
+          { title: 'Accounting', items: [   // v1.35.0
+            { label: 'Accounting journals', hint: 'Odoo, Zoho Books, Excel / CSV, ZEO API – department and employee posting', link: M + 'salary-options/accounting', icon: 'account_balance_wallet', perms: ['view_accounting', 'post_accounting', 'manage_accounting'] },
           ] },
           { title: 'Salaries', items: [
             { label: 'Employee salary', link: M + 'salary-options/employee-salary', icon: 'badge', perms: ['view_employeesalarystructure'] },
@@ -272,6 +288,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Salary structures', link: M + 'salary-options/salary-structure', icon: 'account_tree', perms: ['view_salarycomponent'] },
             { label: 'Approval levels', link: M + 'salary-options/payroll-approval-level', icon: 'approval', perms: ['view_payslipcommonworkflow'] },
             { label: 'Payroll controls', hint: 'Segregation of duties, WPS and settlement deadlines', link: M + 'salary-options/payroll-controls', icon: 'admin_panel_settings', perms: ['change_payrollplussettings', 'view_payrollplussettings', 'change_payrollrun'] },   // v1.18.0
+            { label: 'Statutory schemes', hint: 'Social security, PF, ESI, tax of the company country', link: M + 'salary-options/statutory-schemes', icon: 'account_balance', perms: ['view_salarycomponent', 'change_payrollplussettings'] },   // v1.31.0
           ] },
         ],
       },
@@ -351,6 +368,23 @@ export const MAIN_GROUPS: MenuGroup[] = [
           ] },
         ],
       },
+    ],
+  },
+  {
+    title: 'AI assistants', apps: [   // v1.37.0: built-in assistants on the company's own records – advise, never decide
+      { key: 'ai', label: 'AI assistants', icon: 'auto_awesome', parents: ['zeo-ai'], sections: [
+        { title: 'Assistants', items: [
+          { label: 'Payroll auditor', hint: 'Unusual changes, duplicates, missing deductions – before approval', link: M + 'zeo-ai/payroll', icon: 'fact_check', perms: ['view_payrollrun', 'change_payrollrun'] },
+          { label: 'Attendance & shifts', hint: 'Repeated lates, coverage gaps, overtime forecast, replacements, roster', link: M + 'zeo-ai/attendance', icon: 'schedule' },
+          { label: 'Recruitment', hint: 'CV reading, skill match, job descriptions, interview questions, time-to-hire', link: M + 'zeo-ai/recruitment', icon: 'person_search', perms: ['view_candidate', 'view_application', 'view_jobopening'] },
+          { label: 'Performance & development', hint: 'Review summaries, skill gaps, courses, objectives, development plans', link: M + 'zeo-ai/performance', icon: 'school' },
+          { label: 'Workforce analytics', hint: 'Headcount and budget forecasts, turnover hot-spots, hiring needs, cost comparison, questions', link: M + 'zeo-ai/workforce', icon: 'insights' },
+        ] },
+        { title: 'Setup', collapsed: true, items: [
+          { label: 'Assistant settings', hint: 'Thresholds and approval gate', link: M + 'zeo-ai/settings', icon: 'tune', perms: ['change_payrollrun', 'view_payrollrun'] },
+          { label: 'External AI (optional)', link: M + 'settings/ai-settings', icon: 'smart_toy', perms: ['*admin'] },
+        ] },
+      ] },
     ],
   },
   {
@@ -584,35 +618,74 @@ export const MAIN_GROUPS: MenuGroup[] = [
       ] },
       { key: 'crm-sales', label: 'Sales', icon: 'trending_up', sections: [
         { title: 'Sales', items: [
+          { label: 'Leads', hint: 'New enquiries – score, qualify, convert', link: CRM + 'r/lead', icon: 'person_add', perms: CRM_ALL },
           { label: 'Opportunities', hint: 'List or board by stage', link: CRM + 'r/opportunity', icon: 'trending_up', perms: CRM_ALL },
-          { label: 'Contacts', link: CRM + 'r/contact', icon: 'contacts', perms: CRM_ALL },
-          { label: 'Activities', hint: 'Calls, e-mails, meetings, tasks', link: CRM + 'r/activity', icon: 'call', perms: CRM_ALL },
+          { label: 'Quotations', hint: 'Priced offers with product lines', link: CRM + 'r/quotation', icon: 'request_quote', perms: CRM_ALL },
+          { label: 'Sales orders', link: CRM + 'r/sales_order', icon: 'shopping_cart', perms: CRM_ALL },
+          { label: 'Activities', hint: 'Calls, e-mails, meetings, tasks – list or calendar', link: CRM + 'r/activity', icon: 'call', perms: CRM_ALL },
+          { label: 'Sales targets', link: CRM + 'r/target', icon: 'flag', perms: CRM_ALL },
+        ] },
+        { title: 'Customers', items: [
+          { label: 'Accounts', hint: 'Companies you sell to', link: CRM + 'r/account', icon: 'business', perms: CRM_ALL },
+          { label: 'Contacts', hint: 'People in the accounts', link: CRM + 'r/contact', icon: 'contacts', perms: CRM_ALL },
+        ] },
+        { title: 'Property', items: [
           { label: 'Viewings', link: CRM + 'r/viewing', icon: 'event_seat', perms: CRM_ALL },
-          { label: 'Offers', link: CRM + 'r/offer', icon: 'request_quote', perms: CRM_ALL },
+          { label: 'Offers', link: CRM + 'r/offer', icon: 'local_offer', perms: CRM_ALL },
           { label: 'Listings', link: CRM + 'r/listing', icon: 'storefront', perms: CRM_ALL },
+        ] },
+      ] },
+      { key: 'crm-masters', label: 'Masters', icon: 'inventory_2', sections: [
+        { title: 'Products and prices', items: [
+          { label: 'Products', hint: 'Goods and services (shared with Sales / Inventory)', link: CRM + 'r/product', icon: 'inventory_2', perms: CRM_ALL },
+          { label: 'Product categories', link: CRM + 'r/product_category', icon: 'category', perms: CRM_ALL },
+          { label: 'Price books', hint: 'Customer-group prices and quantity breaks', link: CRM + 'r/price_book', icon: 'menu_book', perms: CRM_ALL },
+          { label: 'Units of measure', link: CRM + 'r/uom', icon: 'straighten', perms: CRM_ALL },
+        ] },
+        { title: 'Terms', items: [
+          { label: 'Tax codes', hint: 'VAT / GST rates of the country', link: CRM + 'r/tax_code', icon: 'percent', perms: CRM_ALL },
+          { label: 'Payment terms', link: CRM + 'r/payment_term', icon: 'schedule', perms: CRM_ALL },
         ] },
       ] },
       { key: 'crm-reports', label: 'Reports', icon: 'summarize', sections: [
         { title: 'Analysis', items: [
           { label: 'Sales pipeline by stage', link: RC + 'crm-pipeline', icon: 'view_kanban', perms: CRM_ALL },
+          { label: 'Sales forecast', hint: 'Weighted by stage probability', link: RC + 'crm-forecast', icon: 'insights', perms: CRM_ALL },
+          { label: 'Targets vs actual', link: RC + 'crm-targets', icon: 'flag', perms: CRM_ALL },
           { label: 'Won and lost by agent', link: RC + 'crm-agents', icon: 'leaderboard', perms: CRM_ALL },
+          { label: 'Quotations by agent', link: RC + 'crm-quotations-agent', icon: 'request_quote', perms: CRM_ALL },
+          { label: 'Sales by product', link: RC + 'crm-products', icon: 'inventory_2', perms: CRM_ALL },
+          { label: 'Lead funnel by source and campaign', link: RC + 'crm-leads-funnel', icon: 'filter_alt', perms: CRM_ALL },
           { label: 'Lead source effectiveness', link: RC + 'crm-sources', icon: 'input', perms: CRM_ALL },
+          { label: 'Lost to competitors', link: RC + 'crm-competitors', icon: 'sports_kabaddi', perms: CRM_ALL },
         ] },
         { title: 'Registers', items: [
+          { label: 'Leads', link: RC + 'crm-lead', icon: 'person_add', perms: CRM_ALL },
           { label: 'Opportunities', link: RC + 'crm-opportunity', icon: 'trending_up', perms: CRM_ALL },
+          { label: 'Quotations', link: RC + 'crm-quotation', icon: 'request_quote', perms: CRM_ALL },
+          { label: 'Sales orders', link: RC + 'crm-sales-order', icon: 'shopping_cart', perms: CRM_ALL },
+          { label: 'Accounts', link: RC + 'crm-account', icon: 'business', perms: CRM_ALL },
           { label: 'Contacts', link: RC + 'crm-contact', icon: 'contacts', perms: CRM_ALL },
           { label: 'Activities', link: RC + 'crm-activity', icon: 'call', perms: CRM_ALL },
+          { label: 'Sales targets', link: RC + 'crm-target', icon: 'flag', perms: CRM_ALL },
           { label: 'Viewings', link: RC + 'crm-viewing', icon: 'event_seat', perms: CRM_ALL },
-          { label: 'Offers', link: RC + 'crm-offer', icon: 'request_quote', perms: CRM_ALL },
+          { label: 'Offers', link: RC + 'crm-offer', icon: 'local_offer', perms: CRM_ALL },
           { label: 'Listings', link: RC + 'crm-listing', icon: 'storefront', perms: CRM_ALL },
         ] },
       ] },
       { key: 'crm-setup', label: 'Setup', icon: 'tune', sections: [
-        { title: 'Setup', items: [
+        { title: 'Pipeline', items: [
           { label: 'Pipelines and stages', link: CRM + 'r/pipeline', icon: 'view_kanban', perms: ['crm_manager'] },
           { label: 'Lead sources', link: CRM + 'r/source', icon: 'input', perms: ['crm_manager'] },
           { label: 'Lost reasons', link: CRM + 'r/lost_reason', icon: 'thumb_down', perms: ['crm_manager'] },
-          { label: 'CRM setup', hint: 'Industry pack, settings, links, roles', link: CRM + 'setup', icon: 'tune', perms: ['crm_manager'] },
+          { label: 'Campaigns', link: CRM + 'r/campaign', icon: 'campaign', perms: ['crm_manager', 'crm_team_lead'] },
+          { label: 'Competitors', link: CRM + 'r/competitor', icon: 'sports_kabaddi', perms: ['crm_manager', 'crm_team_lead'] },
+        ] },
+        { title: 'Leads and territories', items: [
+          { label: 'Lead score rules', hint: 'Points that qualify a lead', link: CRM + 'r/score_rule', icon: 'star_rate', perms: ['crm_manager'] },
+          { label: 'Assignment rules', hint: 'Who gets a new lead', link: CRM + 'r/assignment_rule', icon: 'assignment_ind', perms: ['crm_manager'] },
+          { label: 'Territories', link: CRM + 'r/territory', icon: 'map', perms: ['crm_manager'] },
+          { label: 'CRM setup', hint: 'Industry pack, discount limit, quote terms, web form key, roles', link: CRM + 'setup', icon: 'tune', perms: ['crm_manager'] },
         ] },
       ] },
     ],
@@ -717,6 +790,153 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { label: 'Categories and SLA', link: MN + 'r/category', icon: 'category', perms: ['mnt_manager'] },
           { label: 'Checklists', link: MN + 'r/checklist', icon: 'checklist', perms: ['mnt_manager'] },
           { label: 'Maintenance setup', hint: 'Industry pack, settings, links, roles', link: MN + 'setup', icon: 'tune', perms: ['mnt_manager'] },
+        ] },
+      ] },
+    ],
+  },
+  // ================================================================ v1.33.0 Asset Management app (one register with HR → Assets)
+  {
+    title: 'Asset Management', suite: 'assets', apps: [
+      { key: 'am-home', label: 'Asset home', icon: 'home', parents: ['zeo-assets'], sections: [
+        { title: 'Overview', items: [
+          { label: 'Asset home', hint: 'Figures, overdue returns, warranties, my assets', link: AM + 'home', icon: 'home' },
+          { label: 'Scan an asset', hint: 'Camera, USB scanner or typed code', link: AM + 'scan', icon: 'qr_code_scanner' },
+          { label: 'Field (phone)', hint: 'My jobs, tickets with photo and GPS, counts – works offline', link: AM + 'field', icon: 'smartphone' },
+        ] },
+      ] },
+      { key: 'am-register', label: 'Register', icon: 'inventory_2', sections: [
+        { title: 'Assets', items: [
+          { label: 'Assets', hint: 'Check out, move, transfer, reserve, dispose', link: AM + 'r/asset', icon: 'inventory_2' },
+          { label: 'Reservations', hint: 'Bookings of pool assets', link: AM + 'r/reservation', icon: 'event_available' },
+          { label: 'Movements', hint: 'Check-outs, check-ins, moves, transfers', link: AM + 'r/movement', icon: 'swap_horiz', perms: AST_ALL },
+          { label: 'Print labels', hint: 'QR and barcode labels (PDF)', link: AM + 'labels', icon: 'qr_code_2', perms: AST_ALL },
+        ] },
+      ] },
+      { key: 'am-maint', label: 'Maintenance', icon: 'build', sections: [
+        { title: 'Maintenance', items: [
+          { label: 'Work orders', hint: 'Preventive, corrective and breakdown work', link: AM + 'r/work_order', icon: 'construction', perms: AST_MNT },
+          { label: 'Maintenance calendar', hint: 'Planned work by day', link: AM + 'calendar', icon: 'calendar_month', perms: AST_MNT },
+          { label: 'Maintenance plans', hint: 'Recurring by date or meter', link: AM + 'r/plan', icon: 'event_repeat', perms: AST_MNT },
+        ] },
+      ] },
+      { key: 'am-desk', label: 'Helpdesk', icon: 'support_agent', sections: [
+        { title: 'Helpdesk', items: [
+          { label: 'Tickets', hint: 'Breakdowns, complaints, incidents with SLA', link: AM + 'r/ticket', icon: 'support_agent' },
+        ] },
+      ] },
+      { key: 'am-parts', label: 'Spare parts', icon: 'inventory', sections: [
+        { title: 'Spare parts', items: [
+          { label: 'Spare parts', hint: 'Parts and consumables, minimum stock', link: AM + 'r/part', icon: 'inventory', perms: AST_STORE },
+          { label: 'Stock movements', hint: 'Receipts, issues, transfers', link: AM + 'r/stock_move', icon: 'sync_alt', perms: AST_STORE },
+          { label: 'Part requests', hint: 'Technicians ask the store', link: AM + 'r/part_request', icon: 'assignment', perms: AST_STORE },
+          { label: 'Stock counts', hint: 'Physical count of a store', link: AM + 'r/stock_count', icon: 'fact_check', perms: AST_STORE },
+        ] },
+      ] },
+      { key: 'am-verify', label: 'Counts', icon: 'fact_check', sections: [
+        { title: 'Physical verification', items: [
+          { label: 'Asset counts', hint: 'Plan, scan, approve', link: AM + 'r/audit', icon: 'fact_check' },
+          { label: 'Count lines', hint: 'Found, missing, misplaced', link: AM + 'r/audit_line', icon: 'checklist', perms: AST_ALL },
+        ] },
+      ] },
+      { key: 'am-finance', label: 'Finance', icon: 'account_balance', sections: [
+        { title: 'Fixed assets', items: [
+          { label: 'Depreciation runs', hint: 'Calculate, post, export the journal', link: AM + 'r/depreciation', icon: 'trending_down', perms: AST_FIN },
+          { label: 'Capital costs (CWIP)', hint: 'Costs of assets under construction', link: AM + 'r/capital_cost', icon: 'construction', perms: AST_FIN },
+        ] },
+      ] },
+      { key: 'am-reports', label: 'Reports', icon: 'summarize', sections: [
+        { title: 'Registers', items: [
+          { label: 'Assets', link: RC + 'ast-asset', icon: 'inventory_2', perms: AST_ALL },
+          { label: 'Movements', link: RC + 'ast-movement', icon: 'swap_horiz', perms: AST_ALL },
+          { label: 'Reservations', link: RC + 'ast-reservation', icon: 'event_available', perms: AST_ALL },
+          { label: 'Asset counts', link: RC + 'ast-audit', icon: 'fact_check', perms: AST_ALL },
+          { label: 'Depreciation runs', link: RC + 'ast-depreciation', icon: 'trending_down', perms: AST_FIN },
+          { label: 'Work orders', link: RC + 'ast-work-order', icon: 'construction', perms: AST_MNT },
+          { label: 'Tickets', link: RC + 'ast-ticket', icon: 'support_agent', perms: AST_DESK },
+          { label: 'Spare parts', link: RC + 'ast-part', icon: 'inventory', perms: AST_STORE },
+          { label: 'Stock movements', link: RC + 'ast-stock-move', icon: 'sync_alt', perms: AST_STORE },
+        ] },
+      ] },
+      { key: 'am-setup', label: 'Setup', icon: 'tune', sections: [
+        { title: 'Setup', items: [
+          { label: 'Locations', hint: 'Sites, buildings, floors, rooms, stores', link: AM + 'r/location', icon: 'place', perms: AST_ALL },
+          { label: 'Categories', hint: 'Depreciation rules and accounts', link: AM + 'r/category', icon: 'category', perms: ['ast_manager', 'ast_finance'] },
+          { label: 'Teams', hint: 'Support and maintenance teams', link: AM + 'r/team', icon: 'groups', perms: ['ast_manager', 'ast_maint_planner', 'ast_helpdesk'] },
+          { label: 'Activity types', hint: 'Maintenance activities and checklists', link: AM + 'r/activity', icon: 'checklist', perms: ['ast_manager', 'ast_maint_planner'] },
+          { label: 'SLA rules', hint: 'Helpdesk response and fix times', link: AM + 'r/sla', icon: 'timer', perms: ['ast_manager', 'ast_helpdesk'] },
+          { label: 'Import and mailbox', hint: 'Excel upload of assets and parts; e-mail to ticket', link: AM + 'import', icon: 'upload_file', perms: ['ast_manager', 'ast_coordinator', 'ast_storekeeper'] },
+          { label: 'Asset Management setup', hint: 'Industry pack, settings, links, roles', link: AM + 'setup', icon: 'tune', perms: ['ast_manager'] },
+        ] },
+      ] },
+    ],
+  },
+  // ================================================================ v1.36.0 People app (benefits, e-signature, forms, surveys, recognition, chat, 360°)
+  {
+    title: 'People', suite: 'people', apps: [
+      { key: 'pp-home', label: 'People home', icon: 'home', parents: ['zeo-people'], sections: [
+        { title: 'Overview', items: [
+          { label: 'People home', hint: 'Figures, my signatures, reviews, surveys, benefits', link: PP + 'home', icon: 'home' },
+          { label: 'Recognition wall', hint: 'Thank colleagues, points, leaders', link: PP + 'wall', icon: 'emoji_events' },
+          { label: 'Chat', hint: 'Messages with colleagues', link: PP + 'chat', icon: 'chat' },
+          { label: 'Forms', hint: 'Fill a company form', link: PP + 'forms', icon: 'dynamic_form' },
+        ] },
+      ] },
+      { key: 'pp-benefits', label: 'Benefits', icon: 'health_and_safety', sections: [
+        { title: 'Benefits', items: [
+          { label: 'Benefit plans', hint: 'Medical, life, allowances, wellness', link: PP + 'r/benefit_plan', icon: 'health_and_safety' },
+          { label: 'Enrolments', hint: 'Who is in which plan', link: PP + 'r/enrolment', icon: 'how_to_reg' },
+          { label: 'Claims', hint: 'Reimbursements – approve, pay in payroll', link: PP + 'r/claim', icon: 'receipt_long' },
+        ] },
+      ] },
+      { key: 'pp-engage', label: 'Engagement', icon: 'favorite', sections: [
+        { title: 'Surveys', items: [
+          { label: 'Surveys', hint: 'Engagement, pulse, onboarding, exit', link: PP + 'r/survey', icon: 'poll' },
+        ] },
+        { title: 'Recognition', items: [
+          { label: 'Recognition wall', link: PP + 'wall', icon: 'emoji_events' },
+          { label: 'Recognitions', hint: 'All recognitions, approvals', link: PP + 'r/recognition', icon: 'star' },
+          { label: 'Rewards', hint: 'Points redeemed', link: PP + 'r/reward', icon: 'card_giftcard' },
+          { label: 'Awards', hint: 'Award types and points', link: PP + 'r/award', icon: 'military_tech', perms: PP_HR },
+        ] },
+        { title: 'Forms and signatures', items: [
+          { label: 'Forms', hint: 'Fill a form', link: PP + 'forms', icon: 'dynamic_form' },
+          { label: 'Form submissions', hint: 'Approve, see what was sent', link: PP + 'r/form_submission', icon: 'inbox' },
+          { label: 'Form templates', hint: 'Build forms', link: PP + 'r/form_template', icon: 'design_services', perms: PP_HR },
+          { label: 'Signatures', hint: 'Letters, offers, policies to sign', link: PP + 'r/sign_request', icon: 'draw' },
+        ] },
+      ] },
+      { key: 'pp-develop', label: '360° & development', icon: 'psychology', sections: [
+        { title: '360° reviews', items: [
+          { label: '360° reviews', hint: 'Self, manager, peers, reports', link: PP + 'r/review_360', icon: '360' },
+          { label: 'Development plans', hint: 'Actions, mentor, progress', link: PP + 'r/development_plan', icon: 'trending_up' },
+          { label: 'Competencies', hint: 'What is rated, levels 1–5', link: PP + 'r/competency', icon: 'psychology', perms: PP_HR },
+        ] },
+      ] },
+      { key: 'pp-reports', label: 'Reports', icon: 'summarize', sections: [
+        { title: 'Analysis', items: [
+          { label: 'Benefits cost by plan', link: RC + 'ppl-benefits-cost', icon: 'payments', perms: PP_STAFF },
+          { label: 'Survey engagement', link: RC + 'ppl-engagement', icon: 'poll', perms: PP_STAFF },
+          { label: 'Recognition leaders', link: RC + 'ppl-recognition-leaders', icon: 'leaderboard', perms: PP_STAFF },
+          { label: '360° review summary', link: RC + 'ppl-360-summary', icon: '360', perms: PP_STAFF },
+        ] },
+        { title: 'Registers', items: [
+          { label: 'Enrolments', link: RC + 'ppl-enrolment', icon: 'how_to_reg', perms: PP_STAFF },
+          { label: 'Claims', link: RC + 'ppl-claim', icon: 'receipt_long', perms: PP_STAFF },
+          { label: 'Signatures', link: RC + 'ppl-sign-request', icon: 'draw', perms: PP_STAFF },
+          { label: 'Form submissions', link: RC + 'ppl-form-submission', icon: 'inbox', perms: PP_STAFF },
+          { label: 'Surveys', link: RC + 'ppl-survey', icon: 'poll', perms: PP_STAFF },
+          { label: 'Recognitions', link: RC + 'ppl-recognition', icon: 'star', perms: PP_STAFF },
+          { label: '360° reviews', link: RC + 'ppl-review-360', icon: '360', perms: PP_STAFF },
+          { label: 'Development plans', link: RC + 'ppl-development-plan', icon: 'trending_up', perms: PP_STAFF },
+        ] },
+      ] },
+      { key: 'pp-setup', label: 'Setup', icon: 'tune', sections: [
+        { title: 'Setup', items: [
+          { label: 'People setup', hint: 'Industry pack, points, e-signature, chat retention, 360° weights, roles', link: PP + 'setup', icon: 'tune', perms: ['ppl_manager'] },
+          { label: 'Benefit plans', link: PP + 'r/benefit_plan', icon: 'health_and_safety', perms: ['ppl_manager', 'ppl_benefits'] },
+          { label: 'Awards', link: PP + 'r/award', icon: 'military_tech', perms: ['ppl_manager'] },
+          { label: 'Competencies', link: PP + 'r/competency', icon: 'psychology', perms: PP_HR },
+          { label: 'Form templates', link: PP + 'r/form_template', icon: 'design_services', perms: PP_HR },
         ] },
       ] },
     ],
@@ -841,7 +1061,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
       // v1.21.0: which apps the company uses, with the industry of each
       { key: 'st-apps', label: 'Apps', icon: 'apps', sections: [
         { title: 'Apps', items: [
-            { label: 'Apps', hint: 'Activate HR, Payroll, Projects, CRM, Property, Maintenance and HSE, with the industry of each', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
+            { label: 'Apps', hint: 'Activate HR, Payroll, Projects, CRM, Property, Maintenance, Asset Management and HSE, with the industry of each', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
           ] },
       ] },
       // v1.23.0 ZEO Cloud: the account owner's subscription and sign-in rules

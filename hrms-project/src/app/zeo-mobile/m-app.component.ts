@@ -513,6 +513,7 @@ export class MRequestsComponent implements OnInit {
   <section class="card"><div class="list">
     <a class="li" routerLink="/m/payslips"><span class="ic"><span class="material-icons" aria-hidden="true">receipt_long</span></span><span class="tx"><b>{{ 'Payslips' | t }}</b></span><span class="material-icons chev" aria-hidden="true">chevron_right</span></a>
     <a class="li" routerLink="/m/requests"><span class="ic"><span class="material-icons" aria-hidden="true">assignment</span></span><span class="tx"><b>{{ 'My requests' | t }}</b></span><span class="material-icons chev" aria-hidden="true">chevron_right</span></a>
+    <button type="button" class="li" (click)="assets()"><span class="ic"><span class="material-icons" aria-hidden="true">inventory_2</span></span><span class="tx"><b>{{ 'Assets' | t }}</b><span>{{ 'Scan, my work orders, raise a ticket with a photo, counts' | t }}</span></span><span class="material-icons chev" aria-hidden="true">chevron_right</span></button>
     <button type="button" class="li" (click)="full()"><span class="ic"><span class="material-icons" aria-hidden="true">open_in_new</span></span><span class="tx"><b>{{ 'Open full ZEO' | t }}</b><span>{{ 'Letters, documents, expenses and every other screen' | t }}</span></span><span class="material-icons chev" aria-hidden="true">chevron_right</span></button>
     <button type="button" class="li" (click)="companies()"><span class="ic"><span class="material-icons" aria-hidden="true">domain</span></span><span class="tx"><b>{{ 'Switch company' | t }}</b><span>{{ company }}</span></span><span class="material-icons chev" aria-hidden="true">chevron_right</span></button>
   </div></section>
@@ -561,6 +562,7 @@ export class MMoreComponent implements OnInit {
     this.cd.detectChanges();
   }
   full(): void { this.router.navigate(['/main-sidebar/home']); }   // v1.28.1: one Home for everyone
+  assets(): void { this.router.navigate(['/main-sidebar/zeo-assets/field']); }   // v1.34.0 Asset Management field screen
   companies(): void { this.router.navigate(['/m/companies']); }
   changeServer(): void { this.router.navigate(['/m/connect']); }
   out(): void { void this.m.signOut(); }

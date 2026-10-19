@@ -1854,3 +1854,15 @@ body.sidebar-open {
   outline: 2px solid #a5b4fc;
   outline-offset: -2px;
 }
+
+/* v1.30.0 location level switcher */
+.loc-picker { border-top: 1px solid #e2e8f0; background: #fffdf7; }
+.loc-head { display: flex; align-items: center; gap: 8px; }
+.loc-head .loc-all { margin-left: auto; font-size: 12px; color: #4f46e5; cursor: pointer; }
+.loc-groups { max-height: 220px; overflow-y: auto; padding: 4px 10px 6px; }
+.loc-branch-name { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .03em; margin: 6px 2px 4px; }
+.loc-option { padding: 6px 10px; }
+.loc-option.loc-current { border-color: #b8730f; background: #fff7e6; }
+.loc-work { border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 11px; border-radius: 999px; padding: 2px 8px; cursor: pointer; white-space: nowrap; }
+.loc-work.on { background: #b8730f; border-color: #b8730f; color: #fff; }
+.loc-hint { font-size: 11px; color: #94a3b8; margin: 0; padding: 0 12px 8px; }

@@ -37,8 +37,12 @@ import { ToastrModule } from 'ngx-toastr';
 import { AuthGuard } from './auth.guard';
 import { AuthenticationService } from './login/authentication.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ErrorHandler } from '@angular/core';
+import { ZStaleBuildHandler } from './shared-ui/z-stale-build.handler';   // v1.32.1: reload once after a deploy
 import { ZBusyInterceptor } from './shared-ui/z-busy.interceptor';   // v1.28.1
 import { ZHttpErrorInterceptor } from './shared-ui/z-http-error.interceptor';   // v1.28.1
+import { ZLocationInterceptor } from './shared-ui/z-location.service';   // v1.30.0
+import { ZBranchProfileComponent, ZCompanyProfileComponent } from './shared-ui/z-profile-extras.component';   // v1.31.0
 import { AuthInterceptor } from './auth-interceptor.service';
 import { CompanyMasterComponent } from './company-master/company-master.component';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -532,6 +536,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     ZAppTitleComponent,
     ZEmpOrgFieldsComponent,
     ZIfOrgDirective,
+    ZCompanyProfileComponent, ZBranchProfileComponent,   // v1.31.0 legal / registration details
     EMPLOYEE_PROFILE_COMPONENTS,   // v1.13.0 (nested array)
     COUNTRY_PACK_UI,   // v1.14.0: zc / zmoney pipes, *zCountry
     I18N_UI,           // v1.15.0: t / zdate pipes, <z-lang-picker>
@@ -589,6 +594,8 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     { provide: HTTP_INTERCEPTORS, useClass: I18nInterceptor, multi: true },   // v1.15.0: X-Language on every API call
     { provide: HTTP_INTERCEPTORS, useClass: ZBusyInterceptor, multi: true },   // v1.28.1: loading bar for every save / delete
     { provide: HTTP_INTERCEPTORS, useClass: ZHttpErrorInterceptor, multi: true },   // v1.28.1: server reason added to generic failure messages
+    { provide: ErrorHandler, useClass: ZStaleBuildHandler },   // v1.32.1
+    { provide: HTTP_INTERCEPTORS, useClass: ZLocationInterceptor, multi: true },   // v1.30.0: X-Zeo-Location(s) while location control is on
     { provide: APP_INITIALIZER, useFactory: startI18n, deps: [I18nService], multi: true },   // v1.15.0: language at start
     { provide: ZRecordServiceToken, useExisting: ZRecordService },
     { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true },

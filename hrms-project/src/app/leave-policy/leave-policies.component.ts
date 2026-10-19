@@ -337,6 +337,10 @@ export class LeavePoliciesComponent implements OnInit {
     ['Study leave', '10 working days a year to sit exams at an accredited UAE institution, after 2 years of service.', 'Full pay'],
     ['Hajj', 'Up to 30 days once in service (practice under the former law).', 'Unpaid unless the company decides'],
     ['Unpaid leave', 'By agreement with the employer.', 'Unpaid'],
+    ['Work injury', 'Treatment after a work injury (Art. 37): full pay up to 6 months, then half pay up to 6 months; reported to MoHRE.', 'Full, then half'],
+    ['National service', 'Emirati employees called for national / reserve service (Art. 32(1)(a); Federal Law 6/2014).', 'Full pay'],
+    ['Company practice', 'Not in the law – given by many companies: marriage (3–5 days once), emergency (3 days a year), Umrah (up to 10 days unpaid), medical appointment (half days), short leave in hours, sabbatical (unpaid), quarantine on a health-authority notice. Each is a line of the policy; remove the line where the company does not give it.', 'As set'],
+    ['DIFC / ADGM', 'Companies in the financial free zones follow their own employment law: 20 working days annual leave, 60 working days sick (10 full, 20 half, 30 unpaid), 65 working days maternity (33 full, 32 half), 5 working days paternity – the DIFC and ADGM policies carry these.', 'Per policy'],
     ['More days with service', 'Not in the law: a company may give more, e.g. 26 days from service year 3. Set "By length of service" on the policy line.', '–'],
     ['Counting days', 'Set per policy line: calendar days, or working days (weekends and public holidays inside the leave are not deducted).', '–'],
   ];

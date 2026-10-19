@@ -33,6 +33,8 @@ export class SchemaCreationComponent {
     { key: 'crm', label: 'CRM', hint: 'Contacts, pipelines, deals', on: false },
     { key: 'property', label: 'Property', hint: 'Units, leases, sales', on: false },
     { key: 'maintenance', label: 'Maintenance', hint: 'Work orders, plans', on: false },
+    { key: 'assets', label: 'Asset Management', hint: 'Asset register, labels, counts, depreciation', on: false },   // v1.33.0
+    { key: 'people', label: 'People', hint: 'Benefits, e-signature, forms, surveys, recognition, chat, 360°', on: false },   // v1.36.0
     { key: 'hse', label: 'HSE', hint: 'Risk, permits, incidents', on: false },
   ];
   chosenApps(): string[] {   // v1.23.0: HR comes with any app
