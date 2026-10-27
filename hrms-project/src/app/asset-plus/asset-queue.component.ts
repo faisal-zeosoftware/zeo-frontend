@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { dmy } from '../shared-ui/z-present';   // v1.62.0 ui
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -171,7 +172,7 @@ export class AssetQueueComponent implements OnInit {
 
   /** v1.16.0: the columns of each work list (the cards became table rows). */
   private colsFor(): { l: string; v: (x: any) => string; money?: boolean }[] {
-    const dt = (v: any) => { if (!v) { return ''; } const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v); return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); };
+    const dt = (v: any) => { if (!v) { return ''; } const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v); return isNaN(d.getTime()) ? String(v) : dmy(d); };   // v1.62.0 ui
     const mon = (v: any) => { if (!v) { return ''; } const d = new Date(String(v).slice(0, 10) + 'T00:00:00'); return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }); };
     const t = (v: any) => (v === null || v === undefined ? '' : String(v));
     const m = (v: any) => (v === null || v === undefined || v === '' ? '' : this.m(v));

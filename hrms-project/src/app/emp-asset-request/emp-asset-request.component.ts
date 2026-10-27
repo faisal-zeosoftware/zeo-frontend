@@ -86,7 +86,7 @@ export class EmpAssetRequestComponent {
             }
           );
         } else {
-          console.error('Employee ID parameter is null.');
+          /* v1.56.1: no employee id yet (a new record or a hidden tab) – not an error */
         }
       });
      

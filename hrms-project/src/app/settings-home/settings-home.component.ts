@@ -20,6 +20,7 @@ export const SETTINGS_DESCRIPTIONS: Record<string, string> = {
   [M + 'settings/languages']: 'Languages of the company and translations of the screens.',
   [M + 'settings/state-master']: 'States or emirates used in addresses.',
   [M + 'settings/document-numbering']: 'Number series for requests, letters and other documents.',
+  [M + 'settings/print-templates']: 'Designs of the payslip, letters and every printed document – samples, your copies, the default of each.',   // v1.62.0 print
   [M + 'settings/notification-settings']: 'When to warn about passports, visas and other documents that expire.',
   [M + 'settings/user-master']: 'People who can sign in, their companies and branches.',
   [M + 'settings/user-grouping-master']: 'Groups of rights, for example HR, manager or payroll.',

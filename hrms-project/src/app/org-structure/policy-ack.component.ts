@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +38,7 @@ import { OrgSettingsService } from './org-settings.service';
         <tbody>
           <tr *ngFor="let r of rows">
             <td data-label="Policy"><b>{{ r.title }}</b><br><small class="lp-muted">{{ r.description }}</small></td>
-            <td data-label="Version">v{{ r.version }}<br><small class="lp-muted">{{ r.version_date | date:'dd MMM yyyy' }}</small></td>
+            <td data-label="Version">v{{ r.version }}<br><small class="lp-muted">{{ r.version_date | date:'dd/MM/yyyy' }}</small></td>
             <td data-label="Applies to">{{ r.applies_to }}</td>
             <td data-label="Acknowledged">{{ r.acknowledged }}</td>
             <td data-label="Pending">{{ r.pending }}</td>
@@ -69,7 +70,7 @@ import { OrgSettingsService } from './org-settings.service';
         <tbody><tr *ngFor="let x of shown()">
           <td>{{ x.employee }}</td><td>{{ x.branch }}</td><td>{{ x.department }}</td>
           <td><span class="os-tag" [ngClass]="x.status === 'Acknowledged' ? 'ok' : 'warn'">{{ x.status }}</span></td>
-          <td>{{ x.acknowledged_at ? (x.acknowledged_at | date:'dd MMM yyyy, HH:mm') : '–' }}</td><td>{{ x.ip || '–' }}</td></tr></tbody>
+          <td>{{ x.acknowledged_at ? (x.acknowledged_at | date:'dd/MM/yyyy HH:mm') : '–' }}</td><td>{{ x.ip || '–' }}</td></tr></tbody>
       </table></div>
     </div>
     <footer>

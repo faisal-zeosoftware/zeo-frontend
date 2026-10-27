@@ -26,7 +26,7 @@ export class AppComponent {
     // v1.7.0: notes, activities, files, history and extra fields inside every form; To-do count in the top bar
     injector.start();
     let last = 0;
-    router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => { if (Date.now() - last > 60000) { last = Date.now(); rec.refreshTodo(); } });
+    router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => { if (Date.now() - last > 60000) { last = Date.now(); rec.refreshTodo(); rec.refreshInbox(); rec.refreshStars(); } });   // v1.45.0 inbox count, starred / recent
     // v1.25.0 mobile app: the phone app starts with its own screens (/m); the web sign-in page is never shown there
     if (Capacitor.isNativePlatform()) {
       router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {

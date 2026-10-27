@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';   // v1.40.1
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -311,13 +312,8 @@ loadBranches(callback?: Function): void {
     if (selectedSchema) {
       this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
-          this.Employee = result;
-          this.FilteredEmployees = result;
-          
-          this.currentPage = 1;
-
-          this.updatePagination();    
-
+          this.Employee = Array.isArray(result) ? result : (result?.results || []);
+          // v1.40.1: the modal's table is loaded page by page from the API (loadModalEmployees)
           if (callback) callback();
         },
         (error) => {
@@ -384,28 +380,50 @@ loadBranches(callback?: Function): void {
   SearchEmployee = '';
 
   FilterEmployee() {
-    const search = this.SearchEmployee.toLowerCase().trim();
-  
-    // Start from branch-filtered employees, not the full Employee list
-    const branchFiltered = this.selectedBranches.length === 0
-      ? this.Employee
-      : this.Employee.filter(emp =>
-          this.selectedBranches.some(id => emp.emp_branch_id === this.getBranchName(id))
-        );
-  
-    if (!search) {
-      this.FilteredEmployees = [...branchFiltered];
-    } else {
-      this.FilteredEmployees = branchFiltered.filter(emp =>
-        (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
-        (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search)) ||
-        (emp.emp_code && emp.emp_code.toLowerCase().includes(search))
-      );
-    }
-  
+    // v1.40.1: searched through the API (see loadModalEmployees)
     this.currentPage = 1;
-    this.updatePagination();
+    this.loadModalEmployees();
   }
+
+  // ---- v1.40.1: employee list of the Create / Edit popup – searched and paged through /employee/api/emplist/
+  selectedEmpIds = new Set<number>();          // chosen employees, kept across pages, searches and branch changes
+  empTotal = 0;
+  empLoading = false;
+  private empSeq = 0;
+  private empSearchTimer: any;
+
+  onEmpSearch(): void {
+    clearTimeout(this.empSearchTimer);
+    this.empSearchTimer = setTimeout(() => this.FilterEmployee(), 250);
+  }
+
+  loadModalEmployees(): void {
+    const schema = this.authService.getSelectedSchema();
+    if (!schema) { return; }
+    const id = ++this.empSeq;
+    this.empLoading = true;
+    let url = `${environment.apiBaseUrl}/employee/api/emplist/?schema=${encodeURIComponent(schema)}&page_size=${this.itemsPerPage}&page=${this.currentPage}`;
+    const q = (this.SearchEmployee || '').trim();
+    if (q) { url += `&search=${encodeURIComponent(q)}`; }
+    if (this.selectedBranches && this.selectedBranches.length) { url += `&branch_id=[${this.selectedBranches.join(',')}]`; }
+    this.http.get<any>(url).subscribe({
+      next: (d: any) => {
+        if (id !== this.empSeq) { return; }
+        const rows = Array.isArray(d) ? d : (d?.results || []);
+        this.empTotal = Array.isArray(d) ? rows.length : (d?.count ?? rows.length);
+        this.FilteredEmployees = rows;
+        this.pagedEmployees = rows;
+        this.empLoading = false;
+      },
+      error: (e: any) => { if (id === this.empSeq) { this.empLoading = false; this.FilteredEmployees = []; this.pagedEmployees = []; this.empTotal = 0; } console.error('Employee list failed', e); }
+    });
+  }
+
+  toggleEmp(emp: any, on: boolean): void { on ? this.selectedEmpIds.add(emp.id) : this.selectedEmpIds.delete(emp.id); }
+  pageAllSelected(): boolean { return this.pagedEmployees.length > 0 && this.pagedEmployees.every(e => this.selectedEmpIds.has(e.id)); }
+  pageSomeSelected(): boolean { return !this.pageAllSelected() && this.pagedEmployees.some(e => this.selectedEmpIds.has(e.id)); }
+  toggleSelectPage(on: boolean): void { this.pagedEmployees.forEach(e => on ? this.selectedEmpIds.add(e.id) : this.selectedEmpIds.delete(e.id)); }
+  clearSelectedEmps(): void { this.selectedEmpIds.clear(); }
 
   editSearchEmployee = '';
 
@@ -512,6 +530,7 @@ loadBranches(callback?: Function): void {
     }
   
     this.Employee.forEach(emp => emp.selected = false);
+    this.selectedEmpIds = new Set<number>(); this.SearchEmployee = '';   // v1.40.1
     this.applyEmployeeFilter();
   }
   closeapplicationModal(): void {
@@ -612,21 +631,9 @@ allEmployeesSelected = false;
 
 
 applyEmployeeFilter(): void {
-
-  this.FilteredEmployees = this.Employee.filter(emp => {
-
-    const branchMatch =
-      this.selectedBranches.length === 0 ||
-      this.selectedBranches.some(id =>
-        emp.emp_branch_id === this.getBranchName(id)
-      );
-
-    return branchMatch;
-
-  });
-
+  // v1.40.1: the branch filter goes to the API with the search (chosen employees are kept)
   this.currentPage = 1;
-  this.updatePagination();
+  this.loadModalEmployees();
 }
 
 getBranchName(id: number): string {
@@ -691,34 +698,17 @@ isSomeBranchesSelected(): boolean {
 
 
 currentPage: number = 1;
-itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
+itemsPerPage: number = 50;   // v1.40.1: one API page of the popup's employee list
 pagedEmployees: any[] = [];
 
 
 updatePagination(): void {
-
-  const startIndex =
-    (this.currentPage - 1) * this.itemsPerPage;
-
-  const endIndex =
-    startIndex + this.itemsPerPage;
-
-  this.pagedEmployees =
-    this.FilteredEmployees.slice(
-      startIndex,
-      endIndex
-    );
-
+  this.loadModalEmployees();   // v1.40.1: a page from the API
 }
 
 
 get totalPages(): number {
-
-  return Math.ceil(
-    this.FilteredEmployees.length /
-    this.itemsPerPage
-  );
-
+  return Math.ceil(this.empTotal / this.itemsPerPage);   // v1.40.1
 }
 
 
@@ -763,10 +753,7 @@ goToPage(page: number): void {
 
 registerSalarystructure(): void {
 
-  const selectedEmployees =
-    this.Employee
-      .filter(x => x.selected)
-      .map(x => x.id);
+  const selectedEmployees = Array.from(this.selectedEmpIds);   // v1.40.1: chosen across pages / searches
 
   const companyData = {
     name: this.name,
@@ -1298,10 +1285,11 @@ editSalaryStructure(doc: any): void {
   this.selectedBranches = Array.isArray(doc.branch) ? [...doc.branch] : (doc.branch ? [doc.branch] : []);
   this.components = Array.isArray(doc.components) ? [...doc.components] : [];
 
-  this.applyEmployeeFilter();
-
   // ✅ use "employees", matching the actual API field name
   const selectedEmpIds: number[] = doc.employees || [];
+  this.selectedEmpIds = new Set<number>(selectedEmpIds.map((x: any) => Number(x)));   // v1.40.1
+  this.SearchEmployee = '';
+  this.applyEmployeeFilter();
 
   this.Employee.forEach(emp => {
     emp.selected = selectedEmpIds.includes(emp.id);
@@ -1310,8 +1298,6 @@ editSalaryStructure(doc: any): void {
   this.FilteredEmployees.forEach(emp => {
     emp.selected = selectedEmpIds.includes(emp.id);
   });
-
-  this.updatePagination();
 }
 
 

@@ -423,6 +423,8 @@
               class="form-control"
               [(ngModel)]="delegationForm.deligate_to"
             >
+              <!-- v1.40.1: a placeholder – without it the first user LOOKED selected while the model was still null, so Send posted no delegate -->
+              <option [ngValue]="null" disabled>Select a user…</option>
 
               <option
                 *ngFor="let user of Users"

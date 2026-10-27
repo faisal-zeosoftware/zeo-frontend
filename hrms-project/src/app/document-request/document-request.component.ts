@@ -262,7 +262,8 @@ this.employeeService.selectedBranches$.subscribe(ids => {
  
   
     LoadUsers(selectedSchema: string) {
-      this.leaveService.getUsers(selectedSchema).subscribe(
+      // v1.62.0 speed: this company's logins only (/users/tenant-users/, ~17 KB) instead of every login of all companies (/users/api/user/, ~1.4 MB)
+      this.leaveService.getApproverUsers(selectedSchema).subscribe(
         (data: any) => {
           this.Users = data;
         

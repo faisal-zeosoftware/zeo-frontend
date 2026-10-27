@@ -39,8 +39,8 @@ export class ErService {
     document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(u); }, 30000);
   }
 
-  lookups(): Promise<any> {
-    if (!this.look || this.lookSchema !== this.schema) {
+  lookups(force = false): Promise<any> {   // v1.40.1 force: after a master list changed (standard skills loaded)
+    if (force || !this.look || this.lookSchema !== this.schema) {
       this.lookSchema = this.schema;
       this.look = this.get('employee-profile/api/record-lookups/');
       this.look.catch(() => (this.look = null));
@@ -48,6 +48,10 @@ export class ErService {
     return this.look;
   }
 
+  /** v1.40.1: the standard-list kind of a skill master field (Languages, Marketing skills, Programming skills), else null. */
+  static stdKind(f: ErField): string | null {
+    return ({ 'Core.LanguageSkill': 'language', 'Core.MarketingSkill': 'marketing', 'Core.ProgrammingLanguageSkill': 'programming' } as Record<string, string>)[f.source || ''] || null;
+  }
   /** Options of a field: its own choices, or the look-up list its source points to. */
   options(f: ErField, look: any): { value: any; label: string }[] {
     if (f.options) { return f.options; }
@@ -111,9 +115,10 @@ export function maskEid(v: string): string {
   const p = [d.slice(0, 3), d.slice(3, 7), d.slice(7, 14), d.slice(14, 15)].filter(x => x);
   return p.join('-');
 }
-/** IBAN: AE + 21 digits, shown in groups of four */
+/** IBAN shown in groups of four. v1.40.1: up to 34 characters (UAE / Oman 23, Saudi 24, Qatar 29, Kuwait 30) – the
+ *  length and check digits of the company's country are checked while typing and by the server. */
 export function maskIban(v: string): string {
-  const s = (v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 23);
+  const s = (v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 34);
   return s.replace(/(.{4})/g, '$1 ').trim();
 }
 /** MOHRE person code: 14 characters */

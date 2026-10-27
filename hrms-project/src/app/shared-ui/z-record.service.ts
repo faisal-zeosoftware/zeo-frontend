@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import { rawText } from './z-present';   // v1.62.0 ui
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { ZListService } from './z-list.service';
@@ -121,7 +122,7 @@ export class ZRecordService {
 
   /** The record behind a table row: the item of a list the screen loaded whose values match the row's cells. */
   rowRecord(tr: HTMLTableRowElement): { endpoint: string; id: string; item: any } | null {
-    const cells = Array.from(tr.cells).map(c => (c.textContent || '').trim().toLowerCase()).filter(x => x.length > 1);
+    const cells = Array.from(tr.cells).map(c => rawText(c).trim().toLowerCase()).filter(x => x.length > 1);   // v1.62.0 ui: the values as the API sent them
     if (!cells.length) { return null; }
     const lists = this.z.recordedLists();
     let best: { endpoint: string; id: string; item: any } | null = null; let bestN = 0;
@@ -143,9 +144,9 @@ export class ZRecordService {
     const tables = Array.from(document.querySelectorAll('table')).filter(t => !t.closest('z-record-panel, .zl-modal, mat-dialog-container, .modal-content'));
     const big = tables.sort((a, b) => b.querySelectorAll('tbody tr').length - a.querySelectorAll('tbody tr').length)[0];
     if (big) {
-      const rows = Array.from(big.querySelectorAll('tbody tr')).slice(0, 40).map(r => Array.from((r as HTMLTableRowElement).cells).map(c => (c.textContent || '').trim()));
+      const rows = Array.from(big.querySelectorAll('tbody tr')).slice(0, 40).map(r => Array.from((r as HTMLTableRowElement).cells).map(c => rawText(c).trim()));   // v1.62.0 ui
       const ep = this.z.endpointFor(rows);
-      if (ep) { return ep.endsWith('/') ? ep : ep + '/'; }
+      if (ep && !/\/options\//.test(ep)) { return ep.endsWith('/') ? ep : ep + '/'; }   // v1.56.1 a drop-down source is not the screen's list
     }
     // no rows to compare: the list whose address shares the most words with the page (leave-approval-level → leave-approval-levels)
     const words = (x: string) => x.toLowerCase().replace(/[^a-z]+/g, ' ').split(' ')
@@ -153,6 +154,7 @@ export class ZRecordService {
     const page = words(location.pathname.split('/').pop() || '');
     let best: string | null = null; let bestN = 0;
     for (const l of this.z.recordedLists()) {
+      if (/\/options\//.test(l.path)) { continue; }   // v1.56.1 drop-down sources (HSE Training and competency asked for extra fields of one: 400)
       const w = words(l.path.split('/').filter(Boolean).pop() || '');
       const n = page.filter(x => w.some(y => y === x || (x.length > 4 && (y.startsWith(x) || x.startsWith(y))))).length;
       // "shift-pattern" ↔ "shiftpattern": the whole name joined is the strongest match
@@ -190,12 +192,43 @@ export class ZRecordService {
 
   // ------------------------------------------------------------------ API
   record(endpoint: string, id: string): Observable<any> {
-    return this.http.get(this.url('record/', `&endpoint=${encodeURIComponent(endpoint)}&id=${encodeURIComponent(id)}`));
+    // v1.45.0: the page is remembered as "recently viewed" and used as the link of messages and stars
+    return this.http.get(this.url('record/', `&endpoint=${encodeURIComponent(endpoint)}&id=${encodeURIComponent(id)}&page=${encodeURIComponent(location.pathname)}`));
   }
-  addNote(endpoint: string, id: string, body: string, attachment_ids: number[] = []): Observable<any> {
-    return this.http.post(this.url('notes/'), { endpoint, id, body, attachment_ids });
+  addNote(endpoint: string, id: string, body: string, attachment_ids: number[] = [], extra: any = {}): Observable<any> {
+    return this.http.post(this.url('notes/'), { endpoint, id, body, attachment_ids, page: location.pathname, ...extra });
+  }
+  // ------------------------------------------------------------------ v1.45.0 collaboration
+  followers(body: any): Observable<any> { return this.http.post(this.url('followers/'), { page: location.pathname, ...body }); }
+  inbox(q: Record<string, string> = {}): Observable<any> {
+    return this.http.get(this.url('inbox/', Object.entries(q).filter(([, v]) => v).map(([k, v]) => `&${k}=${encodeURIComponent(v)}`).join('')));
+  }
+  inboxMark(ids: number[] | 'all', action: string): Observable<any> { return this.http.post(this.url('inbox/'), { ids, action }); }
+  stars(): Observable<any> { return this.http.get(this.url('stars/')); }
+  toggleStar(endpoint: string, id: string, label = ''): Observable<any> { return this.http.post(this.url('stars/'), { endpoint, id, label, page: location.pathname }); }
+  tags(): Observable<any[]> { return this.http.get<any[]>(this.url('tags/')); }
+  addTagDef(name: string, color = ''): Observable<any> { return this.http.post(this.url('tags/'), { name, color }); }
+  saveTagDef(id: number, body: any): Observable<any> { return this.http.patch(this.url(`tags/${id}/`), body); }
+  deleteTagDef(id: number): Observable<any> { return this.http.delete(this.url(`tags/${id}/`)); }
+  recordTags(endpoint: string, id: string, add: any[] = [], remove: any[] = []): Observable<any> { return this.http.post(this.url('record-tags/'), { endpoint, id, add, remove }); }
+  tagValues(endpoint: string, ids: string[]): Observable<any> {
+    return this.http.get(this.url('tag-values/', `&endpoint=${encodeURIComponent(endpoint)}&ids=${ids.join(',')}`));
+  }
+  mass(body: any): Observable<any> { return this.http.post(this.url('mass/'), body); }
+  readonly inboxUnread$ = new BehaviorSubject<number>(0);
+  /** v1.45.0 starred and recently viewed records (app launcher, home page). */
+  readonly stars$ = new BehaviorSubject<{ starred: any[]; recent: any[] }>({ starred: [], recent: [] });
+  refreshStars(): void {
+    if (!localStorage.getItem('auth_token') || !this.s) { return; }
+    this.stars().subscribe({ next: r => this.stars$.next(r), error: () => { /* older server */ } });
+  }
+  refreshInbox(): void {
+    if (!localStorage.getItem('auth_token') || !this.s) { return; }
+    this.http.get<any>(this.url('inbox/', '&unread=1')).subscribe({ next: r => this.inboxUnread$.next(r.unread_messages || 0), error: () => { /* older server */ } });
   }
   deleteNote(pk: number): Observable<any> { return this.http.delete(this.url(`notes/${pk}/`)); }
+  react(pk: number, endpoint: string, id: string, emoji: string): Observable<any> { return this.http.post(this.url(`notes/${pk}/react/`), { endpoint, id, emoji }); }   // v1.46.0
+  resolve(pk: number, endpoint: string, id: string, resolved: boolean): Observable<any> { return this.http.post(this.url(`notes/${pk}/resolve/`), { endpoint, id, resolved }); }
   upload(endpoint: string, id: string, files: File[], field = ''): Observable<any[]> {
     const fd = new FormData();
     fd.append('endpoint', endpoint); fd.append('id', id); if (field) { fd.append('field', field); }

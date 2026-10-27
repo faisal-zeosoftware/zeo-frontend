@@ -240,12 +240,12 @@ export class ZaHomeComponent implements OnInit {
       </div>
       <div class="za-grid2">
         <div class="za-pack" *ngFor="let p of pack.packs" [class.on]="pack.installed.includes(p.code)">
-          <b>{{ p.label }}</b> <span class="hs-b ok" *ngIf="p.code === pack.industry">industry of {{ info?.title }}</span>
+          <b>{{ p.label }}</b> <span class="hs-b ok" *ngIf="p.code === pack.industry">Main industry pack</span><!-- v1.62.0 ui wording -->
           <span class="hs-b" *ngIf="pack.installed.includes(p.code) && p.code !== pack.industry">installed</span>
           <div class="hs-muted">{{ p.description }}</div><ul><li *ngFor="let h of p.highlights">{{ h }}</li></ul>
           <div class="hs-acts" style="margin-top:8px" *ngIf="pack.can_setup">
             <button type="button" class="ex-btn sm" *ngIf="!pack.installed.includes(p.code)" (click)="install(p.code, false)">Add this pack</button>
-            <button type="button" class="ex-btn sm" *ngIf="p.code !== pack.industry" (click)="install(p.code, true)">Make it the industry of {{ info?.title }}</button></div>
+            <button type="button" class="ex-btn sm" *ngIf="p.code !== pack.industry" (click)="install(p.code, true)">Use as the main industry pack</button></div>
         </div>
       </div>
     </ng-container>
@@ -260,6 +260,8 @@ export class ZaHomeComponent implements OnInit {
             <label *ngIf="f.type === 'textarea'" class="wide">{{ f.label }}<textarea rows="3" [(ngModel)]="s[f.name]"></textarea></label>
             <label *ngIf="!['bool','choice','json','textarea'].includes(f.type)">{{ f.label }}<input [type]="f.type === 'int' || f.type === 'decimal' ? 'number' : 'text'" [(ngModel)]="s[f.name]" [step]="f.type === 'decimal' ? 'any' : null"></label>
           </ng-container>
+          <label *ngIf="s.secret_set !== undefined">Provider API key (SMS / WhatsApp) <span class="hs-muted">{{ s.secret_set ? '· set – kept encrypted, enter again to change' : '· not set' }}</span>
+            <input type="password" [(ngModel)]="s.secret" autocomplete="new-password" placeholder="Leave empty to keep"></label>   <!-- v1.40.0 -->
         </div>
         <h3 style="margin-top:16px">Wording</h3>
         <p class="hs-muted">Change what the screens call things, e.g. opportunity → Enquiry.</p>

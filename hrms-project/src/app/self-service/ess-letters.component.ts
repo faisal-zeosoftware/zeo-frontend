@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +43,7 @@ import { CountryPackService } from '../shared-ui/country-pack.service';   // v1.
         <div class="es-row" *ngFor="let l of rows">
           <div class="main">
             <div class="t">{{ l.letter_label }} <span class="es-muted" *ngIf="l.language === 'ar'">(Arabic)</span></div>
-            <div class="s"><span *ngIf="hr">{{ l.employee }} · </span>{{ l.number || l.reference_no }} · {{ l.created_at | date:'dd MMM yyyy' }}<span *ngIf="l.addressee"> · To: {{ l.addressee }}</span><span *ngIf="l.purpose"> · {{ l.purpose }}</span></div>
+            <div class="s"><span *ngIf="hr">{{ l.employee }} · </span>{{ l.number || l.reference_no }} · {{ l.created_at | date:'dd/MM/yyyy' }}<span *ngIf="l.addressee"> · To: {{ l.addressee }}</span><span *ngIf="l.purpose"> · {{ l.purpose }}</span></div>
             <div class="s" *ngIf="l.status === 'issued'">Reference {{ l.reference_no }} · verification code {{ l.verification_code }}</div>
             <div class="s" *ngIf="l.decision_note">HR: {{ l.decision_note }}</div>
           </div>
@@ -65,7 +66,7 @@ import { CountryPackService } from '../shared-ui/country-pack.service';   // v1.
           <div><label>Verification code</label><input [(ngModel)]="code" placeholder="10 letters / digits from the letter footer"></div>
           <div style="align-self:end"><button type="button" class="es-btn" (click)="verify()">Check</button></div>
         </div>
-        <p class="es-msg" style="margin-top:10px" *ngIf="verified?.valid">Valid: {{ verified.letter }} for {{ verified.employee }}, reference {{ verified.reference_no }}, issued {{ verified.issued_at | date:'dd MMM yyyy' }}.</p>
+        <p class="es-msg" style="margin-top:10px" *ngIf="verified?.valid">Valid: {{ verified.letter }} for {{ verified.employee }}, reference {{ verified.reference_no }}, issued {{ verified.issued_at | date:'dd/MM/yyyy' }}.</p>
         <p class="es-msg err" style="margin-top:10px" *ngIf="verified && !verified.valid">{{ verified.detail }}</p>
       </div>
     </div>

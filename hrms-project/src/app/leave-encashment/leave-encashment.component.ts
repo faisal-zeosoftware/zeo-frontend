@@ -484,8 +484,30 @@ export class LeaveEncashmentComponent {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
   
+  // v1.40.1: formula on the Edit form
+  @ViewChild('editFormulaInput') editFormulaInputRef?: ElementRef<HTMLTextAreaElement>;
+  editUseCustomFormula = false;
+
+  onEditFormulaCheckboxChange(): void {
+    if (!this.editUseCustomFormula) { this.editAsset.formula = this.editAsset.formula_used || this.defaultFormula; this.showFormulaHelper = false; }
+    else if (!this.editAsset.formula) { this.editAsset.formula = this.defaultFormula; }
+  }
+
+  insertEditFormulaText(text: string): void {
+    const ta = this.editFormulaInputRef?.nativeElement;
+    const cur = this.editAsset.formula || '';
+    if (!ta) { this.editAsset.formula = (cur ? cur + ' ' : '') + text; return; }
+    const start = ta.selectionStart ?? cur.length, end = ta.selectionEnd ?? cur.length;
+    const ins = (start > 0 && cur[start - 1] !== ' ' ? ' ' : '') + text + ' ';
+    this.editAsset.formula = cur.substring(0, start) + ins + cur.substring(end);
+    setTimeout(() => { ta.focus(); ta.selectionStart = ta.selectionEnd = start + ins.length; });
+  }
+
   openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
+  // v1.40.1: the formula the record was calculated with, editable
+  this.editAsset.formula = asset.formula_used || asset.formula || this.defaultFormula;
+  this.editUseCustomFormula = !!this.editAsset.formula && !!this.defaultFormula && this.editAsset.formula.trim() !== this.defaultFormula.trim();
   this.isEditModalOpen = true;
   
   this.mapLeaveTypeNameToId();
@@ -546,7 +568,14 @@ export class LeaveEncashmentComponent {
   return;
   }
   
-  this.leaveService.updateLeaveEncashment(this.editAsset.id, this.editAsset).subscribe(
+  // v1.40.1: the formula goes with the update (the API calculates the amount again)
+  const formula = (this.editAsset.formula || '').trim() || this.defaultFormula;
+  if (formula && !this.isFormulaValid(formula)) {
+    alert(`Formula contains unknown variable(s): ${this.getUnknownFormulaTokens(formula).join(', ')}`);
+    return;
+  }
+  const payload = { ...this.editAsset, formula };
+  this.leaveService.updateLeaveEncashment(this.editAsset.id, payload).subscribe(
   (response) => {
   alert(' Leave Encashment updated successfully!');
   this.closeEditModal();
@@ -562,7 +591,7 @@ export class LeaveEncashmentComponent {
     if (backendError && typeof backendError === 'object') {
       // Convert the object into a readable string
       errorMsg = Object.keys(backendError)
-        .map(key => `${key}: ${backendError[key].join(', ')}`)
+        .map(key => `${key}: ${Array.isArray(backendError[key]) ? backendError[key].join(', ') : backendError[key]}`)   // v1.40.1: {"error": "..."} too
         .join('\n');
     }
   

@@ -3,16 +3,18 @@
     <mat-sidenav #sidenav class="sub-sidenav hide-scrollbar" [opened]="isMobile ? isMenuOpen : true" [mode]="isMobile ? 'over' : 'side'" (closedStart)="isMenuOpen = false">
       <div class="wrapper">
         <div class="sidebar-top">
-          <span class="sub-sidebar-title" *ngIf="isMenuOpen">{{ title }}</span>
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen">{{ otherApp ? otherApp.label : title }}</span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
             <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
           </button>
         </div>
         <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul class="nav-menu-list">
+          <!-- v1.40.1: a page of this module opened from another app's menu (Leave → My leave) keeps that app's menu -->
+          <z-module-menu *ngIf="otherApp" [open]="isMenuOpen" (picked)="closeOnMobile()"></z-module-menu>
+          <ul class="nav-menu-list" *ngIf="!otherApp">
             <ng-container *ngFor="let item of items">
               <li *ngIf="visible[item.path]">
-                <a [routerLink]="base + '/' + item.path" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <a [routerLink]="item.path.startsWith('/') ? item.path : base + '/' + item.path" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                   <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
                   <span class="sidenav-opt">{{ item.label }}</span>
                 </a>

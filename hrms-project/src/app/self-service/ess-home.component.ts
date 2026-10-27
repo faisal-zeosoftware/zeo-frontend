@@ -25,6 +25,7 @@ export const ESS_LINKS: { title: string; items: Tile[] }[] = [
     { icon: 'receipt_long', label: 'Expenses', hint: 'Claims with receipts', link: '/main-sidebar/expense-options/expenses' },
     { icon: 'request_quote', label: 'Claims and requests', hint: 'General requests, advance, loan, air ticket', link: ESS_BASE + '/claims' },
     { icon: 'devices', label: 'My assets', hint: 'Laptop, phone, access cards', link: '/main-sidebar/asset-plus/my-assets' },
+    { icon: 'flight', label: 'My air ticket', hint: 'Entitlement, next eligible date, requests', link: ESS_BASE + '/air-ticket' },   // v1.62.0 air ticket
   ] },
   { title: 'Growth', items: [
     { icon: 'flag', label: 'My goals', hint: 'Goal setting and check-ins', link: '/main-sidebar/performance-options/goal-setting' },

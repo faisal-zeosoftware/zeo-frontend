@@ -523,7 +523,8 @@
               
             <tr *ngFor="let docs of pagedLeaveRequests;let i = index">
               <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-              <td data-label="Document Number">{{ docs.document_number }}</td>
+              <td data-label="Document Number">{{ docs.document_number }}
+                <a *ngIf="(docs.status || '').toLowerCase() === 'approved'" [routerLink]="['/main-sidebar/print-view/leave_approval', docs.id]" title="Leave approval letter (PDF)" aria-label="Print the leave approval letter"><mat-icon style="font-size:16px;width:16px;height:16px;vertical-align:middle">print</mat-icon></a></td>   <!-- v1.62.0 print -->
               <td data-label="Employee">{{ docs.employee }}<div style="font-size:12px;color:#4a4766">{{ docs.employee_name }}</div></td>
               <td data-label="Start date">{{ docs.start_date }}</td>
               <td data-label="End date">{{ docs.end_date }}</td> 

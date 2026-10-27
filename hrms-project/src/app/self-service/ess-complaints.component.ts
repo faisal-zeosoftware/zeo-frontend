@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -53,7 +54,7 @@ const NEXT_LABEL: Record<string, string> = {
             <div class="es-row click" *ngFor="let c of rows" [class.on]="sel?.id === c.id" (click)="open(c)">
               <div class="main">
                 <div class="t">{{ c.number }} · {{ c.subject }}</div>
-                <div class="s">{{ c.category_label }}<span *ngIf="handler"> · {{ c.employee }}</span> · {{ c.created_at | date:'dd MMM yyyy' }} · due {{ c.due_date | date:'dd MMM' }}</div>
+                <div class="s">{{ c.category_label }}<span *ngIf="handler"> · {{ c.employee }}</span> · {{ c.created_at | date:'dd/MM/yyyy' }} · due {{ c.due_date | date:'dd MMM' }}</div>
               </div>
               <div class="r">
                 <span class="es-tag overdue" *ngIf="c.overdue">overdue</span>
@@ -73,7 +74,7 @@ const NEXT_LABEL: Record<string, string> = {
         <div class="es-panel" *ngIf="sel">
           <div class="es-h">{{ sel.number }} · {{ sel.subject }} <span class="es-tag" [ngClass]="sel.status">{{ sel.status }}</span></div>
           <p class="es-muted" style="margin:0">{{ sel.category_label }}<span *ngIf="handler"> · {{ sel.employee }}</span><span *ngIf="sel.anonymous && !(handler && sel.employee === 'Anonymous')"> · anonymous</span><span *ngIf="sel.confidential"> · confidential</span>
-            · due {{ sel.due_date | date:'dd MMM yyyy' }}<span *ngIf="sel.overdue" style="color:#b42318"> (overdue)</span></p>
+            · due {{ sel.due_date | date:'dd/MM/yyyy' }}<span *ngIf="sel.overdue" style="color:#b42318"> (overdue)</span></p>
           <p style="font-size:13px;white-space:pre-line;margin-top:8px">{{ sel.description }}</p>
           <p class="es-muted" *ngIf="sel.against">Concerns: {{ sel.against }}</p>
           <p class="es-msg" *ngIf="sel.outcome"><b>Outcome:</b> {{ sel.outcome }}</p>

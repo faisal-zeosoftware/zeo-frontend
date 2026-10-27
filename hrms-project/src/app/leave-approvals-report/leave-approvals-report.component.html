@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section" >
@@ -297,7 +298,7 @@
     
           <ng-template #dateCheck>
             <ng-container *ngIf="f.key === 'updated_at'; else defaultCell">
-              <span class="text-nowrap">{{ item[f.key] | date:'dd MMM yyyy' }}</span>
+              <span class="text-nowrap">{{ item[f.key] | date:'dd/MM/yyyy' }}</span>
             </ng-container>
           </ng-template>
     

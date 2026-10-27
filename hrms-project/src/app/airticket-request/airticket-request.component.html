@@ -1,92 +1,15 @@
+<!-- v1.62.0 air ticket: requests with names, ticket or cash in words, route, dates, amount, status and approval progress -->
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
     <div class="header_section">
-      <div class="row">
-        <div class="col-md-4">
-          <h1>Air ticket request</h1>
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Air ticket requests</h1>
+          <p class="at-desc">Tickets and cash instead of a ticket asked by employees, with the route, travel dates and where the approval stands.</p>
         </div>
-
-     <div class="col-md-3">
-                    
-<div class="search-container">
-    <input
-        type="text"
-        class="search-input"
-        placeholder="Search..."
-        [(ngModel)]="searchQuery"
-        [ngModelOptions]="{standalone: true}"
-        (ngModelChange)="onSearchChange()"
-    >
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-</div>
-        <div class="col-md-5">
-          <div class="button-group pull-right">
-            <button
-              type="button"
-              (click)="openPopus()"
-              class="btn-Create btn btn-success"
-              *ngIf="hasAddPermission"
-            >
-              <span class="header-btn-icon"
-                ><mat-icon>add_circle </mat-icon></span
-              >
-              Create
-            </button>
-            <span *ngIf="!hasAddPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Edit btn-info btn"
-              (click)="EditShowButtons()"
-              *ngIf="hasEditPermission"
-            >
-              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
-              Edit
-            </button>
-            <span *ngIf="hasEditPermission"></span>
-            <button
-              type="button"
-              class="btn-Delete btn btn-danger"
-              (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission"
-            >
-              <span class="header-btn-icon">
-                <mat-icon> delete </mat-icon></span
-              >
-              {{ Delete ? "Cancel" : "Delete" }}
-            </button>
-
-            <span *ngIf="!hasDeletePermission"></span>
-          </div>
+        <div class="at-actions">
+          <button type="button" class="at-btn primary" *ngIf="hasAddPermission" (click)="openPopus()">+ New request</button>
         </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <button
-          class="mt-3 btn-danger btn"
-          style="width: 100%"
-          color="warn"
-          *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()"
-        >
-          Select all
-        </button>
-      </div>
-      <div class="col-md-3">
-        <button
-          class="mt-3 btn-danger btn"
-          color="warn"
-          *ngIf="Delete"
-          (click)="deleteSelectedAirTicketReq()"
-        >
-          Delete selected
-        </button>
       </div>
     </div>
 
@@ -250,7 +173,7 @@
                 >
                   <option value="TICKET">Ticket</option>
 
-                  <option value="ENCASHMENT">Encashment</option>
+                  <option value="ENCASHMENT">Cash instead of ticket</option>
                 </select>
               </div>
               <div
@@ -498,7 +421,7 @@
                 >
                   <option value="TICKET">Ticket</option>
 
-                  <option value="ENCASHMENT">Encashment</option>
+                  <option value="ENCASHMENT">Cash instead of ticket</option>
                 </select>
               </div>
             </div>
@@ -598,108 +521,30 @@
       </div>
     </div>
 
-    <div class="com_list mt-4" *ngIf="hasViewPermission">
-      <div style="overflow-x: auto; width: 100%">
-        <table width="100%" *ngIf="hasViewPermission">
-          <thead>
-            <tr>
-               <th class="sticky-left">No</th>
-              <th>Allocation</th>
-              <th>Document number</th>
-              <th>Branch</th>
-              <th>Employee</th>
-              <th>Request type</th>
-              <th>Request date</th>
-              <th>Departure date</th>
-              <th>Return date</th>
-
-              <th>Origin</th>
-              <th>Destination</th>
-              <th>Status</th>
-              <th>Notes</th>
-
-              <th>Approved date</th>
-
-             <th class="sticky-right">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr *ngFor="let docs of pagedRequests; let i = index">
-              <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-              <td data-label="Allocation">{{ docs.allocation }}</td>
-              <td data-label="Document Number">{{ docs.document_number }}</td>
-              <td data-label="Branch">{{ docs.branch }}</td>
-              <td data-label="Employee">{{ docs.employee }}</td>
-
-              <td data-label="Request Type">{{ docs.request_type }}</td>
-              <td data-label="Request Date">{{ docs.request_date }}</td>
-              <td data-label="Departure Date">{{ docs.departure_date }}</td>
-              <td data-label="Return Date">{{ docs.return_date }}</td>
-
-              <td data-label="Origin">{{ docs.origin }}</td>
-              <td data-label="Designation">{{ docs.destination }}</td>
-              <td data-label="Status">
-                <span
-                  class="badge"
-                  [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
-                >
-                  {{ docs.status }}
-                </span>
-              </td>
-              <td data-label="Notes">{{ docs.notes }}</td>
-
-              <td data-label="Approved Date">{{ docs.approved_date }}</td>
-
-              <!-- Dynamic custom field values -->
-
-              <td class="sticky-right" data-label="Actions">
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-                  (click)="openEditModal(docs)"
-                >
-                  <mat-icon style="color: white">draw</mat-icon>
-                </button>
-                <mat-checkbox
-                  *ngIf="Delete"
-                  [(ngModel)]="docs.selected"
-                ></mat-checkbox>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="pagination-container">
-  
-        <button
-          class="page-btn"
-          (click)="previousPage()"
-          [disabled]="currentPage === 1">
-      
-          Previous
-      
-        </button>
-      
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-      
-        <button
-          class="page-btn"
-          (click)="nextPage()"
-          [disabled]="currentPage === totalPages">
-      
-          Next
-      
-        </button>
-      
-      </div>
-      </div>
+    <div class="com_list mt-4">
+      <p class="at-msg err" *ngIf="atMsg">{{ atMsg }}</p>
+      <p class="at-muted" *ngIf="atLoading">Loading…</p>
+      <table class="table at-table" *ngIf="!atLoading && atRows.length">
+        <thead><tr><th>Request</th><th>Employee</th><th>Ticket or cash · route</th><th class="nw">Travel dates</th><th class="num">Amount</th><th>Status</th><th>Approval</th><th class="at-acts"></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let r of atRows" [attr.data-req]="r.id">
+            <td class="nw"><span class="at-code">{{ r.number || '–' }}</span><span class="at-sub">{{ at.dmy(r.request_date) }}</span></td>
+            <td class="at-who"><b>{{ r.employee }}</b><small>{{ r.code }} · {{ r.branch }}</small></td>
+            <td class="at-who"><b data-translate>{{ at.requestType(r.type) }}</b><small data-translate>{{ at.route(r) }}</small></td>
+            <td class="nw">{{ r.departure ? at.dmy(r.departure) : '–' }}<span class="at-sub" *ngIf="r.return" data-translate>{{ at.t('back {0}', [at.dmy(r.return)]) }}</span></td>
+            <td class="num">{{ at.money(r.amount) }}</td>
+            <td><span class="at-st" [ngClass]="at.reqClass(r.status)" data-translate>{{ at.reqStatus(r) }}</span></td>
+            <td><div class="at-prog"><span class="at-dots" *ngIf="at.dots(r).length"><i *ngFor="let d of at.dots(r)" [class.on]="d"></i></span><span data-translate>{{ at.progressMain(r) }}</span></div><span class="at-prog-sub" *ngIf="at.progressWho(r)" data-translate>{{ at.progressWho(r) }}</span></td>
+            <td class="at-acts">
+              <button type="button" class="at-btn sm at-icon-btn" title="Edit" aria-label="Edit" *ngIf="hasEditPermission && r.status === 'PENDING'" (click)="atEdit(r.id)"><mat-icon>edit</mat-icon></button>
+              <button type="button" class="at-btn sm danger at-icon-btn" title="Delete" aria-label="Delete" *ngIf="hasDeletePermission && (r.status === 'PENDING' || r.status === 'REJECTED')" (click)="atDelete(r)"><mat-icon>delete_outline</mat-icon></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="at-empty" *ngIf="!atLoading && !atMsg && !atRows.length"><b>No air ticket requests</b>Requests made by employees or by HR appear here.</div>
     </div>
+
   </div>
 </div>
 

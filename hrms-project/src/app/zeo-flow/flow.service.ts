@@ -12,6 +12,7 @@ export interface FlowMeta {
   users: { id: number; label: string; email: string }[]; roles: { id: number; label: string }[];
   templates: { id: number; name: string; kind: string; model: string }[]; approval_flows: { id: number; name: string; model: string }[];
   recipient_types: { key: string; label: string }[]; variables: string[]; can_configure: boolean; is_admin: boolean;
+  webhooks?: { id: number; name: string; url?: string; active?: boolean }[];   // v1.52.0 action "Call a webhook"
 }
 export interface FlowField { key: string; label: string; type: string; choices?: { value: any; label: string }[]; link?: string; link_label?: string; user?: boolean; employee?: boolean; related?: boolean; many?: boolean; required?: boolean; }
 

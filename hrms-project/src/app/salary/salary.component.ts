@@ -16,7 +16,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 @Component({
   selector: 'app-salary',
   templateUrl: './salary.component.html',
-  styleUrl: './salary.component.css'
+  styleUrls: ['./salary.component.css', '../leave-policy/leave-policy.css', '../payroll-plus/pay162.css']
 })
 export class SalaryComponent {
 
@@ -518,6 +518,7 @@ allPayrollCategories = [
       next: (data: any) => {
         // Filter active employees
         this.Salarycomponent = data;
+        this.scLoad();   // v1.62.0 payroll
 
         this.isLoading = false;
       },
@@ -1052,4 +1053,40 @@ openEditModal(asset: any): void {
 
 
 
+
+  // ------------------------------------------------------------------ v1.62.0 payroll: components once per code, grouped
+  scRows: any[] = [];
+  scLoaded = false;
+  scErr = '';
+  scQ = '';
+  scOpen: Record<string, boolean> = {};
+  scSections = [
+    { key: 'addition', title: 'Additions', desc: 'Basic salary, allowances and other earnings' },
+    { key: 'deduction', title: 'Deductions', desc: 'Amounts taken from the salary' },
+    { key: 'system', title: 'Statutory and system items', desc: 'Pension, insurance, gratuity accrual, loans and advances – calculated by ZEO' },
+  ];
+  scLoad(): void {
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any>(`${environment.apiBaseUrl}/payroll-plus/api/workspace/components/?schema=${encodeURIComponent(schema)}`).subscribe({
+      next: d => { this.scRows = d.rows || []; this.scLoaded = true; this.scErr = ''; },
+      error: e => { this.scLoaded = true; this.scErr = e?.error?.detail || 'The salary components could not be loaded.'; },
+    });
+  }
+  scShown(section: string): any[] {
+    const q = (this.scQ || '').trim().toLowerCase();
+    return this.scRows.filter(r => r.section === section && (!q || `${r.name} ${r.code} ${r.category_label}`.toLowerCase().includes(q)));
+  }
+  scEdit(item: any): void {
+    const c = (this.Salarycomponent || []).find((x: any) => x.id === item.id);
+    if (c) { this.openEditModal(c); return; }
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any>(`${environment.apiBaseUrl}/payroll/api/salarycomponent/${item.id}/?schema=${encodeURIComponent(schema)}`).subscribe(x => this.openEditModal(x));
+  }
+  scDelete(item: any): void {
+    if (!confirm(`Delete the component for ${item.branch}? Employees who have it lose it from their salary.`)) { return; }
+    this.EmployeeService.deleteSalaryComponent(item.id).subscribe({
+      next: () => { this.Salarycomponent = (this.Salarycomponent || []).filter((x: any) => x.id !== item.id); this.scLoad(); },
+      error: (e: any) => alert(e?.error?.detail || e?.error?.error || 'The component could not be deleted – it may be used in payslips.'),
+    });
+  }
 }

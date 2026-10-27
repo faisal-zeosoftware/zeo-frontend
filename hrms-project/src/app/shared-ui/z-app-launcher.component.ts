@@ -9,12 +9,13 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { Subscription, filter } from 'rxjs';
-import { ALL_APPS, MAIN_GROUPS, MenuApp, SUITES, appForUrl } from './menu-config';
+import { ALL_APPS, MAIN_GROUPS, MenuApp, SUITES, appForUrl, menuPicked } from './menu-config';
 import { appLanding, suiteOfApp, visibleGroups, visibleSections } from './z-module-menu.component';
 import { ZListService } from './z-list.service';
 import { CountryPackService } from './country-pack.service';
 import { I18N_UI, i18nT } from './i18n.service';
 import { AppSuite, ZSuiteService } from './z-suite.service';
+import { ZRecordService } from './z-record.service';   // v1.45.0 starred / recently viewed records
 
 interface Tile { key: string; label: string; icon: string; link: string; suite: AppSuite; }
 interface Hit { label: string; where: string; link: string; icon: string; suite: AppSuite | null; appKey: string; }
@@ -50,6 +51,13 @@ const TILE_ICON: Record<string, string> = {
           <span>{{ 'Recent:' | t }}</span>
           <button type="button" *ngFor="let r of recent" [class.cur]="r.key === current" (click)="go(r.link, r.suite, r.key)">{{ r.label }}</button>
         </div>
+      </div>
+      <!-- v1.45.0 starred and recently viewed records -->
+      <div class="zal-recs" *ngIf="!q.trim() && (stars.starred.length || stars.recent.length)">
+        <div class="zal-rc" *ngIf="stars.starred.length"><span class="zal-rh"><mat-icon aria-hidden="true">star</mat-icon>{{ 'Starred' | t }}</span>
+          <button type="button" *ngFor="let r of stars.starred.slice(0, 8)" (click)="openRec(r)" [title]="r.app">{{ r.label || r.object_id }}<small>{{ r.app }}</small></button></div>
+        <div class="zal-rc" *ngIf="stars.recent.length"><span class="zal-rh"><mat-icon aria-hidden="true">history</mat-icon>{{ 'Recently viewed' | t }}</span>
+          <button type="button" *ngFor="let r of stars.recent.slice(0, 8)" (click)="openRec(r)" [title]="r.app">{{ r.label || r.object_id }}<small>{{ r.app }}</small></button></div>
       </div>
       <div class="zal-hits" *ngIf="q.trim()">
         <button type="button" *ngFor="let h of hits" (click)="go(h.link, h.suite, h.appKey)">
@@ -100,6 +108,14 @@ const TILE_ICON: Record<string, string> = {
   .zal-hits b { display: block; font-weight: 500; color: #1B1640; font-size: 14px; }
   .zal-hits small { display: block; color: #6B7185; font-size: 12px; }
   .zal-none { margin: 8px 10px; color: #6B7185; }
+  .zal-recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .zal-rc { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .zal-rh { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #6B7185; margin-right: 4px; }
+  .zal-rh mat-icon { font-size: 16px; width: 16px; height: 16px; color: #E0A100; }
+  .zal-rc button { border: 1px solid #E3E5EE; background: #fff; border-radius: 8px; padding: 3px 9px; font-size: 12.5px; cursor: pointer; color: #1B1640;
+    max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .zal-rc button small { color: #6B7185; margin-left: 5px; font-size: 11px; }
+  .zal-rc button:hover { background: #F1F3F9; }
   :host-context([dir=rtl]) .zal-panel { left: auto; right: 0; }
   :host-context([dir=rtl]) .zal-suites button, :host-context([dir=rtl]) .zal-hits button { text-align: right; }
   @media (max-width: 900px) { .zal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -118,13 +134,16 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
   @ViewChild('box') box?: ElementRef<HTMLInputElement>;
 
+  stars: { starred: any[]; recent: any[] } = { starred: [], recent: [] };
   constructor(private router: Router, private zlist: ZListService, private cp: CountryPackService, private ss: ZSuiteService,
-              private cd: ChangeDetectorRef) {}
+              private cd: ChangeDetectorRef, private zrec: ZRecordService) {}
+  openRec(r: any): void { this.open = false; if (r.page) { this.router.navigateByUrl(r.page); } }
 
   ngOnInit(): void {
     this.subs.push(this.zlist.permissions().subscribe({ next: a => { this.access = a; this.buildRecent(); }, error: () => {} }));
     this.subs.push(this.ss.suite$.subscribe(s => { this.suite = s; if (!this.open) { this.view = s; } this.cd.markForCheck(); }));
     this.subs.push(this.ss.recent$.subscribe(() => this.buildRecent()));
+    this.subs.push(this.zrec.stars$.subscribe(x => { this.stars = { starred: x.starred || [], recent: (x.recent || []).filter((r: any) => r.page !== this.router.url) }; this.cd.markForCheck(); }));
     this.subs.push(this.ss.active$.subscribe(() => { this.buildRecent(); this.cd.markForCheck(); }));
     this.subs.push(this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => { this.mark(); this.open = false; }));
     this.mark();
@@ -136,7 +155,7 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
 
   toggle(): void {
     this.open = !this.open; this.q = ''; this.view = this.suite;
-    if (this.open) { setTimeout(() => this.box?.nativeElement.focus(), 30); }
+    if (this.open) { this.zrec.refreshStars(); setTimeout(() => this.box?.nativeElement.focus(), 30); }
   }
   /** Apps the user has at least one module in (an employee without rights sees no Settings). */
   shownSuites() {
@@ -187,6 +206,7 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
   first(): void { const h = this.hits[0]; if (h) { this.go(h.link, h.suite, h.appKey); } }
 
   go(link: string, suite: AppSuite | null, key: string): void {
+    menuPicked();   // v1.40.1: an app picked here opens its own menu
     if (suite) { this.ss.set(suite); }
     this.ss.touch(key);
     this.open = false; this.q = '';

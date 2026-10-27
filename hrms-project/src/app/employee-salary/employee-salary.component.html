@@ -110,13 +110,9 @@ placeholder="Enter amount"
           <label>Employee
             <span class="required-star">*</span>
           </label>
-          <div class="custom-sel">
-            <select class="form-control" id="employee" name="employee" [(ngModel)]="employee"
-              [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !employee}">
-              <option value="" disabled selected hidden>Select employee</option>
-              <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.emp_code }} – {{ employee.emp_first_name }} {{ employee.emp_last_name || '' }}</option>
-            </select>
-          </div>
+          <!-- v1.40.1: searchable, wide picker (the <select> cut the names off) -->
+          <z-emp-pick inputId="employee" name="employee" [employees]="employees" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}"
+                      [ngClass]="{'error-field': registerButtonClicked && !employee}" placeholder="Search employee by name or code"></z-emp-pick>
           <div *ngIf="registerButtonClicked && !employee" class="error-message">Employee is required.</div>
         </div>
 
@@ -204,13 +200,8 @@ placeholder="Enter amount"
         
                         <div class="col-md-6">
                           <label>Employee</label>
-                          <div class="custom-sel">
-                            <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee"
-                              [ngModelOptions]="{standalone: true}">
-                              <option value="" disabled selected hidden>Select employee</option>
-              <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.emp_code }} – {{ employee.emp_first_name }} {{ employee.emp_last_name || '' }}</option>
-                            </select>
-                          </div>
+                          <!-- v1.40.1: searchable, wide picker -->
+                          <z-emp-pick inputId="edit-employee" name="edit-employee" [employees]="employees" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}"></z-emp-pick>
                         </div>
         
         
@@ -377,18 +368,26 @@ placeholder="Enter amount"
 
               <div class="col-md-3">
                 <mat-form-field appearance="outline" class="w-100 compact-mat-select" style="margin-top: 5px;">
+                  <!-- v1.40.1: wide panel (not the width of the narrow filter box), readable "CODE - Name" rows, a
+                       summary in the box instead of a cut-off list of names -->
                   <mat-select
                     multiple
                     [(ngModel)]="selectedEmployees"
                     placeholder="Select Employee"
+                    panelClass="es-emp-panel"
+                    panelWidth="auto"
                     (selectionChange)="applyEmployeeFilter()">
+                    <mat-select-trigger>
+                      <ng-container *ngIf="selectedEmployees.length === 1">{{ employeeLabel(selectedEmployees[0]) }}</ng-container>
+                      <ng-container *ngIf="selectedEmployees.length > 1">{{ selectedEmployees.length }} employees selected</ng-container>
+                    </mat-select-trigger>
               
                     <!-- Search box -->  
                      
-                    <div class="px-2 pb-2">
+                    <div class="px-2 pb-2 es-emp-search">
                       <input
                         type="text"
-                        placeholder="Search Employee"
+                        placeholder="Search employee by name or code"
                         class="form-control"
                         [(ngModel)]="employeeSearch"
                         [ngModelOptions]="{ standalone: true }"

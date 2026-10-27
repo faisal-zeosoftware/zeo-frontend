@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -13,9 +16,29 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-airticket-allocation',
   templateUrl: './airticket-allocation.component.html',
-  styleUrl: './airticket-allocation.component.css'
+  styleUrls: ['./airticket-allocation.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 export class AirticketAllocationComponent {
+  // v1.62.0 air ticket: readable rows and the summary from /payroll-plus/api/air-tickets/allocations/; row actions open this screen's own form
+  at = atInject(AtUiService);
+  atRows: any[] = [];
+  atSum: any = null;
+  atLoading = true;
+  atMsg = '';
+  async atLoad(branchIds: number[] = []): Promise<void> {
+    try { const r: any = await this.at.get('allocations', { branch_id: branchIds }); this.atRows = r.rows || []; this.atSum = r.summary; this.atMsg = ''; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The allocations could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atEdit(id: number): void {
+    const row = (this.Allocations || []).find((x: any) => x.id === id);
+    if (row) { this.openEditModal(row); }
+  }
+  /** v1.62.0 air ticket: deletes the allocation itself (the old "Delete selected" called the policy endpoint with the allocation id) */
+  async atDelete(a: any): Promise<void> {
+    if (await this.at.remove('allocation', a.id, `${a.employee} – ${a.policy}`)) { this.Allocations = (this.Allocations || []).filter((x: any) => x.id !== a.id); await this.atLoad(); }
+  }
+
 
 
   
@@ -453,6 +476,7 @@ ngOnInit(): void {
               isLoading: boolean = false;
 
 fetchEmployees(schema: string, branchIds: number[]): void {
+  this.atLoad(branchIds);   // v1.62.0 air ticket
   this.isLoading = true;
   this.employeeService.getairticketAllocationsNew(schema, branchIds).subscribe({
     next: (data: any) => {

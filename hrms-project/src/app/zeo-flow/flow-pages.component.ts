@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 /** v1.29.0 – Workflow automation pages: dashboard, rules, execution log, scheduled actions, templates, audit. */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -6,8 +7,9 @@ import { Router, RouterModule } from '@angular/router';
 import { FLOW_CSS, FlowMeta, FlowService } from './flow.service';
 import { zToast } from '../shared-ui/z-toast';
 import { TPipe } from '../shared-ui/i18n.service';
+import { ZListDirective } from '../shared-ui/z-list.directive';
 
-const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe];
+const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe, ZListDirective];   // v1.38.0: the HRMS list bar (search, views, columns, export) on the lists
 
 @Component({
   selector: 'z-flow-dashboard', standalone: true, imports: IMPORTS, styles: [FLOW_CSS],
@@ -60,7 +62,7 @@ export class FlowDashboardComponent implements OnInit {
     <select [(ngModel)]="module" (ngModelChange)="load()"><option value="">{{ 'All modules' | t }}</option><option *ngFor="let m of meta?.modules" [value]="m.key">{{ m.label }}</option></select>
   </div>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Rule' | t }}</th><th>{{ 'Module · record' | t }}</th><th>{{ 'Trigger' | t }}</th><th>{{ 'Actions' | t }}</th><th>{{ 'State' | t }}</th><th>{{ 'Runs' | t }}</th><th></th></tr></thead>
+    <table class="fw-table"><thead><tr><th>{{ 'Rule' | t }}</th><th>{{ 'Module · record' | t }}</th><th>{{ 'Trigger' | t }}</th><th>{{ 'Actions' | t }}</th><th>{{ 'State' | t }}</th><th>{{ 'Runs' | t }}</th><th></th></tr></thead>
       <tbody>
         <tr *ngFor="let w of rows">
           <td><a [routerLink]="['/main-sidebar/automation/rules', w.id]"><b>{{ w.name }}</b></a><div class="fw-muted" *ngIf="w.description">{{ w.description }}</div><div class="fw-small fw-muted" *ngIf="w.problems?.length"><span class="fw-chip bad">{{ w.problems.length }} {{ 'to fix' | t }}</span></div></td>
@@ -118,7 +120,7 @@ export class FlowRulesComponent implements OnInit {
     <input type="date" [(ngModel)]="f.from" (ngModelChange)="load()"><input type="date" [(ngModel)]="f.to" (ngModelChange)="load()">
   </div>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Started' | t }}</th><th>{{ 'Rule' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Trigger' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Status' | t }}</th><th>{{ 'Steps' | t }}</th><th>{{ 'Duration' | t }}</th><th></th></tr></thead>
+    <table class="fw-table"><thead><tr><th>{{ 'Started' | t }}</th><th>{{ 'Rule' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Trigger' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Status' | t }}</th><th>{{ 'Steps' | t }}</th><th>{{ 'Duration' | t }}</th><th></th></tr></thead>
       <tbody><tr *ngFor="let r of rows" (click)="sel = r" style="cursor:pointer">
         <td class="fw-muted" style="white-space:nowrap">{{ r.started_at | date:'dd/MM/yy HH:mm:ss' }}</td><td>{{ r.workflow_name }} <span class="fw-muted fw-small">v{{ r.version }}</span></td>
         <td><a *ngIf="r.link" [routerLink]="r.link" (click)="$event.stopPropagation()">{{ r.record_label }}</a><span *ngIf="!r.link">{{ r.record_label || '–' }}</span></td>
@@ -165,8 +167,8 @@ export class FlowRunsComponent implements OnInit {
   <div class="fw-filters"><select [(ngModel)]="status" (ngModelChange)="load()"><option value="pending">{{ 'Pending' | t }}</option><option value="overdue">{{ 'Overdue' | t }}</option><option value="done">{{ 'Done' | t }}</option><option value="cancelled">{{ 'Cancelled' | t }}</option><option value="failed">{{ 'Failed' | t }}</option><option value="">{{ 'All' | t }}</option></select></div>
   <p class="fw-msg" *ngIf="res">{{ res }}</p>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Due' | t }}</th><th>{{ 'Kind' | t }}</th><th>{{ 'Rule' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Note' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr></thead>
-      <tbody><tr *ngFor="let s of rows"><td style="white-space:nowrap" [style.color]="overdue(s) ? '#b42318' : ''">{{ s.due_at | date:'dd/MM/yy HH:mm' }}</td><td>{{ s.kind }}</td><td>{{ s.workflow_name }}</td>
+    <table class="fw-table"><thead><tr><th>{{ 'Due' | t }}</th><th>{{ 'Kind' | t }}</th><th>{{ 'Rule' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Note' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr></thead>
+      <tbody><tr *ngFor="let s of rows"><td style="white-space:nowrap" [style.color]="overdue(s) ? '#b42318' : ''">{{ s.due_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ s.kind }}</td><td>{{ s.workflow_name }}</td>
         <td><a *ngIf="s.link" [routerLink]="s.link">{{ s.record_label }}</a></td><td class="fw-small">{{ s.note }} <span class="fw-muted" *ngIf="s.actions?.length">· {{ s.actions.length }} action(s) left</span></td>
         <td><span class="fw-chip" [ngClass]="s.status">{{ s.status }}</span></td><td><button class="fw-btn sm danger" *ngIf="s.status === 'pending'" (click)="cancel(s)">{{ 'Cancel' | t }}</button></td></tr>
       <tr *ngIf="!rows.length && loaded"><td colspan="7" class="fw-empty">{{ 'Nothing scheduled.' | t }}</td></tr></tbody></table></div>
@@ -190,7 +192,7 @@ export class FlowScheduledComponent implements OnInit {
   <div class="fw-head"><div><h1>{{ 'Notification templates' | t }}</h1><p>{{ 'E-mail and in-app texts used by the rules. Variables:' | t }} <code *ngFor="let v of meta?.variables" style="margin-right:4px">{{ v }}</code></p></div>
     <span class="sp"></span><button class="fw-btn primary" (click)="edit({ name: '', kind: 'email', model: '', subject: '', body: '', active: true })">+ {{ 'New template' | t }}</button></div>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Name' | t }}</th><th>{{ 'Kind' | t }}</th><th>{{ 'Record type' | t }}</th><th>{{ 'Subject' | t }}</th><th>{{ 'Active' | t }}</th><th></th></tr></thead>
+    <table class="fw-table"><thead><tr><th>{{ 'Name' | t }}</th><th>{{ 'Kind' | t }}</th><th>{{ 'Record type' | t }}</th><th>{{ 'Subject' | t }}</th><th>{{ 'Active' | t }}</th><th></th></tr></thead>
       <tbody><tr *ngFor="let t of rows"><td><a class="fw-link" (click)="edit(t)"><b>{{ t.name }}</b></a></td><td>{{ t.kind }}</td><td>{{ modelLabel(t.model) }}</td><td class="fw-small">{{ t.subject }}</td><td><span class="fw-chip" [ngClass]="t.active ? 'ok' : 'inactive'">{{ t.active ? 'yes' : 'no' }}</span></td>
         <td><button class="fw-btn sm" (click)="edit(t)">{{ 'Edit' | t }}</button> <button class="fw-btn sm danger" (click)="del(t)">{{ 'Delete' | t }}</button></td></tr>
       <tr *ngIf="!rows.length && loaded"><td colspan="6" class="fw-empty">{{ 'No template yet.' | t }}</td></tr></tbody></table></div>
@@ -227,8 +229,8 @@ export class FlowTemplatesComponent implements OnInit {
   selector: 'z-flow-audit', standalone: true, imports: IMPORTS, styles: [FLOW_CSS],
   template: `
 <div class="fw"><div class="fw-head"><div><h1>{{ 'Configuration changes' | t }}</h1><p>{{ 'Who created, changed, activated, archived or deleted rules, approval flows and templates.' | t }}</p></div></div>
-  <div class="fw-card" style="padding:0;overflow:hidden"><table class="fw-table" zPlain><thead><tr><th>{{ 'When' | t }}</th><th>{{ 'User' | t }}</th><th>{{ 'What' | t }}</th><th>{{ 'Action' | t }}</th><th>{{ 'Detail' | t }}</th></tr></thead>
-    <tbody><tr *ngFor="let a of rows"><td class="fw-muted" style="white-space:nowrap">{{ a.at | date:'dd/MM/yy HH:mm' }}</td><td>{{ a.user }}</td><td>{{ a.kind }} #{{ a.object_id }}</td><td>{{ a.action }}</td><td class="fw-small">{{ a.detail | json }}</td></tr>
+  <div class="fw-card" style="padding:0;overflow:hidden"><table class="fw-table"><thead><tr><th>{{ 'When' | t }}</th><th>{{ 'User' | t }}</th><th>{{ 'What' | t }}</th><th>{{ 'Action' | t }}</th><th>{{ 'Detail' | t }}</th></tr></thead>
+    <tbody><tr *ngFor="let a of rows"><td class="fw-muted" style="white-space:nowrap">{{ a.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ a.user }}</td><td>{{ a.kind }} #{{ a.object_id }}</td><td>{{ a.action }}</td><td class="fw-small">{{ a.detail | json }}</td></tr>
     <tr *ngIf="!rows.length && loaded"><td colspan="5" class="fw-empty">{{ 'Nothing yet.' | t }}</td></tr></tbody></table></div></div>`,
 })
 export class FlowAuditComponent implements OnInit {

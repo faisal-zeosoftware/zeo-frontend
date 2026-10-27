@@ -12,6 +12,9 @@ import { DrillPanelComponent } from '../hr-modules/dashboards/drill-panel.compon
 import { ManagerDashboardComponent } from '../hr-modules/dashboards/manager-dashboard.component';
 import { EssDashboardComponent } from '../hr-modules/dashboards/ess-dashboard.component';
 import { CeoDashboardComponent } from '../ceo-dashboard/ceo-dashboard.component';
+import { ZRecordService } from '../shared-ui/z-record.service';   // v1.45.0 starred / recent records
+import { ZWallComponent } from '../shared-ui/z-wall.component';   // v1.47.0 company wall strip
+import { ZSetupCardComponent } from '../shared-ui/z-setup-card.component';   // v1.56.0 setup guide progress / checklist
 
 type Tab = 'hr' | 'management' | 'team' | 'my';
 
@@ -29,8 +32,8 @@ type Tab = 'hr' | 'management' | 'team' | 'my';
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [...COUNTRY_PACK_UI, ...I18N_UI, CommonModule, MatIconModule, ZDashDesignerComponent, ZDashOverviewComponent, DrillPanelComponent,
-            ManagerDashboardComponent, EssDashboardComponent, CeoDashboardComponent],
+  imports: [...COUNTRY_PACK_UI, ...I18N_UI, CommonModule, MatIconModule, ZSetupCardComponent, ZDashDesignerComponent, ZDashOverviewComponent, DrillPanelComponent,
+            ManagerDashboardComponent, EssDashboardComponent, CeoDashboardComponent, ZWallComponent],
   template: `
   <div class="zh-page" #page>
     <div class="zh-in">
@@ -47,6 +50,7 @@ type Tab = 'hr' | 'management' | 'team' | 'my';
       </header>
       <p class="zh-err" *ngIf="error">{{ error | t }}</p>
 
+      <z-setup-card></z-setup-card>
       <!-- needs your action: only what this user must act on; each item opens its rows -->
       <section class="zh-act" *ngIf="home" [attr.aria-label]="'Needs your action' | t" data-strip="1">
         <h2><mat-icon aria-hidden="true">notification_important</mat-icon>{{ 'Needs your action' | t }}</h2>
@@ -61,6 +65,17 @@ type Tab = 'hr' | 'management' | 'team' | 'my';
         </div>
         <ng-template #allClear><p class="zh-clear"><mat-icon aria-hidden="true">task_alt</mat-icon>{{ 'Nothing needs your action right now.' | t }}</p></ng-template>
       </section>
+
+      <!-- v1.45.0 starred and recently viewed records -->
+      <section class="zh-recs" *ngIf="stars.starred.length || stars.recent.length" [attr.aria-label]="'Starred and recently viewed' | t">
+        <div class="zh-rc" *ngIf="stars.starred.length"><h2><mat-icon aria-hidden="true" class="st">star</mat-icon>{{ 'Starred' | t }}</h2>
+          <button type="button" *ngFor="let r of stars.starred.slice(0, 10)" (click)="openRec(r)"><b>{{ r.label || r.object_id }}</b><small>{{ r.app }}</small></button></div>
+        <div class="zh-rc" *ngIf="stars.recent.length"><h2><mat-icon aria-hidden="true">history</mat-icon>{{ 'Recently viewed' | t }}</h2>
+          <button type="button" *ngFor="let r of stars.recent.slice(0, 10)" (click)="openRec(r)"><b>{{ r.label || r.object_id }}</b><small>{{ r.app }}</small></button></div>
+      </section>
+
+      <!-- v1.47.0 company wall: today's birthdays, anniversaries, new joiners, the newest announcements -->
+      <z-wall *ngIf="home" [compact]="true"></z-wall>
 
       <ng-container *ngIf="home" [ngSwitch]="tab">
         <section *ngSwitchCase="'hr'" class="zh-view" data-view="hr">
@@ -77,6 +92,14 @@ type Tab = 'hr' | 'management' | 'team' | 'my';
   </div>
   <z-drill-panel [request]="drillReq" (closed)="drillReq = null" (navigate)="goModule($event)"></z-drill-panel>`,
   styles: [`
+  .zh-recs { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin: 0 0 16px; }
+  .zh-rc { background: #fff; border: 1px solid #E3E5EE; border-radius: 12px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .zh-rc h2 { flex: 0 0 100%; display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; margin: 0 0 4px; color: #1B1640; }
+  .zh-rc h2 mat-icon { font-size: 18px; width: 18px; height: 18px; color: #6B7185; } .zh-rc h2 mat-icon.st { color: #E0A100; }
+  .zh-rc button { border: 1px solid #E3E5EE; background: #F7F8FB; border-radius: 8px; padding: 4px 10px; cursor: pointer; text-align: left; max-width: 260px; }
+  .zh-rc button b { display: block; font-weight: 500; font-size: 12.5px; color: #1B1640; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .zh-rc button small { color: #6B7185; font-size: 11px; }
+  .zh-rc button:hover { background: #EEEDFD; }
     :host { display: block; --zh-top: 64px; --zh-side: 56px; }
     /* the page's own scroll area: below the fixed top bar, beside the fixed main menu (left, or right in Arabic) */
     .zh-page { position: fixed; top: var(--zh-top); bottom: 0; inset-inline-start: var(--zh-side); inset-inline-end: 0; overflow-x: hidden; overflow-y: auto;
@@ -132,8 +155,10 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   private mo?: MutationObserver;
   private raf = 0;
 
+  stars: { starred: any[]; recent: any[] } = { starred: [], recent: [] };
   constructor(private api: ModuleApiService, private route: ActivatedRoute, private router: Router, private el: ElementRef<HTMLElement>,
-              private zone: NgZone, private cd: ChangeDetectorRef) {}
+              private zone: NgZone, private cd: ChangeDetectorRef, private zrec: ZRecordService) {}
+  openRec(r: any): void { if (r.page) { this.router.navigateByUrl(r.page); } }
 
   get greeting(): string {
     const h = new Date().getHours();
@@ -151,6 +176,8 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.starSub = this.zrec.stars$.subscribe(x => { this.stars = { starred: x.starred || [], recent: x.recent || [] }; this.cd.markForCheck(); });   // v1.45.0
+    this.zrec.refreshStars();
     this.fit();
     this.watchFrame();
     this.sub = this.route.queryParamMap.subscribe(q => {
@@ -163,7 +190,9 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { this.sub?.unsubscribe(); this.ro?.disconnect(); this.mo?.disconnect(); cancelAnimationFrame(this.raf); }
+  private starSub?: Subscription;
+  ngOnDestroy(): void {
+    this.starSub?.unsubscribe(); this.sub?.unsubscribe(); this.ro?.disconnect(); this.mo?.disconnect(); cancelAnimationFrame(this.raf); }
 
   /** The view asked for (address), if the user may open it; else the default view of their role. */
   private pick(want: Tab | null): void {

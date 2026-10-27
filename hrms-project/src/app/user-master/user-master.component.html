@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container mt-5" *ngIf="hasViewPermission">
     <div class="comapny_section">
         <div class="header_section">
@@ -30,7 +31,7 @@
                     <td>{{ u.email }}</td>
                     <td>{{ u.branch_names || 'All branches' }}</td>
                     <td>{{ userType(u) }}</td>
-                    <td>{{ u.last_login ? (u.last_login | date:'dd MMM yyyy, HH:mm') : never() }}</td>
+                    <td>{{ u.last_login ? (u.last_login | date:'dd/MM/yyyy HH:mm') : never() }}</td>
                     <td class="text-end">
                         <button type="button" class="um-act" title="Edit" *ngIf="hasEditPermission" (click)="openEditEmpPopuss(u.id)"><mat-icon>edit</mat-icon></button>
                         <button type="button" class="um-act" title="Details" (click)="showUserDetails(u.id)"><mat-icon>open_in_new</mat-icon></button>
@@ -51,7 +52,7 @@
                     <td>{{ i.email || i.username }}</td>
                     <td>{{ i.is_superuser ? 'Administrator' : i.is_staff ? 'Staff' : 'User' }}</td>
                     <td>{{ i.invited_by || '–' }}</td>
-                    <td>{{ i.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
+                    <td>{{ i.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
                     <td class="text-end"><button type="button" class="um-act um-del" title="Cancel the invitation" *ngIf="hasAddPermission" (click)="cancelInvite(i)"><mat-icon>close</mat-icon></button></td>
                 </tr>
             </tbody>

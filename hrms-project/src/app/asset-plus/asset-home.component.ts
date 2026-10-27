@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -64,7 +65,7 @@ import { ASSET_BASE, AssetApiService, EVENT_ICON, STATUS_LABEL, money } from './
           <div class="ap-ev" *ngFor="let e of events">
             <mat-icon>{{ icon(e.event) }}</mat-icon>
             <div class="txt"><a class="ex-link" (click)="open(e.asset_id)">{{ e.asset }}</a> – {{ e.summary }}
-              <div class="meta">{{ e.at | date:'dd MMM yyyy, HH:mm' }} · {{ e.user }}</div></div>
+              <div class="meta">{{ e.at | date:'dd/MM/yyyy HH:mm' }} · {{ e.user }}</div></div>
           </div>
           <p class="ex-muted" *ngIf="!events.length">Nothing has happened yet.</p>
         </div>

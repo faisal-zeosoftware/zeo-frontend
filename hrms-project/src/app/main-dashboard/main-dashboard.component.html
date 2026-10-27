@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container-fluid" *ngFor="let employeesec of employees">
     <div class="row">
       <!-- Sidebar Navigation -->
@@ -163,7 +164,7 @@
                     <div>
                       <strong>Document Alert</strong>
                       <div class="text-muted small">
-                        {{ doc.created_at | date: 'medium' }}
+                        {{ doc.created_at | date: 'dd/MM/yyyy HH:mm' }}
                       </div>
                       <div class="small mt-1 text-wrap">{{ doc.message }}</div>
                     </div>
@@ -514,7 +515,7 @@
                             <div class="col-md-11">
                               <h2 >{{ ann.title }}</h2>
                               <h3 >
-                                {{ ann.schedule_at | date:'dd MMM yyyy' }} – {{ ann.expires_at | date:'dd MMM yyyy' }}
+                                {{ ann.schedule_at | date:'dd/MM/yyyy' }} – {{ ann.expires_at | date:'dd/MM/yyyy' }}
                               </h3>
                             </div>
                             <div class="col-md-1 text-end">
@@ -570,11 +571,11 @@
         <div class="project-meta">
           <div class="meta-item">
             <i class="fa fa-calendar-alt"></i>
-            <span><strong>Start:</strong> {{ project.start_date | date }}</span>
+            <span><strong>Start:</strong> {{ project.start_date | date:'dd/MM/yyyy' }}</span>
           </div>
           <div class="meta-item">
             <i class="fa fa-calendar-check"></i>
-            <span><strong>End:</strong> {{ project.end_date | date }}</span>
+            <span><strong>End:</strong> {{ project.end_date | date:'dd/MM/yyyy' }}</span>
           </div>
         </div>
   
@@ -605,7 +606,7 @@
             </div>
             <p class="task-desc">{{ task.description }}</p>
             <small class="task-date">
-              <i class="fa fa-clock"></i> {{ task.start_date | date }} → {{ task.end_date | date }}
+              <i class="fa fa-clock"></i> {{ task.start_date | date:'dd/MM/yyyy' }} → {{ task.end_date | date:'dd/MM/yyyy' }}
             </small>
           </div>
         </div>

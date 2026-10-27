@@ -39,6 +39,7 @@ const APP = 'zeo-people';
       <div class="hs-side">
         <div class="hs-card" *ngIf="d.status === 'sent'">
           <h3>Your signature</h3>
+          <p class="hs-note info" *ngIf="d.witness">Signing on this device: hand it to {{ d.signer }} to sign. It is recorded as signed in front of you.</p>
           <ng-container *ngIf="d.otp_needed">
             <p class="hs-muted">1. Get a one-time code by e-mail, then enter it here.</p>
             <div class="hs-acts"><button type="button" class="ex-btn sm" (click)="sendOtp()" [disabled]="busy">{{ otpSent ? 'Send the code again' : 'Send me the code' }}</button>
@@ -75,8 +76,10 @@ export class ZpSignComponent implements OnInit {
   api!: ZaClient; d: any = null; err = ''; ok = ''; busy = false; otp = ''; otpSent = false; otpTo = ''; mode = 'draw'; typed = ''; agree = false; declining = false; reason = '';
   docUrl: any = null; drawing = false; drew = false; id = 0; w = when;
   constructor(private za: ZaApiService, private route: ActivatedRoute, private router: Router, private sanitizer: DomSanitizerLike) {}
+  app = APP;   // v1.48.0: also the asset handovers of HR operations (route data app = zeo-hr)
   async ngOnInit(): Promise<void> {
-    this.api = this.za.for(APP);
+    this.app = this.route.snapshot.data['app'] || APP;
+    this.api = this.za.for(this.app);
     this.id = Number(this.route.snapshot.paramMap.get('id'));
     await this.load();
   }
@@ -109,7 +112,7 @@ export class ZpSignComponent implements OnInit {
     this.busy = false;
   }
   async decline(): Promise<void> { try { this.d = await this.api.post(`sign/${this.id}/`, { decline: this.reason }); this.declining = false; this.ok = 'Declined.'; } catch (e) { this.err = ZaApiService.error(e); } }
-  back(): void { this.router.navigate([base(APP), 'home']); }
+  back(): void { this.router.navigate([base(this.app), 'home']); }
 }
 
 
@@ -459,4 +462,65 @@ export class ZpReviewComponent implements OnInit {
     this.busy = false;
   }
   back(): void { this.router.navigate([base(APP), 'home']); }
+}
+
+// ---------------------------------------------------------------- v1.61.0 insurer member file
+@Component({
+  selector: 'zp-insurer-file',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  styleUrls: ['../expense/expense.css', './za.css'],
+  template: `
+<div class="container"><div class="comapny_section" data-insurer-file>
+  <div class="header_section"><div class="ex-head"><div>
+    <h1 class="page-title">Insurer member file</h1>
+    <p class="ex-desc">The members of a medical plan for the insurer – each employee and their insured family members, with gender, date of birth, nationality, Emirates ID, passport, visa, salary band and member number – or the additions and deletions since a date for the monthly endorsement.</p></div></div></div>
+  <div class="com_list mt-4">
+    <p class="hs-note err" *ngIf="err">{{ err }}</p>
+    <div class="hs-card">
+      <div class="ex-form">
+        <label>Plan<select [(ngModel)]="plan" data-ins-plan><option [ngValue]="null">Choose…</option><option *ngFor="let p of plans" [ngValue]="p.id">{{ p.name }}{{ p.provider ? ' – ' + p.provider : '' }}</option></select></label>
+        <label>Members on<input type="date" [(ngModel)]="on" data-ins-on></label>
+        <label>Only the changes since (optional)<input type="date" [(ngModel)]="since" data-ins-since></label>
+      </div>
+      <div class="hs-acts" style="margin-top:10px">
+        <button type="button" class="ex-btn primary" (click)="show()" [disabled]="busy || !plan" data-ins-show>Show</button>
+        <button type="button" class="ex-btn" (click)="dl('xlsx')" [disabled]="busy || !plan" data-ins-xlsx>Excel</button>
+        <button type="button" class="ex-btn" (click)="dl('csv')" [disabled]="busy || !plan">CSV</button></div>
+      <p class="hs-muted" style="margin-top:8px">Insurers use different templates: check the columns against your insurer's file before the first upload. Family members are taken from Employee › Family where "insured" is ticked (else from the dependants written on the enrolment).</p>
+    </div>
+    <div class="hs-card" *ngIf="r" style="margin-top:12px" data-ins-result>
+      <p><b>{{ r.principals }}</b> employee(s), <b>{{ r.dependants }}</b> family member(s){{ r.since ? ' – changes since ' + r.since : ' on ' + r.on }}.</p>
+      <div class="hs-note err" *ngIf="r.problems.length" data-ins-problems>{{ r.problems.length }} member(s) miss data the insurer needs:
+        <span *ngFor="let p of r.problems.slice(0, 8); let l = last">{{ p.member }} ({{ p.missing.join(', ') }}){{ l ? '' : '; ' }}</span>{{ r.problems.length > 8 ? ' …' : '' }}</div>
+      <div style="overflow:auto;max-height:480px">
+        <table class="hs-table" zPlain><thead><tr><th *ngFor="let c of cols">{{ c.label }}</th></tr></thead>
+          <tbody><tr *ngFor="let x of r.rows" [attr.data-ins-row]="x.member_type"><td *ngFor="let c of cols">{{ x[c.key] }}</td></tr>
+            <tr *ngIf="!r.rows.length"><td [attr.colspan]="cols.length" class="hs-muted">No members.</td></tr></tbody></table>
+      </div>
+    </div>
+  </div>
+</div></div>`,
+})
+export class ZpInsurerFileComponent implements OnInit {
+  api!: ZaClient; plans: any[] = []; plan: number | null = null; on = new Date().toISOString().slice(0, 10); since = ''; r: any = null; err = ''; busy = false;
+  cols: any[] = [];
+  constructor(private za: ZaApiService) {}
+  async ngOnInit(): Promise<void> {
+    this.api = this.za.for(APP);
+    try { this.plans = (await this.api.get('insurer-file/plans/')).plans; if (this.plans.length === 1) { this.plan = this.plans[0].id; } } catch (e) { this.err = ZaApiService.error(e); }
+  }
+  private q(fmt: string): any { return { plan: this.plan, on: this.on, since: this.since, file: fmt }; }
+  async show(): Promise<void> {
+    this.err = ''; this.busy = true;
+    try { this.r = await this.api.get('insurer-file/', this.q('json')); this.cols = this.r.columns.filter((c: any) => this.since || c.key !== 'change'); } catch (e) { this.err = ZaApiService.error(e); this.r = null; }
+    this.busy = false;
+  }
+  async dl(fmt: 'xlsx' | 'csv'): Promise<void> {
+    this.err = ''; this.busy = true;
+    const p = this.plans.find(x => x.id === this.plan);
+    try { await this.api.file('insurer-file/', `${(p?.name || 'plan').replace(/[^\w-]+/g, '-')}-${this.since ? 'changes' : 'members'}-${this.on}.${fmt}`, this.q(fmt)); }
+    catch (e) { this.err = ZaApiService.error(e); }
+    this.busy = false;
+  }
 }

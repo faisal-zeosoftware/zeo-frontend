@@ -1,69 +1,18 @@
+<!-- v1.62.0 air ticket: card header with a one-line description; each policy is a card with its rules, actions on the card -->
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1> Air ticket policy </h1>
-                </div>
-
-                    <div class="col-md-3">
-                    
-<div class="search-container">
-<input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchQuery"
-  [ngModelOptions]="{standalone: true}"
-  (ngModelChange)="onSearchChange()"
->
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
-                      <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-
-                           <span *ngIf="!hasDeletePermission"></span>
-                    </div>
-                </div>
-            </div>
-           
-           
-
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Air ticket policies</h1>
+          <p class="at-desc">The home leave ticket of each home country: amount and how often, ticket or cash, who it applies to and the service rules.</p>
         </div>
-
-        <div class="row">
-            <div class="col-md-2">
-                
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
-
-            </div>
-            <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAirTicketPolicy()">Delete selected </button>
-
-            </div>
+        <div class="at-actions">
+          <button type="button" class="at-btn" (click)="atGo('airticket-rule')">Rules</button>
+          <button type="button" class="at-btn primary" *ngIf="hasAddPermission" (click)="openPopus()">+ New policy</button>
         </div>
-      
-
-      
+      </div>
+    </div>
 
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
@@ -130,16 +79,16 @@
 
 
   <div class="col-md-6" >
-    <label>Allowance type
+    <label>Ticket or cash
        <span class="required-star">*</span>
     </label>
     <div class="custom-sel">
       <select
         class="form-control" [(ngModel)]="allowance_type" [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !allowance_type}">
-        <option value="CASH">Cash </option>
-        <option value="TICKET">Ticket </option>
+        <option value="CASH">Cash only</option>
+        <option value="TICKET">Ticket only</option>
 
-        <option value="BOTH"> Both </option>
+        <option value="BOTH">Ticket or cash</option>
 
 
       </select>
@@ -170,7 +119,7 @@
   <label></label>
   <div class="check-box-selection-sec form-control mt-3">
     <div class="mat-set">
-      <mat-checkbox [(ngModel)]="allowed_in_probation" [ngModelOptions]="{standalone: true}">allowed in probation</mat-checkbox>
+      <mat-checkbox [(ngModel)]="allowed_in_probation" [ngModelOptions]="{standalone: true}">Can be used during probation</mat-checkbox>
     </div>
   </div>
 </div>
@@ -178,7 +127,7 @@
   <label></label>
   <div class="check-box-selection-sec form-control mt-3">
     <div class="mat-set">
-      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Active</mat-checkbox>
     </div>
   </div>
 </div>
@@ -416,7 +365,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit airticket policy </h2>
+          <h2>Edit air ticket policy</h2>
         </div>
       <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -470,14 +419,14 @@
 
 
   <div class="col-md-6" >
-    <label>Allowance type</label>
+    <label>Ticket or cash</label>
     <div class="custom-sel">
       <select
         class="form-control" [(ngModel)]="editAsset.allowance_type" [ngModelOptions]="{ standalone: true }">
-        <option value="CASH">Cash </option>
-        <option value="TICKET">Ticket </option>
+        <option value="CASH">Cash only</option>
+        <option value="TICKET">Ticket only</option>
 
-        <option value="BOTH"> Both </option>
+        <option value="BOTH">Ticket or cash</option>
 
 
       </select>
@@ -507,7 +456,7 @@
   <label></label>
   <div class="check-box-selection-sec form-control mt-3">
     <div class="mat-set">
-      <mat-checkbox [(ngModel)]="editAsset.allowed_in_probation" [ngModelOptions]="{standalone: true}">allowed in probation</mat-checkbox>
+      <mat-checkbox [(ngModel)]="editAsset.allowed_in_probation" [ngModelOptions]="{standalone: true}">Can be used during probation</mat-checkbox>
     </div>
   </div>
 </div>
@@ -515,7 +464,7 @@
   <label></label>
   <div class="check-box-selection-sec form-control mt-3">
     <div class="mat-set">
-      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Active</mat-checkbox>
     </div>
   </div>
 </div>
@@ -749,105 +698,47 @@
   </div>
   
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
-
-          <div style="overflow-x: auto; width: 100%;">
-
-          <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th class="sticky-left">No</th>
-                <th>Name</th>
-                <th>Frequency year</th>
-                <th>Amount</th>
-                <th>Allowance type</th>
-                <th>Country </th>
-                <th>Department </th>
-                <th>Designation </th>
-                <th>Category </th>
-                <th>Branch </th>
-
-
-
-
-                <th>Allowed in probation</th>
-          
-               
-          
-                 <th class="sticky-right">Actions</th>
-              </tr>
-            </thead>
-          
-            <tbody>
-             <tr *ngFor="let docs of filteredLoanTypes; let i = index">
-                <td class="sticky-left" data-label="No">
-                 {{ (currentPage - 1) * pageSize + i + 1 }}
-                </td>
-                <td data-label="Name">{{ docs.name }}</td>
-                <td data-label="Frequency Year">{{ docs.frequency_years }}</td>
-                <td data-label="Amount">{{ docs.amount }}</td>
-                <td data-label="Allowance Type">{{ docs.allowance_type }}</td>
-                <td data-label="Country">{{ docs.country }}</td>
-                <td data-label="Department">{{ docs.eligible_departments }}</td>
-                <td data-label="Designation">{{ docs.eligible_designations }}</td>
-                <td data-label="Category">{{ docs.eligible_categories }}</td>
-                <td data-label="Branch">{{ docs.branch }}</td>
-
-
-                <td data-label="Allowed in probation">{{ docs.allowed_in_probation }}</td>
-
-          
-                <!-- Dynamic custom field values -->
-            
-               <td class="sticky-right" data-label="Actions">
-                  <button
-                    mat-fab
-
-                    color="primary"
-                    aria-label="Edit icon"
-                    *ngIf="showEditBtn"
-                    (click)="openEditModal(docs)"
-                  >
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="com_list mt-4">
+      <p class="at-msg err" *ngIf="atMsg">{{ atMsg }}</p>
+      <p class="at-muted" *ngIf="atLoading">Loading…</p>
+      <div class="at-empty" *ngIf="!atLoading && !atMsg && !atRows.length"><b>No air ticket policies yet</b>Add one policy per home country.</div>
+      <div class="at-cards">
+        <div class="at-card" *ngFor="let p of atRows" [class.off]="!p.is_active" [attr.data-policy]="p.id">
+          <div class="top">
+            <div>
+              <div class="t">{{ p.name }}</div>
+              <div class="s">{{ at.t('Home country: {0}', [p.country]) }}<ng-container *ngIf="!p.is_active"> · {{ at.t('Inactive') }}</ng-container></div>
+            </div>
+            <div class="amt" data-no-translate>{{ at.money(p.amount) }}<small>{{ at.everyYears(p.frequency_years) }}</small></div>
           </div>
-  <div class="pagination-container">
-
-  <button
-    type="button"
-    class="page-btn"
-    (click)="previousPage()"
-    [disabled]="currentPage === 1">
-    Previous
-  </button>
-
-  <!-- Current Page Only -->
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-
-<button
-  type="button"
-  class="page-btn"
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages">
-  Next
-</button>
-
-</div>
+          <div class="at-facts">
+            <div><small>Ticket type</small><b>{{ at.ticketType(p.allowance_type) }}</b></div>
+            <div><small>Travel class</small><b>{{ at.travelClass(p.travel_class) }}</b></div>
+            <div><small>Probation</small><b [title]="at.probation(p.allowed_in_probation)">{{ at.t(p.allowed_in_probation ? 'Allowed' : 'Not allowed') }}</b></div>
+          </div>
+          <div class="at-h">Applies to</div>
+          <div class="at-chips" data-no-translate><span class="at-chip" *ngFor="let c of at.appliesTo(p); let first = first" [class.who]="first" [title]="c">{{ c }}</span></div>
+          <div class="at-h">Rules</div>
+          <ul class="at-rules" data-no-translate>
+            <li *ngFor="let r of p.rules"><mat-icon>{{ r.type === 'ENCASHMENT' ? 'payments' : 'flight_takeoff' }}</mat-icon>
+              <span>{{ at.ruleText(r) }}</span></li>
+            <li *ngIf="!p.rules.length" class="at-muted">{{ at.t('No rules yet – add them on the Rules screen.') }}</li>
+          </ul>
+          <div class="foot">
+            <span class="at-muted" data-no-translate>{{ p.employees === 1 ? at.t('1 employee entitled now') : at.t('{0} employees entitled now', [p.employees]) }}</span>
+            <span class="at-acts">
+              <button type="button" class="at-btn sm" *ngIf="hasEditPermission" (click)="atEdit(p.id)">Edit</button>
+              <button type="button" class="at-btn sm danger" *ngIf="hasDeletePermission" (click)="atDelete(p)">Delete</button>
+            </span>
+          </div>
         </div>
-        </div>
-        </div>
-
-                            <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+      </div>
     </div>
-        
+
+  </div>
+</div>
+
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

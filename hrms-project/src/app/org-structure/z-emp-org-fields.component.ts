@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -71,7 +72,7 @@ import { OrgField, OrgSettings, OrgSettingsService } from './org-settings.servic
       </div>
       <div class="col-md-3 zo-ess" *ngIf="showEndDate && names['contract_end_date']">
         <div class="d-flex align-items-center mt-2"><strong>Contract end date</strong></div>
-        <small class="text-center">{{ names['contract_end_date'] | date:'dd MMM yyyy' }}</small>
+        <small class="text-center">{{ names['contract_end_date'] | date:'dd/MM/yyyy' }}</small>
       </div>
     </ng-container>
     <ng-container *ngIf="layout !== 'ess'">
@@ -81,7 +82,7 @@ import { OrgField, OrgSettings, OrgSettingsService } from './org-settings.servic
       </div>
       <div [class]="colClass + ' zo-col zo-dv'" *ngIf="showEndDate && names['contract_end_date']">
         <h2>Contract end date</h2>
-        <h3>{{ names['contract_end_date'] | date:'dd MMM yyyy' }}</h3>
+        <h3>{{ names['contract_end_date'] | date:'dd/MM/yyyy' }}</h3>
       </div>
     </ng-container>
   </ng-container>

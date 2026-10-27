@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container" *ngIf="hasViewPermission">
 
   <div class="comapny_section">
@@ -45,14 +46,19 @@
       <!-- v1.20.1: approvals as a standard list (search, filters, group by, export from the list bar) -->
   <table class="table zl-apr-table">
     <thead>
-      <tr><th>Request</th><th>Level</th><th>Comment</th><th>Approver</th><th>Status</th><th style="width:150px"></th></tr>
+      <!-- v1.40.1: the request itself (employee, type, reason, date) is shown, not only its number -->
+      <tr><th>Request</th><th>Employee</th><th>Request type</th><th>Reason</th><th>Date</th><th>Level</th><th>Comment</th><th>Approver</th><th>Status</th><th style="width:150px"></th></tr>
     </thead>
     <tbody>
       <tr *ngFor="let apr of filteredApprovals">
         <td><a class="apr-link" (click)="selectedaprovaldetalis(apr.id)">{{ apr.general_request }}</a></td>
+        <td>{{ apr.request_details?.employee_name || apr.request_details?.employee || apr.employee_id || '—' }} <span class="apr-muted" *ngIf="apr.request_details?.employee_name">{{ apr.request_details?.employee }}</span></td>
+        <td>{{ apr.request_details?.request_type || '—' }}</td>
+        <td>{{ apr.request_details?.reason || '—' }}<span *ngIf="apr.request_details?.total"> · AED {{ apr.request_details?.total }}</span></td>
+        <td>{{ apr.request_details?.created_at_date ? (apr.request_details?.created_at_date | date:'dd/MM/yyyy') : '—' }}</td>
         <td>{{ apr.level || '—' }}</td>
         <td>{{ apr.note || '—' }}</td>
-        <td>{{ apr.approver }}</td>
+        <td>{{ (apr.approver_name || apr.approver) }}</td>
         <td><span
             class="status-badge"
             [ngClass]="{
@@ -106,7 +112,7 @@
                 </strong>
 
                 <p>
-                  {{ apr.approver || '—' }}
+                  {{ (apr.approver_name || apr.approver) || '—'  }}
                 </p>
 
               </div>
@@ -125,7 +131,7 @@
                 </strong>
 
                 <p>
-                  {{ apr.delegation_details.delegate_to || '—' }}
+                  {{ (apr.delegation_details.delegate_to_name || apr.delegation_details.delegate_to) || '—'  }}
                 </p>
 
               </div>
@@ -240,6 +246,18 @@
             General request -
             {{ selectedApproval.general_request }}
           </h6>
+          <!-- v1.40.1: the request details the approver decides on -->
+          <table class="table table-sm apr-detail" *ngIf="selectedApproval.request_details as rd">
+            <tbody>
+              <tr><th>Employee</th><td>{{ rd.employee_name || rd.employee }} <span class="apr-muted">{{ rd.employee }}</span></td></tr>
+              <tr><th>Request type</th><td>{{ rd.request_type || '—' }}</td></tr>
+              <tr><th>Reason</th><td>{{ rd.reason || '—' }}</td></tr>
+              <tr *ngIf="rd.total !== null && rd.total !== undefined"><th>Amount</th><td>AED {{ rd.total }}</td></tr>
+              <tr><th>Date</th><td>{{ rd.created_at_date | date:'dd/MM/yyyy' }}<span *ngIf="rd.branch"> · {{ rd.branch }}</span></td></tr>
+              <tr *ngIf="rd.remarks"><th>Remarks</th><td>{{ rd.remarks }}</td></tr>
+              <tr *ngIf="rd.document_url"><th>Attachment</th><td><a [href]="rd.document_url" target="_blank" rel="noopener">Open document</a></td></tr>
+            </tbody>
+          </table>
 
           <h6>
             Status -

@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -52,7 +53,7 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from '.
                   </div>
                   <div class="main">
                     <div class="t">{{ e.merchant || e.category_name }}</div>
-                    <div class="s">{{ e.date | date:'dd MMM yyyy' }} · {{ e.category_name }}<span *ngIf="e.report_number"> · {{ e.report_number }}</span></div>
+                    <div class="s">{{ e.date | date:'dd/MM/yyyy' }} · {{ e.category_name }}<span *ngIf="e.report_number"> · {{ e.report_number }}</span></div>
                   </div>
                   <div class="r">
                     <div class="money">{{ m(e.amount_aed) }}</div>

@@ -326,7 +326,8 @@ next: (data: any) => {
 
 
 LoadEmployee(selectedSchema: string) {
-  this.leaveService.getEmployee(selectedSchema).subscribe(
+  // v1.62.0 speed: the light employee list (/employee/api/emplist/, ~14 KB) – this page never reads more than the rows themselves; the full /Employee/ was ~7 MB
+    this.leaveService.getemployeesMaster(selectedSchema).subscribe(
     (data: any) => {
       this.Employees = data;
 
@@ -714,6 +715,10 @@ selectedDelegationId: number | null = null;
     if (!selectedSchema || !this.selectedApproval) {
       return;
     }
+    if (!this.delegationForm.deligate_to) {   // v1.40.1
+      alert('Select the user to delegate to.');
+      return;
+    }
   
     const apiUrl =
       `${this.apiUrl}/payroll/api/approval-salaryrequest/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
@@ -736,7 +741,11 @@ selectedDelegationId: number | null = null;
   
           alert("Delegated Successfully");
   
-          window.location.reload();
+          // v1.40.1: no full page reload – it wiped the "Delegated Successfully" message before anyone could read it;
+  
+          // the pop-ups close and the list is loaded again instead
+  
+          this.isAddFieldsModalOpen = false;
   
           this.closeDelegationModal();
   
@@ -751,6 +760,10 @@ selectedDelegationId: number | null = null;
   
           this.isLoading = false;
           console.error(err);
+  
+          // v1.40.1: tell the user why (already delegated, same user, no rights…) instead of failing silently
+  
+          alert(err?.error?.error || err?.error?.detail || 'The delegation could not be sent.');
   
         }
   

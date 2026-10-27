@@ -6,7 +6,7 @@
  *   licence:admin the server is an Enterprise installation and the user is a server administrator (Settings → Licence)
  * Set by ZSuiteService (apps) and ZeoCloudService (cloud). Unknown while loading → apps shown, cloud items hidden.
  */
-export const ZEO_FLAGS: { apps: string[] | null; cloudOwner: boolean; cloudLinked: boolean; licenceAdmin: boolean } = { apps: null, cloudOwner: false, cloudLinked: false, licenceAdmin: false };
+export const ZEO_FLAGS: { apps: string[] | null; cloudOwner: boolean; cloudLinked: boolean; licenceAdmin: boolean; payCycles: string[]; bareLogin: boolean } = { apps: null, cloudOwner: false, cloudLinked: false, licenceAdmin: false, payCycles: [], bareLogin: false };
 
 /** true / false for app: and cloud: expressions, null for anything else (country features). */
 export function flagAllows(k: string): boolean | null {
@@ -14,6 +14,8 @@ export function flagAllows(k: string): boolean | null {
   if (k === 'cloud:owner') { return ZEO_FLAGS.cloudOwner; }
   if (k === 'cloud:linked') { return ZEO_FLAGS.cloudLinked; }
   if (k === 'licence:admin') { return ZEO_FLAGS.licenceAdmin; }   // v1.28.0 Enterprise server, server administrator
+  if (k === 'pay:cycles') { return ZEO_FLAGS.payCycles.length > 0; }   // v1.55.0 weekly / bi-weekly / semi-monthly switched on in Payroll controls
+  if (k.startsWith('pay:')) { return ZEO_FLAGS.payCycles.includes(k.slice(4)); }
   return null;
 }
 

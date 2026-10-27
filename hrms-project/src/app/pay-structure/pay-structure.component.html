@@ -1,92 +1,15 @@
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
+    <!-- v1.62.0 payroll: card header with a description; edit / delete are row actions -->
     <div class="header_section">
-      <div class="row">
-        <div class="col-md-4">
-          <h1>Pay structure</h1>
+      <div class="py-wrap py-head">
+        <div>
+          <h1 class="page-title">Pay structure</h1>
+          <p class="lp-desc">How the salary of a month is worked out for each branch or group of employees: the days a month is paid on, the attendance cycle, the pay day and where overtime comes from.</p>
         </div>
-               <div class="col-md-3">
-                    
-<div class="search-container">
-<input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchQuery"
-  [ngModelOptions]="{standalone: true}"
-  (ngModelChange)="onSearchChange()"
->
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-                </div>
-        <div class="col-md-5">
-          <div class="button-group pull-right">
-            <button
-              type="button"
-              (click)="openPopus()"
-              class="btn-Create btn btn-success"
-              *ngIf="hasAddPermission"
-            >
-              <span class="header-btn-icon"
-                ><mat-icon>add_circle </mat-icon></span
-              >
-              Create
-            </button>
-            <span *ngIf="!hasAddPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Edit btn-info btn"
-              (click)="EditShowButtons()"
-              *ngIf="hasEditPermission"
-            >
-              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
-              Edit
-            </button>
-            <span *ngIf="hasEditPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Delete btn btn-danger"
-              (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission"
-            >
-              <span class="header-btn-icon">
-                <mat-icon> delete </mat-icon></span
-              >
-              {{ Delete ? "Cancel" : "Delete" }}
-            </button>
-
-            <span *ngIf="!hasDeletePermission"></span>
-          </div>
+        <div class="py-tools">
+          <button type="button" class="py-btn primary" (click)="openPopus()" *ngIf="hasAddPermission" data-py-ps-new>+ New pay structure</button>
         </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <button
-          class="mt-3 btn-danger btn"
-          style="width: 100%"
-          color="warn"
-          *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()"
-        >
-          Select all
-        </button>
-      </div>
-      <div class="col-md-3">
-        <button
-          class="mt-3 btn-danger btn"
-          color="warn"
-          *ngIf="Delete"
-          (click)="deleteSelectedPayrollAprlvl()"
-        >
-          Delete selected
-        </button>
       </div>
     </div>
 
@@ -843,107 +766,29 @@
       </div>
     </div>
 
+    <!-- v1.62.0 payroll: readable rules, no raw codes, no empty columns -->
     <div class="com_list mt-4" *ngIf="hasViewPermission">
-      <div style="overflow-x: auto; width: 100%">
-        <table class="table-container" width="100%">
-          <thead>
-            <tr>
-              <th class="sticky-left">No</th>
-
-              <th>Work week</th>
-              <th>Salary calculation type</th>
-              <th>Fixed working days</th>
-              <th>Attendance cycle type</th>
-              <th>Cycle start day</th>
-              <th>Cycle end day</th>
-
-              <th>Payday type</th>
-              <th>Payday</th>
-              <th>Payroll start month</th>
-              <th>Branch</th>
-              <th>Designation</th>
-              <th>Department</th>
-              <th>Category</th>
-
-              <th class="sticky-right">Actions</th>
-            </tr>
-          </thead>
+      <div class="py-scroll">
+        <table class="py-t" zPlain data-py-paystructures>
+          <thead><tr><th>Pay structure</th><th>Applies to</th><th>Salary of a month</th><th>Attendance cycle</th><th>Pay day</th><th>Overtime from</th><th>Payroll from</th><th></th></tr></thead>
           <tbody>
-            <tr *ngFor="let pol of filteredPayStructures; let i = index">
-              <td class="sticky-left" data-label="No">
-    {{ (currentPage - 1) * pageSize + i + 1 }}
-  </td>
-              <td data-label="Work Week">{{ pol.working_days }}</td>
-              <td data-label="Salary Calculation Type">
-                {{ pol.salary_calculation_type }}
-              </td>
-              <td data-label="Fixed working Days">
-                {{ pol.fixed_working_days }}
-              </td>
-              <td data-label="Attendance Cycle Type">
-                {{ pol.attendance_cycle_type }}
-              </td>
-              <td data-label="Cycle Start Day">{{ pol.cycle_start_day }}</td>
-              <td data-label="Cycle End Day">{{ pol.cycle_end_day }}</td>
-              <td data-label="Payday Type">{{ pol.payday_type }}</td>
-              <td data-label="Payday">{{ pol.payday }}</td>
-              <td data-label="Payroll Start Month">
-                {{ pol.payroll_start_month }}
-              </td>
-              <td data-label="Branch">{{ pol.branch }}</td>
-              <td data-label="Designation">{{ pol.designation }}</td>
-              <td data-label="Department">{{ pol.department }}</td>
-              <td data-label="Category">{{ pol.category }}</td>
-
-              <td class="sticky-right" data-label="Actions">
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-                  (click)="openEditModal(pol)"
-                >
-                  <mat-icon style="color: white">draw</mat-icon>
-                </button>
-
-                <mat-checkbox
-                  *ngIf="Delete"
-                  [(ngModel)]="pol.selected"
-                ></mat-checkbox>
+            <tr *ngFor="let pol of overtimepol" [attr.data-py-ps]="pol.id">
+              <td><span class="nm">{{ psName(pol) }}</span><span class="sub">{{ psWeek(pol) }}</span></td>
+              <td><span class="py-chip" *ngFor="let b of pol.branch">{{ b }}</span>
+                <span class="sub">{{ psScope(pol) }}</span></td>
+              <td>{{ psDays(pol) }}</td>
+              <td>{{ psCycle(pol) }}</td>
+              <td>{{ pol.payday ? psOrd(pol.payday) + ' of the month' : '–' }}</td>
+              <td>{{ psOt(pol.overtime_source) }}</td>
+              <td>{{ pol.payroll_start_month ? (pol.payroll_start_month | date:'MMMM yyyy') : '–' }}</td>
+              <td style="white-space:nowrap;text-align:end">
+                <button type="button" class="py-btn sm" *ngIf="hasEditPermission" (click)="openEditModal(pol)" data-py-ps-edit>Edit</button>
+                <button type="button" class="py-btn sm danger" style="margin-inline-start:4px" *ngIf="hasDeletePermission" (click)="psDelete(pol)">Delete</button>
               </td>
             </tr>
+            <tr *ngIf="!overtimepol?.length && !isLoading"><td colspan="8" class="py-empty"><b>No pay structure yet</b><p>Without one, a month is paid on its calendar days.</p></td></tr>
           </tbody>
         </table>
-      </div>
-                <div class="pagination-container">
-  
-        <button
-         type="button"
-          class="page-btn"
-          (click)="previousPage()"
-          [disabled]="currentPage === 1">
-      
-          Previous
-      
-        </button>
-      
-  <!-- Current Page Only -->
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-      
-        <button
-         type="button"
-          class="page-btn"
-          (click)="nextPage()"
-          [disabled]="currentPage === totalPages">
-      
-          Next
-      
-        </button>
-      
       </div>
     </div>
   </div>

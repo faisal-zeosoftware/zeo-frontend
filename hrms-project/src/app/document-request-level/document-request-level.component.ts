@@ -751,7 +751,7 @@ alert('No States selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected Document Request Approvel Level ?')) {
+if (confirm('Are you sure you want to delete the selected document request approval level?')) {   // v1.62.0 ui
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -764,7 +764,7 @@ selectedEmployeeIds.forEach(categoryId => {
       this.LeaveapprovalLevels = this.LeaveapprovalLevels.filter(employee => employee.id !== categoryId);
        completed++;
         if (completed === total) {
-      alert(' Document Request Approvel Level  deleted successfully');
+      alert('Document request approval level deleted.');
       window.location.reload();
         }
 

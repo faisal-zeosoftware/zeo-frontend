@@ -1,92 +1,157 @@
 <div class="container">
   <div class="comapny_section">
-    <div class="header_section">
-      <div class="zq-head">
-        <div>
-          <h1 class="page-title">{{ title }}</h1>
-          <p class="zq-desc" *ngIf="description">{{ description }}</p>
-          <p class="zq-desc zq-rnote" *ngFor="let n of notes">{{ n }}</p>
+    <!-- v1.62.0 reports: one card – header (title, one line, variants, actions), period, filters, summary strip, chart, table -->
+    <div class="zq-card">
+      <div class="header_section">
+        <div class="zq-head">
+          <div class="zq-titles">
+            <div class="zq-crumbs"><a [routerLink]="['/main-sidebar/report-options/home']" data-report-home-link>{{ 'Reports' | t }}</a><span *ngIf="section"> › {{ section | t }}</span></div>
+            <h1 class="page-title">{{ title }}
+              <button type="button" class="zq-star" [class.on]="fav" (click)="toggleFav()" [attr.aria-pressed]="fav"
+                      [title]="(fav ? 'Remove from favourites' : 'Add to favourites') | t" [attr.aria-label]="(fav ? 'Remove from favourites' : 'Add to favourites') | t" data-report-fav>
+                <svg viewBox="0 0 24 24" width="17" height="17" [attr.fill]="fav ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+              </button>
+            </h1>
+            <p class="zq-desc" *ngIf="description" [title]="description">{{ description }}</p>
+          </div>
+          <div class="zq-side">
+            <span class="zq-count" *ngIf="!loading && !error">{{ (rows.length === 1 ? '{0} row' : '{0} rows') | t:(rows.length | number) }}</span>
+            <button type="button" class="zq-mail" (click)="email()" [disabled]="sending || loading || !!error" [title]="'Send this report to your e-mail as a CSV file' | t">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg><span>{{ (sending ? 'Sending…' : 'E-mail') | t }}</span>
+            </button>
+            <a class="zq-mail" [routerLink]="['/main-sidebar/report-options/scheduled']" [queryParams]="{ report: key }" [title]="'E-mail this report every day, week or month' | t" data-schedule-report>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>{{ 'Schedule' | t }}</span></a>
+            <span class="zq-more">
+              <button type="button" class="zq-mail zq-icon" (click)="menuOpen = !menuOpen" [attr.aria-expanded]="menuOpen" [title]="'More actions' | t" [attr.aria-label]="'More actions' | t" data-report-more>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18.5" cy="12" r="1.7"/></svg>
+              </button>
+              <span class="zq-menu" *ngIf="menuOpen" role="menu">
+                <button type="button" role="menuitem" (click)="menuOpen = false; openDash()" [disabled]="loading || !!error" data-add-dashboard>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.5"/><rect x="13.5" y="10.5" width="7" height="10" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/></svg>{{ 'Add to a dashboard' | t }}</button>
+                <button type="button" role="menuitem" *ngIf="ui?.chart" (click)="menuOpen = false; showChart = !showChart" data-toggle-chart>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>{{ (showChart ? 'Hide the chart' : 'Show the chart') | t }}</button>
+              </span>
+            </span>
+          </div>
         </div>
-        <div class="zq-side">
-          <span class="zq-count" *ngIf="!loading && !error">{{ (rows.length === 1 ? '{0} row' : '{0} rows') | t:(rows.length | number) }}</span>
-          <button type="button" class="zq-mail" (click)="email()" [disabled]="sending || loading || !!error" [title]="'Send this report to your e-mail as a CSV file' | t">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg><span>{{ (sending ? 'Sending…' : 'E-mail me') | t }}</span>
+        <!-- merged reports: one tab each -->
+        <div class="zq-variants" *ngIf="variants.length > 1" role="tablist" data-report-variants>
+          <a *ngFor="let v of variants; trackBy: trackKey" role="tab" [routerLink]="['/main-sidebar/report-options/r', v.key]" [class.on]="v.key === key" [attr.aria-selected]="v.key === key">{{ v.label | t }}</a>
+        </div>
+        <details class="zq-how" *ngIf="notes.length" data-report-notes>
+          <summary>{{ 'How this is worked out' | t }}</summary>
+          <p *ngFor="let n of notes">{{ n }}</p>
+        </details>
+        <div class="zq-note" *ngIf="dashOpen" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center" data-add-dash-panel>   <!-- v1.53.0 -->
+          <span>{{ 'Add to' | t }}</span>
+          <select [(ngModel)]="dashPick" [attr.aria-label]="'Dashboard' | t" data-add-dash-pick><option *ngFor="let d of dashList" [ngValue]="d.id">{{ d.name }}</option><option [ngValue]="null">{{ 'A new dashboard' | t }}</option></select>
+          <select [(ngModel)]="dashView" [attr.aria-label]="'Show as' | t" data-add-dash-view><option value="number">{{ 'A number' | t }}</option><option value="bar">{{ 'Bars by a column' | t }}</option><option value="line">{{ 'A line by month' | t }}</option><option value="table">{{ 'A short table' | t }}</option></select>
+          <select *ngIf="dashView === 'bar' || dashView === 'line'" [(ngModel)]="dashGroup" [attr.aria-label]="'Column' | t" data-add-dash-group><option value="">{{ 'Column…' | t }}</option><option *ngFor="let c of dashGroupCols()" [value]="c.key">{{ c.label }}</option></select>
+          <button type="button" class="zq-mail" (click)="addToDash()" [disabled]="dashBusy || ((dashView === 'bar' || dashView === 'line') && !dashGroup)" data-add-dash-go>{{ 'Add' | t }}</button>
+          <button type="button" class="zq-dx" (click)="dashOpen = false">{{ 'Cancel' | t }}</button>
+        </div>
+        <p class="zq-note" *ngIf="note" [class.zq-err]="noteErr">{{ note }}</p>
+
+        <div class="zq-bar">
+          <div class="zq-period" *ngIf="asOf !== null">
+            <span class="zq-plabel">{{ 'As of' | t }}</span>
+            <span class="zq-custom">
+              <z-date-field [(value)]="asOf" label="As of" (enter)="run()" data-as-of></z-date-field>
+              <button type="button" class="zq-run" (click)="run()" [disabled]="!asOf || loading">{{ 'Run' | t }}</button>
+            </span>
+          </div>
+          <!-- v1.31.1 location level: the report's locations (defaults to the header switcher; a pick here runs the report for those only) -->
+          <div class="zq-period" *ngIf="zloc.enabled && zloc.snapshot.locations.length">
+            <span class="zq-plabel">{{ zloc.snapshot.label | t }}</span>
+            <button type="button" [class.on]="!locPick.length" (click)="locPick = []; run()">{{ zloc.selectedIds.length ? ('As in the header' | t) : ('All' | t) }}</button>
+            <button type="button" *ngFor="let l of zloc.snapshot.locations" [class.on]="locPick.includes(l.id)" (click)="locToggle(l.id)">{{ l.name }}</button>
+          </div>
+          <div class="zq-period" *ngIf="hasPeriod" data-report-period>
+            <span class="zq-plabel">{{ 'Period' | t }}</span>
+            <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l | t }}</button>
+            <span class="zq-custom">
+              <z-date-field [(value)]="from" label="From date" (enter)="custom()" data-from></z-date-field>
+              <span>{{ 'to' | t }}</span>
+              <z-date-field [(value)]="to" label="To date" (enter)="custom()" data-to></z-date-field>
+              <button type="button" class="zq-run" (click)="custom()" [disabled]="!from || !to || loading">{{ 'Run' | t }}</button>
+            </span>
+          </div>
+          <!-- v1.16.0: filter row (branch is the top bar) -->
+          <div class="zq-filters" *ngIf="filterOpts.length && !error">
+            <label *ngFor="let f of filterOpts" class="zq-f">
+              <span>{{ f.label }}</span>
+              <select [ngModel]="drillValue(f.key)" (ngModelChange)="setFilter(f.key, $event)" [attr.aria-label]="'Filter by {0}' | t:f.label">
+                <option value="">{{ 'All' | t }}</option>
+                <option *ngIf="drillValue(f.key) && !f.values.includes(drillValue(f.key))" [value]="drillValue(f.key)">{{ drillValue(f.key).split('|').join(' or ') }}</option>
+                <option *ngFor="let v of f.values" [value]="v">{{ v | t }}</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="com_list">
+        <div class="zq-drill" *ngIf="(drillF.length || nz || zeroHidden || (showZero && ui?.hide_zero)) && !loading && !error">
+          <span class="zq-dl" *ngIf="drillF.length || nz">{{ 'Showing only' | t }}</span>
+          <span class="zq-dchip" *ngFor="let f of drillF">{{ f.label }} = <b>{{ f.value.split('|').join(' or ') | t }}</b></span>
+          <span class="zq-dchip" *ngIf="nz">{{ nzLabel }} <b>{{ 'not zero' | t }}</b></span>
+          <span class="zq-dn" *ngIf="drillF.length || nz">{{ '{0} of {1} rows' | t:(rows.length | number):(all.length | number) }}</span>
+          <button type="button" class="zq-dlink" *ngIf="zeroHidden || showZero" (click)="toggleZero()" data-zero-rows>{{ (showZero ? 'Hide the rows with nothing in them' : '{0} rows with nothing in them are hidden – show them') | t:zeroHidden }}</button>
+          <button type="button" class="zq-dx" *ngIf="drillF.length || nz" (click)="clearDrill()">{{ 'Show all rows' | t }}</button>
+        </div>
+
+        <!-- v1.62.0 reports: summary strip – the few totals that matter, formatted, the rest under "More totals" -->
+        <div class="zq-sum" *ngIf="totalCols.length && !loading && !error" data-report-totals>
+          <button type="button" class="zq-tile" *ngFor="let c of mainTotals; trackBy: trackCol" (click)="drillTotal(c)" [title]="'Show the rows that make up {0}' | t:c.label" [attr.data-total]="c.key">
+            <em>{{ tLabel(c) }}<small *ngIf="tAvg(c)"> · {{ 'average' | t }}</small></em>
+            <b><small *ngIf="tUnit(c)">{{ tUnit(c) }}</small>{{ fmt(totals[c.key], c) }}</b>
+          </button>
+          <button type="button" class="zq-moret" *ngIf="otherTotals.length" (click)="moreTotals = !moreTotals" [attr.aria-expanded]="moreTotals" data-more-totals>
+            {{ (moreTotals ? 'Fewer totals' : 'More totals ({0})') | t:otherTotals.length }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path [attr.d]="moreTotals ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6'"/></svg>
           </button>
         </div>
-      </div>
-      <p class="zq-note" *ngIf="note" [class.zq-err]="noteErr">{{ note }}</p>
+        <div class="zq-allt" *ngIf="moreTotals && otherTotals.length && !loading && !error" data-more-totals-list>
+          <button type="button" *ngFor="let c of otherTotals; trackBy: trackCol" (click)="drillTotal(c)" [title]="'Show the rows that make up {0}' | t:c.label">
+            <span>{{ tLabel(c) }}<small *ngIf="tAvg(c)"> · {{ 'average' | t }}</small></span><b><small *ngIf="tUnit(c)">{{ tUnit(c) }} </small>{{ fmt(totals[c.key], c) }}</b>
+          </button>
+        </div>
 
-      <div class="zq-period" *ngIf="asOf !== null">
-        <span class="zq-plabel">{{ 'As of' | t }}</span>
-        <span class="zq-custom">
-          <input type="date" [(ngModel)]="asOf" [attr.aria-label]="'As of' | t">
-          <button type="button" class="zq-run" (click)="run()" [disabled]="!asOf || loading">{{ 'Run' | t }}</button>
-        </span>
-      </div>
-      <!-- v1.31.1 location level: the report's locations (defaults to the header switcher; a pick here runs the report for those only) -->
-      <div class="zq-period" *ngIf="zloc.enabled && zloc.snapshot.locations.length">
-        <span class="zq-plabel">{{ zloc.snapshot.label | t }}</span>
-        <button type="button" [class.on]="!locPick.length" (click)="locPick = []; run()">{{ zloc.selectedIds.length ? ('As in the header' | t) : ('All' | t) }}</button>
-        <button type="button" *ngFor="let l of zloc.snapshot.locations" [class.on]="locPick.includes(l.id)" (click)="locToggle(l.id)">{{ l.name }}</button>
-      </div>
-      <div class="zq-period" *ngIf="hasPeriod">
-        <span class="zq-plabel">{{ 'Period' | t }}</span>
-        <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l | t }}</button>
-        <span class="zq-custom">
-          <input type="date" [(ngModel)]="from" [attr.aria-label]="'From date' | t">
-          <span>{{ 'to' | t }}</span>
-          <input type="date" [(ngModel)]="to" [attr.aria-label]="'To date' | t">
-          <button type="button" class="zq-run" (click)="custom()" [disabled]="!from || !to || loading">{{ 'Run' | t }}</button>
-        </span>
-      </div>
-    </div>
+        <z-report-chart *ngIf="ui?.chart && showChart && !loading && !error && rows.length" [spec]="ui.chart" [rows]="rows" [columns]="columns"></z-report-chart>
 
-    <!-- v1.16.0: filter row (branch is the top bar) -->
-    <div class="zq-filters" *ngIf="filterOpts.length && !error">
-      <span class="zq-plabel">{{ 'Filter' | t }}</span>
-      <label *ngFor="let f of filterOpts" class="zq-f">
-        <span>{{ f.label }}</span>
-        <select [ngModel]="drillValue(f.key)" (ngModelChange)="setFilter(f.key, $event)" [attr.aria-label]="'Filter by {0}' | t:f.label">
-          <option value="">{{ 'All' | t }}</option>
-          <option *ngIf="drillValue(f.key) && !f.values.includes(drillValue(f.key))" [value]="drillValue(f.key)">{{ drillValue(f.key).split('|').join(' or ') }}</option>
-          <option *ngFor="let v of f.values" [value]="v">{{ v }}</option>
-        </select>
-      </label>
-    </div>
+        <p class="zq-msg" *ngIf="loading"><span class="zq-spin" aria-hidden="true"></span>{{ 'Running the report…' | t }}</p>
+        <p class="zq-msg zq-err" *ngIf="error && !loading">{{ error }}</p>
 
-    <div class="com_list mt-4">
-      <div class="zq-drill" *ngIf="(drillF.length || nz) && !loading && !error">
-        <span class="zq-dl">{{ 'Drilled down to' | t }}</span>
-        <span class="zq-dchip" *ngFor="let f of drillF">{{ f.label }} = <b>{{ f.value.split('|').join(' or ') }}</b></span>
-        <span class="zq-dchip" *ngIf="nz">{{ nzLabel }} <b>{{ 'not zero' | t }}</b></span>
-        <span class="zq-dn">{{ rows.length | number }} of {{ all.length | number }} rows</span>
-        <button type="button" class="zq-dx" (click)="clearDrill()">{{ 'Show all rows' | t }}</button>
-      </div>
-      <div class="zq-totals" *ngIf="totalCols.length && !loading && !error">
-        <button type="button" *ngFor="let c of totalCols" (click)="drillTotal(c)" [title]="'Show the rows that make up {0}' | t:c.label"><em>{{ c.label }}</em><b>{{ fmt(totals[c.key]) }}</b></button>
-      </div>
-
-      <p class="zq-msg" *ngIf="loading">{{ 'Running the report…' | t }}</p>
-      <p class="zq-msg zq-err" *ngIf="error && !loading">{{ error }}</p>
-
-      <ng-container *ngIf="!loading && !error">
-        <ng-container *ngFor="let r of runs">
-          <table class="table table-hover mb-0 zq-table">
-            <thead>
-              <tr><th *ngFor="let c of columns; trackBy: trackCol" [class.zq-num]="c.type === 'number'">{{ c.label }}</th><th class="zq-open-h"></th></tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of rows" [class.zq-row]="rowLink(row)" (click)="rowClick(row, $event)">
-                <td *ngFor="let c of columns; trackBy: trackCol" [attr.data-label]="c.label" [attr.data-k]="c.key" [class.zq-num]="c.type === 'number'" [class.zq-date]="c.type === 'date'"
-                    [class.zq-cl]="cellLink(row, c)">{{ show(row, c) }}</td>
-                <td class="zq-open"><button *ngIf="rowLink(row)" type="button" class="zq-ob" (click)="open(row, $event)" [attr.aria-label]="row._m ? 'Open record' : 'Open the rows behind this line'" [title]="row._m ? 'Open record' : 'Open the rows behind this line'">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></td>
-              </tr>
-            </tbody>
-          </table>
+        <ng-container *ngIf="!loading && !error">
+          <ng-container *ngFor="let r of runs">
+            <table class="table table-hover mb-0 zq-table" [class.zq-hidden-table]="!rows.length">
+              <thead>
+                <tr><th *ngFor="let c of columns; trackBy: trackCol" [class.zq-num]="c.type === 'number'" [class.zq-empc]="isEmpCol(c)" [attr.data-zl-optional]="c.hidden ? '' : null">{{ c.label }}</th><th class="zq-open-h"></th></tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of rows" [class.zq-row]="rowLink(row)" (click)="rowClick(row, $event)">
+                  <td *ngFor="let c of columns; trackBy: trackCol" [attr.data-label]="c.label" [attr.data-k]="c.key" [class.zq-num]="c.type === 'number'" [class.zq-date]="c.type === 'date'"
+                      [class.zq-cl]="cellLink(row, c)" [class.zq-nw]="c.nowrap" [class.zq-long]="c.long" [class.zq-empc]="isEmpCol(c)" [attr.title]="c.long ? row[c.key] : null"><ng-container
+                      *ngIf="isEmpCol(c) && empSplit(row[c.key]) as e; else plain"><span class="zq-emp">{{ e[0] }}<small>({{ e[1] }})</small></span></ng-container><ng-template #plain><ng-container
+                      *ngIf="c.daycode && row[c.key]; else stat"><span class="zq-code" [attr.data-code]="codeOf(row[c.key])">{{ row[c.key] }}</span></ng-container><ng-template #stat><ng-container
+                      *ngIf="c.status && row[c.key]; else txt"><span class="zq-st" [attr.data-tone]="tone(row[c.key])">{{ row[c.key] | t }}</span></ng-container><ng-template #txt><ng-container
+                      *ngIf="c.fmt === 'bool'; else val"><span [class.zq-no]="row[c.key] === 'No'">{{ (row[c.key] || '-') | t }}</span></ng-container><ng-template #val>{{ show(row, c) }}</ng-template></ng-template></ng-template></ng-template></td>
+                  <td class="zq-open"><button *ngIf="rowLink(row)" type="button" class="zq-ob" (click)="open(row, $event)" [attr.aria-label]="(row._m ? 'Open record' : 'Open the rows behind this line') | t" [title]="(row._m ? 'Open record' : 'Open the rows behind this line') | t">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+          <!-- v1.62.0 reports: empty state – what feeds the report and a wider period -->
+          <div class="zq-empty" *ngIf="!rows.length" data-report-empty>
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+            <b>{{ (hasPeriod && periodText ? 'Nothing in {0}' : 'Nothing to show yet') | t:periodText }}</b>
+            <span *ngIf="ui?.empty_hint">{{ ui.empty_hint | t }}</span>
+            <span *ngIf="!ui?.empty_hint">{{ 'Pick another period or branch in the top bar.' | t }}</span>
+            <button type="button" class="zq-dx" *ngIf="emptyNext" (click)="tryPeriod(emptyNext.k)" data-try-period>{{ emptyNext.l | t }}</button>
+          </div>
         </ng-container>
-        <p class="zq-msg" *ngIf="!rows.length">{{ 'Nothing to show for this period and these branches. Pick another period or branch.' | t }}</p>
-      </ng-container>
+      </div>
     </div>
   </div>
 </div>

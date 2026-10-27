@@ -51,7 +51,20 @@ import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.ser
               <button type="button" class="lp-btn" (click)="ask('change', d)">Change</button>
               <button type="button" class="lp-btn" *ngIf="d.planned && !d.off" (click)="ask('cancel', d)">Cancel shift</button>
               <button type="button" class="lp-btn" (click)="ask('swap', d)">Swap</button>
+              <button type="button" class="lp-btn" *ngIf="d.planned && !d.off" (click)="offer(d)" [attr.data-offer]="d.date">Offer</button>   <!-- v1.49.0 -->
             </div>
+          </div>
+        </div>
+
+        <!-- v1.49.0 shifts offered by colleagues of the branch -->
+        <div class="sp-h">Shifts offered by colleagues</div>
+        <p class="lp-muted" *ngIf="!offers.length">No colleague is offering a shift right now.</p>
+        <div class="sp-cards">
+          <div class="sp-card" *ngFor="let o of offers" [attr.data-offer-id]="o.id">
+            <h3>{{ nice(o.date) }}</h3>
+            <div>{{ o.from_shift }} · offered by {{ o.employee }}</div>
+            <div class="lp-muted" *ngIf="o.reason">{{ o.reason }}</div>
+            <div style="margin-top:8px" class="sp-row-actions"><button type="button" class="lp-btn primary" *ngIf="o.can.take" (click)="act(o, 'take')">Take this shift</button></div>
           </div>
         </div>
 
@@ -168,9 +181,17 @@ export class SpMyScheduleComponent implements OnInit {
 
   ngOnInit(): void { this.load(); }
 
+  offers: any[] = [];
+  async offer(d: any): Promise<void> {   // v1.49.0 give the shift to a colleague who takes it (the manager approves)
+    const reason = prompt('Offer this shift to your colleagues. Why? (optional)');
+    if (reason === null) return;
+    try { await this.api.post('requests/', { kind: 'offer', date: d.date, reason }); this.say('Shift offered – a colleague of your branch can take it, then your manager approves.'); await this.load(); }
+    catch (e) { this.say(SpApiService.error(e), true); }
+  }
   async load(): Promise<void> {
     this.loading = true;
     try {
+      this.api.get('requests/', { scope: 'offers' }).then((r: any) => { this.offers = r || []; this.cd.markForCheck(); }).catch(() => { this.offers = []; });
       this.data = await this.api.get('my-schedule/', { from: this.from, to: addDays(this.from, 13) });
     } catch (e) { this.say(SpApiService.error(e, 'Your schedule could not be loaded.'), true); }
     this.loading = false;

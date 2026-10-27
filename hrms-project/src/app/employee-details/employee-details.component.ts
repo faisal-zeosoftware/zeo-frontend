@@ -230,7 +230,7 @@ export class EmployeeDetailsComponent implements OnInit {
           }
         );
       } else {
-        console.error('Employee ID parameter is null.');
+        /* v1.56.1: no employee id yet (a new record or a hidden tab) – not an error */
       }
 
       if (employeeIdParam) {
@@ -246,7 +246,7 @@ export class EmployeeDetailsComponent implements OnInit {
           }
         );
       } else {
-        console.error('Employee ID parameter is null.');
+        /* v1.56.1: no employee id yet (a new record or a hidden tab) – not an error */
       }
 
 
@@ -349,8 +349,8 @@ getProgressOffset(balance: number): number {
     }
 
 
-    isImage(src: string): boolean {
-      return src.toLowerCase().endsWith('.jpg') || src.toLowerCase().endsWith('.jpeg') || src.toLowerCase().endsWith('.png') || src.toLowerCase().endsWith('.gif');
+    isImage(src: string | null | undefined): boolean {   // v1.40.1: null-safe (a document without a file)
+      return /\.(jpe?g|png|gif|webp)$/.test(String(src || '').toLowerCase().split('?')[0]);
     }
 
     isPDF(url: string): boolean {
@@ -2011,7 +2011,7 @@ async fillDocFromFile(document: any): Promise<void> {
   if (!document?._newFile) { return; }
   const v = await openDocFill(this.dialog, document._newFile, [], {
     emp_doc_number: document.emp_doc_number, emp_doc_issued_date: document.emp_doc_issued_date, emp_doc_expiry_date: document.emp_doc_expiry_date,
-  }, ['emp_doc_number', 'emp_doc_issued_date', 'emp_doc_expiry_date']);
+  }, ['emp_doc_number', 'emp_doc_issued_date', 'emp_doc_expiry_date'], { empId: this.employee?.id, inForm: true });   // v1.53.2
   if (!v) { return; }
   if (v.emp_doc_number !== undefined) { document.emp_doc_number = v.emp_doc_number; }
   if (v.emp_doc_issued_date !== undefined) { document.emp_doc_issued_date = v.emp_doc_issued_date; }

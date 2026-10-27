@@ -337,8 +337,8 @@ export class EmployeeApprovalsComponent {
     
     
     
-        isImage(src: string): boolean {
-          return src.toLowerCase().endsWith('.jpg') || src.toLowerCase().endsWith('.jpeg') || src.toLowerCase().endsWith('.png') || src.toLowerCase().endsWith('.gif');
+        isImage(src: string | null | undefined): boolean {   // v1.40.1: null-safe (a document without a file)
+          return /\.(jpe?g|png|gif|webp)$/.test(String(src || '').toLowerCase().split('?')[0]);
         }
          
      

@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 /** v1.29.0 – Approval engine screens: My approvals (decide / delegate / resubmit) and Approval flows (the chains). */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -7,8 +8,9 @@ import { FLOW_CSS, FlowMeta, FlowService } from './flow.service';
 import { zToast } from '../shared-ui/z-toast';
 import { SessionService } from '../login/session.service';
 import { TPipe } from '../shared-ui/i18n.service';
+import { ZListDirective } from '../shared-ui/z-list.directive';
 
-const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe];
+const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe, ZListDirective];   // v1.38.0: the HRMS list bar (search, views, columns, export) on the lists
 
 @Component({
   selector: 'z-flow-approvals', standalone: true, imports: IMPORTS, styles: [FLOW_CSS],
@@ -18,9 +20,9 @@ const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe];
     <span class="sp"></span><button class="fw-btn" (click)="load()">{{ 'Refresh' | t }}</button></div>
   <div class="fw-tabs"><button [class.on]="box === 'mine'" (click)="box = 'mine'; load()">{{ 'For me' | t }}</button><button [class.on]="box === 'submitted'" (click)="box = 'submitted'; load()">{{ 'Submitted by me' | t }}</button><button [class.on]="box === 'history'" (click)="box = 'history'; load()">{{ 'History' | t }}</button><button *ngIf="meta?.can_configure" [class.on]="box === 'all'" (click)="box = 'all'; load()">{{ 'All (admin)' | t }}</button></div>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Submitted' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Flow' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Level' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr></thead>
+    <table class="fw-table"><thead><tr><th>{{ 'Submitted' | t }}</th><th>{{ 'Record' | t }}</th><th>{{ 'Flow' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Level' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr></thead>
       <tbody><tr *ngFor="let r of rows" (click)="sel = r" style="cursor:pointer">
-        <td class="fw-muted" style="white-space:nowrap">{{ r.submitted_at | date:'dd/MM/yy HH:mm' }}</td><td><b>{{ r.record_label }}</b><div class="fw-small fw-muted">{{ r.model_label }}<span *ngIf="r.amount"> · {{ r.amount | number:'1.2-2' }}</span></div></td>
+        <td class="fw-muted" style="white-space:nowrap">{{ r.submitted_at | date:'dd/MM/yyyy HH:mm' }}</td><td><b>{{ r.record_label }}</b><div class="fw-small fw-muted">{{ r.model_label }}<span *ngIf="r.amount"> · {{ r.amount | number:'1.2-2' }}</span></div></td>
         <td>{{ r.flow_name }}</td><td>{{ r.submitted_by_name }}</td><td>{{ levelText(r) }}</td><td><span class="fw-chip" [ngClass]="r.status">{{ r.status_label }}</span><span class="fw-chip bad" *ngIf="overdue(r)">{{ 'overdue' | t }}</span></td>
         <td style="white-space:nowrap" (click)="$event.stopPropagation()"><ng-container *ngFor="let s of actSteps(r)"><button class="fw-btn sm primary" (click)="open(r, s, 'approved')">{{ 'Approve' | t }}</button> <button class="fw-btn sm danger" (click)="open(r, s, 'rejected')">{{ 'Reject' | t }}</button></ng-container></td></tr>
       <tr *ngIf="!rows.length && loaded"><td colspan="7" class="fw-empty">{{ 'Nothing here.' | t }}</td></tr></tbody></table></div>
@@ -37,7 +39,7 @@ const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe];
         <div style="flex:1"><b>{{ s.level_name }}</b> · {{ s.approver_name }}<span *ngIf="s.delegate_name"> → {{ s.delegate_name }}</span><span *ngIf="s.escalated_to_name"> ↑ {{ s.escalated_to_name }}</span>
           <span class="fw-chip" [ngClass]="s.status">{{ s.status }}</span><span class="fw-chip bad" *ngIf="s.overdue">{{ 'overdue' | t }}</span>
           <div class="fw-muted fw-small" *ngIf="s.due_at && s.status === 'pending'">{{ 'due' | t }} {{ s.due_at | date:'dd/MM HH:mm' }}</div>
-          <div class="fw-small" *ngIf="s.decided_at">{{ s.decided_by_name }} · {{ s.decided_at | date:'dd/MM/yy HH:mm' }}</div>
+          <div class="fw-small" *ngIf="s.decided_at">{{ s.decided_by_name }} · {{ s.decided_at | date:'dd/MM/yyyy HH:mm' }}</div>
           <div class="fw-small" *ngIf="s.comment" style="white-space:pre-wrap">“{{ s.comment }}”</div>
           <div class="fw-row" style="margin-top:6px" *ngIf="s.can_act"><button class="fw-btn sm primary" (click)="open(sel, s, 'approved')">{{ 'Approve' | t }}</button><button class="fw-btn sm danger" (click)="open(sel, s, 'rejected')">{{ 'Reject' | t }}</button><button class="fw-btn sm" (click)="open(sel, s, 'changes')">{{ 'Ask for changes' | t }}</button><button class="fw-btn sm" (click)="open(sel, s, 'delegate')">{{ 'Delegate' | t }}</button></div></div></div>
       <div class="fw-card" *ngIf="act" style="margin-top:12px"><h2>{{ actTitle() }}</h2>
@@ -83,7 +85,7 @@ export class FlowApprovalsComponent implements OnInit {
   <div class="fw-head"><div><h1>{{ 'Approval flows' | t }}</h1><p>{{ 'Who approves a record type, in which order. Levels run one after the other; inside a level either the first approver decides or everyone must (parallel). A level with an amount threshold is skipped below it. Deadlines send reminders and escalate.' | t }}</p></div>
     <span class="sp"></span><button class="fw-btn primary" (click)="edit(blank())">+ {{ 'New approval flow' | t }}</button></div>
   <div class="fw-card" style="padding:0;overflow:hidden">
-    <table class="fw-table" zPlain><thead><tr><th>{{ 'Name' | t }}</th><th>{{ 'Record type' | t }}</th><th>{{ 'Levels' | t }}</th><th>{{ 'Pending' | t }}</th><th>{{ 'Active' | t }}</th><th></th></tr></thead>
+    <table class="fw-table"><thead><tr><th>{{ 'Name' | t }}</th><th>{{ 'Record type' | t }}</th><th>{{ 'Levels' | t }}</th><th>{{ 'Pending' | t }}</th><th>{{ 'Active' | t }}</th><th></th></tr></thead>
       <tbody><tr *ngFor="let f of rows"><td><a class="fw-link" (click)="edit(f)"><b>{{ f.name }}</b></a><div class="fw-muted fw-small">{{ f.description }}</div></td><td>{{ f.model_label }}</td><td class="fw-small">{{ levelsText(f) }}</td><td>{{ f.pending }}</td><td><span class="fw-chip" [ngClass]="f.active ? 'ok' : 'inactive'">{{ f.active ? 'yes' : 'no' }}</span></td>
         <td><button class="fw-btn sm" (click)="edit(f)">{{ 'Edit' | t }}</button> <button class="fw-btn sm" (click)="submitOn = f; subId = ''">{{ 'Submit a record' | t }}</button> <button class="fw-btn sm danger" (click)="del(f)">{{ 'Delete' | t }}</button></td></tr>
       <tr *ngIf="!rows.length && loaded"><td colspan="6" class="fw-empty">{{ 'No approval flow yet.' | t }}</td></tr></tbody></table></div>

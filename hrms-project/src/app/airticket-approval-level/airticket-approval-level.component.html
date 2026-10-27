@@ -1,73 +1,18 @@
-<div class="container"  *ngIf="hasViewPermission">
-    <div class="comapny_section">
-
-
-
-      <div class="header_section">
-
-        <div class="row">
-            <div class="col-md-4">
-                <h1> Airticket approval level</h1>
-            </div>
-
-        <div class="col-md-3">
-                    
-<div class="search-container">
-<input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchQuery"
-  [ngModelOptions]="{standalone: true}"
-  (ngModelChange)="onSearchChange()"
->
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-                </div>
-
-            <div class="col-md-5">
-              <div class="button-group pull-right">
-                  <button *ngIf="hasAddPermission" type="button" (click)="openPopus()" class="btn-Create btn btn-success" ><span class="header-btn-icon"><mat-icon>add_circle
-                  </mat-icon></span>Create</button>
-                  <span *ngIf="!hasAddPermission"></span>
-
-                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                      <span class="header-btn-icon">
-                       <mat-icon>draw
-                  </mat-icon></span> Edit</button>
-                  <span *ngIf="!hasEditPermission"></span>
-
-                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                      <span class="header-btn-icon">
-                          <mat-icon> delete
-                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                     
-                     <span *ngIf="!hasDeletePermission"></span>
-              </div>
-          </div>
-
+<!-- v1.62.0 air ticket: who approves air ticket requests in each branch, level by level; actions on each workflow -->
+<div class="container" *ngIf="hasViewPermission">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Air ticket approval levels</h1>
+          <p class="at-desc">Who approves air ticket requests in each branch, level by level. A branch without a workflow cannot send requests.</p>
         </div>
-       
-       
-
+        <div class="at-actions">
+          <button type="button" class="at-btn" (click)="atGo('airticket-escalation')">Escalation</button>
+          <button type="button" class="at-btn primary" *ngIf="hasAddPermission" (click)="openPopus()">+ New workflow</button>
+        </div>
+      </div>
     </div>
-
-    <div class="row">
-      <div class="col-md-2">
-          
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
-
-      </div>
-      <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAirticketAprlvl()">Delete selected </button>
-
-      </div>
-  </div>
-  
-  
 
     <div *ngIf="iscreateLoanApp" class="modal">
         <div class="modal-content">
@@ -444,122 +389,31 @@
 
      
 
-          <div class="com_list mt-4" *ngIf="hasViewPermission">
-
-
-          <table width="100%" *ngIf="hasViewPermission">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Level</th>
-                        <th>Role</th>
-                        <th>Approver</th>
-                        <th>Branch</th>
-                        <th>Approver type</th>                      
-                        <th>Action</th>
-
-            
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-<tr *ngFor="let docs of filteredApprovalLevels; let i = index">
- <td data-label="No">
-    {{ (currentPage - 1) * pageSize + i + 1 }}
- </td>
-
-  <td data-label="Level">
-    <div *ngFor="let lvl of docs.levels">
-      Level {{ lvl.level }}
-    </div>
-  </td>
-
-  <td data-label="Role">
-    <div *ngFor="let lvl of docs.levels">
-      {{ lvl.role }}
-    </div>
-  </td>
-
-  <td data-label="Approver">
-    <div *ngFor="let lvl of docs.levels">
-      {{ lvl.approver }}
-    </div>
-  </td>
-
-  <td data-label="Branch">
-    <span *ngFor="let b of docs.branch; let last = last">
-      {{ b }}<span *ngIf="!last">, </span>
-    </span>
-  </td>
-
-  <td data-label="Approver Type">
-  {{
-    docs.approval_type === 'no_approval' ? 'No Approval' :
-    docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
-    docs.approval_type === 'multi_approval' ? 'Multi Approval' :
-    docs.approval_type
-  }}
-</td>
-
-
-  <td data-label="Action" class="text-center">
-    <button
-      mat-fab
-      color="primary"
-      *ngIf="showEditBtn"
-      (click)="openEditModal(docs)"
-      style="transform: scale(0.7); margin-right: 6px;"
-    >
-      <mat-icon style="color: white;">draw</mat-icon>
-    </button>
-
-    <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-  </td>
-</tr>
-                  
-                    </tbody>
-                  </table>
-    
-                  </div>
-
-                                    <div class="pagination-container">
-
-  <button
-    type="button"
-    class="page-btn"
-    (click)="previousPage()"
-    [disabled]="currentPage === 1">
-    Previous
-  </button>
-
-  <!-- Current Page Only -->
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-
-<button
-  type="button"
-  class="page-btn"
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages">
-  Next
-</button>
-
-</div>
-
+    <div class="com_list mt-4">
+      <p class="at-msg err" *ngIf="atMsg">{{ atMsg }}</p>
+      <p class="at-muted" *ngIf="atLoading">Loading…</p>
+      <div class="at-empty" *ngIf="!atLoading && !atMsg && !atRows.length"><b>No approval workflow yet</b>Add one so that branches can send air ticket requests.</div>
+      <section class="at-group" *ngFor="let w of atRows" [attr.data-workflow]="w.id">
+        <header>
+          <div><b data-no-translate>{{ w.branches.length ? w.branches.join(', ') : at.t('No branch') }}</b><small data-no-translate>{{ at.workflowType(w.type) }}</small></div>
+          <span class="at-acts">
+            <button type="button" class="at-btn sm" *ngIf="hasEditPermission" (click)="atEdit(w.id)">Edit</button>
+            <button type="button" class="at-btn sm danger" *ngIf="hasDeletePermission" (click)="atDelete(w)">Delete</button>
+          </span>
+        </header>
+        <div class="at-line" *ngFor="let l of w.levels" data-no-translate>
+          <span class="k">{{ at.t('Level {0}', [l.level]) }}</span>
+          <span class="v">{{ at.approverOf(l, w.type) }}<span class="at-sub" *ngIf="l.role && w.type === 'multi_approval'">{{ l.role }}</span></span>
+          <span class="m">{{ at.escalation(l) }}</span>
+          <span></span>
         </div>
-
-
-
-
-
-</div>
-
-                    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+      </section>
     </div>
 
+  </div>
+</div>
+
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

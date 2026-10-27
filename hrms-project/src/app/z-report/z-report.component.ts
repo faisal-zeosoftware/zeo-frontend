@@ -13,8 +13,22 @@ import { employeeUrl, recordUrl, reportLink } from '../shared-ui/z-nav';
 import { CountryPackService, cpServerFields } from '../shared-ui/country-pack.service';   // v1.14.0
 import { I18N_UI, i18nLocalize, i18nT } from '../shared-ui/i18n.service';   // v1.15.0
 import { ZLocationService } from '../shared-ui/z-location.service';   // v1.31.1 location level
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 reports
+import { ZReportChartComponent } from './z-report-chart.component';   // v1.62.0 reports
 
-interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; }
+// v1.62.0 reports: fmt / status / long / hidden come from the report centre (DashboardManagement/report_present.py)
+interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; fmt?: string; status?: boolean; long?: boolean; hidden?: boolean; daycode?: boolean; nowrap?: boolean; }
+
+/** v1.62.0 reports – favourites and recently run reports of this user on this device (the report home reads them). */
+export function zrepGet(name: 'fav' | 'recent'): string[] {
+  try { const v = JSON.parse(localStorage.getItem('zrep:' + name + ':' + (localStorage.getItem('selectedSchema') || '')) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
+}
+export function zrepSet(name: 'fav' | 'recent', keys: string[]): void {
+  try { localStorage.setItem('zrep:' + name + ':' + (localStorage.getItem('selectedSchema') || ''), JSON.stringify(keys.slice(0, 40))); } catch { /* storage blocked */ }
+}
+const GOOD = /^(approved|active|paid|paid on time|on time|completed|confirmed|valid|present|accepted|processed|closed|deducted|assigned|hired|passed|done|signed|published|ok|found|disposed|gain|with employee|returned|current|reviewed|acknowledged|on track|ahead|healthy|available|in use|joined|filled)$/i;
+const WARN = /^(pending|in[ _]progress|draft|submitted|waiting.*|open.*|on[ _]hold|requested|partially.*|to[ _]do|scheduled|planned|in review|expiring.*|due.*|not paid yet|not started|interview.*|screening|offer.*|in maintenance|on probation|half day|late|early out|trial|collecting|new|applied|nominated|due soon)$/i;
+const BAD = /^(rejected|cancel+ed|inactive|expired|failed|absent|declined|terminated|overdue.*|lost|loss|late payment|paid late|exception|missing.*|not found|found – damaged|damaged|never verified|left|absconding|at risk|off track|error|check.*|no iban.*|no person id.*)$/i;
 
 /**
  * v1.8.0 – one screen for every report (report centre).
@@ -24,7 +38,7 @@ interface Col { key: string; label: string; type: 'text' | 'number' | 'date'; }
 @Component({
   selector: 'app-z-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZListDirective, ...I18N_UI],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZListDirective, ZDateFieldComponent, ZReportChartComponent, ...I18N_UI],
   templateUrl: './z-report.component.html',
   styleUrls: ['./z-report.component.css'],
 })
@@ -54,6 +68,16 @@ export class ZReportComponent implements OnInit, OnDestroy {
   sending = false;
   note = '';
   noteErr = false;
+  // v1.62.0 reports: presentation hints of the report (ui), summary strip, chart, variants, empty state
+  ui: any = {};
+  moreTotals = false;
+  showChart = true;
+  menuOpen = false;
+  zeroHidden = 0;
+  showZero = false;
+  noDefaults = false;
+  fav = false;
+  section = '';
   presets = [
     { k: 'month', l: 'This month' }, { k: 'lmonth', l: 'Last month' }, { k: 'quarter', l: 'This quarter' },
     { k: 'year', l: 'This year' }, { k: 'lyear', l: 'Last year' },
@@ -71,7 +95,10 @@ export class ZReportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subs.push(combineLatest([this.route.paramMap, this.route.queryParamMap]).subscribe(([p, q]) => {
-      this.key = p.get('key') || ''; this.note = '';
+      const nk = p.get('key') || '';
+      if (nk !== this.key) { this.dashOpen = false; this.dashPick = null; this.menuOpen = false; this.moreTotals = false; this.showZero = false; }   // v1.62.0 reports (P3-2)
+      this.key = nk; this.note = ''; this.fav = zrepGet('fav').includes(nk);
+      this.noDefaults = q.get('all') === '1';
       this.from = q.get('from') || ''; this.to = q.get('to') || ''; this.preset = '';
       this.asOf = q.get('as_of') || null;
       this.drillF = q.keys.filter(k => k.startsWith('f_')).map(k => ({ key: k.slice(2), label: k.slice(2), value: q.get(k) || '' }));
@@ -84,6 +111,15 @@ export class ZReportComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
 
   get totalCols(): Col[] { return this.columns.filter(c => this.totals[c.key] !== undefined); }
+  /** v1.62.0 reports: the few main totals of the summary strip (the report says which), the rest under "More totals". */
+  get mainTotals(): Col[] {
+    const main: string[] = this.ui?.totals_main || [];
+    const cols = this.totalCols;
+    const picked = main.map(k => cols.find(c => c.key === k)).filter(Boolean) as Col[];
+    return picked.length ? picked : cols.slice(0, 4);
+  }
+  get otherTotals(): Col[] { const m = new Set(this.mainTotals.map(c => c.key)); return this.totalCols.filter(c => !m.has(c.key)); }
+  get visibleCols(): Col[] { return this.columns; }
 
   private range(k: string): [string, string] {
     const d = new Date();
@@ -125,12 +161,23 @@ export class ZReportComponent implements OnInit, OnDestroy {
       if (seq !== this.seq) { return; }
       // v1.14.0: captions in the company's country terms; columns of features the country does not use are left out
       // v1.15.0: then in the user's language (country first, then language)
+      // v1.62.0 reports: a merged report opens the report it was merged into (old addresses keep working)
+      if (d.ui?.redirect && d.ui.redirect !== this.key) { this.router.navigate(['/main-sidebar/report-options/r', d.ui.redirect], { queryParams: this.route.snapshot.queryParams, replaceUrl: true }); return; }
+      this.ui = d.ui || {}; this.section = d.section || '';
       this.title = i18nT(this.cp.text(d.title)); this.description = i18nT(this.cp.text(d.description)); this.hasPeriod = d.has_period; this.asOf = d.as_of || null; this.notes = (d.notes || []).map((n: any) => typeof n === 'string' ? i18nT(this.cp.text(n)) : n);
       if (d.period) { this.from = d.period.from; this.to = d.period.to; }
       this.preset = this.presets.find(p => { const [a, b] = this.range(p.k); return a === this.from && b === this.to; })?.k || '';
       this.columns = i18nLocalize(cpServerFields(d.columns || [], this.cp)); this.all = d.rows; this.serverTotals = d.totals || {};
       this.filterKeys = d.filters || [];
+      // v1.62.0 reports: short text (names, cycles, departments) stays on one line; long text is cut with a tooltip
+      this.columns.forEach(c => { if (c.type === 'text' && !c.long) { c.nowrap = (this.all || []).slice(0, 400).every(r => String(r[c.key] ?? '').length <= 42); } });
+      this.sortDefault();
+      // v1.62.0 reports: default filters (e.g. Changed = Yes) when the address names none – "Show all rows" switches them off
+      if (!this.drillF.length && !this.nz && !this.noDefaults && this.ui.default_filters) {
+        Object.entries(this.ui.default_filters).forEach(([k, v]) => { if (this.all.some(r => String(r[k]) === String(v))) { this.drillF.push({ key: k, label: k, value: String(v) }); } });
+      }
       this.applyDrill();
+      this.remember();
       this.buildFilters();
       this.runs = [this.runs[0] + 1];   // a fresh table, so the list tools read the new columns
     } catch (e: any) {
@@ -139,10 +186,39 @@ export class ZReportComponent implements OnInit, OnDestroy {
       this.rows = []; this.all = []; this.columns = [];
       // v1.11.0: keep the period picker so a too-wide range can be corrected (e.g. "Choose at most 3 months")
       if (this.from && this.to && e?.status === 400) { this.hasPeriod = true; }
-      if (!this.title || this.title === 'Report') { this.title = this.key.replace(/-/g, ' ').replace(/^./, (c: string) => c.toUpperCase()); }
+      // v1.38.0: the previous report's title and description must not stay above the error (an unknown report showed "Contacts")
+      if (e?.status === 404 || !this.title || this.title === 'Report') { this.title = this.key.replace(/-/g, ' ').replace(/^./, (c: string) => c.toUpperCase()); this.description = ''; }
     }
     this.loading = false;
     this.cd.detectChanges();
+  }
+
+  /** v1.53.0 – put this report on one of my dashboards as a card. */
+  dashOpen = false; dashList: any[] = []; dashPick: any = null; dashView = 'number'; dashGroup = ''; dashBusy = false;
+  async openDash(): Promise<void> {
+    this.dashOpen = !this.dashOpen; this.note = '';
+    if (!this.dashOpen) { return; }
+    const s = localStorage.getItem('selectedSchema') || '';
+    try { this.dashList = ((await firstValueFrom(this.http.get<any[]>(`${this.rec.api}/insights/api/dashboards/?schema=${encodeURIComponent(s)}`))) || []).filter(d => d.can_edit); }
+    catch { this.dashList = []; }
+    this.dashPick = this.dashList[0]?.id || null;
+    this.cd.detectChanges();
+  }
+  dashGroupCols(): any[] { return this.dashView === 'line' ? this.columns.filter((c: any) => c.type === 'date') : this.columns.filter((c: any) => c.type !== 'number'); }
+  async addToDash(): Promise<void> {
+    const s = localStorage.getItem('selectedSchema') || '';
+    this.dashBusy = true;
+    try {
+      let id = this.dashPick;
+      if (!id) {
+        const r = await firstValueFrom(this.http.post<any>(`${this.rec.api}/insights/api/dashboards/?schema=${encodeURIComponent(s)}`, { name: 'My dashboard', cards: [] }));
+        id = r.id;
+      }
+      const card = { report: this.key, view: this.dashView, group: this.dashGroup, period: 'report', size: this.dashView === 'number' ? 's' : 'w' };
+      await firstValueFrom(this.http.post<any>(`${this.rec.api}/insights/api/dashboards/${id}/add-card/?schema=${encodeURIComponent(s)}`, { card }));
+      this.note = 'Added to the dashboard (Reports › Dashboards).'; this.noteErr = false; this.dashOpen = false;
+    } catch (e: any) { this.note = e?.error?.detail || 'The card could not be added.'; this.noteErr = true; }
+    this.dashBusy = false; this.cd.detectChanges();
   }
 
   /** Sends the report, as now filtered by period and branch, to the user's e-mail (CSV). */
@@ -176,10 +252,24 @@ export class ZReportComponent implements OnInit, OnDestroy {
     // a value "A|B" means any of them (e.g. working days = Present, Absent or On leave)
     this.rows = this.all.filter(r => this.drillF.every(f => f.value.split('|').some(v => norm(r[f.key]) === norm(v)))
       && (!this.nz || (typeof r[this.nz] === 'number' ? r[this.nz] !== 0 : !!r[this.nz])));
-    if (!this.drillF.length && !this.nz) { this.totals = this.serverTotals; return; }
+    // v1.62.0 reports: rows with nothing in them (leave types without entitlement …) are hidden until asked for
+    const hz: string[] = this.ui?.hide_zero || [];
+    this.zeroHidden = 0;
+    if (hz.length && !this.showZero) {
+      const before = this.rows.length;
+      this.rows = this.rows.filter(r => hz.some(k => typeof r[k] === 'number' && r[k] !== 0));
+      this.zeroHidden = before - this.rows.length;
+    }
+    if (!this.drillF.length && !this.nz && !this.zeroHidden) { this.totals = this.serverTotals; return; }
     this.totals = {};
+    const tm = this.ui?.totals_meta || {};
     Object.keys(this.serverTotals).forEach(k => {
-      this.totals[k] = Math.round(this.rows.reduce((a, r) => a + (typeof r[k] === 'number' ? r[k] : 0), 0) * 100) / 100;
+      const nums = this.rows.map(r => r[k]).filter(v => typeof v === 'number');
+      const sum = nums.reduce((a, v) => a + v, 0);
+      this.totals[k] = Math.round((tm[k]?.agg === 'avg' ? (nums.length ? sum / nums.length : 0) : sum) * 100) / 100;
+    });
+    Object.keys(tm).filter(k => tm[k].agg === 'ratio' && this.totals[k] !== undefined).forEach(k => {
+      const [a, b] = tm[k].of; this.totals[k] = this.totals[b] ? Math.round(this.totals[a] / this.totals[b] * 100) / 100 : 0;
     });
   }
 
@@ -206,7 +296,7 @@ export class ZReportComponent implements OnInit, OnDestroy {
   /** Show all rows of the report again (keep the period). */
   // (v1.16.0: also clears the filter row)
   clearDrill(): void {
-    const q: Record<string, string> = {};
+    const q: Record<string, string> = { all: '1' };   // v1.62.0 reports: also without the report's default filters
     if (this.from && this.to) { q['from'] = this.from; q['to'] = this.to; }
     this.router.navigate([], { relativeTo: this.route, queryParams: q });
   }
@@ -250,11 +340,104 @@ export class ZReportComponent implements OnInit, OnDestroy {
   show(row: any, c: Col): string {
     const v = row[c.key];
     if (v === null || v === undefined || v === '') { return c.type === 'number' ? '' : '-'; }
-    if (c.type === 'number' && typeof v === 'number') { return v.toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+    if (c.type === 'number' && typeof v === 'number') { return this.num(v, c.fmt); }
+    if (typeof v === 'boolean') { return i18nT(v ? 'Yes' : 'No'); }   // v1.62.0 reports
+    if (c.type === 'date' || (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v))) { return zDmy(v); }   // v1.62.0 reports: dd/mm/yyyy
     return String(v);
   }
 
-  fmt(n: number): string { return (n ?? 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+  /** v1.62.0 reports: money with 2 decimals, % with 1 decimal and the sign, counts without decimals – thousands separators. */
+  num(v: number, f?: string): string {
+    if (typeof v !== 'number') { return String(v ?? ''); }
+    if (f === 'money') { return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    if (f === 'pct') { return v.toLocaleString('en-US', { maximumFractionDigits: 1 }) + '%'; }
+    if (f === 'int') { return v.toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+    return v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+
+  fmt(n: number, c?: Col): string { return this.num(n ?? 0, c?.fmt); }
+
+  /** Total label without the "(AED)" – the strip shows the currency next to the figure. */
+  tLabel(c: Col): string { return (c.label || '').replace(/\s*\((AED|USD|SAR|QAR|OMR|BHD|KWD|INR|[A-Z]{3}|درهم|ريال|دينار)\)\s*$/, ''); }
+  tUnit(c: Col): string {
+    if (c.fmt !== 'money') { return ''; }
+    const m = (c.label || '').match(/\(([A-Z]{3})\)/);
+    return m ? m[1] : (this.cp.currency()?.code || 'AED');
+  }
+  tAvg(c: Col): boolean { return this.ui?.totals_meta?.[c.key]?.agg === 'avg'; }
+
+  /** "Anil Kumar (GD-0008)" → name on the first line, the code muted under it. */
+  empSplit(v: any): [string, string] | null {
+    if (typeof v !== 'string') { return null; }
+    const m = v.match(/^(.*\S)\s+\(([A-Za-z]{1,6}-?\d{2,}[A-Za-z0-9-]*)\)$/);
+    return m ? [m[1], m[2]] : null;
+  }
+
+  /** good | warn | bad | '' for a status word. */
+  tone(v: any): string {
+    const t = String(v ?? '').trim();
+    if (!t || t === '-') { return ''; }
+    return GOOD.test(t) ? 'good' : BAD.test(t) ? 'bad' : WARN.test(t) ? 'warn' : 'neutral';
+  }
+
+  codeOf(v: any): string { return String(v ?? '').trim().split(/\s+/)[0].toUpperCase(); }
+
+  isEmpCol(c: Col): boolean { return c.key === 'employee' || c.key === 'held_by' || c.key === 'candidate'; }
+
+  toggleZero(): void { this.showZero = !this.showZero; this.applyDrill(); this.runs = [this.runs[0] + 1]; this.cd.detectChanges(); }
+
+  /** Variants: a merged report is one tab of the report it was merged into. */
+  get variants(): { key: string; label: string }[] { return this.ui?.variants || []; }
+
+  toggleFav(): void {
+    const f = zrepGet('fav');
+    const i = f.indexOf(this.key);
+    if (i > -1) { f.splice(i, 1); } else { f.unshift(this.key); }
+    zrepSet('fav', f); this.fav = f.includes(this.key);
+  }
+
+  private remember(): void {
+    const r = zrepGet('recent').filter(k => k !== this.key);
+    r.unshift(this.key); zrepSet('recent', r.slice(0, 12));
+  }
+
+  private sortDefault(): void {
+    const s = this.ui?.sort;
+    if (!s) { return; }
+    const [k, dir] = s;
+    this.all = [...this.all].sort((a, b) => {
+      const x = a[k], y = b[k];
+      const xe = x === '' || x === null || x === undefined, ye = y === '' || y === null || y === undefined;
+      if (xe || ye) { return xe === ye ? 0 : xe ? 1 : -1; }
+      return (x < y ? -1 : x > y ? 1 : 0) * (dir || 1);
+    });
+  }
+
+  /** Empty state: try a wider period. */
+  tryPeriod(k: string): void { this.pick(k); }
+  get emptyNext(): { k: string; l: string } | null {
+    if (!this.hasPeriod) { return null; }
+    if (this.preset === 'month') { return { k: 'lmonth', l: 'Try last month' }; }
+    if (this.preset !== 'year') { return { k: 'year', l: 'Try this year' }; }
+    return { k: 'lyear', l: 'Try last year' };
+  }
+  get periodText(): string { return this.from && this.to ? `${zDmy(this.from)} – ${zDmy(this.to)}` : ''; }
 
   trackCol = (_: number, c: Col) => c.key;
+  trackKey = (_: number, v: { key: string }) => v.key;   // v1.62.0 reports
+}
+
+/** v1.62.0 reports: 2026-10-01 → 01/10/2026, 2026-10-26T08:54:06+00:00 → 26/10/2026 08:54 (the company's local time). */
+export function zDmy(v: any): string {
+  const t = String(v ?? '');
+  const m = t.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if (!m) { return t; }
+  if (m[4] !== undefined && /[zZ]|[+-]\d{2}:?\d{2}$/.test(t)) {
+    const d = new Date(t);
+    if (!isNaN(+d)) {
+      const p = (n: number) => String(n).padStart(2, '0');
+      return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+  }
+  return `${m[3]}/${m[2]}/${m[1]}` + (m[4] !== undefined ? ` ${m[4]}:${m[5]}` : '');
 }

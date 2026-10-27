@@ -274,6 +274,7 @@
 
                 <div class="col-md-2 d-flex align-items-end">
                   <button
+                    type="button"
                     class="form-control btn btn-danger w-100"
                     (click)="removeLevel(i)"
                   >
@@ -283,7 +284,7 @@
               </div>
 
               <!-- Add Button -->
-              <button class="btn btn-primary mt-2" (click)="addLevel()">
+              <button type="button" class="btn btn-primary mt-2" (click)="addLevel()">
                 + Add level
               </button>
             </div>
@@ -544,7 +545,7 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Level">{{ docs.level }}</td>
         <td data-label="Request Type">{{ docs.request_type }}</td>
-        <td data-label="Approver">{{ docs.approver }}</td>
+        <td data-label="Approver">{{ (docs.approver_name || docs.approver) }}</td>
         <td data-label="Branch">{{ docs.branch }}</td>
         <td data-label="Action" class="text-center">
           <button
@@ -586,7 +587,7 @@
             </td>
             <td data-label="Approver">
               <div *ngFor="let lvl of docs.levels">
-                {{ lvl.approver }}
+                {{ (lvl.approver_name || lvl.approver) }}
               </div>
             </td>
             <td data-label="Branch">

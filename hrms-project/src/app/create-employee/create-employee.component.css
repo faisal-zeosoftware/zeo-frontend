@@ -430,3 +430,7 @@ label {
 .ce-dupe a { color: #5B4FE0; cursor: pointer; text-decoration: underline; margin-left: 4px; }
 .ce-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .ce-actions .btn { height: 38px; padding: 0 16px; }
+/* v1.62.0 release checklist §8 "Pop-up scroll": sticky footer – the form scrolls, Cancel / Save stay visible at the bottom */
+.ce-actions-row { position: sticky; bottom: -20px; z-index: 5; margin: 0 -20px -40px; padding: 10px 20px 20px; background: #fff;
+                  border-top: 1px solid #E6E8F0; box-shadow: 0 -6px 12px -10px rgba(20, 18, 48, .25); }
+.ce-actions-row .ce-actions { margin-top: 0; padding: 0; }

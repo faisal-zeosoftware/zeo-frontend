@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +26,7 @@ import { ASSET_BASE, AssetApiService, money } from './asset-api.service';
         <div class="ex-rows">
           <div class="ex-row click" *ngFor="let e of rows" [class.on]="sel?.employee_id === e.employee_id" (click)="pick(e)">
             <div class="main"><div class="t">{{ e.employee }}</div>
-              <div class="s">{{ e.branch }}<span *ngIf="e.last_working_date"> · last day {{ e.last_working_date | date:'dd MMM yyyy' }}</span><span *ngIf="e.eos_status"> · settlement {{ e.eos_status }}</span></div></div>
+              <div class="s">{{ e.branch }}<span *ngIf="e.last_working_date"> · last day {{ e.last_working_date | date:'dd/MM/yyyy' }}</span><span *ngIf="e.eos_status"> · settlement {{ e.eos_status }}</span></div></div>
             <div class="r"><span class="ex-tag" [ngClass]="e.blocked ? 'rejected' : 'approved'">{{ e.blocked ? e.open_items + ' open' : (e.waived ? 'Released' : 'Clear') }}</span></div>
           </div>
           <p class="ex-muted" *ngIf="!rows.length">Nobody is leaving right now.</p>

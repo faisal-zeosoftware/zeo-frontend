@@ -252,6 +252,12 @@ type Cond = { field?: string; operator?: string; value?: any; value2?: any; op?:
             <div class="fw-f full"><label>{{ 'Else' | t }}</label><ng-container *ngTemplateOutlet="actList; context: { list: a.else, depth: depth + 1 }"></ng-container></div>
           </ng-container>
           <div class="fw-f full" *ngIf="a.type === 'stop'"><label>{{ 'Note' | t }}</label><input [(ngModel)]="a.note"></div>
+          <ng-container *ngIf="a.type === 'call_webhook'">   <!-- v1.52.0 -->
+            <div class="fw-f"><label>{{ 'Webhook' | t }}</label><select [(ngModel)]="a.webhook"><option [ngValue]="null">{{ 'Choose…' | t }}</option>
+              <option *ngFor="let h of (meta?.webhooks || [])" [ngValue]="h.id">{{ h.name }} – {{ h.url }}</option></select>
+              <small *ngIf="!(meta?.webhooks || []).length">{{ 'Add a webhook in Settings → API keys and webhooks first.' | t }}</small></div>
+            <div class="fw-f"><label>{{ 'Note sent with the record (optional)' | t }}</label><input [(ngModel)]="a.note"></div>
+          </ng-container>
           <div class="fw-f"><label>{{ 'Label (optional)' | t }}</label><input [(ngModel)]="a.label"></div>
           <div class="fw-f"><label>{{ 'If this action fails' | t }}</label><select [(ngModel)]="a.on_error"><option value="">{{ 'Stop the run (default)' | t }}</option><option value="continue">{{ 'Continue with the next action' | t }}</option></select></div>
         </div>
@@ -359,6 +365,7 @@ export class FlowEditorComponent implements OnInit {
     if (type === 'submit_approval') { a.flow = null; a.on_approved = []; a.on_rejected = []; }
     if (type === 'branch') { a.conditions = { op: 'and', items: [] }; a.then = []; a.else = []; }
     if (type === 'wait') { a.days = 1; }
+    if (type === 'call_webhook') { a.webhook = (this.meta?.webhooks || [])[0]?.id || null; }   // v1.52.0
     list.push(a);
   }
   move(list: any[], i: number, d: number) { const j = i + d; if (j < 0 || j >= list.length) { return; } [list[i], list[j]] = [list[j], list[i]]; }
@@ -426,6 +433,7 @@ export class FlowEditorComponent implements OnInit {
       if (a.type === 'update_fields' && !(a._fields || []).some((x: any) => x.k)) { p.push(`Action ${i + 1}: choose the fields to set.`); }
       if (a.type === 'create_record' && !a.model) { p.push(`Action ${i + 1}: choose the record type to create.`); }
       if (a.type === 'submit_approval' && !a.flow) { p.push(`Action ${i + 1}: choose the approval flow.`); }
+      if (a.type === 'call_webhook' && !a.webhook) { p.push(`Action ${i + 1}: choose the webhook.`); }   // v1.52.0
       if (a.type === 'wait' && !(a.days || a.hours || a.minutes || a.until_field)) { p.push(`Action ${i + 1}: a duration or a date field.`); }
       if (a.type === 'assign_owner' && !a.field) { p.push(`Action ${i + 1}: choose the user field to set.`); }
     });

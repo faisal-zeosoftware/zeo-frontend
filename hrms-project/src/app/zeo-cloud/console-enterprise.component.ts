@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -31,7 +32,7 @@ const API = () => `${environment.apiBaseUrl}/licence/api/console`;
       <label>{{ 'Companies (empty = no limit)' | t }}<input type="number" min="1" [(ngModel)]="f.limits.companies"></label>
       <label>{{ 'Employees (empty = no limit)' | t }}<input type="number" min="1" [(ngModel)]="f.limits.employees"></label>
       <label>{{ 'Users (empty = no limit)' | t }}<input type="number" min="1" [(ngModel)]="f.limits.users"></label>
-      <label>{{ 'Request' | t }}<select [(ngModel)]="f.request_id"><option [ngValue]="null">–</option><option *ngFor="let r of requests" [ngValue]="r.id">{{ r.company }} ({{ r.created_at | date:'d MMM y' }})</option></select></label>
+      <label>{{ 'Request' | t }}<select [(ngModel)]="f.request_id"><option [ngValue]="null">–</option><option *ngFor="let r of requests" [ngValue]="r.id">{{ r.company }} ({{ r.created_at | date:'dd/MM/yyyy' }})</option></select></label>
       <div class="wide"><span class="zk-note">{{ 'Apps' | t }}</span><div class="cc-apps">
         <label class="cc-inline" *ngFor="let a of apps"><input type="checkbox" [(ngModel)]="f.appsOn[a]" [disabled]="a === 'hrms'"> {{ appName(a) }}</label></div></div>
       <label class="wide cc-inline"><input type="checkbox" [(ngModel)]="f.group"> {{ 'Group features (group dashboard, reports, approvals, copy settings, transfers)' | t }}</label>
@@ -44,14 +45,14 @@ const API = () => `${environment.apiBaseUrl}/licence/api/console`;
     <tr><th>{{ 'Client' | t }}</th><th>{{ 'Installation' | t }}</th><th>{{ 'Valid' | t }}</th><th>{{ 'Limits' | t }}</th><th>{{ 'Apps' | t }}</th><th>{{ 'Issued' | t }}</th><th></th></tr>
     <tr *ngFor="let x of licences"><td>{{ x.client }}<small>{{ x.licence_id }}</small></td><td><code class="cc-id">{{ x.installation_id }}</code></td>
       <td class="cc-nw">{{ x.valid_from }}<small>– {{ x.valid_until }}</small></td><td>{{ limitsText(x.limits) }}</td><td>{{ appsText(x.apps) }}{{ x.features.includes('group') ? ' · ' + ('group' | t) : '' }}</td>
-      <td>{{ x.issued_at | date:'d MMM y' }}<small>{{ x.issued_by }}</small></td>
+      <td>{{ x.issued_at | date:'dd/MM/yyyy' }}<small>{{ x.issued_by }}</small></td>
       <td><button type="button" class="lp-btn" (click)="download(x)">{{ 'Download' | t }}</button> <button type="button" class="lp-btn" (click)="renew(x)">{{ 'Renew' | t }}</button></td></tr>
     <tr *ngIf="!licences.length"><td colspan="7" class="zk-note">{{ 'No licences yet.' | t }}</td></tr>
   </table></div></div>
 
   <div class="zk-card"><h2>{{ 'Enterprise requests' | t }}</h2><div class="zk-scroll"><table class="zk-table">
     <tr><th>{{ 'Date' | t }}</th><th>{{ 'Company' | t }}</th><th>{{ 'Contact' | t }}</th><th>{{ 'Size' | t }}</th><th>{{ 'Message' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
-    <tr *ngFor="let r of requests"><td>{{ r.created_at | date:'d MMM y' }}</td><td>{{ r.company }}<small *ngIf="r.account">{{ 'ZEO Cloud' | t }}: {{ r.account }}</small><small>{{ r.country }}</small></td>
+    <tr *ngFor="let r of requests"><td>{{ r.created_at | date:'dd/MM/yyyy' }}</td><td>{{ r.company }}<small *ngIf="r.account">{{ 'ZEO Cloud' | t }}: {{ r.account }}</small><small>{{ r.country }}</small></td>
       <td>{{ r.name }}<small><a [href]="'mailto:' + r.email">{{ r.email }}</a> {{ r.phone }}</small></td>
       <td>{{ r.employees || '–' }} {{ 'employees' | t }}<small>{{ r.companies || '–' }} {{ 'companies' | t }}</small></td>
       <td class="cc-msg">{{ r.message }}</td>

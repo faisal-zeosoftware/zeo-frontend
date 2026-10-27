@@ -33,7 +33,7 @@
         <td><a class="apr-link" (click)="selectedaprovaldetalis(apr.id)">{{ apr.resignation_request }}</a></td>
         <td>{{ apr.level }}</td>
         <td>{{ apr.note || '—' }}</td>
-        <td>{{ apr.approver }}</td>
+        <td>{{ (apr.approver_name || apr.approver) }}</td>
         <td><span
         class="status-badge"
         [ngClass]="{
@@ -67,7 +67,7 @@
         <div class="col-md-6">
           <div class="del-item">
             <strong>Delegator</strong>
-            <p>{{ apr.approver }}</p>
+            <p>{{ (apr.approver_name || apr.approver) }}</p>
           </div>
         </div>
 
@@ -75,7 +75,7 @@
           <div class="del-item">
             <strong>Delegate to</strong>
             <p>
-              {{ apr.delegation_details.delegate_to }}
+              {{ (apr.delegation_details.delegate_to_name || apr.delegation_details.delegate_to) }}
             </p>
           </div>
         </div>
@@ -217,6 +217,8 @@
           <div class="col-md-4">
             <label>Delegate to</label>
             <select class="form-control" [(ngModel)]="delegationForm.deligate_to">
+              <!-- v1.40.1: a placeholder – without it the first user LOOKED selected while the model was still null, so Send posted no delegate -->
+              <option [ngValue]="null" disabled>Select a user…</option>
               <option *ngFor="let user of Users" [ngValue]="user.id">
                 {{ user.username }}
               </option>

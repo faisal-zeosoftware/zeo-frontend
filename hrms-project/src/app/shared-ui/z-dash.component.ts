@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, NgZone, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -661,7 +662,7 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
         <article class="zdo-card" data-widget="me-assets" data-widget-title="My assets" data-widget-timed="0" data-widget-now="Assets you hold today.">
           <header><mat-icon>inventory_2</mat-icon><h3>{{ 'My assets' | t }}</h3><span class="zdo-n">{{ me.assets?.length || 0 }}</span></header>
           <p class="zr-muted" *ngIf="!me.assets?.length">{{ 'No company assets with you.' | t }}</p>
-          <div class="zdo-row zdo-go" *ngFor="let a of me.assets?.slice(0, 5)" (click)="open(a)" role="link" tabindex="0" (keydown.enter)="open(a)"><span>{{ a.name }}<small *ngIf="a.serial"> · {{ a.serial }}</small></span><b><small>{{ a.since | date:'d MMM y' }}</small></b></div>
+          <div class="zdo-row zdo-go" *ngFor="let a of me.assets?.slice(0, 5)" (click)="open(a)" role="link" tabindex="0" (keydown.enter)="open(a)"><span>{{ a.name }}<small *ngIf="a.serial"> · {{ a.serial }}</small></span><b><small>{{ a.since | date:'dd/MM/yyyy' }}</small></b></div>
         </article>
         <article class="zdo-card" data-widget="me-pay" data-widget-title="My pay" data-widget-timed="0" data-widget-now="Your last approved payslip up to the end of the dashboard period.">
           <header><mat-icon>payments</mat-icon><h3>{{ 'My pay' | t }}</h3></header>

@@ -421,6 +421,9 @@
         {{ cal.calendar_title }}
         <span class="year-badge">{{ cal.year }}</span>
       </h4>
+      <div class="hc-udf" *ngIf="udfCal.length">   <!-- v1.40.1: the calendar's extra fields -->
+        <span *ngFor="let f of udfCal"><small>{{ f.label }}</small> {{ udf(udfCalVals, cal.id, f) || '–' }}</span>
+      </div>
     </div>
   
     <!-- RIGHT SIDE -->
@@ -475,6 +478,8 @@
           <th>Start date</th>
           <th>End date</th>
           <th>Note</th>
+          <th *ngFor="let f of udfHol">{{ f.label }}</th>   <!-- v1.40.1: extra fields of the holiday -->
+          <th *ngFor="let f of udfCal">{{ f.label }}</th>   <!-- v1.40.1: extra fields of the calendar -->
           <!-- <th>Restricted</th> -->
           <th class="text-center">Action</th>
         </tr>
@@ -487,6 +492,8 @@
           <td data-label="Start Date">{{ h.start_date }}</td>
           <td data-label="End Date">{{ h.end_date }}</td>
           <td data-label="Note">{{ h.note }}</td>
+          <td *ngFor="let f of udfHol" [attr.data-label]="f.label">{{ udf(udfHolVals, h.id, f) }}</td>
+          <td *ngFor="let f of udfCal" [attr.data-label]="f.label">{{ udf(udfCalVals, cal.id, f) }}</td>
           <!-- <td>
             <span class="badge"
                   [ngClass]="h.restricted ? 'badge-danger' : 'badge-success'">

@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { errText, wsUrl } from '../payroll-plus/pay162';   // v1.62.0 payroll
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient } from '@angular/common/http';
@@ -15,7 +18,7 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-wps',
   templateUrl: './wps.component.html',
-  styleUrl: './wps.component.css'
+  styleUrls: ['./wps.component.css', '../leave-policy/leave-policy.css', '../payroll-plus/pay162.css']
 })
 export class WpsComponent {
 
@@ -64,6 +67,7 @@ private employeeService: EmployeeService,
   ) {}
 
   ngOnInit(): void {
+    this.loadRuns();   // v1.62.0 payroll
 
      // combineLatest waits for both Schema and Branches to have a value
      this.dataSubscription = combineLatest([
@@ -250,14 +254,15 @@ fetchSIFData(): void {
     (response: any) => {
       if (response.status === 'success') {
         this.sifData = response.data;
-        console.log('SIF Data:', this.sifData);
+        if (this.downloadAfterFetch) { this.downloadAfterFetch = false; this.downloadSIFFile(); }   // v1.62.0 payroll
       } else {
         alert('Failed to fetch SIF data.');
       }
     },
     (error) => {
       console.error('Error fetching SIF data:', error);
-      alert('Error while fetching SIF data');
+      this.downloadAfterFetch = false;
+      alert(errText(error, 'The WPS file could not be made.'));   // v1.62.0 payroll: the reason from the server
     }
   );
 }
@@ -379,6 +384,7 @@ downloadSIFStyledExcel(): void {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
     FileSaver.saveAs(blob, 'SIF_Styled_Report.xlsx');
+    this.logMade('xlsx');   // v1.62.0 payroll
   });
 }
 
@@ -497,6 +503,44 @@ downloadSIFFile(): void {
   const blob = new Blob([sifContent], { type: 'text/plain;charset=utf-8' });
   const fileName = `SIF_${this.selectedPayrollId}_${new Date().toISOString().slice(0, 10)}.sif`;
   FileSaver.saveAs(blob, fileName);
+  this.logMade('sif');   // v1.62.0 payroll
 }
 
+
+  // ------------------------------------------------------------------ v1.62.0 payroll: the runs with their WPS state
+  private http2 = inject(HttpClient);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+  wpsRuns: any[] = [];
+  wpsLoading = true;
+  wpsMsg = '';
+  downloadAfterFetch = false;
+  showAll = false;
+
+  async loadRuns(): Promise<void> {
+    this.wpsLoading = true;
+    try {
+      const d: any = await firstValueFrom(this.http2.get(wsUrl('runs/')));
+      this.wpsRuns = d.runs || [];
+      const q = Number(this.route.snapshot.queryParamMap.get('run') || 0);
+      if (q && !this.sifData && this.wpsRuns.some(r => r.id === q)) { this.make(this.wpsRuns.find(r => r.id === q)); }
+    } catch (e) { this.wpsMsg = errText(e, 'The payroll runs could not be loaded.'); }
+    this.wpsLoading = false; this.cd.markForCheck();
+  }
+  shownRuns(): any[] { return this.showAll ? this.wpsRuns : this.wpsRuns.filter(r => r.status === 'approved' || r.status === 'paid').slice(0, 12); }
+  selectedRun(): any { return this.wpsRuns.find(r => String(r.id) === String(this.selectedPayrollId)); }
+  isSel(r: any): boolean { return String(r.id) === String(this.selectedPayrollId); }
+  ready(r: any): boolean { return r.status === 'approved' || r.status === 'paid'; }
+  make(r: any): void { this.selectedPayrollId = r.id; this.sifData = null; this.fetchSIFData(); }
+  download(r: any): void { this.selectedPayrollId = r.id; this.sifData = null; this.downloadAfterFetch = true; this.fetchSIFData(); }
+  closeFile(): void { this.sifData = null; this.selectedPayrollId = null; this.router.navigate([], { relativeTo: this.route, queryParams: { run: null } }); }
+  private async logMade(kind: string): Promise<void> {
+    const s = this.sifData?.summary; const id = this.selectedPayrollId;
+    if (!s || !id) { return; }
+    try {
+      await firstValueFrom(this.http2.post(wsUrl(`runs/${id}/wps-made/`), { file: kind, employees: s.employees, total: s.total_salary, skipped: s.skipped }));
+      this.loadRuns();
+    } catch { /* the file is saved; only the note in the history failed */ }
+  }
 }

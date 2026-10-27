@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -190,7 +191,7 @@ const BLANK_LINE = {
         <h3 style="font-size:14px;margin:16px 0 8px">Employees with a policy of their own</h3>
         <table class="table" *ngIf="overrides.length">
           <thead><tr><th>Employee</th><th>Policy</th><th>Note</th><th>Since</th><th>Actions</th></tr></thead>
-          <tbody><tr *ngFor="let o of overrides"><td>{{ o.employee }}</td><td>{{ o.policy_name }}</td><td>{{ o.note || '-' }}</td><td>{{ o.assigned_at | date:'dd MMM yyyy' }}</td>
+          <tbody><tr *ngFor="let o of overrides"><td>{{ o.employee }}</td><td>{{ o.policy_name }}</td><td>{{ o.note || '-' }}</td><td>{{ o.assigned_at | date:'dd/MM/yyyy' }}</td>
             <td><button type="button" class="lp-btn" (click)="dropOverride(o)">Back to category policy</button></td></tr></tbody>
         </table>
         <p class="lp-muted" *ngIf="!overrides.length">Everybody follows the policy of their category.</p>
@@ -404,7 +405,7 @@ export class LeavePoliciesComponent implements OnInit {
   }
   howLabel(h: string): string {
     return ({ user: 'named user', reporting_manager: 'reporting manager', manager_of_manager: "manager's manager", branch_hr: 'branch HR manager',
-              department_head: 'department head', company_hr: 'company HR manager', admin: 'company admin – nobody else found', escalate_to: 'escalation user', none: 'nobody found' } as any)[h] || h;
+              department_head: 'department head', company_hr: 'company HR manager', functional_manager: 'functional manager', admin: 'company admin – nobody else found', escalate_to: 'escalation user', none: 'nobody found' } as any)[h] || h;
   }
 
   say(m: string, err = false): void { this.msg = m; this.msgErr = err; this.cd.detectChanges(); }

@@ -69,7 +69,7 @@ export class AuthenticationService {
     return this.http.post(url, body, { headers }).pipe(
       tap((response: any) => {
         const token = response.access;
-        this.setAuthToken(token);
+        if (token) { this.setAuthToken(token); }   // v1.52.0 no token yet when the authenticator code comes next
       })
     );
   }
@@ -148,9 +148,17 @@ export class AuthenticationService {
   
   }
 
+  // v1.56.1 (release checklist, page speed): the top bar, the company menu and the screens asked for the companies and branches
+  // of the login 2–4 times while a page opened (each answer counts the notifications of every branch) – one request is
+  // shared for a few seconds, like getUserData
+  private schemaCache = new Map<number, { at: number; obs: Observable<any> }>();
   getUserSchema(userId: number): Observable<any> {
+    const hit = this.schemaCache.get(userId);
+    if (hit && Date.now() - hit.at < 8000) { return hit.obs; }
     const url = `${this.apiUrl}/api/user/${userId}/tenants`;
-    return this.http.get(url);
+    const obs = this.http.get(url).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.schemaCache.set(userId, { at: Date.now(), obs });
+    return obs;
   }
 
   fetchSchemaDetails(schemaId: number): Observable<any> {
@@ -221,6 +229,15 @@ export class AuthenticationService {
 
 
   logout(): Observable<any> {
+    // v1.52.0 end this sign-in on the server too (its tokens stop working at once); an impersonation ends with it
+    const t = this.getAuthToken();
+    if (t) {
+      const h = new HttpHeaders({ Authorization: `Bearer ${t}` });
+      let imp = false;
+      try { imp = !!JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).imp; } catch { imp = false; }
+      this.http.post(imp ? `${this.apiUrl}/impersonate/stop/` : `${this.apiUrl}/sessions/`, imp ? {} : { action: 'sign_out' }, { headers: h }).subscribe({ error: () => {} });
+    }
+    try { sessionStorage.removeItem('zeo_imp_admin'); } catch { /* no storage */ }
     this.forgetUserData();
        this.clearTokens();
 

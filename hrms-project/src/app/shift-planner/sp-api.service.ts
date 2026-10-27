@@ -1,6 +1,6 @@
 /**
  * v1.12.0 Shift planner – API helper for /shift-planner/api/… (always with ?schema=<selected company>).
- * Backend: ShiftPlanner app (see /home/claude/allapps/shiftplan/INTEGRATION.md for every endpoint).
+ * Backend: ShiftPlanner app (every endpoint is listed in the ShiftPlanner app's urls.py).
  */
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -15,6 +15,7 @@ export interface SpMeta {
   branches: { id: number; branch_name: string }[];
   departments: { id: number; dept_name: string }[];
   approvers: { id: number; username: string }[];
+  skills?: { id: number; name: string; category: string | null }[];   // v1.61.0
 }
 
 @Injectable({ providedIn: 'root' })

@@ -13,7 +13,8 @@ import { FLOW_CSS } from '../zeo-flow/flow.service';
  * (GPSSA + ILOE, GOSI + SANED, GRSIA, PASI, SIO, PIFSS, EPF + ESI + professional tax + TDS …). Loaded by
  * Settings → Country settings → Apply country defaults (or "Load the country's schemes" here), editable, and turned into
  * salary components with formulas stat_<code>_emp / stat_<code>_er. "Check an employee" shows the figures per scheme.
- * API: payroll-plus/api/statutory/ (+ seed/, apply/, preview/?employee=)
+ * API: payroll-plus/api/statutory/ (+ seed/, apply/, preview/?employee=&date=, <id>/versions/, in-force/?date=)
+ * v1.59.0 – "Rates by date": new rates from a date (law changes); the payroll uses the rates of the 1st of the pay month.
  */
 const API = `${environment.apiBaseUrl}/payroll-plus/api/statutory/`;
 const schema = () => localStorage.getItem('selectedSchema') || '';
@@ -124,29 +125,90 @@ function err(e: any): string {
           <td>{{ r.max_base ? (r.max_base | number) : '–' }}{{ r.eligible_gross_max ? (' · gross ≤ ' + (r.eligible_gross_max | number)) : '' }}</td>
           <td><code *ngIf="r.employee_component">{{ r.employee_component }}</code> <code *ngIf="r.employer_component">{{ r.employer_component }}</code><span *ngIf="!r.employee_component && !r.employer_component" class="lp-muted">–</span></td>
           <td><span class="fw-chip" [class.ok]="r.active" [class.inactive]="!r.active">{{ r.active ? ('yes' | t) : ('no' | t) }}</span></td>
-          <td style="white-space:nowrap" *ngIf="d.can_change"><a class="fw-link" (click)="pick(r)">{{ 'Change' | t }}</a> · <a class="fw-link" (click)="del(r)">{{ 'Delete' | t }}</a></td>
+          <td style="white-space:nowrap"><a class="fw-link" (click)="openHist(r)" [attr.data-rates]="r.code">{{ 'Rates by date' | t }}</a><ng-container *ngIf="d.can_change"> · <a class="fw-link" (click)="pick(r)">{{ 'Change' | t }}</a> · <a class="fw-link" (click)="del(r)">{{ 'Delete' | t }}</a></ng-container></td>
         </tr>
         <tr *ngIf="!d.rows.length"><td colspan="9" class="lp-muted">{{ 'No schemes yet – load the country’s schemes, or add your own.' | t }}</td></tr>
       </tbody>
     </table>
   </div>
 
+  <div class="fw-card" *ngIf="hist" data-rate-history>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+      <div><h2 style="margin-bottom:2px">{{ 'Rates by date' | t }} – {{ hist.scheme.name }}</h2>
+        <p class="lp-muted" style="margin:0;max-width:760px">{{ 'When the law changes, add the new rates from the date they start. The payroll of a month uses the rates in force on the 1st of the pay month, so a re-run of an earlier month keeps that month’s rates.' | t }}</p></div>
+      <button type="button" class="lp-btn" (click)="hist = null; nv = null">{{ 'Close' | t }}</button>
+    </div>
+    <table class="fw-table" zPlain style="margin-top:10px">
+      <thead><tr><th>{{ 'From' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th><th>{{ 'Minimum base' | t }}</th><th>{{ 'Ceiling' | t }}</th><th>{{ 'Law reference' | t }}</th><th></th><th></th></tr></thead>
+      <tbody>
+        <tr *ngFor="let v of hist.rows" [attr.data-version]="v.id || 'scheme'">
+          <td><b>{{ v.effective_from || ('from the start' | t) }}</b><br><small class="lp-muted">{{ v.source === 'scheme' ? ('rates on the scheme' | t) : ('new rates' | t) }}</small></td>
+          <td>{{ vshare(v, 'employee') }}</td><td>{{ vshare(v, 'employer') }}</td>
+          <td>{{ v.min_base ? (+v.min_base | number) : '–' }}</td><td>{{ v.max_base ? (+v.max_base | number) : '–' }}</td>
+          <td><small>{{ v.law_reference }}</small><br *ngIf="v.notes"><small class="lp-muted" *ngIf="v.notes">{{ v.notes }}</small></td>
+          <td><span class="fw-chip ok" *ngIf="v.in_force">{{ 'in force today' | t }}</span><span class="fw-chip" *ngIf="!v.in_force && v.effective_from && v.effective_from > todayIso">{{ 'coming' | t }}</span></td>
+          <td><a class="fw-link" *ngIf="v.id && d.can_change" (click)="delVersion(v)">{{ 'Delete' | t }}</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="d.can_change" style="margin-top:12px">
+      <button type="button" class="lp-btn primary" *ngIf="!nv" (click)="newVersion()">+ {{ 'New rates from a date' | t }}</button>
+      <div *ngIf="nv" class="ss-form" style="margin-top:6px" data-new-rates>
+        <label>{{ 'Rates start on' | t }}<input type="date" [(ngModel)]="nv.effective_from"></label>
+        <ng-container *ngIf="hist.scheme.kind === 'percent'">
+          <label>{{ 'Employee %' | t }}<input type="number" step="0.01" [(ngModel)]="nv.employee_rate"></label>
+          <label>{{ 'Employer %' | t }}<input type="number" step="0.01" [(ngModel)]="nv.employer_rate"></label>
+        </ng-container>
+        <ng-container *ngIf="hist.scheme.kind === 'fixed'">
+          <label>{{ 'Employee amount / month' | t }}<input type="number" step="0.01" [(ngModel)]="nv.employee_fixed"></label>
+          <label>{{ 'Employer amount / month' | t }}<input type="number" step="0.01" [(ngModel)]="nv.employer_fixed"></label>
+        </ng-container>
+        <ng-container *ngIf="hist.scheme.kind === 'annual_slab'">
+          <label>{{ 'Standard deduction (yearly)' | t }}<input type="number" [(ngModel)]="nv.standard_deduction"></label>
+          <label>{{ 'No tax up to (yearly taxable)' | t }}<input type="number" [(ngModel)]="nv.rebate_income_limit"></label>
+          <label>{{ 'Cess / surcharge %' | t }}<input type="number" step="0.01" [(ngModel)]="nv.cess_rate"></label>
+        </ng-container>
+        <label>{{ 'Minimum base' | t }}<input type="number" [(ngModel)]="nv.min_base"></label>
+        <label>{{ 'Maximum base (ceiling)' | t }}<input type="number" [(ngModel)]="nv.max_base"></label>
+        <label>{{ 'Only when gross ≤' | t }}<input type="number" [(ngModel)]="nv.eligible_gross_max"></label>
+        <label class="wide">{{ 'Law reference' | t }}<input [(ngModel)]="nv.law_reference" maxlength="400" [placeholder]="'e.g. the decree or circular and its date' | t"></label>
+        <label class="wide">{{ 'Notes' | t }}<textarea [(ngModel)]="nv.notes"></textarea></label>
+        <div class="wide lp-muted" *ngIf="hist.scheme.kind === 'slab' || hist.scheme.kind === 'annual_slab'" style="grid-column:1/-1">{{ 'The slabs are copied from the rates in force today – change them below.' | t }}</div>
+        <div *ngIf="hist.scheme.kind === 'slab' || hist.scheme.kind === 'annual_slab'" style="grid-column:1/-1">
+          <div class="ss-slab" *ngFor="let s of nv.slabs; let i = index">
+            <input type="number" [(ngModel)]="s.to" placeholder="∞">
+            <input type="number" step="0.01" *ngIf="hist.scheme.kind === 'slab'" [(ngModel)]="s.employee"><input type="number" step="0.01" *ngIf="hist.scheme.kind !== 'slab'" [(ngModel)]="s.rate">
+            <input type="number" step="0.01" *ngIf="hist.scheme.kind === 'slab'" [(ngModel)]="s.employer"><span *ngIf="hist.scheme.kind !== 'slab'"></span>
+            <button type="button" class="lp-btn" (click)="nv.slabs.splice(i, 1)">×</button>
+          </div>
+          <button type="button" class="lp-btn" (click)="nv.slabs.push({})">+ {{ 'Slab' | t }}</button>
+        </div>
+        <div style="display:flex;gap:8px;grid-column:1/-1">
+          <button type="button" class="lp-btn primary" (click)="saveVersion()" [disabled]="busy || !nv.effective_from">{{ 'Save the new rates' | t }}</button>
+          <button type="button" class="lp-btn" (click)="nv = null">{{ 'Cancel' | t }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="fw-card" *ngIf="d">
     <h2>{{ 'Check an employee' | t }}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input class="ss-form" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 10px;font-size:13px;width:160px" [(ngModel)]="empId" [placeholder]="'Employee id' | t">
+      <label class="lp-muted" style="display:flex;align-items:center;gap:6px">{{ 'Rates on' | t }}<input type="date" [(ngModel)]="pvDate" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px"></label>
       <button type="button" class="lp-btn" (click)="preview()" [disabled]="!empId">{{ 'Calculate' | t }}</button>
       <span class="lp-muted" *ngIf="pv">{{ pv.employee }} · {{ 'gross' | t }} {{ pv.gross | number }} · {{ pv.national ? ('national' | t) : ('expatriate' | t) }}</span>
     </div>
     <table class="fw-table" zPlain *ngIf="pv" style="margin-top:10px">
-      <thead><tr><th>{{ 'Scheme' | t }}</th><th>{{ 'Base' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th></tr></thead>
-      <tbody><tr *ngFor="let s of pv.schemes" [style.opacity]="s.applies ? 1 : .5"><td>{{ s.name }}</td><td>{{ s.base | number:'1.2-2' }}</td><td>{{ s.employee | number:'1.2-2' }}</td><td>{{ s.employer | number:'1.2-2' }}</td></tr></tbody>
+      <thead><tr><th>{{ 'Scheme' | t }}</th><th>{{ 'Base' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th><th>{{ 'Rates from' | t }}</th></tr></thead>
+      <tbody><tr *ngFor="let s of pv.schemes" [style.opacity]="s.applies ? 1 : .5" [attr.data-pv]="s.code"><td>{{ s.name }}</td><td>{{ s.base | number:'1.2-2' }}</td><td>{{ s.employee | number:'1.2-2' }}</td><td>{{ s.employer | number:'1.2-2' }}</td><td>{{ s.rates_from || '–' }}</td></tr></tbody>
     </table>
   </div>
 </div>`,
 })
 export class StatutorySchemesComponent implements OnInit {
   d: any = null; edit: any = null; busy = false; msg = ''; bad = false; empId = ''; pv: any = null;
+  hist: any = null; nv: any = null; pvDate = ''; todayIso = new Date().toISOString().slice(0, 10);   // v1.59.0 rates by date
   constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
   ngOnInit(): void { this.load(); }
   blank(): any { return { id: null, code: '', name: '', authority: '', kind: 'percent', applies_to: 'all', base: 'basic', min_base: null, max_base: null, eligible_gross_max: null,
@@ -195,8 +257,51 @@ export class StatutorySchemesComponent implements OnInit {
     catch (e) { this.msg = err(e); this.bad = true; }
     this.busy = false; this.cd.detectChanges();
   }
+  // ---------------------------------------------------------------- v1.59.0 rates by date
+  vshare(v: any, who: 'employee' | 'employer'): string {
+    const k = this.hist?.scheme?.kind;
+    if (k === 'percent') { return (+v[who + '_rate']).toString() + ' %'; }
+    if (k === 'fixed') { return (+v[who + '_fixed']).toString(); }
+    return (v.slabs || []).length + ' ' + 'slabs';
+  }
+  async openHist(r: any): Promise<void> {
+    this.nv = null; this.msg = ''; this.bad = false;
+    try { this.hist = await firstValueFrom(this.http.get<any>(API + `${r.id}/versions/`, { params: { schema: schema() } })); }
+    catch (e) { this.msg = err(e); this.bad = true; }
+    this.cd.detectChanges();
+    setTimeout(() => document.querySelector('[data-rate-history]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+  newVersion(): void {
+    const cur = (this.hist.rows || []).find((v: any) => v.in_force) || this.hist.rows[this.hist.rows.length - 1] || {};
+    const n: any = { effective_from: '', law_reference: '', notes: '' };
+    for (const k of ['employee_rate', 'employer_rate', 'employee_fixed', 'employer_fixed', 'min_base', 'max_base', 'eligible_gross_max', 'standard_deduction', 'rebate_income_limit', 'cess_rate']) {
+      n[k] = cur[k] === null || cur[k] === undefined ? null : +cur[k];
+    }
+    n.slabs = (cur.slabs || []).map((x: any) => ({ ...x }));
+    this.nv = n;
+  }
+  async saveVersion(): Promise<void> {
+    this.busy = true; this.msg = ''; this.bad = false;
+    const body: any = { ...this.nv };
+    for (const k of ['min_base', 'max_base', 'eligible_gross_max']) { if (body[k] === '' || body[k] === undefined) { body[k] = null; } }
+    for (const k of ['employee_rate', 'employer_rate', 'employee_fixed', 'employer_fixed', 'standard_deduction', 'rebate_income_limit', 'cess_rate']) { if (body[k] === '' || body[k] === null || body[k] === undefined) { body[k] = 0; } }
+    body.slabs = (body.slabs || []).map((x: any) => ({ ...x, to: x.to === '' || x.to === undefined ? null : x.to }));
+    try {
+      const r = await firstValueFrom(this.http.post<any>(API + `${this.hist.scheme.id}/versions/`, body, { params: { schema: schema() } }));
+      this.hist = r; this.nv = null; this.msg = 'Saved.' + (r.note ? ' ' + r.note : '');
+    } catch (e) { this.msg = err(e); this.bad = true; }
+    this.busy = false; this.cd.detectChanges();
+  }
+  async delVersion(v: any): Promise<void> {
+    if (!confirm(`Delete the rates from ${v.effective_from}?`)) { return; }
+    try { this.hist = await firstValueFrom(this.http.delete<any>(API + `${this.hist.scheme.id}/versions/`, { params: { schema: schema(), version: v.id } })); }
+    catch (e) { this.msg = err(e); this.bad = true; }
+    this.cd.detectChanges();
+  }
   async preview(): Promise<void> {
-    try { this.pv = await firstValueFrom(this.http.get<any>(API + 'preview/', { params: { schema: schema(), employee: this.empId } })); }
+    const params: any = { schema: schema(), employee: this.empId };
+    if (this.pvDate) { params.date = this.pvDate; }
+    try { this.pv = await firstValueFrom(this.http.get<any>(API + 'preview/', { params })); }
     catch (e) { this.msg = err(e); this.bad = true; }
     this.cd.detectChanges();
   }

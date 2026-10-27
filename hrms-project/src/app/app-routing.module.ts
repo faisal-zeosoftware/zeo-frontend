@@ -2,8 +2,18 @@ import { EmployeeTransferComponent } from './hr-actions/employee-transfer.compon
 import { RejoiningComponent } from './hr-actions/rejoining.component';                 // v1.11.0
 import { PROJECT_CONTROL_CHILDREN } from './project-control/project-control.routes';  // v1.11.0
 import { ZTodoComponent } from './shared-ui/z-todo.component';
+import { ZInboxComponent } from './shared-ui/z-inbox.component';   // v1.45.0
+import { ZMyTeamComponent } from './shared-ui/z-my-team.component';   // v1.47.0
+import { ZWallComponent, ZMyOneOnOnesComponent } from './shared-ui/z-wall.component';   // v1.47.0
+import { ZCollabSettingsComponent } from './shared-ui/z-collab-settings.component';   // v1.45.0
+import { ZMessagingSettingsComponent } from './shared-ui/z-messaging-settings.component';   // v1.51.0
+import { ZMyAccountComponent, ZSignInSecurityComponent, ZIntegrationsComponent, ZScheduledReportsComponent, ZImportHistoryComponent, ZHealthComponent, ZPrivacyComponent, ZTestCompanyComponent } from './shared-ui/z-admin-pages.component';   // v1.52.0, v1.53.0
+import { ZReportBuilderComponent, ZDashboardsComponent } from './shared-ui/z-insights.component';   // v1.53.0
+import { ZAuditComponent } from './shared-ui/z-audit.component';   // v1.46.0
 import { ZOrgChartComponent } from './shared-ui/z-org-chart.component';
 import { NotFoundComponent } from './not-found/not-found.component';   // v1.15.1 page not found
+import { NoAccessComponent } from './not-found/no-access.component';   // v1.62.0 page refused by the menu rights
+import { menuRightsGuard } from './shared-ui/menu-rights.guard';      // v1.62.0 release checklist §37 menu by rights
 import { moved } from './not-found/moved';   // v1.15.1 moved pages keep their query string
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -118,16 +128,19 @@ import { CLOUD_SETTINGS_ROUTES } from './zeo-cloud/cloud-settings.component';
 import { CONTROL_ROUTES } from './zeo-cloud/console.component';
 import { CloudSignupComponent } from './zeo-cloud/signup.component';   // v1.23.0   // v1.21.0 Settings → Apps
 import { AI_SETTINGS_ROUTES } from './ai-settings/ai-settings.routes';   // v1.16.0
+import { PRINT_TEMPLATES_ROUTES, PRINT_VIEW_ROUTE } from './print-templates/print-templates.routes';   // v1.62.0 print
 import { COUNTRY_PACK_ROUTES } from './country-pack/country-pack.routes';   // v1.20.1
 import { LANGUAGE_PACK_ROUTES } from './language-pack/language-pack.routes';   // v1.20.1
 import { ProjectMasterComponent } from './project-master/project-master.component';
 import { ProjectStagesComponent } from './project-stages/project-stages.component';
 import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
 import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet.component';
-import { ResignationApprovedListComponent } from './resignation-approved-list/resignation-approved-list.component';
-import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
-import { FinalSettlementComponent } from './payroll-plus/final-settlement.component';   // v1.18.0
+import { LeaversComponent } from './leavers/leavers.component';   // v1.62.0 EOS
+import { LeaverCaseComponent } from './leavers/leaver-case.component';   // v1.62.0 EOS
+import { SalaryRegisterComponent } from './employee-salary/salary-register.component';   // v1.62.0 payroll
 import { PayrollControlsComponent } from './payroll-plus/payroll-controls.component';   // v1.18.0
+import { LoansComponent, ProvisionsComponent } from './payroll-plus/pp-v149.component';   // v1.49.0
+import { CostAllocationComponent, WhatIfComponent } from './payroll-plus/pp-v150.component';   // v1.50.0
 import { StatutorySchemesComponent } from './payroll-plus/statutory-schemes.component';   // v1.31.0
 import { AccountingComponent } from './payroll-plus/accounting.component';   // v1.35.0
 import { GratuityComponent } from './gratuity/gratuity.component';
@@ -158,10 +171,12 @@ import { AssetEscalationComponent } from './asset-escalation/asset-escalation.co
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 
 import { ReportOptionsComponent } from './report-options/report-options.component';
+import { ZReportHomeComponent } from './report-options/z-report-home.component';   // v1.62.0 reports
 import { ZReportComponent } from './z-report/z-report.component';
 import { ZRecordViewComponent } from './z-report/z-record-view.component';
 import { LeavePoliciesComponent } from './leave-policy/leave-policies.component';
 import { LeavePlannerComponent } from './leave-policy/leave-planner.component';
+import { LeaveConflictsComponent } from './leave-policy/leave-conflicts.component';   // v1.51.0
 import { EncashmentApprovalsComponent } from './leave-policy/encashment-approvals.component';
 import { ReportGenerateComponent } from './report-generate/report-generate.component';
 import { DocumentReportComponent } from './document-report/document-report.component';
@@ -219,6 +234,9 @@ const routes: Routes = [
   { path: 'group', canActivate: [AuthGuard], loadComponent: () => import('./zeo-group/group.component').then(m => m.GroupComponent) },        // v1.27.0 group view
   { path: 'group/:key', canActivate: [AuthGuard], loadComponent: () => import('./zeo-group/group.component').then(m => m.GroupComponent) },
   { path: 'signup', component: CloudSignupComponent },                       // v1.23.0 ZEO Cloud – sign-up (14-day trial)
+  { path: 'careers', loadChildren: () => import('./careers/careers-public.component').then(m => m.CAREERS_ROUTES) },   // v1.57.0 public careers page (no login)
+  { path: 'set-password', loadComponent: () => import('./shared-ui/z-set-password.component').then(m => m.ZSetPasswordComponent) },   // v1.56.0 sign-in link
+  { path: 'activate', loadComponent: () => import('./shared-ui/z-security62.component').then(m => m.ZActivateComponent) },   // v1.62.0 activation without e-mail
   { path: 'm', loadChildren: () => import('./zeo-mobile/m.routes').then(m => m.MOBILE_ROUTES) },   // v1.25.0 mobile app
   { path: 'employee-schema-selection', component: EmployeeSchemaSelectionComponent, canActivate: [AuthGuard], },
 
@@ -228,9 +246,11 @@ const routes: Routes = [
   {
     path: 'main-sidebar',
     component: MainSidebarComponent, canActivate: [AuthGuard],
+    canActivateChild: [menuRightsGuard],   // v1.62.0: an address whose menu entry the user may not see shows "No access"
     children: [
       // v1.15.1: /main-sidebar alone opens the dashboard (with the '**' below it would show "Page not found")
       { path: '', redirectTo: 'home', pathMatch: 'full' },   // v1.17.0: Home (was dashboard-contents)
+      ...PRINT_VIEW_ROUTE,   // v1.62.0 print: a document printed with the company's design
       // v1.17.0: one Home menu entry – the right view per role, tabs for several; the old dashboard addresses open their tab
       { path: 'home', component: DashboardHomeComponent },
       { path: 'ceo-dashboard', redirectTo: '/main-sidebar/home?tab=management', pathMatch: 'full' },
@@ -238,6 +258,13 @@ const routes: Routes = [
       { path: 'my-dashboard', redirectTo: '/main-sidebar/home?tab=my', pathMatch: 'full' },
       // v1.7.0: My To-do (activities on every screen) and the organisation chart
       { path: 'todo', component: ZTodoComponent },
+      { path: 'inbox', component: ZInboxComponent },   // v1.45.0 Discuss inbox
+      { path: 'my-team', component: ZMyTeamComponent },   // v1.47.0 the manager's hub
+      { path: 'wall', component: ZWallComponent },   // v1.47.0 company wall
+      { path: 'my-one-on-ones', component: ZMyOneOnOnesComponent },   // v1.47.0 the 1:1s shared with me
+      { path: 'my-loans', component: LoansComponent, data: { mine: true } },   // v1.49.0
+      { path: 'my-air-ticket', redirectTo: '/main-sidebar/self-service/air-ticket', pathMatch: 'full' },   // v1.62.0 air ticket
+      { path: 'my-final-settlement', component: LeaverCaseComponent, data: { mine: true } },   // v1.62.0 EOS: the leaver's own statement
       { path: 'org-chart', component: ZOrgChartComponent },
 
       // Performance, Recruitment and Learning Management (hr-modules)
@@ -291,15 +318,12 @@ const routes: Routes = [
             path: 'resignation-approvals',
             component: ResignationApprovalsComponent
           },
-          {
-            path: 'resignation-approved-list',
-            component: ResignationApprovedListComponent
-          },
-          {
-            path: 'end-of-service',
-            component: EndOfServiceComponent
-          },
-          { path: 'final-settlement', component: FinalSettlementComponent },   // v1.18.0
+          // v1.62.0 EOS: one Leavers workspace replaces Approved resignations, End of service and Final settlement (old addresses open it)
+          { path: 'leavers', component: LeaversComponent },
+          { path: 'leavers/:id', component: LeaverCaseComponent },
+          { path: 'resignation-approved-list', redirectTo: 'leavers', pathMatch: 'full' },
+          { path: 'end-of-service', redirectTo: 'leavers', pathMatch: 'full' },
+          { path: 'final-settlement', redirectTo: 'leavers', pathMatch: 'full' },
           { path: 'gratuity', component: GratuityComponent },   // v1.15.1 (was gratyuity)
           { path: 'gratyuity', redirectTo: 'gratuity', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
@@ -319,6 +343,7 @@ const routes: Routes = [
           ...CLOUD_SETTINGS_ROUTES,   // v1.23.0 ZEO Cloud: Subscription and Security (account owner)
           { path: 'licence', loadComponent: () => import('./zeo-licence/licence.component').then(m => m.LicenceComponent), data: { title: 'Licence' } },   // v1.28.0 Enterprise licence
           ...AI_SETTINGS_ROUTES,   // v1.16.0: Settings → AI settings
+          ...PRINT_TEMPLATES_ROUTES,   // v1.62.0 print: Settings → Print templates (gallery, editor)
           ...COUNTRY_PACK_ROUTES,   // v1.20.1: Settings → Country settings (was /main-sidebar/country-settings)
           ...LANGUAGE_PACK_ROUTES,   // v1.20.1: Settings → Languages (was /main-sidebar/languages)
           { path: 'field-help', loadChildren: () => import('./field-help/field-help-settings.component').then(m => m.FIELD_HELP_ROUTES) },   // v1.16.0
@@ -450,6 +475,23 @@ const routes: Routes = [
             path: 'email-configuration',
             component: EmailConfigurationComponent
           },
+          { path: 'messages-and-tags', component: ZCollabSettingsComponent },   // v1.45.0 reply mailbox, tags
+          { path: 'whatsapp-sms-push', component: ZMessagingSettingsComponent },   // v1.51.0
+          { path: 'my-account', component: ZMyAccountComponent },   // v1.52.0 authenticator app, sign-ins, out of office
+          { path: 'sign-in-security', component: ZSignInSecurityComponent },   // v1.52.0
+          { path: 'single-sign-on', loadComponent: () => import('./shared-ui/z-sso-settings.component').then(m => m.ZSsoSettingsComponent) },   // v1.54.0
+          { path: 'api-keys-webhooks', component: ZIntegrationsComponent },
+          { path: 'import-history', component: ZImportHistoryComponent },
+          { path: 'data-workbook', loadComponent: () => import('./shared-ui/z-data-workbook.component').then(m => m.ZDataWorkbookComponent) },   // v1.62.0 workbook
+          { path: 'system-health', component: ZHealthComponent },
+          { path: 'data-retention', component: ZPrivacyComponent },   // v1.53.0
+          { path: 'security-dashboard', loadComponent: () => import('./shared-ui/z-security62.component').then(m => m.ZSecurityDashboardComponent) },   // v1.62.0
+          { path: 'give-access', loadComponent: () => import('./shared-ui/z-security62.component').then(m => m.ZGiveAccessComponent) },   // v1.62.0
+          { path: 'bank-changes', loadComponent: () => import('./shared-ui/z-security62.component').then(m => m.ZBankChangesComponent) },   // v1.62.0
+          { path: 'history-retention', data: { page: true }, loadComponent: () => import('./shared-ui/z-security62.component').then(m => m.ZHistoryCleaningComponent) },   // v1.62.0
+          { path: 'test-company', component: ZTestCompanyComponent },
+          { path: 'setup-guide', loadComponent: () => import('./shared-ui/z-setup-guide.component').then(m => m.ZSetupGuideComponent) },   // v1.56.0
+          { path: 'audit-log', component: ZAuditComponent },   // v1.46.0 company-wide audit log
           {
             path: 'notification-settings',
             component: NotificationSettingsComponent
@@ -509,6 +551,7 @@ const routes: Routes = [
         children: [
           { path: 'leave-policies', component: LeavePoliciesComponent },          // v1.10.0
           { path: 'leave-planner', component: LeavePlannerComponent },            // v1.10.0
+          { path: 'leave-conflicts', component: LeaveConflictsComponent },        // v1.51.0
           { path: 'encashment-approvals', component: EncashmentApprovalsComponent }, // v1.10.0
           { path: 'rejoining', component: RejoiningComponent },                  // v1.11.0
           {
@@ -586,11 +629,14 @@ const routes: Routes = [
 
           {
             path: 'employee-salary',
-            component: EmployeeSalaryComponent,
+            component: SalaryRegisterComponent,   // v1.62.0 payroll: monthly salaries + the assign screen as a tab
           },
 
+          // v1.62.0 payroll: the run-centred workspace; the previous screen stays as "Classic pay sheets"
+          { path: 'pay-roll', loadComponent: () => import('./payroll-plus/payroll-runs.component').then(m => m.PayrollRunsComponent) },
+          { path: 'payroll-run/:id', loadComponent: () => import('./payroll-plus/payroll-run.component').then(m => m.PayrollRunComponent) },
           {
-            path: 'pay-roll',
+            path: 'pay-roll-classic',
             component: PayRollComponent,
           },
 
@@ -610,8 +656,10 @@ const routes: Routes = [
           { path: 'payroll-approval-level', component: PayrollAppovalLevelComponent },   // v1.15.1 (was payroll-appoval-level)
           { path: 'payroll-appoval-level', redirectTo: 'payroll-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
+          // v1.62.0 payroll: approvals grouped by run; the previous list stays as "Show as one list"
+          { path: 'payslip-approval', loadComponent: () => import('./payroll-plus/payslip-approvals.component').then(m => m.PayslipApprovalsComponent) },
           {
-            path: 'payslip-approval',
+            path: 'payslip-approval-list',
             component: PayslipApprovalComponent,
           },
           {
@@ -619,7 +667,15 @@ const routes: Routes = [
             component: WpsComponent,
           },
           { path: 'payroll-controls', component: PayrollControlsComponent },   // v1.18.0
+          { path: 'provisions', component: ProvisionsComponent },   // v1.49.0
+          { path: 'loans', component: LoansComponent },
+          { path: 'what-if', component: WhatIfComponent },   // v1.50.0
+          { path: 'cost-allocation', component: CostAllocationComponent },
+          { path: 'pay-calendars', loadComponent: () => import('./payroll-plus/pp-v155.component').then(m => m.PayCalendarsComponent) },   // v1.55.0
+          { path: 'off-cycle', loadComponent: () => import('./payroll-plus/pp-v155.component').then(m => m.OffCycleComponent) },
+          { path: 'arrears', loadComponent: () => import('./payroll-plus/pp-v155.component').then(m => m.ArrearsComponent) },
           { path: 'statutory-schemes', component: StatutorySchemesComponent },   // v1.31.0
+          { path: 'legal-rates', loadComponent: () => import('./payroll-plus/legal-rates.component').then(m => m.LegalRatesComponent) },   // v1.59.0
           { path: 'accounting', component: AccountingComponent },   // v1.35.0 accounting integration
 
           {
@@ -991,7 +1047,12 @@ const routes: Routes = [
         path: 'report-options',
         component: ReportOptionsComponent,
         children: [
+          { path: '', pathMatch: 'full', redirectTo: 'home' },   // v1.62.0 reports: the report home
+          { path: 'home', component: ZReportHomeComponent },   // v1.62.0 reports
           { path: 'r/:key', component: ZReportComponent },   // v1.8.0 report centre
+          { path: 'scheduled', component: ZScheduledReportsComponent },   // v1.52.0
+          { path: 'builder', component: ZReportBuilderComponent },   // v1.53.0
+          { path: 'dashboards', component: ZDashboardsComponent },
           { path: 'rec/:label/:id', component: ZRecordViewComponent },   // v1.8.1 drill-down to the record
 
           {
@@ -1074,6 +1135,7 @@ const routes: Routes = [
 
       { path: 'automation', component: SettingsComponent, loadChildren: () => import('./zeo-flow/zeo-flow.routes').then(m => m.FLOW_ROUTES) },   // v1.29.0 workflow automation (Settings shell = sub-sidebar with the Automation menu)
       { path: '_reload', children: [] },   // v1.28.1: blank stop used to re-open the current page after a company / branch change
+      { path: 'no-access', component: NoAccessComponent },   // v1.62.0 (menu-rights.guard.ts)
       // v1.15.1: unknown addresses under /main-sidebar/ show "Page not found" inside the app (menu stays)
       { path: '**', component: NotFoundComponent },
     ]

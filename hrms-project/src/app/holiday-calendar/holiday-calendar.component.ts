@@ -498,12 +498,37 @@ openEditModal(detail: any): void {
       return data;
     }
 
+    // ---------------- v1.40.1 (bug: UDF fields missing from the list and the export) ----------------
+    // The calendars come as cards with their holidays nested inside, so the shared list helper cannot match the rows to
+    // records and never added the form-designer fields. This page shows them itself: the calendar's fields on its card
+    // and as columns of its holiday table (so Export has them), and the holiday's own fields as columns too.
+    udfCal: any[] = []; udfCalVals: Record<string, any> = {};
+    udfHol: any[] = []; udfHolVals: Record<string, any> = {};
+    private loadUdf(schema: string): void {
+      const calIds = (this.HolidaysCalendar || []).map((c: any) => c.id);
+      const holIds = (this.HolidaysCalendar || []).flatMap((c: any) => (c.holiday_list || []).map((h: any) => h.id));
+      const get = (ep: string, ids: any[], done: (f: any[], v: any) => void) =>
+        this.http.get<any>(`${this.apiUrl}/chatter/api/values/?schema=${schema}&endpoint=${encodeURIComponent(ep)}&ids=${ids.join(',')}`)
+          .subscribe({ next: r => done((r?.fields || []).filter((f: any) => f.show_in_list !== false), r?.values || {}), error: () => done([], {}) });
+      get('/calendars/api/holiday-calendar/', calIds, (f, v) => { this.udfCal = f; this.udfCalVals = v; });
+      get('/calendars/api/holiday/', holIds, (f, v) => { this.udfHol = f; this.udfHolVals = v; });
+    }
+    udf(vals: Record<string, any>, id: any, f: any): string {
+      const v = (vals[String(id)] || {})[f.name];
+      if (v === null || v === undefined || v === '') { return ''; }
+      if (Array.isArray(v)) { return v.map(x => (x && typeof x === 'object') ? (x.label || x.name || x.value || '') : x).join(', '); }
+      if (typeof v === 'boolean') { return v ? 'Yes' : 'No'; }
+      if (typeof v === 'object') { return v.label || v.name || v.value || ''; }
+      return String(v);
+    }
+
     fetchEmployees(schema: string, branchIds: number[]): void {
       this.isLoading = true;
       this.countryService.getholidayCalendarsNew(schema, branchIds).subscribe({
         next: (data: any) => {
           // Filter active employees
           this.HolidaysCalendar = this.sortHolidayLists(data);
+          this.loadUdf(schema);   // v1.40.1
   
           this.isLoading = false;
         },

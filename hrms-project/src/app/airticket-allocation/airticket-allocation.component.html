@@ -1,69 +1,17 @@
+<!-- v1.62.0 air ticket: allocations with names, amounts, next eligible date and the liability summary; actions on each row -->
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1> Air ticket allocation </h1>
-                </div>
-
-      <div class="col-md-3">
-                    
-<div class="search-container">
-<input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchQuery"
-  [ngModelOptions]="{standalone: true}"
-  (ngModelChange)="onSearchChange()"
->
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
-                      <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-
-                           <span *ngIf="!hasDeletePermission"></span>
-                    </div>
-                </div>
-            </div>
-           
-           
-
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Air ticket allocation</h1>
+          <p class="at-desc">What each employee is entitled to, what is used and what is left, and when the next ticket is due.</p>
         </div>
-
-        <div class="row">
-            <div class="col-md-2">
-                
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
-
-            </div>
-            <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAirTicketAllocation()">Delete selected </button>
-
-            </div>
+        <div class="at-actions">
+          <button type="button" class="at-btn primary" *ngIf="hasAddPermission" (click)="openPopus()">+ New allocation</button>
         </div>
-      
-
-      
+      </div>
+    </div>
 
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
@@ -387,93 +335,40 @@
   </div>
   
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
-
-
-          <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th> Employee</th>
-                <th>Policy</th>
-                <th>Amount</th>
-                <th>Remaining amount</th>
-                <th> Expiry date </th>
-
-                <th>Status</th>
-          
-               
-          
-                <th>Is active</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-          
-            <tbody>
-              <tr *ngFor="let docs of filteredAllocations; let i = index">
-                <td data-label="No">
-                {{ (currentPage - 1) * pageSize + i + 1 }}
-                </td>
-                <td data-label="Employee">{{ docs.employee }}</td>
-                <td data-label="Policy">{{ docs.policy }}</td>
-                <td data-label="Amount">{{ docs.amount }}</td>
-                <td data-label="Remaining Amount">{{ docs.remaining_amount }}</td>
-                <td data-label="Expiry Date">{{ docs.expiry_date }}</td>
-
-                <td data-label="Status">{{ docs.status }}</td>
-                <td data-label="Is Active">{{ docs.is_active }}</td>
-
-          
-                <!-- Dynamic custom field values -->
-            
-                <td data-label="Action">
-                  <button
-                    mat-fab
-
-                    color="primary"
-                    aria-label="Edit icon"
-                    *ngIf="showEditBtn"
-                    (click)="openEditModal(docs)"
-                  >
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-          <div class="pagination-container">
-
-  <button
-    type="button"
-    class="page-btn"
-    (click)="previousPage()"
-    [disabled]="currentPage === 1">
-    Previous
-  </button>
-
-  <!-- Current Page Only -->
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-
-<button
-  type="button"
-  class="page-btn"
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages">
-  Next
-</button>
-
-</div>
-        </div>
-        </div>
-
-                            <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+    <div class="com_list mt-4">
+      <p class="at-msg err" *ngIf="atMsg">{{ atMsg }}</p>
+      <div class="at-tiles" *ngIf="atSum">
+        <div class="at-tile"><div class="lbl">Employees entitled</div><div class="num" data-no-translate>{{ atSum.entitled }}</div><div class="sub">with an open entitlement</div></div>
+        <div class="at-tile t2"><div class="lbl">Total liability</div><div class="num" data-no-translate>{{ at.money(atSum.liability) }}</div><div class="sub">remaining on open entitlements</div></div>
+        <div class="at-tile t3"><div class="lbl" data-no-translate>{{ at.t('Tickets used in {0}', [atSum.year]) }}</div><div class="num" data-no-translate>{{ atSum.used_this_year }}</div><div class="sub">tickets and cash approved</div></div>
+        <div class="at-tile t4"><div class="lbl" title="Employees who can travel now or within 90 days">Due in the next 90 days</div><div class="num" data-no-translate>{{ atSum.due_90 }}</div><div class="sub" data-no-translate>{{ at.t('{0} to be covered', [at.money(atSum.due_90_amount)]) }}</div></div>
+      </div>
+      <p class="at-muted" *ngIf="atLoading">Loading…</p>
+      <table class="table at-table" *ngIf="!atLoading && atRows.length">
+        <thead><tr><th>Employee</th><th>Policy</th><th class="num">Entitled</th><th class="num">Used</th><th class="num">Remaining</th><th class="nw">Next eligible</th><th>Status</th><th class="at-acts" *ngIf="hasEditPermission || hasDeletePermission">Actions</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let a of atRows" [attr.data-alloc]="a.id">
+            <td class="at-who"><b>{{ a.employee }}</b><small>{{ a.code }} · {{ a.branch }}</small></td>
+            <td class="at-who"><b>{{ a.policy }}</b><small><span data-translate>{{ at.ticketType(a.allowance_type) }}</span></small></td>
+            <td class="num">{{ at.money(a.amount) }}</td>
+            <td class="num" [class.zero]="+a.used === 0">{{ at.money(a.used) }}</td>
+            <td class="num" [class.zero]="+a.remaining === 0">{{ at.money(a.remaining) }}</td>
+            <td class="nw"><span data-translate>{{ a.eligible_now ? at.t('Now') : at.dmy(a.next_eligible) }}</span><span class="at-sub" data-translate>{{ a.expiry ? at.t('expires {0}', [at.dmy(a.expiry)]) : at.t('no expiry') }}</span></td>
+            <td><span class="at-st" [ngClass]="at.allocClass(a.state)" data-translate>{{ at.allocStatus(a.state) }}</span></td>
+            <td class="at-acts" *ngIf="hasEditPermission || hasDeletePermission">
+              <button type="button" class="at-btn sm" *ngIf="hasEditPermission" (click)="atEdit(a.id)">Edit</button>
+              <button type="button" class="at-btn sm danger" *ngIf="hasDeletePermission" (click)="atDelete(a)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="at-empty" *ngIf="!atLoading && !atMsg && !atRows.length"><b>No allocations yet</b>Allocations are made from the policies, or add one here.</div>
     </div>
-        
+
+  </div>
+</div>
+
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

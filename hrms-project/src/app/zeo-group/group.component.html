@@ -25,7 +25,7 @@
           <div class="zg-kpi"><b>{{ dash.total.employees }}</b><span>{{ 'Employees' | t }}</span></div>
           <div class="zg-kpi"><b>{{ dash.total.joiners }} / {{ dash.total.leavers }}</b><span>{{ 'Joined / left this month' | t }}</span></div>
           <div class="zg-kpi"><b>{{ dash.total.on_leave }}</b><span>{{ 'On leave today' | t }}</span></div>
-          <div class="zg-kpi"><b>{{ money(dash.total.payroll_gross) }}</b><span>{{ 'Gross pay, last payroll' | t }}</span></div>
+          <div class="zg-kpi"><b>{{ money(dash.total.payroll_gross) }}</b><span>{{ 'Gross pay, last payroll' | t }}{{ dash.currency ? ', ' + dash.currency : '' }}</span></div>
           <div class="zg-kpi" [class.warn]="dash.total.documents_30 > 0"><b>{{ dash.total.documents_30 }}</b><span>{{ 'Documents expiring in 30 days' | t }}</span></div>
           <div class="zg-kpi" [class.warn]="dash.total.approvals > 0"><b>{{ dash.total.approvals }}</b><span>{{ 'Requests waiting for approval' | t }}</span></div>
         </div>
@@ -36,17 +36,20 @@
             <tr *ngFor="let c of dash.companies">
               <td><b>{{ c.company }}</b><div class="zg-err-s" *ngIf="c.error">{{ c.error }}</div></td>
               <td class="n">{{ c.employees }}</td><td class="n">{{ c.joiners }}</td><td class="n">{{ c.leavers }}</td><td class="n">{{ c.on_leave }}</td>
-              <td>{{ c.payroll_month || '–' }}</td><td class="n">{{ c.payroll_month ? money(c.payroll_gross) : '–' }}</td>
+              <td>{{ c.payroll_month || '–' }}</td><td class="n">{{ c.payroll_month ? money(c.payroll_gross) + (c.currency ? ' ' + c.currency : '') : '–' }}</td>
               <td class="n">{{ c.documents_30 }}</td><td class="n">{{ c.approvals }}</td>
               <td class="r"><button type="button" class="zg-link" *ngIf="group.role !== 'viewer'" (click)="openCompany(c.schema_name)">{{ 'Open' | t }}</button></td>
             </tr>
           </tbody>
           <tfoot><tr><td>{{ 'Group total' | t }}</td><td class="n">{{ dash.total.employees }}</td><td class="n">{{ dash.total.joiners }}</td><td class="n">{{ dash.total.leavers }}</td>
-            <td class="n">{{ dash.total.on_leave }}</td><td></td><td class="n">{{ money(dash.total.payroll_gross) }}</td><td class="n">{{ dash.total.documents_30 }}</td><td class="n">{{ dash.total.approvals }}</td><td></td></tr></tfoot>
+            <td class="n">{{ dash.total.on_leave }}</td><td></td><td class="n">{{ money(dash.total.payroll_gross) }} {{ dash.currency }}</td><td class="n">{{ dash.total.documents_30 }}</td><td class="n">{{ dash.total.approvals }}</td><td></td></tr></tfoot>
         </table></div>
       </ng-container>
       <p class="zg-muted" *ngIf="!dash && busy">{{ 'Reading the companies…' | t }}</p>
     </section>
+
+    <!-- ================= v1.53.0 payroll in one currency -->
+    <section *ngIf="tab === 'cost' && group?.features"><z-group-cost [key]="key"></z-group-cost></section>
 
     <!-- ================= approvals -->
     <section *ngIf="tab === 'inbox'">

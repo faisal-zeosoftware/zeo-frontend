@@ -5,8 +5,10 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
+import { HttpClient } from '@angular/common/http';   // v1.45.0 transfer request by drag and drop
 
-interface Node { id: number; code: string; name: string; designation: string; department: string; branch: string; email: string; photo: string | null; manager: number | null; kids: Node[]; open: boolean; hit: boolean; size: number; }
+interface Node { id: number; code: string; name: string; designation: string; department: string; branch: string; email: string; photo: string | null; manager: number | null; kids: Node[]; open: boolean; hit: boolean; size: number;
+  dotted?: { manager: number; area: string } | null; assignments?: { kind: string; where: string; percent: string }[]; }   // v1.58.0
 
 /** Employee organisation chart, from each employee's reporting manager. */
 @Component({
@@ -17,7 +19,7 @@ interface Node { id: number; code: string; name: string; designation: string; de
   template: `
   <div class="zo-page">
     <header class="zo-h">
-      <div><h2>Organisation chart</h2><p class="zr-muted">{{ total }} employees · built from each employee's reporting manager</p></div>
+      <div><h2>Organisation chart</h2><p class="zr-muted">{{ total }} employees · built from each employee's reporting manager · drag a card onto another person to ask HR for a move</p></div>
       <span class="zr-grow"></span>
       <div class="zo-tools">
         <label class="zo-search"><mat-icon>search</mat-icon><input [value]="q" (input)="search($any($event.target).value)" placeholder="Find an employee" aria-label="Find an employee"></label>
@@ -39,15 +41,33 @@ interface Node { id: number; code: string; name: string; designation: string; de
     </div>
     <ng-template #level let-nodes>
       <li *ngFor="let n of nodes">
-        <div class="zo-card" [class.hit]="n.hit" [class.mute]="q && !n.hit">
+        <div class="zo-card" [class.hit]="n.hit" [class.mute]="q && !n.hit" [class.drop]="overId === n.id" draggable="true"
+             (dragstart)="dragStart($event, n)" (dragend)="overId = null" (dragover)="dragOver($event, n)" (dragleave)="overId === n.id && (overId = null)" (drop)="dropOn($event, n)"
+             [title]="'Drag onto another person: ' + n.name + ' would report to them (HR approves)'">
           <span class="zo-av" [style.background]="color(n.department)"><img *ngIf="n.photo" [src]="photo(n.photo)" alt="">{{ n.photo ? '' : initials(n.name) }}</span>
-          <div class="zo-txt"><b>{{ n.name }}</b><span>{{ n.designation || '—' }}</span><small>{{ n.department }}{{ n.branch ? ' · ' + n.branch : '' }}</small><small *ngIf="extra(n)">{{ extra(n) }}</small><small class="zo-code">{{ n.code }}</small></div>
+          <div class="zo-txt"><b>{{ n.name }}</b><span>{{ n.designation || '—' }}</span><small>{{ n.department }}{{ n.branch ? ' · ' + n.branch : '' }}</small><small *ngIf="extra(n)">{{ extra(n) }}</small><small class="zo-code">{{ n.code }}</small>
+            <small class="zo-dotted" *ngIf="n.dotted" [attr.data-dotted]="n.id" [title]="'Functional (dotted-line) manager'">┄ {{ dottedName(n) }}{{ n.dotted.area ? ' (' + n.dotted.area + ')' : '' }}</small>
+            <small class="zo-asg" *ngFor="let a of n.assignments || []" [attr.data-asg]="n.id">{{ a.kind }}: {{ a.where }} {{ a.percent }}%</small></div>
           <button type="button" class="zo-tog" *ngIf="n.kids.length" (click)="n.open = !n.open" [attr.aria-expanded]="n.open" [attr.aria-label]="(n.open ? 'Hide ' : 'Show ') + n.size + ' reports'">{{ n.open ? '−' : n.size }}</button>
         </div>
         <ul *ngIf="n.kids.length && n.open"><ng-container *ngTemplateOutlet="level; context: { $implicit: n.kids }"></ng-container></ul>
       </li>
     </ng-template>
     <div class="zr-err" *ngIf="error" role="alert">{{ error }}</div>
+    <!-- v1.45.0 move request -->
+    <div class="zo-move-back" *ngIf="move" (click)="move = null">
+      <div class="zo-move" role="dialog" aria-modal="true" aria-label="Transfer request" (click)="$event.stopPropagation()">
+        <h3>Move {{ move.emp.name }}</h3>
+        <p>New reporting manager: <b>{{ move.to.name }}</b>{{ move.to.designation ? ' (' + move.to.designation + ')' : '' }}</p>
+        <p class="zr-muted">Now reports to {{ managerName(move.emp) }}. HR approves the request; the move is then made on the date below (a transfer with history and the employee timeline).</p>
+        <label class="zf-label">Effective date<input type="date" class="zf-in" [value]="move.date" (change)="move.date = $any($event.target).value"></label>
+        <label class="zf-label">Reason<textarea class="zf-in" rows="2" [value]="move.reason" (input)="move.reason = $any($event.target).value" placeholder="Why the move"></textarea></label>
+        <div class="zr-err" *ngIf="move.err">{{ move.err }}</div>
+        <div class="zr-row"><span class="zr-grow"></span><button type="button" class="zr-btn" (click)="move = null">Cancel</button>
+          <button type="button" class="zr-btn primary" [disabled]="move.busy" (click)="sendMove()">Send to HR</button></div>
+      </div>
+    </div>
+    <div class="zo-ok" *ngIf="moved" role="status">{{ moved }}</div>
   </div>`,
   styles: [`
     .zo-page { padding: 4px 4px 40px; text-align: left; }
@@ -87,7 +107,16 @@ interface Node { id: number; code: string; name: string; designation: string; de
     .zo-txt span { font-size: 12px; color: var(--zl-text); }
     .zo-txt small { font-size: 11px; color: var(--zl-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .zo-code { font-variant-numeric: tabular-nums; }
+    .zo-dotted { color: #3E3A99; border-top: 1px dashed #B9B3F0; margin-top: 3px; padding-top: 2px; } .zo-asg { color: #2E7D57; }   /* v1.58.0 */
     .zo-tog { position: absolute; bottom: -11px; left: 50%; transform: translateX(-50%); min-width: 24px; height: 22px; border-radius: 11px; border: 1px solid var(--zl-line); background: #fff; font-size: 11px; font-weight: 600; color: var(--zl-primary-ink); cursor: pointer; z-index: 1; }
+    .zo-card[draggable=true] { cursor: grab; }
+    .zo-card.drop { border-color: var(--zl-primary); box-shadow: 0 0 0 3px var(--zl-weak); background: #f6f5ff; }
+    .zo-move-back { position: fixed; inset: 0; background: rgba(27,22,64,.35); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .zo-move { background: #fff; border-radius: 14px; width: min(460px, 100%); padding: 18px 20px; box-shadow: 0 24px 60px rgba(27,22,64,.3); display: flex; flex-direction: column; gap: 8px; }
+    .zo-move h3 { margin: 0; font-size: 17px; color: var(--zl-ink); }
+    .zo-move p { margin: 0; font-size: 13px; }
+    .zo-move .zf-label { display: flex; flex-direction: column; gap: 4px; }
+    .zo-ok { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1b1640; color: #fff; padding: 10px 16px; border-radius: 8px; z-index: 2100; font-size: 13px; }
     @media print { .zo-h .zo-tools, app-main-sidebar nav, .sub-sidenav { display: none !important; } .zo-canvas { border: none; overflow: visible; } }
   `],
 })
@@ -105,7 +134,49 @@ export class ZOrgChartComponent implements OnInit {
   private orgSettings = inject(OrgSettingsService);
   loading = true; error = '';
 
-  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private host: ElementRef<HTMLElement>) {}
+  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private host: ElementRef<HTMLElement>, private http: HttpClient) {}
+
+  // ---------------------------------------------------------------- v1.45.0 drag a card onto another person = transfer request
+  overId: number | null = null;
+  move: { emp: Node; to: Node; date: string; reason: string; busy: boolean; err: string } | null = null;
+  moved = '';
+  private dragId: number | null = null;
+  dragStart(ev: DragEvent, n: Node): void { this.dragId = n.id; ev.dataTransfer?.setData('text/plain', String(n.id)); if (ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; } }
+  dragOver(ev: DragEvent, n: Node): void {
+    if (this.dragId === null || this.dragId === n.id) { return; }
+    const emp = this.nodes.find(x => x.id === this.dragId);
+    if (!emp || emp.manager === n.id || this.isUnder(n, emp)) { return; }   // already the manager, or would make a loop
+    ev.preventDefault(); this.overId = n.id;
+  }
+  dropOn(ev: DragEvent, n: Node): void {
+    ev.preventDefault(); this.overId = null;
+    const emp = this.nodes.find(x => x.id === this.dragId);
+    this.dragId = null;
+    if (!emp || emp.id === n.id) { return; }
+    this.move = { emp, to: n, date: new Date().toISOString().slice(0, 10), reason: '', busy: false, err: '' };
+  }
+  private isUnder(n: Node, emp: Node): boolean {
+    const ids = new Map(this.nodes.map(x => [x.id, x]));
+    let cur: Node | undefined = n; let guard = 0;
+    while (cur && guard++ < 500) { if (cur.id === emp.id) { return true; } cur = cur.manager !== null ? ids.get(cur.manager) : undefined; }
+    return false;
+  }
+  managerName(n: Node): string { return this.nodes.find(x => x.id === n.manager)?.name || 'nobody'; }
+  dottedName(n: Node): string { return this.nodes.find(x => x.id === n.dotted?.manager)?.name || ''; }   // v1.58.0
+  async sendMove(): Promise<void> {
+    if (!this.move) { return; }
+    const m = this.move;
+    m.busy = true; m.err = '';
+    try {
+      await firstValueFrom(this.http.post(`${this.rec.api}/hr-actions/api/transfers/`,
+        { request: true, employee: m.emp.id, to_manager_employee: m.to.id, effective_date: m.date, reason: m.reason || 'Moved on the org chart' },
+        { params: { schema: localStorage.getItem('selectedSchema') || '' } }));
+      this.move = null;
+      this.moved = `Request sent to HR: ${m.emp.name} to report to ${m.to.name}.`;
+      setTimeout(() => { this.moved = ''; this.cd.detectChanges(); }, 5000);
+    } catch (e: any) { m.err = e?.error?.detail || 'The request could not be sent.'; m.busy = false; }
+    this.cd.detectChanges();
+  }
 
   async ngOnInit(): Promise<void> {
     try {

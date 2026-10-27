@@ -1,4 +1,5 @@
 import { style } from '@angular/animations';
+import { dmy } from '../shared-ui/z-present';   // v1.62.0 ui
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../login/authentication.service';
@@ -182,6 +183,9 @@ todayDate: string = '';
       this.router.navigate(['/login']);
       return;
     }
+    // v1.62.0 air ticket: My air ticket → "Request a ticket" opens the request tab (?tab=airticketRequest)
+    const atTab = new URLSearchParams(window.location.search).get('tab');
+    if (atTab === 'airticketRequest') { this.selectTabNav(atTab); }
 
     
 
@@ -1219,7 +1223,8 @@ downloadSalaryExcel(employee: any) {
     'Total Working Days': pay.total_working_days || '',
     'Days Worked': pay.days_worked || '',
     'Payment Date': pay.payroll_run?.payment_date 
-        ? new Date(pay.payroll_run.payment_date).toLocaleDateString()
+        ? dmy(new Date(pay.payroll_run.payment_date))   // v1.62.0 ui
+
         : '',
     'Components': this.formatComponents(pay.components),
     'Gross Salary': pay.gross_salary || '',

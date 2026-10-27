@@ -17,14 +17,14 @@ export function visibleSections(app: MenuApp | null, access: Access, cp?: Countr
   const allows = cp ? (e: string) => cp.allows(e) : undefined;   // v1.14.0: country-gated items and captions
   return app.sections
     .map(s => ({ ...s, items: s.items
-      .filter(i => itemVisible(i.perms, access) && countryVisible(i.country, allows) && flagsVisible(i.country))
+      .filter(i => itemVisible(i.perms, access, i.link) && countryVisible(i.country, allows) && flagsVisible(i.country))
       .map(i => cp ? { ...i, label: cp.text(i.label), hint: i.hint ? cp.text(i.hint) : i.hint } : i)
       .map(i => ({ ...i, label: i18nT(i.label), hint: i.hint ? i18nT(i.hint) : i.hint })) }))   // v1.15.0: country first, then language
     .filter(s => s.items.length);
 }
 
 export function appLanding(app: MenuApp, access: Access): string | null {
-  if (!app.sections) { return itemVisible(app.perms, access) ? app.link || null : null; }
+  if (!app.sections) { return itemVisible(app.perms, access, app.link) ? app.link || null : null; }
   const first = visibleSections(app, access)[0];
   return first ? first.items[0].link : null;
 }

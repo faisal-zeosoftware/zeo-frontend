@@ -389,7 +389,9 @@ mapEmployeeNameToId() {
           next: (data: any) => {
             // Filter active employees
                  this.DocRequest = data;
-  
+            // v1.62.0 people: the list showed "0 of 0" – the page rows were never refreshed after the load
+            this.currentPage = 1;
+            this.updatePagination();
             this.isLoading = false;
           },
           error: (err) => {

@@ -6,6 +6,7 @@ import { EmpCodeSettingsComponent, IdentityImportComponent, ProbationDueComponen
 export const EMPLOYEE_PROFILE_MENU: ModuleMenuItem[] = [
   { path: 'probation', label: 'Probation ending', icon: 'event_available', model: 'emp_master' },
   { path: 'identity-import', label: 'Import identity details', icon: 'upload_file', model: 'emp_master' },
+  { path: 'document-files', label: 'Upload document files', icon: 'drive_folder_upload', model: 'emp_documents' },   // v1.53.2
   { path: 'code-numbering', label: 'Employee code numbering', icon: 'pin', model: 'emp_master' },
 ];
 
@@ -19,6 +20,7 @@ export const EMPLOYEE_PROFILE_ROUTES: Routes = [
       { path: '', redirectTo: 'probation', pathMatch: 'full' },
       { path: 'probation', component: ProbationDueComponent },
       { path: 'identity-import', component: IdentityImportComponent },
+      { path: 'document-files', loadComponent: () => import('./z-doc-upload.component').then(m => m.DocUploadComponent) },   // v1.53.2 (own chunk)
       { path: 'code-numbering', component: EmpCodeSettingsComponent },
     ],
   },

@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ZModuleMenuComponent } from '../shared-ui/z-module-menu.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -44,7 +45,7 @@ export const ORG_STRUCTURE_MENU: OrgMenuItem[] = [
 @Component({
   selector: 'app-org-structure-options',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule, ZModuleMenuComponent],   // v1.40.1: the shared template shows z-module-menu
   templateUrl: '../hr-modules/module-options/module-options.component.html',
   styleUrl: '../hr-modules/module-options/module-options.component.css',
 })

@@ -493,24 +493,34 @@ removeLevel(index: number) {
 registerApproveLevel(): void {
   this.registerButtonClicked = true;
 
+  // v1.40.1: validate before calling the API (the empty level row of "No approval" used to be sent as approver 0 -> 'Invalid pk "0"')
+  const branches: number[] = Array.isArray(this.branch) ? this.branch : (this.branch ? [Number(this.branch)] : []);
+  if (!this.request_type || !branches.length || !this.approval_type) {
+    alert('Please fill in request type, branch and approval type.');
+    return;
+  }
+  if (this.approval_type === 'multi_approval') {
+    const missing = this.levels.findIndex(l => !l.approver || Number(l.approver) === 0);
+    if (!this.levels.length) { alert('Add at least one approval level.'); return; }
+    if (missing >= 0) { alert(`Level ${missing + 1}: choose an approver.`); return; }
+  }
+
   // ✅ Ensure level numbering
   const formattedLevels = this.levels.map((lvl, index) => ({
     ...lvl,
     level: index + 1,
-    approver: Number(lvl.approver),
+    approver: lvl.approver ? Number(lvl.approver) : null,
     escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
   }));
 
-  const companyData = {
+  const companyData: any = {
     request_type: Number(this.request_type),
-    branch: this.branch,
+    branch: branches,
     approval_type: this.approval_type,
-
-    // 🔥 IMPORTANT FIX
-    level: formattedLevels.length,   // ✅ REQUIRED FIELD
-
-    levels: formattedLevels
   };
+  if (this.approval_type === 'multi_approval') {
+    companyData.levels = formattedLevels;   // v1.40.1: "No approval" / "Reporting manager" get their fixed level from the server
+  }
 
   this.employeeService.registerApproveLevel(companyData).subscribe(
     (response) => {
@@ -758,12 +768,20 @@ updateAssetType(): void {
     return;
   }
 
-  const payload = {
+  const payload: any = {
     ...this.editAsset,
     request_type: Number(this.editAsset.request_type),
     branch: this.editAsset.branch,
-    levels: this.editAsset.levels
   };
+  // v1.40.1: levels only for multi approval, approver as id (never 0 / '')
+  if (this.editAsset.approval_type === 'multi_approval') {
+    const missing = (this.editAsset.levels || []).findIndex((l: any) => !l.approver || Number(l.approver) === 0);
+    if (!(this.editAsset.levels || []).length) { alert('Add at least one approval level.'); return; }
+    if (missing >= 0) { alert(`Level ${missing + 1}: choose an approver.`); return; }
+    payload.levels = this.editAsset.levels.map((l: any, i: number) => ({ ...l, level: i + 1, approver: Number(l.approver), escalate_to: l.escalate_to ? Number(l.escalate_to) : null }));
+  } else {
+    delete payload.levels;
+  }
 
   this.employeeService.updateGenreqApprovalLevel(this.editAsset.id, payload).subscribe(
     () => {
@@ -774,7 +792,7 @@ updateAssetType(): void {
     },
     (error) => {
       console.error(error);
-      alert('Update failed');
+      alert('The approval level could not be updated.\n\n' + apiErrorText(error));   // v1.40.1: show the server's reason
     }
   );
 }

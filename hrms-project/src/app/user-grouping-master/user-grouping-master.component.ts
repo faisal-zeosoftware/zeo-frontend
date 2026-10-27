@@ -441,14 +441,17 @@ deleteSelectedEmployees() {
   if (confirm('Are you sure you want to delete the selected Group?')) {
     selectedEmployeeIds.forEach(DeptId => {
       this.UserMasterService.deleteDept(DeptId).subscribe(
-        () => {
+        (res: any) => {
           console.log('Group deleted successfully:', DeptId);
+          if (res && res.detail) { alert(res.detail); }   // v1.62.0 isolation: own copy removed – back on the standard group
           // Remove the deleted employee from the local list
           this.Groups = this.Groups.filter(employee => employee.id !== DeptId);
           window.location.reload();
         },
         (error) => {
           console.error('Error deleting Group:', error);
+          // v1.62.0 isolation: a standard / shared group cannot be deleted from a company – say why (nothing was shown)
+          alert((error && error.error && error.error.detail) || 'Could not delete the group.');
         }
       );
     });

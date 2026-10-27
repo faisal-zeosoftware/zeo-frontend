@@ -47,7 +47,8 @@
 
                 <div class="dec_sec" style="width: 100%;">
                 <img *ngIf="isImage(documentData.emp_doc_document)" [src]="documentData.emp_doc_document" alt="Employee Document" style="width: 150px; height:150px;">
-                <a *ngIf="!isImage(documentData.emp_doc_document)" [href]="documentData.emp_doc_document" target="_blank">View Document</a>
+                <a *ngIf="documentData.emp_doc_document && !isImage(documentData.emp_doc_document)" [href]="documentData.emp_doc_document" target="_blank">View Document</a>
+                <span *ngIf="!documentData.emp_doc_document" class="text-muted">No file attached</span>   <!-- v1.40.1 -->
             </div>
             </div>
         </div>
@@ -94,49 +95,11 @@
 
 
 <div class="col-md-6">
-
-
-    <div class="custom-sel">
-        <label>Select employee</label>
-         <mat-form-field appearance="outline" style="width:100%">
-          <mat-select
-        placeholder="Select"
-        [(ngModel)]="documentData.employee"
-        [ngModelOptions]="{standalone: true}"
-        #employeeSelect
-        multiple>
-
-        <div class="select-all">
-                <mat-checkbox [(ngModel)]="allEmployeesSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllEmployees()">
-                  Select All
-                </mat-checkbox>
-              </div>
-              <input type="text" placeholder="Search Employee"
-            class="form-control"
-            [(ngModel)]="employeeSearch"
-            [ngModelOptions]="{standalone: true}"
-            (click)="$event.stopPropagation()">
-
-
-        <!-- Employee List -->
-        <mat-option
-          *ngFor="let emp of filterEmployees()"
-          [value]="emp.id">
-
-          {{ emp.emp_first_name }}
-
-        </mat-option>
-
-      </mat-select>
-    <p>Selected Employee ID: {{ documentData.emp_id }}</p>
-
-       </mat-form-field>
-    
-    
-    </div>
-
-                
-
+    <!-- v1.40.1: one searchable employee picker bound to the employee id (the multi-select sent the name back and the update failed) -->
+    <label>Employee</label>
+    <z-emp-pick inputId="doc-employee" name="doc-employee" [employees]="Employees" [(ngModel)]="documentData.emp_id_id" [ngModelOptions]="{standalone: true}"
+                placeholder="Search employee by name or code"></z-emp-pick>
+    <div *ngIf="registerButtonClicked && !documentData.emp_id_id" class="error-message">Employee is required.</div>
 </div>
          
 
@@ -154,7 +117,6 @@
             {{ doc.type_name }}
         </option>
     </select>
-    <p>Selected Document Type ID: {{ documentData.document_type }}</p>
     
     
     </div>

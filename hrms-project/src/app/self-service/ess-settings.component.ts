@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -70,13 +71,13 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
       <ng-container *ngIf="tab === 'templates'">
         <div class="es-cols">
           <div class="es-rows">
-            <div class="es-row click" *ngFor="let t of templates" [class.on]="tpl?.id === t.id" (click)="tpl = clone(t)">
+            <div class="es-row click" *ngFor="let t of templates" [class.on]="tpl?.id === t.id" (click)="tpl = clone(t); vers = null">
               <div class="main"><div class="t">{{ t.letter_label }} · {{ t.language === 'ar' ? 'Arabic' : 'English' }}</div><div class="s">{{ t.title }}<span *ngIf="t.branch_id"> · branch {{ t.branch_id }}</span></div></div>
               <div class="r"><span class="es-tag" [ngClass]="t.is_active ? 'approved' : 'withdrawn'">{{ t.is_active ? 'active' : 'off' }}</span></div>
             </div>
           </div>
           <div class="es-panel" *ngIf="tpl">
-            <div class="es-h">{{ tpl.letter_label }} ({{ tpl.language === 'ar' ? 'Arabic' : 'English' }})</div>
+            <div class="es-h">{{ tpl.letter_label }} ({{ tpl.language === 'ar' ? 'Arabic' : 'English' }})<span class="es-muted" *ngIf="tpl.version" data-tpl-version> · version {{ tpl.version }}</span></div>
             <div class="es-form">
               <div class="wide"><label>Title</label><input [(ngModel)]="tpl.title" [attr.dir]="tpl.language === 'ar' ? 'rtl' : null"></div>
               <div class="wide"><label>Text</label><textarea rows="12" [(ngModel)]="tpl.body" [attr.dir]="tpl.language === 'ar' ? 'rtl' : null"></textarea>
@@ -86,7 +87,22 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
               <div class="wide"><label>Footer (optional)</label><input [(ngModel)]="tpl.footer"></div>
               <div><label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" [(ngModel)]="tpl.is_active"> Active</label></div>
             </div>
-            <div class="es-actions" style="margin-top:10px"><button type="button" class="es-btn primary" [disabled]="busy" (click)="saveTemplate()">Save template</button></div>
+            <div class="es-form" style="margin-top:6px"><div class="wide"><label>What changed (kept with the version)</label><input [(ngModel)]="tpl.change_note" maxlength="300" placeholder="e.g. New signatory" data-change-note></div></div>
+            <div class="es-actions" style="margin-top:10px"><button type="button" class="es-btn primary" [disabled]="busy" (click)="saveTemplate()">Save template</button>
+              <button type="button" class="es-btn" (click)="loadVersions()" data-tpl-history>Versions</button></div>
+            <div *ngIf="vers" style="margin-top:12px" data-tpl-versions>   <!-- v1.61.0 -->
+              <div class="es-h">Versions</div>
+              <p class="es-muted">Every saved wording is kept. A letter records the version it was issued with, so you can always see the text an employee received.</p>
+              <div class="es-row" *ngFor="let v of vers" [attr.data-ver]="v.version">
+                <div class="main"><div class="t">Version {{ v.version }}<span *ngIf="v.current"> · current</span></div>
+                  <div class="s">{{ v.saved_at | date:'dd/MM/yyyy HH:mm' }}{{ v.saved_by ? ' · ' + v.saved_by : '' }}{{ v.note ? ' · ' + v.note : '' }} · {{ v.letters }} letter(s) issued</div></div>
+                <div class="r"><button type="button" class="es-btn" (click)="seeVer = (seeVer?.id === v.id ? null : v)">Text</button>
+                  <button type="button" class="es-btn" *ngIf="!v.current" (click)="restore(v)" [disabled]="busy" data-restore>Restore</button></div>
+              </div>
+              <pre *ngIf="seeVer" style="white-space:pre-wrap;background:#f6f7fb;border:1px solid #e3e6ea;border-radius:8px;padding:10px;font:inherit;font-size:12.5px" [attr.dir]="tpl.language === 'ar' ? 'rtl' : null" data-ver-text><b>{{ seeVer.title }}</b>
+
+{{ seeVer.body }}</pre>
+            </div>
           </div>
         </div>
       </ng-container>
@@ -113,6 +129,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 })
 export class EssSettingsComponent implements OnInit {
   tab = 'fields'; rows: any[] = []; templates: any[] = []; tpl: any = null; placeholders: any[] = []; cats: any[] = []; handlers: any[] = [];
+  vers: any[] | null = null; seeVer: any = null;   // v1.61.0 template versions
   dirty = false; busy = false; msg = ''; ok = '';
 
   constructor(private api: EssApiService, private route: ActivatedRoute, private cd: ChangeDetectorRef) {}
@@ -167,8 +184,26 @@ export class EssSettingsComponent implements OnInit {
     this.busy = true;
     try {
       const r: any = await this.api.put(`letter-templates/${this.tpl.id}/`, this.tpl);
-      this.ok = `Template "${r.title}" saved.`; this.msg = ''; this.tpl = r; await this.loadTemplates();
+      this.ok = `Template "${r.title}" saved (version ${r.version}).`; this.msg = ''; this.tpl = r; await this.loadTemplates();
+      if (this.vers) { await this.loadVersions(); }
     } catch (e: any) { this.msg = EssApiService.error(e, 'The template could not be saved.'); }
+    this.busy = false; this.cd.detectChanges();
+  }
+
+  async loadVersions(): Promise<void> {
+    try { const r: any = await this.api.get(`letter-templates/${this.tpl.id}/versions/`); this.vers = r.versions; this.tpl.version = r.template.version; this.msg = ''; }
+    catch (e: any) { this.msg = EssApiService.error(e, 'Could not load the versions.'); }
+    this.cd.detectChanges();
+  }
+
+  async restore(v: any): Promise<void> {
+    if (!confirm(`Use the wording of version ${v.version} again? It becomes a new version; the letters already issued keep theirs.`)) { return; }
+    this.busy = true;
+    try {
+      const r: any = await this.api.post(`letter-templates/${this.tpl.id}/versions/`, { restore: v.id });
+      this.vers = r.versions; this.tpl = { ...r.template }; this.seeVer = null; this.ok = `Version ${v.version} restored as version ${r.template.version}.`; this.msg = '';
+      await this.loadTemplates();
+    } catch (e: any) { this.msg = EssApiService.error(e, 'The version could not be restored.'); }
     this.busy = false; this.cd.detectChanges();
   }
 

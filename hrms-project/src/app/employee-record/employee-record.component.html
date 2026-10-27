@@ -98,7 +98,8 @@
                      (input)="e ? maskIn(f, e) : touch(f)" (blur)="dup && dupCheck(f.key, v[f.key])">
             </ng-container>
             <small class="er-err" *ngIf="err?.[f.key]">{{ err[f.key] }}</small>
-            <small class="er-muted small" *ngIf="!err?.[f.key] && maskNote[f.key]">{{ maskNote[f.key] }}</small>
+            <small class="er-err" *ngIf="!err?.[f.key] && live(f, v[f.key])">{{ live(f, v[f.key]) }}</small>   <!-- v1.40.1: Emirates ID / IBAN checked while typing -->
+            <small class="er-muted small" *ngIf="!err?.[f.key] && !live(f, v[f.key]) && maskNote[f.key]">{{ maskNote[f.key] }}</small>
             <small class="er-dup" *ngIf="dup && dupes[f.key]?.length">Already used by <a *ngFor="let m of dupes[f.key]" (click)="openEmp(m.employee_id)">{{ m.employee }} ({{ m.code }})</a></small>
           </div>
         </ng-template>
@@ -258,6 +259,8 @@
         <!-- ============================================================ UAE documents -->
         <ng-container *ngIf="group === 'documents'">
           <ng-container *ngTemplateOutlet="single; context: { key: 'names', title: 'Names on documents', fields: cardFields('names') }"></ng-container>
+          <!-- v1.62.0 people: cards filled from the employee's document list when the identity details are empty -->
+          <p class="er-muted small" *ngIf="r.identity_from_documents">{{ t('Numbers and dates come from the employee’s document list (the same as Expiring documents and self service). Edit a card to complete it.') }}</p>
           <div class="er-docs">
             <section class="er-card er-doc" *ngFor="let x of r.documents" [id]="'card-' + x.key" [class.editing]="editing === x.key" [ngClass]="x.badge ? 'lv-' + x.badge.level : 'lv-none'">
               <div class="er-sec-h"><h2>{{ x.label }}</h2>
@@ -266,7 +269,8 @@
               <ng-container *ngIf="editing !== x.key">
                 <p class="er-docno er-mono">{{ x.number || '–' }}</p>
                 <dl class="er-kv tight">
-                  <div *ngIf="x.issue_date !== undefined && x.fields.length"><dt>Issued</dt><dd>{{ dmy(x.issue_date) }}</dd></div>
+                  <!-- v1.40.1: "Issued" only when the card has an issue date field (Medical insurance has one now) -->
+                  <div *ngIf="x.issue_field && x.fields.length"><dt>Issued</dt><dd>{{ dmy(x.issue_date) }}</dd></div>
                   <div *ngIf="x.fields.length && x.expiry_date !== undefined"><dt>Expires</dt><dd>{{ dmy(x.expiry_date) }}</dd></div>
                   <!-- v1.28.1: every field of the card is shown, not only number / issued / expires -->
                   <div *ngFor="let f of extraFields(x)"><dt>{{ f.label }}</dt><dd>{{ extraValue(x, f) }}</dd></div>
@@ -321,6 +325,35 @@
           </section>
         </ng-container>
 
+        <!-- ============================================================ v1.45.0 Timeline (employee journey) -->
+        <ng-container *ngIf="group === 'timeline'">
+          <section class="er-card er-sec er-journey">
+            <div class="er-sec-h"><h2>{{ t('Timeline') }}</h2>
+              <button type="button" class="er-btn" *ngIf="d?.can_edit" (click)="newWarning()">{{ t('+ Warning') }}</button></div>
+            <p class="er-muted">{{ t('Everything ZEO records about this employee, newest first: joining, confirmation, transfers and promotions, salary revisions, leaves, awards, warnings, documents and exit.') }}</p>
+            <div class="er-jfilt"><button type="button" *ngFor="let k of jTypes" [class.on]="jPick.has(k.key)" (click)="jToggle(k.key)" [attr.aria-pressed]="jPick.has(k.key)">{{ t(k.label) }}</button></div>
+            <div class="er-warn" *ngIf="warn">
+              <div class="er-wrow">
+                <label>{{ t('Date') }}<input type="date" [(ngModel)]="warn.date"></label>
+                <label>{{ t('Level') }}<select [(ngModel)]="warn.level"><option value="verbal">{{ t('Verbal warning') }}</option><option value="written">{{ t('Written warning') }}</option><option value="final">{{ t('Final warning') }}</option></select></label>
+                <label class="grow">{{ t('Subject') }}<input [(ngModel)]="warn.subject" [placeholder]="t('e.g. Repeated late arrival')"></label></div>
+              <label>{{ t('Details') }}<textarea rows="3" [(ngModel)]="warn.details"></textarea></label>
+              <p class="er-err" *ngIf="warnErr">{{ warnErr }}</p>
+              <div class="er-wrow"><span class="grow"></span><button type="button" class="er-btn" (click)="warn = null">{{ t('Cancel') }}</button><button type="button" class="er-btn primary" (click)="saveWarning()">{{ t('Save warning') }}</button></div>
+            </div>
+            <div *ngIf="journey === null"><span class="z-skel"></span></div>
+            <ol class="er-journey-l" *ngIf="journey">
+              <ng-container *ngFor="let e of jShown(); let i = index">
+                <li class="er-jy" *ngIf="jYear(e, i) as y">{{ y }}</li>
+                <li [class]="'er-je k-' + e.type"><span class="er-jdot"><span class="material-icons">{{ J_ICON[e.type] || 'circle' }}</span></span>
+                  <div class="er-jb"><b>{{ t(e.title) }}</b><span class="er-muted"> · {{ dmy(e.date || e.at) }}<ng-container *ngIf="e.by"> · {{ e.by }}</ng-container></span>
+                    <div *ngIf="e.detail" class="er-muted">{{ e.detail }}</div></div></li>
+              </ng-container>
+            </ol>
+            <p class="z-empty" *ngIf="journey && !jShown().length">{{ t('Nothing recorded yet') }}</p>
+          </section>
+        </ng-container>
+
         <!-- ============================================================ Time & assets -->
         <ng-container *ngIf="group === 'time'">
           <section class="er-card er-sec">
@@ -353,6 +386,10 @@
             <p class="z-empty" *ngIf="!r.time.assets.length">No assets issued</p>
           </section>
         </ng-container>
+        <!-- v1.38.0: the same footer as every other record – notes, activities, files, change history, extra fields -->
+        <section class="er-card er-sec" id="card-notes" *ngIf="id" data-zr-off>
+          <z-record-panel endpoint="/employee/api/Employee/" [id]="'' + id" mode="page" screenName="Employee"></z-record-panel>
+        </section>
       </main>
     </div>
 
@@ -379,10 +416,17 @@
                   <input *ngSwitchCase="'file'" type="file" [id]="'p' + i + f.key" (change)="fileFor(e, $event)">
                   <input *ngSwitchDefault [id]="'p' + i + f.key" [(ngModel)]="e.values[f.key]" [placeholder]="f.placeholder || ''" (input)="maskIn(f, e)">
                 </ng-container>
+                <!-- v1.40.1: an empty skill master (Languages / Marketing / Programming) offers the standard list -->
+                <small class="er-muted small er-std" *ngIf="f.type === 'fk' && stdKind(f)">{{ t('The list is empty.') }} <button type="button" class="er-link" [disabled]="stdBusy" (click)="loadStd(f)">{{ stdBusy ? t('Loading…') : t('Load the standard list') }}</button></small>
                 <small class="er-err" *ngIf="e.errors[f.key]">{{ e.errors[f.key] }}</small>
+                <small class="er-err" *ngIf="!e.errors[f.key] && live(f, e.values[f.key])">{{ live(f, e.values[f.key]) }}</small>   <!-- v1.40.1 -->
+                <small class="er-muted small" *ngIf="!e.errors[f.key] && !live(f, e.values[f.key]) && maskNote[f.key]">{{ maskNote[f.key] }}</small>
               </div>
             </ng-container>
             <div class="er-f wide" *ngIf="panel.table.key === 'files' && !hasFileField(panel)"><label [attr.for]="'pf' + i">File</label><input type="file" [id]="'pf' + i" (change)="fileFor(e, $event)"></div>
+            <!-- v1.53.2 read the chosen file: fill the form and update the employee record -->
+            <div class="er-f wide" *ngIf="panel.table.key === 'files' && e.file"><button type="button" class="er-btn" data-er-docfill (click)="fillDoc(e)">Fill from document</button>
+              <small class="er-muted small">{{ t('Reads the number and dates, and compares the document with the employee record.') }}</small></div>
             <p class="er-computed" *ngIf="computed(panel.table, e.values)">{{ computed(panel.table, e.values) }}</p>
             <button type="button" class="er-link danger" *ngIf="panel.entries.length > 1" (click)="removeEntry(i)">{{ t(panel.table.remove) }}</button>
           </div>

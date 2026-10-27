@@ -1,76 +1,16 @@
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
+    <!-- v1.62.0 payroll: card header with a one-line description; Create stays, edit / delete are row actions -->
     <div class="header_section">
-      <div class="row">
-        <div class="col-md-4">
-          <h1>Salary component</h1>
+      <div class="py-wrap py-head">
+        <div>
+          <h1 class="page-title">Salary components</h1>
+          <p class="lp-desc">The pay items payroll uses – additions, deductions and the statutory / system items ZEO calculates. A component used by several branches is shown once; open it to change it per branch.</p>
         </div>
-
-        <div class="col-md-3"></div>
-        <div class="col-md-5">
-          <div class="button-group pull-right">
-            <button
-              type="button"
-              (click)="openPopus()"
-              class="btn-Create btn btn-success"
-              *ngIf="hasAddPermission"
-            >
-              <span class="header-btn-icon"
-                ><mat-icon>add_circle </mat-icon></span
-              >
-              Create
-            </button>
-            <span *ngIf="!hasAddPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Edit btn-info btn"
-              (click)="EditShowButtons()"
-              *ngIf="hasEditPermission"
-            >
-              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
-              Edit
-            </button>
-            <span *ngIf="hasEditPermission"></span>
-            <button
-              type="button"
-              class="btn-Delete btn btn-danger"
-              (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission"
-            >
-              <span class="header-btn-icon">
-                <mat-icon> delete </mat-icon></span
-              >
-              {{ Delete ? "Cancel" : "Delete" }}
-            </button>
-
-            <span *ngIf="!hasDeletePermission"></span>
-          </div>
+        <div class="py-tools">
+          <input type="search" class="py-in" placeholder="Search component or code…" [(ngModel)]="scQ" [ngModelOptions]="{standalone: true}" aria-label="Search components">
+          <button type="button" class="py-btn primary" (click)="openPopus()" *ngIf="hasAddPermission" data-py-sc-new>+ New component</button>
         </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <button
-          class="mt-3 btn-danger btn"
-          style="width: 100%"
-          color="warn"
-          *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()"
-        >
-          Select all
-        </button>
-      </div>
-      <div class="col-md-3">
-        <button
-          class="mt-3 btn-danger btn"
-          color="warn"
-          *ngIf="Delete"
-          (click)="deleteSelectedAssetMaster()"
-        >
-          Delete selected
-        </button>
       </div>
     </div>
 
@@ -1073,118 +1013,51 @@
       </div>
     </div>
 
+    <!-- v1.62.0 payroll: one row per component code with its branches; grouped Additions / Deductions / Statutory and system -->
     <div class="com_list mt-4" *ngIf="hasViewPermission">
-      <div class="table-responsive" *ngIf="hasViewPermission">
-        <table class="table table-striped custom-table">
-          <thead>
-            <tr>
-              <th class="sticky-left">No</th>
-              <th>Name</th>
-              <th>Component type</th>
-              <th>Payroll category</th>
-              <th>Code</th>
-              <th>Branch</th>
-              <th>Value type</th>
-              <th>Formula</th>
-              <th>Deduct leave</th>
-              <th>Show in payslip</th>
-              <th>Description</th>
-              <th class="sticky-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let docs of Salarycomponent; let i = index">
-              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
-    
-              <td data-label="Name">{{ docs.name }}</td>
-    
-              <td data-label="Component Type">
-                <span
-                  class="badge-type"
-                  [ngClass]="{
-                    'badge-addition': docs.component_type === 'addition',
-                    'badge-deduction': docs.component_type === 'deduction',
-                    'badge-others': docs.component_type === 'others'
-                  }"
-                >
-                  {{ docs.component_type }}
-                </span>
-              </td>
-    
-              <td data-label="Payroll Category">
-                {{ getCategoryLabel(docs.payroll_category) }}
-              </td>
-    
-              <td data-label="Code">
-                <code>{{ docs.code || '-' }}</code>
-              </td>
-    
-              <td data-label="Branch">
-                {{ getBranchName(docs.branch) }}
-              </td>
-    
-              <td data-label="Value Type">
-                <span
-                  class="badge-valuetype"
-                  [ngClass]="{
-                    'badge-fixed': docs.component_value_type === 'fixed',
-                    'badge-variable': docs.component_value_type === 'variable'
-                  }"
-                >
-                  {{ docs.component_value_type }}
-                </span>
-              </td>
-    
-              <td data-label="Formula">
-                <span
-                  *ngIf="docs.formula; else noFormula"
-                  class="formula-chip"
-                  [matTooltip]="docs.formula"
-                >
-                  {{ docs.formula }}
-                </span>
-                <ng-template #noFormula>-</ng-template>
-              </td>
-    
-              <td data-label="Deduct Leave" class="text-center">
-                <mat-icon *ngIf="docs.deduct_leave" class="icon-yes">check_circle</mat-icon>
-                <mat-icon *ngIf="!docs.deduct_leave" class="icon-no">cancel</mat-icon>
-              </td>
-    
-              <td data-label="Show In Payslip" class="text-center">
-                <mat-icon *ngIf="docs.show_in_payslip" class="icon-yes">check_circle</mat-icon>
-                <mat-icon *ngIf="!docs.show_in_payslip" class="icon-no">cancel</mat-icon>
-              </td>
-    
-              <td data-label="Description">
-                <span
-                  class="desc-truncate"
-                  [matTooltip]="docs.description"
-                >
-                  {{ docs.description || '-' }}
-                </span>
-              </td>
-    
-              <td class="sticky-right" data-label="Actions">
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-                  (click)="openEditModal(docs)"
-                >
-                  <mat-icon style="color: white">draw</mat-icon>
-                </button>
-                <z-translate *ngIf="showEditBtn" endpoint="/payroll/api/salarycomponent/" [recordId]="docs.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
-                <mat-checkbox
-                  *ngIf="Delete"
-                  [(ngModel)]="docs.selected"
-                ></mat-checkbox>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <p class="py-msg err" *ngIf="scErr">{{ scErr }}</p>
+      <ng-container *ngFor="let sec of scSections">
+        <div class="py-group" *ngIf="scShown(sec.key).length" [attr.data-py-scsec]="sec.key">
+          <header><div><h3>{{ sec.title }}</h3><span class="py-muted">{{ sec.desc }}</span></div><span class="py-pill">{{ scShown(sec.key).length }}</span></header>
+          <div class="py-scroll">
+            <table class="py-t" zPlain>
+              <thead><tr><th>Component</th><th>Branches</th><th style="min-width:170px">Calculation</th><th class="ctr" title="Deduct for unpaid leave">Unpaid leave</th><th class="ctr" title="Show on payslip">Payslip</th>
+                <th class="ctr" title="In gross / WPS">Gross / WPS</th><th class="num">Employees</th><th class="num">Monthly (AED)</th><th></th></tr></thead>
+              <tbody>
+                <ng-container *ngFor="let c of scShown(sec.key)">
+                  <tr [attr.data-py-sc]="c.key">
+                    <td><span class="nm">{{ c.name }}</span><span class="sub"><span class="py-code" *ngIf="c.code">{{ c.code }}</span></span></td>
+                    <td><span class="py-chip" *ngFor="let it of c.items">{{ it.branch }}</span></td>
+                    <td style="max-width:280px"><span *ngIf="c.formula" [title]="c.formula" class="py-formula">{{ c.formula_readable }}</span>
+                      <span *ngIf="!c.formula" class="py-muted">{{ c.value_type === 'fixed' ? 'Fixed amount per employee' : 'Entered or calculated each month' }}</span></td>
+                    <td class="ctr"><span [class]="c.deduct_leave ? 'py-yes' : 'py-no'" [attr.aria-label]="c.deduct_leave ? 'Yes' : 'No'">{{ c.deduct_leave ? '✓' : '–' }}</span></td>
+                    <td class="ctr"><span [class]="c.show_in_payslip ? 'py-yes' : 'py-no'" [attr.aria-label]="c.show_in_payslip ? 'Yes' : 'No'">{{ c.show_in_payslip ? '✓' : '–' }}</span></td>
+                    <td class="ctr"><span *ngIf="c.wps" class="py-pill" [class.ok]="c.wps === 'fixed'" [class.info]="c.wps === 'variable'">{{ c.wps === 'fixed' ? 'Fixed pay' : 'Variable pay' }}</span><span *ngIf="!c.wps" class="py-no">–</span></td>
+                    <td class="num">{{ c.employees || '–' }}</td>
+                    <td class="num">{{ +c.monthly_total ? (c.monthly_total | number:'1.2-2') : '–' }}</td>
+                    <td style="white-space:nowrap;text-align:end">
+                      <button type="button" class="py-btn sm" *ngIf="hasEditPermission && c.items.length === 1" (click)="scEdit(c.items[0])" data-py-sc-edit>Edit</button>
+                      <button type="button" class="py-btn sm" *ngIf="(hasEditPermission || hasDeletePermission) && c.items.length > 1" (click)="scOpen[c.key] = !scOpen[c.key]">{{ scOpen[c.key] ? 'Close' : 'Per branch' }}</button>
+                      <button type="button" class="py-btn sm danger" style="margin-inline-start:4px" *ngIf="hasDeletePermission && c.items.length === 1" (click)="scDelete(c.items[0])">Delete</button>
+                    </td>
+                  </tr>
+                  <ng-container *ngIf="scOpen[c.key]">
+                    <tr *ngFor="let it of c.items" style="background:#fafaff">
+                      <td style="padding-inline-start:26px"><span class="py-muted">↳</span> {{ it.branch }}</td>
+                      <td colspan="5"><span class="py-muted">{{ it.formula || '' }}</span></td>
+                      <td class="num">{{ it.employees || '–' }}</td><td></td>
+                      <td style="white-space:nowrap;text-align:end">
+                        <button type="button" class="py-btn sm" *ngIf="hasEditPermission" (click)="scEdit(it)">Edit</button>
+                        <button type="button" class="py-btn sm danger" style="margin-inline-start:4px" *ngIf="hasDeletePermission" (click)="scDelete(it)">Delete</button></td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+      <div class="py-empty" *ngIf="scLoaded && !scRows.length"><b>No salary components yet</b><p>Create Basic, the allowances and the deductions your company pays.</p></div>
     </div>
   </div>
 </div>

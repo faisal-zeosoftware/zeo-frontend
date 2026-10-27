@@ -157,6 +157,7 @@ export class ZpCustomersComponent implements OnInit {
           <h1 class="page-title" style="margin-top:8px">{{ c.name }} <span class="zp-code">{{ c.code }}</span></h1>
           <p class="ex-desc">{{ c.email }} {{ c.phone }} {{ c.trn ? '· TRN ' + c.trn : '' }}</p></div>
         <div class="ex-actions">
+          <button type="button" class="ex-btn" *ngIf="c?.partner" (click)="router.navigate(['/main-sidebar/zeo-masters/r/partner', c.partner])">Business partner {{ c.partner_number }}</button>   <!-- v1.42.0 -->
           <button type="button" class="ex-btn" *ngIf="c" (click)="go(['reports', 'work-history'], { customer: c.id, from: yearStart() })">Work history</button>
           <button type="button" class="ex-btn" *ngIf="rights.ticket_add" (click)="go(['tickets'], { customer: c.id, new: 1 })">+ Ticket</button>
           <button type="button" class="ex-btn" *ngIf="rights.amc_edit" (click)="go(['contracts'], { customer: c.id, new: 1 })">+ AMC contract</button>
@@ -265,7 +266,7 @@ export class ZpCustomerComponent implements OnInit {
   cred: any = null;
   sc = STAGE_CLASS;
   pc = PRIORITY_CLASS;
-  constructor(private api: ZpApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private api: ZpApiService, private route: ActivatedRoute, public router: Router) {}
 
   async ngOnInit(): Promise<void> {
     this.rights = (await this.api.lookups().catch(() => ({ rights: {} }))).rights || {};

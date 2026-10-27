@@ -834,7 +834,7 @@
                           <div class="col-md-11">
                             <h2 >{{ ann.title }}</h2>
                             <h3 >
-                              {{ ann.schedule_at | date:'dd MMM yyyy' }} – {{ ann.expires_at | date:'dd MMM yyyy' }}
+                              {{ ann.schedule_at | date:'dd/MM/yyyy' }} – {{ ann.expires_at | date:'dd/MM/yyyy' }}
                             </h3>
                           </div>
                           <div class="col-md-1 text-end">
@@ -890,11 +890,11 @@
       <div class="project-meta">
         <div class="meta-item">
           <i class="fa fa-calendar-alt"></i>
-          <span><strong>Start:</strong> {{ project.start_date | date }}</span>
+          <span><strong>Start:</strong> {{ project.start_date | date:'dd/MM/yyyy' }}</span>
         </div>
         <div class="meta-item">
           <i class="fa fa-calendar-check"></i>
-          <span><strong>End:</strong> {{ project.end_date | date }}</span>
+          <span><strong>End:</strong> {{ project.end_date | date:'dd/MM/yyyy' }}</span>
         </div>
       </div>
 
@@ -925,7 +925,7 @@
           </div>
           <p class="task-desc">{{ task.description }}</p>
           <small class="task-date">
-            <i class="fa fa-clock"></i> {{ task.start_date | date }} → {{ task.end_date | date }}
+            <i class="fa fa-clock"></i> {{ task.start_date | date:'dd/MM/yyyy' }} → {{ task.end_date | date:'dd/MM/yyyy' }}
           </small>
         </div>
       </div>
@@ -1666,7 +1666,7 @@
                   </span>
                 </div>
                 <div class="timeline-date">
-                  {{ approval.created_at | date:'medium' }}
+                  {{ approval.created_at | date:'dd/MM/yyyy HH:mm' }}
                 </div>
                 <div *ngIf="approval.note"
                      class="timeline-note">
@@ -2037,7 +2037,7 @@
         <!-- Financial content here -->
 
  <div class="white-outer-sec d-flex justify-content-between align-items-center">
-       <h3 class="mb-0">AirTicket request</h3>
+       <h3 class="mb-0">Air ticket request</h3>
       <button class="btn btn-success btn-sm" (click)="toggleAirticketForm()" title="Add Airticket Request">
       <i class="fa" [ngClass]="isAirticketFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isAirticketFormOpen ? ' Close Form' : ' Airticket Request' }}
     </button>
@@ -4490,7 +4490,7 @@
                 <h6>Late In Early Out Request Approvals</h6><hr>
                 <div class="row ">
                         <div class="col-md-2">
-                      <h4>Lateinearlyout request</h4>
+                      <h4>Late in / early out request</h4><!-- v1.62.0 ui -->
                       <h5>{{apr.lateinearlyout_request}}</h5>
                     </div>
 
@@ -4533,7 +4533,7 @@
       <div *ngIf="selectedApproval">
        <h6>Late In Early Out Request Approvals</h6>
         <hr>
-        <h6>Lateinearlyout request- {{ selectedApproval.lateinearlyout_request }}</h6>
+        <h6>Late in / early out request – {{ selectedApproval.lateinearlyout_request }}</h6>
         <h6>Status - {{ selectedApproval.status }}</h6>
         <h6>Level - {{ selectedApproval.level }}</h6>
   
@@ -4960,7 +4960,7 @@
 
             <td data-label="Effective Period">{{ revision.effective_period || '-' }}</td>
 
-            <td data-label="Revised On">{{ revision.revised_on | date:'dd MMM yyyy' }}</td>
+            <td data-label="Revised On">{{ revision.revised_on | date:'dd/MM/yyyy' }}</td>
 
             <td data-label="Remarks">{{ revision.remarks || '-' }}</td>
 

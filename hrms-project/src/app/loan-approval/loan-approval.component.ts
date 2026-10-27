@@ -439,6 +439,10 @@ export class LoanApprovalComponent {
     if (!selectedSchema || !this.selectedApproval) {
       return;
     }
+    if (!this.delegationForm.deligate_to) {   // v1.40.1
+      alert('Select the user to delegate to.');
+      return;
+    }
     const apiUrl = `${this.apiUrl}/payroll/api/loan-approval/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
     const payload = {
       approver: this.userId,
@@ -450,7 +454,9 @@ export class LoanApprovalComponent {
         next: () => {
           this.isLoading = false;
           alert("Delegated Successfully");
-          window.location.reload();
+          // v1.40.1: no full page reload – it wiped the "Delegated Successfully" message before anyone could read it;
+          // the pop-ups close and the list is loaded again instead
+          this.isAddFieldsModalOpen = false;
           this.closeDelegationModal();
           this.fetchEmployees(
             selectedSchema,
@@ -460,6 +466,8 @@ export class LoanApprovalComponent {
         error: err => {
           this.isLoading = false;
           console.error(err);
+          // v1.40.1: tell the user why (already delegated, same user, no rights…) instead of failing silently
+          alert(err?.error?.error || err?.error?.detail || 'The delegation could not be sent.');
         }
       });
   }
@@ -470,13 +478,16 @@ export class LoanApprovalComponent {
       (req: any) => req.document_number === approval.loan_request
     );
     this.selectedApproval = approval;
+    // v1.40.1: the API sends the approver as a username (LoanApprovalSerializer.to_representation), so looking it up
+    // by id in the users list found nothing and the Delegator box stayed empty – show the username like the other
+    // approval screens (resignation, advance salary, air ticket, asset) do
     const approver = this.Users.find(
-      (user: any) => user.id === approval.approver
+      (user: any) => user.id === approval.approver || user.username === approval.approver
     );
     this.delegationForm = {
       request: loanRequest ? loanRequest.id : null,
       approver: approval.approver,
-      deligator: approver ? approver.username : '',
+      deligator: approver ? approver.username : (approval.approver || ''),
       deligate_to: null
     };
     this.isDelegationModalOpen = true;

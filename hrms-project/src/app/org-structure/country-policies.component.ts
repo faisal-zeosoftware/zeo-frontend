@@ -14,7 +14,8 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
  * gratuity, overtime, notice, probation, public holidays and WPS notes. "Apply to branches" makes a rule set the
  * one of those branches (else a branch uses the standard set of its country). Leave and payroll can read it
  * (country_policy_for(branch) on the server); they are not switched to it automatically.
- * API: org-structure/api/country-policies/ (CRUD, load-standard/, <id>/apply/, for-branch/) · branch-country-policies/
+ * API: org-structure/api/country-policies/ (CRUD, load-standard/, <id>/apply/, for-branch/, <id>/versions/, in-force/?branch=&date=) · branch-country-policies/
+ * v1.59.0 – "Law changes by date": the gratuity rules from a date (the rules of the day apply).
  */
 @Component({
   selector: 'app-country-policies',
@@ -90,6 +91,39 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
             <div><span>WPS / payroll</span><b>{{ sel.wps_notes || '–' }}</b></div>
           </div>
           <p class="lp-muted" *ngIf="sel.notes" style="margin-top:10px">{{ sel.notes }}</p>
+
+          <!-- v1.59.0 law changes from a date -->
+          <div class="os-sec" data-law-changes>Law changes by date</div>
+          <p class="lp-muted" style="margin:0 0 8px">When the gratuity law changes, add the new rules from the day they start. The end of service uses the rules in force on the last working day, the payroll accrual those of the 1st of the pay month, the provisions and the gratuity report those of their date – earlier dates keep the rules above. Annual leave and overtime are set in Leave policies and the overtime setup.</p>
+          <table class="lp-table" *ngIf="sel.versions?.length">
+            <thead><tr><th>From</th><th>Changes</th><th>Law reference</th><th></th></tr></thead>
+            <tbody><tr *ngFor="let v of sel.versions" [attr.data-policy-version]="v.id">
+              <td><b>{{ v.effective_from }}</b> <span class="lp-chip" *ngIf="v.effective_from > todayIso">coming</span></td>
+              <td>{{ partText(v.parts) }}</td><td><small>{{ v.law_reference }}</small></td>
+              <td><button type="button" class="lp-btn" (click)="delVersion(v)">Delete</button></td></tr></tbody>
+          </table>
+          <p class="lp-muted" *ngIf="!sel.versions?.length">No dated changes – the rules above apply on every date.</p>
+          <button type="button" class="lp-btn" *ngIf="!vf" (click)="newVersion()" style="margin-top:8px">+ Gratuity change from a date</button>
+          <div *ngIf="vf" class="lp-form" style="margin-top:10px" data-version-form>
+            <label>New rules start on<input type="date" [(ngModel)]="vf.effective_from"></label>
+            <label class="wide">Law reference<input [(ngModel)]="vf.law_reference" maxlength="300" placeholder="e.g. the decree-law and its article"></label>
+            <ng-container>
+              <label>Minimum service (years)<input type="number" step="0.5" [(ngModel)]="vf.gratuity.min_service_years"></label>
+              <label>Capped at (years of pay)<input type="number" step="0.5" [(ngModel)]="vf.gratuity.cap_years_of_pay"></label>
+              <div class="wide">
+                <table class="lp-table"><thead><tr><th>From year</th><th>To year</th><th>Days a year</th><th></th></tr></thead>
+                  <tbody><tr *ngFor="let g of vf.gratuity.slabs; let i = index"><td><input type="number" [(ngModel)]="g.from_year" aria-label="From year"></td>
+                    <td><input type="number" [(ngModel)]="g.to_year" aria-label="To year" placeholder="and after"></td><td><input type="number" [(ngModel)]="g.days" aria-label="Days a year"></td>
+                    <td><button type="button" class="lp-x" (click)="vf.gratuity.slabs.splice(i, 1)" aria-label="Remove">×</button></td></tr></tbody></table>
+                <button type="button" class="lp-btn" (click)="vf.gratuity.slabs.push({ from_year: 1, to_year: null, days: 21 })">+ Gratuity slab</button>
+              </div>
+            </ng-container>
+            <label class="wide">Notes<textarea [(ngModel)]="vf.notes"></textarea></label>
+            <div class="wide" style="display:flex;gap:8px">
+              <button type="button" class="lp-btn primary" [disabled]="busy || !vf.effective_from || !vf.gratuity.slabs.length" (click)="saveVersion()">Save the law change</button>
+              <button type="button" class="lp-btn" (click)="vf = null">Cancel</button>
+            </div>
+          </div>
         </div>
 
         <!-- edit -->
@@ -226,7 +260,35 @@ export class CountryPoliciesComponent implements OnInit {
     this.cd.markForCheck();
   }
 
-  pick(p: any): void { this.sel = p; this.form = null; }
+  pick(p: any): void { this.sel = p; this.form = null; this.vf = null; }
+
+  // ---------------------------------------------------------------- v1.59.0 law changes by date
+  vf: any = null; todayIso = new Date().toISOString().slice(0, 10);
+  partText(p: string[]): string { return (p || []).map(x => x === 'annual_leave' ? 'annual leave' : x).join(', ') || '–'; }
+  newVersion(): void {
+    const c = JSON.parse(JSON.stringify(this.sel));
+    this.vf = { effective_from: '', law_reference: '', notes: '',
+                gratuity: { ...(c.gratuity || {}), slabs: (c.gratuity?.slabs || []).map((x: any) => ({ ...x })) } };
+  }
+  async saveVersion(): Promise<void> {
+    const v = this.vf; const num = (x: any) => x === '' || x === null || x === undefined ? null : +x;
+    const body: any = { effective_from: v.effective_from, law_reference: v.law_reference, notes: v.notes };
+    body.gratuity = { ...v.gratuity, slabs: v.gratuity.slabs.map((x: any) => ({ ...x, from_year: num(x.from_year), to_year: num(x.to_year), days: num(x.days) })) };
+    for (const k of ['min_service_years', 'cap_years_of_pay']) { body.gratuity[k] = num(body.gratuity[k]); }
+    this.busy = true;
+    try {
+      await firstValueFrom(this.http.post(this.url(`country-policies/${this.sel.id}/versions/`), body));
+      this.vf = null; this.say('Law change saved.'); await this.load(this.sel.id);
+    } catch (e: any) { this.say(this.errText(e, 'The law change could not be saved.'), true); }
+    this.busy = false; this.cd.markForCheck();
+  }
+  async delVersion(x: any): Promise<void> {
+    if (!confirm(`Delete the law change from ${x.effective_from}?`)) { return; }
+    try {
+      await firstValueFrom(this.http.delete(this.url(`country-policies/${this.sel.id}/versions/`) + `&version=${x.id}`));
+      this.say('Law change deleted.'); await this.load(this.sel.id);
+    } catch (e: any) { this.say(this.errText(e, 'The law change could not be deleted.'), true); }
+  }
 
   slabText(s: any[]): string { return (s || []).map(x => `${x[0]} days ${x[1] === 100 ? 'full pay' : x[1] === 0 ? 'unpaid' : x[1] + '%'}`).join(', ') || '–'; }
   gratText(g: any): string {

@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +29,7 @@ type Dlg = '' | 'ack' | 'damage' | 'loss' | 'return' | 'transfer' | 'history';
           <div class="ap-card" *ngFor="let a of d.assets">
             <div class="t">{{ a.name }} <span class="ap-code">{{ a.code }}</span></div>
             <div class="s">{{ a.type }} · SN {{ a.serial_number }}<span *ngIf="a.model"> · {{ a.model }}</span></div>
-            <div class="s">Since {{ a.assigned_date | date:'dd MMM yyyy' }}<span *ngIf="a.expected_return_date"> · back by {{ a.expected_return_date | date:'dd MMM yyyy' }}</span>
+            <div class="s">Since {{ a.assigned_date | date:'dd/MM/yyyy' }}<span *ngIf="a.expected_return_date"> · back by {{ a.expected_return_date | date:'dd/MM/yyyy' }}</span>
               <span *ngIf="a.custodian_of"> · custodian at {{ a.custodian_of }}</span></div>
             <div class="s" *ngIf="a.accessories">With: {{ a.accessories }}</div>
             <div style="margin-top:6px"><span class="ex-tag" [ngClass]="cls(a.ack_status)">{{ a.ack_status === 'pending' ? 'Receipt not confirmed' : lbl(a.ack_status) }}</span>
@@ -59,7 +60,7 @@ type Dlg = '' | 'ack' | 'damage' | 'loss' | 'return' | 'transfer' | 'history';
               <p class="ex-muted" *ngIf="!d.recoveries.length">None.</p></div>
             <div class="ex-h" style="margin-top:14px">Returned before</div>
             <div class="ex-rows"><div class="ex-row" *ngFor="let p of d.past"><div class="main"><div class="t">{{ p.name }}</div>
-              <div class="s">{{ p.assigned_date | date:'dd MMM yyyy' }} → {{ p.returned_date | date:'dd MMM yyyy' }}</div></div></div>
+              <div class="s">{{ p.assigned_date | date:'dd/MM/yyyy' }} → {{ p.returned_date | date:'dd/MM/yyyy' }}</div></div></div>
               <p class="ex-muted" *ngIf="!d.past.length">None.</p></div></div>
         </div>
       </ng-container>
@@ -105,7 +106,7 @@ type Dlg = '' | 'ack' | 'damage' | 'loss' | 'return' | 'transfer' | 'history';
       </div>
       <div *ngIf="dlg === 'history'">
         <div class="ap-ev" *ngFor="let e of hist"><mat-icon>{{ icon(e.event) }}</mat-icon>
-          <div class="txt">{{ e.summary }}<div class="meta">{{ e.at | date:'dd MMM yyyy, HH:mm' }} · {{ e.user }}</div></div></div>
+          <div class="txt">{{ e.summary }}<div class="meta">{{ e.at | date:'dd/MM/yyyy HH:mm' }} · {{ e.user }}</div></div></div>
         <p class="ex-muted" *ngIf="!hist.length">No history.</p>
       </div>
     </div>

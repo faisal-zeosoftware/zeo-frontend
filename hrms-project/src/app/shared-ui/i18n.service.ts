@@ -235,9 +235,9 @@ export class TPipe implements PipeTransform {
 export class ZDatePipe implements PipeTransform {
   transform(v: any, mode: 'date' | 'datetime' | 'time' = 'date'): string {
     if (v === null || v === undefined || v === '') { return ''; }
-    let fmt = currentPack().date_format || 'dd/MM/yyyy';
-    if (currentPack().lang === 'en' && fmt === 'dd/MM/yyyy') { fmt = 'dd MMM yyyy'; }   // v1.19.0: 12 May 1990 in views
-    const f = mode === 'time' ? 'HH:mm' : mode === 'datetime' ? fmt + (fmt.includes('MMM') ? ', HH:mm' : ' HH:mm') : fmt;
+    const fmt = currentPack().date_format || 'dd/MM/yyyy';
+    // v1.62.0 ui: one display format everywhere – dd/MM/yyyy (was "12 May 1990" in English views)
+    const f = mode === 'time' ? 'HH:mm' : mode === 'datetime' ? fmt + ' HH:mm' : fmt;
     try { return formatDate(v, f, 'en-US'); } catch { return String(v); }
   }
 }

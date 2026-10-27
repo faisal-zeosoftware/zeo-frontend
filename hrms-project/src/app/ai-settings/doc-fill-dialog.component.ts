@@ -3,11 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { AiSettingsApi, DocField, DocReading } from './ai-settings.service';
+import { environment } from '../../environments/environment';
+import { TPipe } from '../shared-ui/i18n.service';
 
 /** Form values the dialog can fill (the names of the employee document form). */
-export interface DocFormValues { document_type?: any; emp_doc_number?: any; emp_doc_issued_date?: any; emp_doc_expiry_date?: any; }
-export interface DocFillData { file: File; types: { id: any; type_name: string }[]; current: DocFormValues; keys?: string[]; }
+export interface DocFormValues { document_type?: any; emp_doc_number?: any; emp_doc_issued_date?: any; emp_doc_expiry_date?: any; record_saved?: boolean; }
+/** v1.53.2 empId: also offer "Update the employee record"; inForm: the document is being added or edited in a form
+ *  (the identity details are saved without adding a document of their own – the form's document is the one). */
+export interface DocFillOptions { empId?: number | null; inForm?: boolean; above?: boolean; }
+export interface DocFillData extends DocFillOptions { file: File; types: { id: any; type_name: string }[]; current: DocFormValues; keys?: string[]; }
+export interface RecLine {
+  key: string; label: string; group: string; current: any; found: any; current_show: any; found_show: any;
+  status: 'new' | 'same' | 'different' | 'unknown'; pick: boolean; note: string;
+}
 
 const SOURCE: Record<string, string> = {
   text: 'the text of the PDF', ocr: 'text recognition (OCR) of the image', 'file name': 'the file name only',
@@ -21,7 +31,7 @@ const SOURCE: Record<string, string> = {
 @Component({
   selector: 'z-doc-fill-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TPipe],
   template: `
 <div class="df" role="dialog" aria-labelledby="df-title">
   <header>
@@ -60,11 +70,41 @@ const SOURCE: Record<string, string> = {
       </div>
       <ul class="df-notes" *ngIf="r.notes.length"><li *ngFor="let n of r.notes">{{ n }}</li></ul>
       <p class="df-muted">Check the values against the document. Nothing is saved until you save the document form.</p>
+
+      <!-- v1.53.2 the values of the document compared with the employee record; the ticked ones are saved on the record -->
+      <section class="df-rec" *ngIf="data.empId && r.record" aria-labelledby="df-rec-title">
+        <h3 id="df-rec-title">Update the employee record</h3>
+        <p class="df-muted">The identity details and the employee's details compared with the document. Tick what to save on the record.</p>
+        <p class="df-muted" *ngIf="recLoading" role="status">Comparing with the employee record…</p>
+        <div class="df-msg err" *ngIf="recError" role="alert">{{ recError }}</div>
+        <table class="df-table" *ngIf="recLines.length" data-df-rec>
+          <thead><tr><th><span class="sr">Save</span></th><th>Field</th><th>On the record</th><th>On the document</th><th><span class="sr">Status</span></th></tr></thead>
+          <tbody>
+            <ng-container *ngFor="let g of recGroups">
+              <tr class="df-g"><td colspan="5">{{ g }}</td></tr>
+              <tr *ngFor="let x of linesOf(g)" [class.same]="x.status === 'same'" [class.diff]="x.status === 'different'" [attr.data-key]="x.key">
+                <td><input type="checkbox" [(ngModel)]="x.pick" [disabled]="x.status === 'same' || x.status === 'unknown' || !!recSaved" [attr.aria-label]="'Save ' + x.label"></td>
+                <td>{{ x.label }}<small class="df-note" *ngIf="x.note">{{ x.note }}</small></td>
+                <td>{{ fmt(x.current_show) || '–' }}</td>
+                <td><b>{{ fmt(x.found_show) }}</b></td>
+                <td><span class="df-tag" [ngClass]="{ ok: x.status === 'same', warn: x.status === 'different', ext: x.status === 'new' }">{{ statusText(x) | t }}</span></td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+        <p class="df-muted" *ngIf="!recLoading && !recError && !recLines.length">The document has nothing to compare with the employee record.</p>
+        <div class="df-rec-f" *ngIf="recLines.length && !recSaved">
+          <span class="df-muted" *ngIf="mismatches">{{ '{0} values differ from the record' | t:[mismatches] }}</span>
+          <span class="df-spacer"></span>
+          <button type="button" class="df-btn" data-df-rec-save (click)="saveRecord()" [disabled]="!recPicked() || recSaving">{{ recSaving ? 'Saving…' : 'Save on the employee record' }}</button>
+        </div>
+        <div class="df-msg ok" *ngIf="recSaved" role="status">{{ 'Saved on the employee record: {0}' | t:[recSaved] }}</div>
+      </section>
     </ng-container>
   </div>
   <footer>
     <button type="button" class="df-btn" (click)="close()">Cancel</button>
-    <button type="button" class="df-btn primary" (click)="apply()" [disabled]="!picked()">Fill the selected fields</button>
+    <button type="button" class="df-btn primary" (click)="apply()" [disabled]="!picked() && !recSaved">{{ picked() || !recSaved ? 'Fill the selected fields' : 'Done' }}</button>
   </footer>
 </div>`,
   styles: [`
@@ -75,6 +115,14 @@ const SOURCE: Record<string, string> = {
 .df-body { padding: 14px 18px; overflow: auto; }
 .df-file { margin: 0 0 8px; font-weight: 600; word-break: break-all; }
 .df-file small, .df-muted { color: #6b7185; font-weight: 400; }
+.df-msg.ok { background: #ecfdf3; color: #1f7a4d; border: 1px solid #b7e4c7; border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
+.df-rec { margin-top: 14px; padding-top: 12px; border-top: 1px solid #eceef5; }
+.df-rec h3 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+.df-table tr.df-g td { background: #f6f7fb; font-size: 11.5px; font-weight: 600; color: #4a4f63; padding: 5px 6px; }
+.df-table tr.diff td { background: #fffaf0; }
+.df-note { display: block; color: #9a5b00; font-size: 11.5px; margin-top: 2px; }
+.df-rec-f { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.df-spacer { flex: 1; }
 .df-msg.err { background: #fff5f5; color: #b42318; border: 1px solid #f3c3c3; border-radius: 8px; padding: 8px 10px; margin: 6px 0; }
 .df-facts { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin: 4px 0 10px; }
 .df-tag { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; background: #f1f2f6; color: #4a4f63; white-space: nowrap; }
@@ -100,9 +148,59 @@ export class DocFillDialogComponent implements OnInit {
   r: DocReading | null = null;
   rows: { f: DocField; label: string; show: string; now: string; same: boolean; pick: boolean }[] = [];
   loading = true; error = '';
+  // v1.53.2 update the employee record
+  recLines: RecLine[] = []; recGroups: string[] = []; recLoading = false; recError = ''; recSaving = false; recSaved = ''; mismatches = 0;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: DocFillData, private ref: MatDialogRef<DocFillDialogComponent>,
-              private api: AiSettingsApi, private cd: ChangeDetectorRef) {}
+              private api: AiSettingsApi, private cd: ChangeDetectorRef, private http: HttpClient) {}
+
+  private recUrl(): string {
+    return `${environment.apiBaseUrl}/employee-profile/api/doc-record/${this.data.empId}/?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`;
+  }
+
+  private async compare(): Promise<void> {
+    if (!this.data.empId || !this.r?.record) { return; }
+    this.recLoading = true; this.recError = '';
+    try {
+      const res: any = await firstValueFrom(this.http.post(this.recUrl(), { action: 'preview', record: this.r.record }));
+      this.setLines(res);
+    } catch (e: any) {
+      this.recError = e?.status === 403 ? (e?.error?.detail || 'You may not change this employee\'s record.') : (e?.error?.detail || 'The employee record could not be compared.');
+    }
+    this.recLoading = false; this.cd.markForCheck();
+  }
+
+  private setLines(res: any): void {
+    this.recLines = res?.lines || [];
+    this.mismatches = res?.mismatches || 0;
+    this.recGroups = [...new Set(this.recLines.map(x => x.group))];
+  }
+
+  linesOf(g: string): RecLine[] { return this.recLines.filter(x => x.group === g); }
+
+  statusText(x: RecLine): string {
+    return x.status === 'same' ? 'Same' : x.status === 'different' ? 'Different' : x.status === 'new' ? 'Not on the record' : 'Not in the list';
+  }
+
+  recPicked(): number { return this.recLines.filter(x => x.pick && (x.status === 'new' || x.status === 'different')).length; }
+
+  async saveRecord(): Promise<void> {
+    const keys = this.recLines.filter(x => x.pick && (x.status === 'new' || x.status === 'different')).map(x => x.key);
+    if (!keys.length) { return; }
+    this.recSaving = true; this.recError = '';
+    try {
+      const res: any = await firstValueFrom(this.http.post(this.recUrl(), {
+        action: 'apply', record: this.r!.record, keys, file_name: this.data.file.name, sync: !this.data.inForm,
+      }));
+      this.recSaved = (res?.saved || []).join(', ');
+      this.setLines(res?.preview);
+    } catch (e: any) {
+      const err = e?.error;
+      this.recError = err?.detail || (err && typeof err === 'object' ? Object.values(err).map((v: any) => Array.isArray(v) ? v.join(' ') : String(v)).join(' ') : '')
+        || 'The employee record could not be saved.';
+    }
+    this.recSaving = false; this.cd.markForCheck();
+  }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -115,6 +213,8 @@ export class DocFillDialogComponent implements OnInit {
         const same = nowRaw !== undefined && nowRaw !== null && String(nowRaw) !== '' && String(nowRaw) === String(f.value);
         return { f, label: this.label(f), show, now, same, pick: !same && f.confidence !== 'low' };
       });
+      this.loading = false; this.cd.markForCheck();
+      await this.compare();
     } catch (e: any) {
       this.error = e?.status === 403 ? 'You do not have permission to read documents here.'
         : e?.status === 429 ? (e?.error?.detail || 'Too many documents read in a short time. Wait a few minutes.')
@@ -133,7 +233,7 @@ export class DocFillDialogComponent implements OnInit {
     return t ? t.type_name : String(id);
   }
 
-  private fmt(v: any): string {
+  fmt(v: any): string {
     if (v === undefined || v === null) { return ''; }
     const s = String(v);
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
@@ -151,15 +251,21 @@ export class DocFillDialogComponent implements OnInit {
   apply(): void {
     const out: DocFormValues = {};
     for (const x of this.rows) { if (x.pick && !x.same) { (out as any)[x.f.key] = x.f.value; } }
+    if (this.recSaved) { out.record_saved = true; }
     this.ref.close(out);
   }
 
-  close(): void { this.ref.close(null); }
+  close(): void { this.ref.close(this.recSaved ? { record_saved: true } : null); }
 }
 
 /** Opens "Fill from document" for a chosen file; resolves with the values the user picked (or null). */
 export function openDocFill(dialog: MatDialog, file: File, types: { id: any; type_name: string }[], current: DocFormValues,
-                            keys?: (keyof DocFormValues)[]): Promise<DocFormValues | null> {
-  const ref = dialog.open(DocFillDialogComponent, { width: '640px', maxWidth: '96vw', data: { file, types, current, keys } as DocFillData, autoFocus: false });
+                            keys?: (keyof DocFormValues)[], opts: DocFillOptions = {}): Promise<DocFormValues | null> {
+  const ref = dialog.open(DocFillDialogComponent, { width: opts.empId ? '760px' : '640px', maxWidth: '96vw', panelClass: 'z-no-record',   // no record footer inside
+    data: { file, types, current, keys, ...opts } as DocFillData, autoFocus: false });
+  // opened from a side panel that sits above the page (the employee page's panel): the dialog goes above it while open
+  const box = opts.above ? document.querySelector('.cdk-overlay-container') as HTMLElement | null : null;
+  const prev = box?.style.zIndex || '';
+  if (box) { box.style.zIndex = '100010'; ref.afterClosed().subscribe(() => { box.style.zIndex = prev; }); }
   return firstValueFrom(ref.afterClosed()).then(v => v || null);
 }

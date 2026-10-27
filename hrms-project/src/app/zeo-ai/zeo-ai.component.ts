@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -128,7 +129,7 @@ const EXAMPLES = ['Which departments have high turnover or absence?', 'Salary bu
           </div>
           <p class="ai-text" style="margin:10px 0">{{ a.summary }}</p>
           <div class="fw-row" style="margin-bottom:8px">
-            <span class="fw-muted" style="font-size:12px">{{ 'Audited' | t }} {{ a.at | date:'d MMM y HH:mm' }} {{ a.by ? '· ' + a.by : '' }}{{ a.totals.previous_label ? ' · ' + ('compared with' | t) + ' ' + a.totals.previous_label : '' }}</span>
+            <span class="fw-muted" style="font-size:12px">{{ 'Audited' | t }} {{ a.at | date:'dd/MM/yyyy HH:mm' }} {{ a.by ? '· ' + a.by : '' }}{{ a.totals.previous_label ? ' · ' + ('compared with' | t) + ' ' + a.totals.previous_label : '' }}</span>
             <span class="sp" style="flex:1"></span>
             <label class="fw-check" style="font-size:12px"><input type="checkbox" [(ngModel)]="showDone"> {{ 'show decided' | t }}</label>
             <a class="fw-btn sm" [href]="xlsx(run.id)" target="_blank"><span class="material-icons">download</span>Excel</a>
@@ -370,8 +371,8 @@ const EXAMPLES = ['Which departments have high turnover or absence?', 'Salary bu
         <div class="fw-kpis"><div class="fw-kpi"><span>{{ 'Completion (90 d)' | t }}</span><b>{{ tr.completion_pct }}%</b></div><div class="fw-kpi" [class.warn]="tr.overdue_needs.length"><span>{{ 'Overdue needs' | t }}</span><b>{{ tr.overdue_needs.length }}</b></div>
           <div class="fw-kpi" [class.warn]="ce?.expiring?.length"><span>{{ 'Expiring (90 d)' | t }}</span><b>{{ ce?.expiring?.length || 0 }}</b></div><div class="fw-kpi" [class.bad]="ce?.expired?.length"><span>{{ 'Expired' | t }}</span><b>{{ ce?.expired?.length || 0 }}</b></div></div>
         <table class="fw-table" *ngIf="ce" style="margin-top:8px"><tr><th>{{ 'Employee' | t }}</th><th>{{ 'Certificate / document' | t }}</th><th>{{ 'Expiry' | t }}</th></tr>
-          <tr *ngFor="let c of ce.expired"><td>{{ c.employee }}</td><td>{{ c.title }} <span class="fw-chip">{{ c.kind }}</span></td><td><span class="ai-sev critical">{{ 'expired' | t }}</span> {{ c.expiry_date | date:'d MMM y' }}</td></tr>
-          <tr *ngFor="let c of ce.expiring"><td>{{ c.employee }}</td><td>{{ c.title }} <span class="fw-chip">{{ c.kind }}</span></td><td><span class="ai-sev" [ngClass]="c.days <= 30 ? 'warning' : 'info'">{{ c.days }} d</span> {{ c.expiry_date | date:'d MMM y' }}</td></tr></table>
+          <tr *ngFor="let c of ce.expired"><td>{{ c.employee }}</td><td>{{ c.title }} <span class="fw-chip">{{ c.kind }}</span></td><td><span class="ai-sev critical">{{ 'expired' | t }}</span> {{ c.expiry_date | date:'dd/MM/yyyy' }}</td></tr>
+          <tr *ngFor="let c of ce.expiring"><td>{{ c.employee }}</td><td>{{ c.title }} <span class="fw-chip">{{ c.kind }}</span></td><td><span class="ai-sev" [ngClass]="c.days <= 30 ? 'warning' : 'info'">{{ c.days }} d</span> {{ c.expiry_date | date:'dd/MM/yyyy' }}</td></tr></table>
         <table class="fw-table" *ngIf="tr.rows.length" style="margin-top:8px"><tr><th>{{ 'Employee' | t }}</th><th>{{ 'Course' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Result' | t }}</th></tr>
           <tr *ngFor="let r of tr.rows"><td>{{ r.employee }}</td><td>{{ r.course }}</td><td>{{ r.date | date:'d MMM' }}</td><td><span class="fw-chip" [ngClass]="r.status === 'passed' ? 'ok' : r.status === 'failed' ? 'bad' : ''">{{ r.status }}</span></td></tr></table>
       </div>

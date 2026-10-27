@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EssApiService } from './ess-api.service';
@@ -31,14 +32,14 @@ import { EssApiService } from './ess-api.service';
         <div class="es-panel" *ngFor="let a of rows" [style.border-left]="a.read ? '' : '4px solid #0f766e'">
           <div class="es-h">
             <span>{{ a.title }} <span class="es-tag" *ngIf="a.is_sticky">pinned</span> <span class="es-tag pending" *ngIf="!a.read">new</span></span>
-            <span class="es-muted">{{ (a.schedule_at || a.created_at) | date:'dd MMM yyyy' }}</span>
+            <span class="es-muted">{{ (a.schedule_at || a.created_at) | date:'dd/MM/yyyy' }}</span>
           </div>
           <p style="white-space:pre-line;font-size:13.5px;margin:0">{{ a.message }}</p>
           <div class="es-actions" style="margin-top:10px">
             <button type="button" class="es-btn sm" *ngIf="a.has_attachment" (click)="file(a)">Open attachment</button>
             <button type="button" class="es-btn sm primary" *ngIf="!a.read" (click)="read(a)">Mark as read</button>
             <span class="es-muted" *ngIf="a.read">Read {{ a.read_at | date:'dd MMM, HH:mm' }}</span>
-            <span class="es-muted" *ngIf="a.expires_at">· until {{ a.expires_at | date:'dd MMM yyyy' }}</span>
+            <span class="es-muted" *ngIf="a.expires_at">· until {{ a.expires_at | date:'dd/MM/yyyy' }}</span>
           </div>
         </div>
         <p class="es-muted" *ngIf="!loading && !rows.length">There are no announcements for you right now.</p>
@@ -47,7 +48,7 @@ import { EssApiService } from './ess-api.service';
       <ng-container *ngIf="tab === 'stats'">
         <div class="es-rows">
           <div class="es-row click" *ngFor="let s of stats" (click)="openStats(s)">
-            <div class="main"><div class="t">{{ s.title }}</div><div class="s">{{ s.created_at | date:'dd MMM yyyy' }}<span *ngIf="s.expires_at"> · until {{ s.expires_at | date:'dd MMM' }}</span></div></div>
+            <div class="main"><div class="t">{{ s.title }}</div><div class="s">{{ s.created_at | date:'dd/MM/yyyy' }}<span *ngIf="s.expires_at"> · until {{ s.expires_at | date:'dd MMM' }}</span></div></div>
             <div class="r"><b>{{ s.read }}</b> / {{ s.audience }} read</div>
           </div>
         </div>

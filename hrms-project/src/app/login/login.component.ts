@@ -59,8 +59,16 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     try {   // v1.23.0: e-mail from the sign-up page, and the sign-up link when this server runs ZEO Cloud
-      const u = new URLSearchParams(window.location.search).get('u');
+      const qp = new URLSearchParams(window.location.search);
+      const u = qp.get('u');
       if (u) { this.username = u; }
+      // v1.54.0 back from the company's identity provider
+      const t = qp.get('sso'), e = qp.get('sso_error');
+      if (t || e) { history.replaceState(null, '', window.location.pathname); }
+      if (t) { this.ssoExchange(t); }
+      if (e) { this.error = i18nT(e); }
+      try { const n = sessionStorage.getItem('zeo_login_notice'); if (n) { sessionStorage.removeItem('zeo_login_notice'); this.notice = i18nT(n); } } catch { /* storage */ }   // v1.62.0
+      try { const last = localStorage.getItem('zeo_sso_email'); if (!u && last && !t) { this.username = last; this.ssoCheck(true); } } catch { /* no storage */ }
     } catch { /* no URL */ }
     this.http.get<any>(`${environment.apiBaseUrl}/cloud/api/signup/plans/`).subscribe({ next: r => this.cloudSignup = !!r?.cloud, error: () => undefined });
 
@@ -100,13 +108,15 @@ export class LoginComponent implements OnInit {
   notice = '';
   tried = false;
   version = APP_VERSION;
-  apps = [
-    { name: 'HR and Payroll', text: 'People, attendance, leave, self service, salaries and WPS' },   // v1.23.0 HR free with any app, Payroll its own app
-    { name: 'Projects', text: 'Support tickets with SLA, AMC contracts and delivery' },
-    { name: 'CRM', text: 'Contacts, pipelines, viewings and offers' },
-    { name: 'Property', text: 'Units, leases, cheques, owners and the tenant portal' },
-    { name: 'Maintenance', text: 'Work orders, preventive plans, assets and vendors' },
-    { name: 'HSE', text: 'Permits to work, incidents, inspections and actions' },
+  apps = [   // v1.38.0: every app, with its icon
+    { icon: 'groups', name: 'HR and Payroll', text: 'Employees, attendance, leave, self service, salaries, WPS, benefits, surveys, recognition, e-signature and 360°' },
+    { icon: 'account_tree', name: 'Projects', text: 'Support tickets with SLA, AMC contracts and delivery' },
+    { icon: 'handshake', name: 'CRM', text: 'Leads, pipelines, quotations, sales orders and targets' },
+    { icon: 'apartment', name: 'Property', text: 'Units, leases, cheques, owners and the tenant portal' },
+    { icon: 'build', name: 'Maintenance', text: 'Work orders, preventive plans, assets and vendors' },
+    { icon: 'inventory_2', name: 'Asset Management', text: 'Register, labels, counts, depreciation, helpdesk and spare parts' },
+    { icon: 'health_and_safety', name: 'HSE', text: 'Permits to work, incidents, inspections and actions' },
+    { icon: 'auto_awesome', name: 'Ask ZEO and AI assistants', text: 'Answers from your own data, payroll audit, rosters, CV matching, forecasts' },
   ];
   private say(msg: string): void { this.error = i18nT(msg); this.notice = ''; }
   /** v1.28.1: employees land on the same Home as everyone (the classic employee dashboard stays at /employee-dashboard
@@ -186,11 +196,25 @@ togglePassword() {
           // Step 2 → Login to get token
           this.authService.login(this.password, this.username).subscribe(
             (response: any) => {
+              if (response?.two_factor === 'totp') {   // v1.52.0 the authenticator app code comes next
+                this.isLoading = false;
+                this.challenge = response.challenge; this.userId = response.user_id; this.otp = ''; this.error = ''; this.notice = '';
+                this.step = 4;
+                return;
+              }
+              if (response?.first_check) {   // v1.62.0 the company default password: one more check at the first sign-in
+                this.isLoading = false;
+                this.challenge = response.challenge; this.userId = response.user_id; this.eid4 = ''; this.dob = ''; this.error = ''; this.notice = '';
+                this.step = 12;
+                return;
+              }
   
               const token = response.access;
               this.authService.setAuthToken(token);
+              this.afterTokens(response);
   
               const loggedUserId = response.user_id;
+              this.gate(response, () => {   // v1.62.0 a password someone else knows is changed first
   
               // Step 3 → Fetch full user profile
               this.authService.getUserData(loggedUserId).subscribe(
@@ -241,6 +265,7 @@ togglePassword() {
                   this.say('Your user details could not be loaded. Try again.');
                 }
               );
+              });
   
             },
             () => {
@@ -250,8 +275,11 @@ togglePassword() {
           );
   
         },
-        () => {
+        (e: any) => {
           this.isLoading = false;
+          const m = String(e?.error?.non_field_errors?.[0] || '');
+          if (m.startsWith('Too many')) { this.error = m; return; }   // v1.52.0 locked after wrong passwords
+          if (e?.error?.sso || m.includes('"')) { this.error = m; this.ssoCheck(true); return; }   // v1.54.0 the company signs in with SSO
           this.say('The e-mail, employee code or password is not correct.');
         }
       );
@@ -305,9 +333,10 @@ togglePassword() {
 
           const token = res.access;
           this.authService.setAuthToken(token);
+          this.afterTokens(res);
   
           // Now fetch user data → same as your current login code
-          this.afterLoginRedirect();
+          this.gate(res, () => this.afterLoginRedirect());
         },
         () => {
           this.isLoading = false;
@@ -317,6 +346,141 @@ togglePassword() {
   }
     
   
+  /** v1.62.0 – first sign-in with the company default password: last 4 digits of the Emirates ID and the date of birth. */
+  eid4 = ''; dob = '';
+  verifyFirstCheck(): void {
+    if (!this.dob) { this.say('Enter your date of birth.'); return; }
+    this.isLoading = true;
+    this.http.post(`${this.apiUrl}/users/first-check/`, { challenge: this.challenge, eid_last4: this.eid4.trim(), dob: this.dob }).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.authService.setAuthToken(res.access);
+        this.afterTokens(res);
+        this.gate(res, () => this.afterLoginRedirect());
+      },
+      error: (e: any) => {
+        this.isLoading = false;
+        if (e?.status === 401) { this.backToStart(); }
+        this.error = e?.error?.detail || i18nT('The Emirates ID digits or the date of birth do not match.');
+      },
+    });
+  }
+
+  /** v1.52.0 – the second step of a sign-in with the authenticator app (no e-mail code after it). */
+  challenge = '';
+  verifyAuthenticator(): void {
+    const code = (this.otp || '').replace(/\s/g, '');
+    if (!code) { this.say('Enter the code.'); return; }
+    this.isLoading = true;
+    this.http.post(`${this.apiUrl}/users/2fa/login/`, { challenge: this.challenge, code }).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.authService.setAuthToken(res.access);
+        this.afterTokens(res);
+        this.gate(res, () => { if (res.is_superuser) { this.router.navigate(['/schema-selection']); return; } this.afterLoginRedirect(); });
+      },
+      error: (e: any) => {
+        this.isLoading = false;
+        if (e?.status === 401) { this.backToStart(); }
+        this.error = e?.error?.detail || i18nT('The code is not correct.');
+      },
+    });
+  }
+
+  // ---------------------------------------------------------------- v1.54.0 single sign-on
+  sso: { provider: { id: number; name: string; kind: string }; password: boolean } | null = null;
+  directory: { name: string } | null = null;   // Active Directory: the password is checked by the domain controller
+  ssoBusy = false;
+  private ssoTimer: any;
+  private ssoFor = '';
+
+  /** the company of the typed e-mail signs in with its identity provider? (asked once per domain, after a short pause) */
+  ssoCheck(now = false): void {
+    clearTimeout(this.ssoTimer);
+    const email = (this.username || '').trim().toLowerCase();
+    const domain = email.includes('@') ? email.split('@')[1] : '';
+    if (!domain || !domain.includes('.')) { this.sso = null; this.directory = null; this.ssoFor = ''; return; }
+    if (domain === this.ssoFor) { return; }
+    this.ssoTimer = setTimeout(() => {
+      this.http.get<any>(`${this.apiUrl}/users/sso/discover/`, { params: { email } }).subscribe({
+        next: r => { this.ssoFor = domain; this.sso = r?.sso ? r : null; this.directory = r?.directory || null; },
+        error: () => { this.sso = null; this.directory = null; },
+      });
+    }, now ? 0 : 450);
+  }
+
+  ssoStart(): void {
+    if (!this.sso) { return; }
+    this.ssoBusy = true; this.error = '';
+    const email = (this.username || '').trim();
+    try { localStorage.setItem('zeo_sso_email', email); } catch { /* no storage */ }
+    this.http.get<any>(`${this.apiUrl}/users/sso/start/${this.sso.provider.id}/`, { params: { app: window.location.origin, back: window.location.pathname || '/login', email } })
+      .subscribe({
+        next: r => { window.location.href = r.url; },
+        error: e => { this.ssoBusy = false; this.error = e?.error?.detail || i18nT('The sign-in could not be started. Try again.'); },
+      });
+  }
+
+  /** the one-time ticket from the identity provider → the usual sign-in */
+  ssoExchange(ticket: string): void {
+    this.isLoading = true;
+    this.http.post<any>(`${this.apiUrl}/users/sso/exchange/`, { ticket }).subscribe({
+      next: res => {
+        this.isLoading = false;
+        this.userId = res.user_id;
+        this.authService.setAuthToken(res.access);
+        this.afterTokens(res);
+        if (res.is_superuser) { this.router.navigate(['/schema-selection']); return; }
+        this.afterLoginRedirect();
+      },
+      error: e => { this.isLoading = false; this.error = e?.error?.detail || i18nT('The sign-in took too long or was already used. Start again.'); },
+    });
+  }
+
+  /** v1.62.0 – a generated, typed, start or temporary password (someone else knows it): the user chooses an own password before
+   *  anything else opens (the server refuses every other request until then – 403 password_change_required). */
+  newPw = ''; newPw2 = ''; private afterChange: (() => void) | null = null;
+  private gate(res: any, next: () => void): void {
+    if (res?.must_change_password && this.password) {
+      this.isLoading = false; this.afterChange = next; this.newPw = ''; this.newPw2 = ''; this.error = ''; this.notice = '';
+      this.step = 13;
+      return;
+    }
+    next();
+  }
+  saveOwnPassword(): void {
+    if (!this.newPw) { this.say('Enter the new password.'); return; }
+    if (this.newPw !== this.newPw2) { this.say('The two passwords are not the same.'); return; }
+    this.isLoading = true;
+    this.http.post(`${this.apiUrl}/users/change-password/`, { old_password: this.password, new_password: this.newPw, confirm_password: this.newPw2 }).subscribe({
+      next: () => {
+        this.isLoading = false; this.password = ''; this.newPw = ''; this.newPw2 = '';
+        const go = this.afterChange; this.afterChange = null;
+        if (go) { go(); }
+      },
+      error: (e: any) => {
+        this.isLoading = false;
+        const er = e?.error || {};
+        this.error = er.message || er.detail || (er.new_password || [])[0] || (er.non_field_errors || [])[0] || i18nT('The password could not be changed.');
+      },
+    });
+  }
+
+  /** v1.52.0 – keep the refresh token and what the sign-in rules ask for (new password, authenticator set-up). */
+  afterTokens(res: any): void {
+    try {
+      if (res?.refresh) { localStorage.setItem('refresh_token', res.refresh); }
+      const ask: string[] = [];
+      if (res?.password_expired) { ask.push('password'); }
+      if (res?.setup_2fa) { ask.push('2fa'); }
+      if (ask.length) { sessionStorage.setItem('zeo_security_ask', ask.join(',')); } else { sessionStorage.removeItem('zeo_security_ask'); }
+    } catch { /* no storage */ }
+    if (res?.access) {   // v1.56.1: the cookie that opens uploaded files (/media/ needs a login)
+      this.http.post(`${environment.apiBaseUrl}/users/media-cookie/`, {}, { withCredentials: true, headers: { Authorization: `Bearer ${res.access}` } })
+        .subscribe({ error: () => undefined });
+    }
+  }
+
   afterLoginRedirect() {
     this.authService.getUserData(this.userId!).subscribe(
       (userData: any) => {

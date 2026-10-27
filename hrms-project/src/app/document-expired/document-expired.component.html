@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container">
     <div class="comapny_section" *ngIf="hasViewPermission">
         <div class="header_section">
@@ -38,7 +39,7 @@
                         <td>{{ r.department }}</td>
                         <td>{{ r.type }}</td>
                         <td>{{ r.number }}</td>
-                        <td>{{ r.expiry | date:'dd MMM yyyy' }}</td>
+                        <td>{{ r.expiry | date:'dd/MM/yyyy' }}</td>
                         <td>{{ r.days_left }}</td>
                         <td><span class="de-tag" [ngClass]="tone(r.status)">{{ r.status }}</span></td>
                         <td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" *ngIf="hasEditPermission" (click)="openEditPopuss(r._id)">Update</button></td>

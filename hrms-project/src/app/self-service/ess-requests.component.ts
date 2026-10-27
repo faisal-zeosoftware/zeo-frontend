@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +42,7 @@ import { ESS_BASE, EssApiService } from './ess-api.service';
           <div class="es-row click" *ngFor="let r of rows" [class.on]="sel?.id === r.id" (click)="sel = r">
             <div class="main">
               <div class="t">{{ r.number }} · {{ r.action_label }} {{ r.group_label | lowercase }}</div>
-              <div class="s"><span *ngIf="hr">{{ r.employee }} · </span>{{ r.created_at | date:'dd MMM yyyy, HH:mm' }}<span *ngIf="r.reason"> · {{ r.reason }}</span></div>
+              <div class="s"><span *ngIf="hr">{{ r.employee }} · </span>{{ r.created_at | date:'dd/MM/yyyy HH:mm' }}<span *ngIf="r.reason"> · {{ r.reason }}</span></div>
             </div>
             <div class="r"><span class="es-tag" [ngClass]="r.status">{{ r.status_label }}</span></div>
           </div>
@@ -62,7 +63,7 @@ import { ESS_BASE, EssApiService } from './ess-api.service';
             <div class="es-label">Attachments</div>
             <button type="button" class="es-link" *ngFor="let a of sel.attachments" (click)="file(a)" style="margin-right:10px">{{ a.name }}</button>
           </div>
-          <p *ngIf="sel.decided_by" class="es-muted" style="margin-top:10px">Decided by {{ sel.decided_by }} on {{ sel.decided_at | date:'dd MMM yyyy' }}<span *ngIf="sel.decision_note"> – {{ sel.decision_note }}</span></p>
+          <p *ngIf="sel.decided_by" class="es-muted" style="margin-top:10px">Decided by {{ sel.decided_by }} on {{ sel.decided_at | date:'dd/MM/yyyy' }}<span *ngIf="sel.decision_note"> – {{ sel.decision_note }}</span></p>
           <div *ngIf="hr && sel.status === 'pending'" style="margin-top:12px">
             <label class="es-label">Note to the employee (required to reject)</label>
             <textarea class="es-input" [(ngModel)]="note" rows="2" placeholder="e.g. Please attach the new passport copy"></textarea>

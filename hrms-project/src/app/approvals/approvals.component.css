@@ -767,3 +767,7 @@ p {
   }
 
 }
+/* v1.40.1: request details on the approvals list / modal */
+.apr-muted { color: #8a87a6; font-size: 12px; margin-left: 6px; }
+.apr-detail th { width: 130px; font-weight: 600; color: #5b5876; background: transparent; }
+.apr-detail td, .apr-detail th { padding: 4px 6px; border-top: 1px solid #ecebf3; }

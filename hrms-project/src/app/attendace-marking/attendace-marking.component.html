@@ -148,7 +148,7 @@
                 <th>Last out</th>
               </tr>
             </thead>
-            <ng-container *ngFor="let docs of Punching; let i = index">
+            <ng-container *ngFor="let docs of Punching.slice(0, shown); let i = index">   <!-- v1.56.1 the first rows; "Show more" adds the next ones (every punch day of every employee made the page slow) -->
               <tbody>
                 <tr class="main-row" (click)="openFaceDashboard(docs)">
                   <td class="expand-col" data-label="" (click)="$event.stopPropagation()">
@@ -203,6 +203,10 @@
               </tbody>
             </ng-container>
           </table>
+          <div *ngIf="Punching.length > shown" style="display:flex;justify-content:center;gap:10px;align-items:center;padding:12px;font-size:13px;color:#6b7185">
+            Showing {{ shown }} of {{ Punching.length }}
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="shown = shown + 200">Show more</button>
+          </div>
         </div>
 
         <!-- ================= FACE DASHBOARD ================= -->

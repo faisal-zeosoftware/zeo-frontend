@@ -15,10 +15,23 @@
 
         <label class="zl-field">
           <span>{{ 'E-mail or employee code' | t }}</span>
-          <input type="text" name="username" autocomplete="username" [(ngModel)]="username" (input)="error = ''"
-                 [class.bad]="tried && !username" autofocus>
+          <input type="text" name="username" autocomplete="username" [(ngModel)]="username" (input)="error = ''; ssoCheck()"
+                 (blur)="ssoCheck(true)" [class.bad]="tried && !username" autofocus>
         </label>
 
+        <!-- v1.54.0 single sign-on: the company of this e-mail signs in with its identity provider -->
+        <div class="zl-sso" *ngIf="sso" data-zl-sso>
+          <button type="button" class="zl-btn zl-sso-btn" (click)="ssoStart()" [disabled]="ssoBusy">
+            <span class="zl-spin" *ngIf="ssoBusy" aria-hidden="true"></span>
+            <span class="zl-sso-mark" aria-hidden="true" [ngClass]="'k-' + sso.provider.kind"></span>{{ sso.provider.name | t }}
+          </button>
+          <p class="zl-sub zl-sso-or" *ngIf="sso.password">{{ 'or sign in with your password' | t }}</p>
+          <p class="zl-sub" *ngIf="!sso.password">{{ 'Your company signs in with its own account – use the button above.' | t }}</p>
+        </div>
+
+        <p class="zl-sub zl-dir" *ngIf="directory" data-zl-directory>{{ 'Use the password of your company (Windows) account.' | t }}</p>
+
+        <ng-container *ngIf="!sso || sso.password">
         <label class="zl-field">
           <span>{{ 'Password' | t }}</span>
           <div class="zl-pw">
@@ -29,10 +42,12 @@
           </div>
         </label>
 
-        <button type="submit" class="zl-btn" [disabled]="isLoading">
+        <button type="submit" class="zl-btn" [class.zl-btn-2]="sso" [disabled]="isLoading">
           <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ (isLoading ? 'Signing in…' : 'Sign in') | t }}
         </button>
         <button type="button" class="zl-link" (click)="startForgot()">{{ 'Forgot password?' | t }}</button>   <!-- v1.28.1 -->
+        <a class="zl-link" routerLink="/activate" data-activate-link>{{ 'No e-mail? Activate your login or reset it with a code' | t }}</a>   <!-- v1.62.0 -->
+        </ng-container>
       </form>
 
       <!-- v1.28.1: forgot password – e-mail → code → new password (staff with an e-mail; employees ask HR) -->
@@ -91,6 +106,48 @@
         <button type="button" class="zl-link" (click)="sendOtp()" [disabled]="isLoading">{{ 'Send the code again' | t }}</button>
       </form>
 
+      <!-- v1.52.0 STEP 4: the code of the authenticator app (or a recovery code) -->
+      <form *ngIf="step === 4" (ngSubmit)="verifyAuthenticator()" novalidate>
+        <h1>{{ 'Authenticator code' | t }}</h1>
+        <p class="zl-sub">{{ 'Open the authenticator app on your phone and type the 6-digit code shown for ZEO. Lost the phone? Type one of your recovery codes.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <label class="zl-field">
+          <span>{{ 'Code' | t }}</span>
+          <input type="text" name="totp" inputmode="numeric" autocomplete="one-time-code" [(ngModel)]="otp" (input)="error = ''"
+                 class="zl-otp" maxlength="12" autofocus>
+        </label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading">
+          <span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Verify and continue' | t }}
+        </button>
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Use another user' | t }}</button>
+      </form>
+
+      <!-- v1.62.0 STEP 12: first sign-in with the company default password – one more check -->
+      <form *ngIf="step === 12" (ngSubmit)="verifyFirstCheck()" novalidate data-first-check>
+        <h1>{{ 'Confirm it is you' | t }}</h1>
+        <p class="zl-sub">{{ 'This is your first sign-in with the start password. Type the last 4 digits of your Emirates ID and your date of birth.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <label class="zl-field"><span>{{ 'Last 4 digits of the Emirates ID' | t }}</span>
+          <input type="text" name="eid4" inputmode="numeric" maxlength="4" [(ngModel)]="eid4" (input)="error = ''" class="zl-otp" autofocus></label>
+        <label class="zl-field"><span>{{ 'Date of birth' | t }}</span>
+          <input type="date" name="dob" [(ngModel)]="dob" (input)="error = ''"></label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading"><span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Verify and continue' | t }}</button>
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Use another user' | t }}</button>
+      </form>
+
+      <!-- v1.62.0 STEP 13: a password someone else knows (generated, typed by HR, start password) – the own password first -->
+      <form *ngIf="step === 13" (ngSubmit)="saveOwnPassword()" novalidate data-own-password>
+        <h1>{{ 'Choose your own password' | t }}</h1>
+        <p class="zl-sub">{{ 'You signed in with a password someone else knows. Choose your own password to continue.' | t }}</p>
+        <div class="zl-msg" *ngIf="error" role="alert">{{ error }}</div>
+        <label class="zl-field"><span>{{ 'New password' | t }}</span>
+          <input type="password" name="newPw" [(ngModel)]="newPw" (input)="error = ''" autocomplete="new-password" autofocus data-own-pw></label>
+        <label class="zl-field"><span>{{ 'The same password again' | t }}</span>
+          <input type="password" name="newPw2" [(ngModel)]="newPw2" (input)="error = ''" autocomplete="new-password" data-own-pw2></label>
+        <button type="submit" class="zl-btn" [disabled]="isLoading"><span class="zl-spin" *ngIf="isLoading" aria-hidden="true"></span>{{ 'Save and continue' | t }}</button>
+        <button type="button" class="zl-link" (click)="backToStart()">{{ 'Use another user' | t }}</button>
+      </form>
+
       <p class="zl-signup" *ngIf="cloudSignup && step === 1">{{ 'New to ZEO?' | t }} <a routerLink="/signup">{{ 'Start a free trial' | t }}</a></p>   <!-- v1.23.0 -->
       <div class="zl-foot">
         <z-lang-picker class="zl-lang" variant="select" [reload]="false"></z-lang-picker>
@@ -102,9 +159,9 @@
   <aside class="zl-brand" aria-label="ZEO apps">
     <div class="zl-brand-in">
       <p class="zl-kicker">{{ 'One login for the whole company' | t }}</p>
-      <h2>{{ 'People, projects, property and safety – in one place.' | t }}</h2>
+      <h2>{{ 'People, payroll, projects, sales, property, assets and safety – in one place.' | t }}</h2>
       <ul class="zl-apps">
-        <li *ngFor="let a of apps"><b>{{ a.name | t }}</b><span>{{ a.text | t }}</span></li>
+        <li *ngFor="let a of apps"><i class="material-icons" aria-hidden="true">{{ a.icon }}</i><div><b>{{ a.name | t }}</b><span>{{ a.text | t }}</span></div></li>
       </ul>
       <p class="zl-made">{{ 'Made for companies in the UAE and the GCC – English and Arabic.' | t }}</p>
     </div>

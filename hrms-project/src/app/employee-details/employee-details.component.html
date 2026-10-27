@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container">
     <div class="comapny_section" *ngIf="employee">
 <!-- Header Section with Dynamic Action Buttons -->
@@ -838,7 +839,7 @@
                     <td data-label="Old Amount">{{ revision.old_amount }}</td>
                     <td data-label="New Amount">{{ revision.new_amount }}</td>
                     <td data-label="Effective Period">{{ revision.effective_period || '-' }}</td>
-                    <td data-label="Revised On">{{ revision.revised_on | date:'dd MMM yyyy' }}</td>
+                    <td data-label="Revised On">{{ revision.revised_on | date:'dd/MM/yyyy' }}</td>
                     <td data-label="Remarks">{{ revision.remarks || '-' }}</td>
 
                 </tr>

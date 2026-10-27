@@ -363,6 +363,7 @@ export class CreateEmployeeComponent implements OnInit {
   onFileSelected(event: any) {
 
     const file = event.target.files.length > 0 ? event.target.files[0] : null;
+    this.selectedFile = file;   // v1.40.1: the photo was only previewed, never sent with the new employee
 
     if (file) {
 
@@ -573,7 +574,7 @@ export class CreateEmployeeComponent implements OnInit {
         }
       );
     } else {
-      console.error('Employee ID parameter is null.');
+      /* v1.56.1: no employee id yet (a new record or a hidden tab) – not an error */
     }
 
 

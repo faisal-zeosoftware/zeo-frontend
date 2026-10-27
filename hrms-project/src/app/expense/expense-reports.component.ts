@@ -1,6 +1,8 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';   // v1.62.0 print
 import { ActivatedRoute, Router } from '@angular/router';
 import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, money } from './expense-api.service';
 
@@ -10,7 +12,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
 @Component({
   selector: 'app-expense-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, RouterModule, ZListDirective],   // v1.62.0 print: RouterModule for the Print link
   styleUrls: ['./expense.css'],
   template: `
 <div class="container">
@@ -54,7 +56,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <div style="min-width:0">
               <div style="font-size:16px">{{ cur.title }}</div>
               <div class="ex-muted">{{ cur.number }} · {{ cur.employee_name }}<span *ngIf="cur.trip_number"> · Trip {{ cur.trip_number }}</span>
-                <span *ngIf="cur.from_date"> · {{ cur.from_date | date:'dd MMM' }} – {{ cur.to_date | date:'dd MMM yyyy' }}</span></div>
+                <span *ngIf="cur.from_date"> · {{ cur.from_date | date:'dd MMM' }} – {{ cur.to_date | date:'dd/MM/yyyy' }}</span></div>
             </div>
             <span class="ex-tag" [ngClass]="cur.status">{{ cur.status_label }}</span>
           </div>
@@ -63,7 +65,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <div><small>Advance applied</small><b>{{ m(cur.advance_applied) }}</b></div>
             <div class="hl"><small>To reimburse</small><b>{{ m(cur.amount_to_reimburse) }}</b></div>
             <div><small>{{ cur.status === 'reimbursed' ? 'Reimbursed' : 'Payment' }}</small>
-              <b style="font-size:13px">{{ cur.status === 'reimbursed' ? (cur.reimbursed_on | date:'dd MMM yyyy') : (cur.payroll_pending ? 'Next payroll' : '–') }}</b></div>
+              <b style="font-size:13px">{{ cur.status === 'reimbursed' ? (cur.reimbursed_on | date:'dd/MM/yyyy') : (cur.payroll_pending ? 'Next payroll' : '–') }}</b></div>
           </div>
           <p class="ex-muted" *ngIf="cur.reimbursement_reference">Reference: {{ cur.reimbursement_reference }}<span *ngIf="cur.reimburse_via"> ({{ cur.reimburse_via === 'payroll' ? 'payroll' : 'direct' }})</span></p>
           <p class="ex-muted" *ngIf="cur.can_edit && num(cur.outstanding_advances) > 0">You have {{ m(cur.outstanding_advances) }} of open advances – they are used when you submit.</p>
@@ -74,7 +76,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <div class="ex-row" *ngFor="let e of cur.lines">
               <div class="main">
                 <div class="t">{{ e.merchant || e.category_name }}</div>
-                <div class="s">{{ e.date | date:'dd MMM yyyy' }} · {{ e.category_name }}<span *ngIf="e.cost_center_name"> · {{ e.cost_center_name }}</span>
+                <div class="s">{{ e.date | date:'dd/MM/yyyy' }} · {{ e.category_name }}<span *ngIf="e.cost_center_name"> · {{ e.cost_center_name }}</span>
                   <span *ngIf="e.receipt"> · <a [href]="e.receipt" target="_blank" rel="noopener" class="ex-link">receipt</a></span>
                   <span *ngIf="!e.receipt"> · no receipt</span></div>
                 <div class="s" *ngIf="e.description" style="white-space:normal">{{ e.description }}</div>
@@ -99,7 +101,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <li *ngFor="let a of cur.approvals" [ngClass]="a.status">
               <span class="who">{{ a.approver || '–' }}</span> · {{ a.role_label }} · <span class="ex-tag" [ngClass]="a.status">{{ lbl(a.status) }}</span>
               <span *ngIf="cur.round > 1" class="ex-muted"> · round {{ a.round }}</span>
-              <div class="ex-muted" *ngIf="a.acted_at">{{ a.acted_at | date:'dd MMM yyyy, HH:mm' }}<span *ngIf="a.acted_by && a.acted_by !== a.approver"> by {{ a.acted_by }}</span></div>
+              <div class="ex-muted" *ngIf="a.acted_at">{{ a.acted_at | date:'dd/MM/yyyy HH:mm' }}<span *ngIf="a.acted_by && a.acted_by !== a.approver"> by {{ a.acted_by }}</span></div>
               <div *ngIf="a.note">“{{ a.note }}”</div>
             </li>
           </ul>
@@ -111,6 +113,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <button type="button" class="ex-btn danger" *ngIf="cur.can_approve" [disabled]="busy" (click)="act('reject')">Reject</button>
             <button type="button" class="ex-btn primary" *ngIf="cur.can_reimburse" [disabled]="busy" (click)="openPay()">Reimburse</button>
             <button type="button" class="ex-btn danger" *ngIf="cur.can_edit && cur.status === 'draft'" [disabled]="busy" (click)="removeReport()">Delete report</button>
+            <a class="ex-btn" [routerLink]="['/main-sidebar/print-view/expense_claim', cur.id]">Print</a>   <!-- v1.62.0 print – the company's design -->
           </div>
         </div>
       </div>
@@ -133,7 +136,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
       <div class="ex-rows">
         <label class="ex-row click" *ngFor="let e of unreported">
           <input type="checkbox" [checked]="pick.has(e.id)" (change)="pick.has(e.id) ? pick.delete(e.id) : pick.add(e.id)">
-          <div class="main"><div class="t">{{ e.merchant || e.category_name }}</div><div class="s">{{ e.date | date:'dd MMM yyyy' }} · {{ e.category_name }}</div></div>
+          <div class="main"><div class="t">{{ e.merchant || e.category_name }}</div><div class="s">{{ e.date | date:'dd/MM/yyyy' }} · {{ e.category_name }}</div></div>
           <div class="r money">{{ m(e.amount_aed) }}</div>
         </label>
         <p class="ex-muted" *ngIf="!unreported.length">No unreported expenses.</p>

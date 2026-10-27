@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -43,7 +44,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <td><input type="checkbox" *ngIf="e.status === 'unreported' && !e.report" [checked]="selected.has(e.id)" (click)="$event.stopPropagation(); toggle(e.id)" [attr.aria-label]="'Select ' + (e.merchant || e.category_name)"></td>
             <td><div class="ex-thumb" [class.none]="!e.receipt">
               <img *ngIf="img(e.receipt)" [src]="e.receipt" alt="Receipt"><span *ngIf="e.receipt && !img(e.receipt)">PDF</span><span *ngIf="!e.receipt">—</span></div></td>
-            <td>{{ e.date | date:'dd MMM yyyy' }}</td>
+            <td>{{ e.date | date:'dd/MM/yyyy' }}</td>
             <td><b>{{ e.merchant || e.category_name }}</b></td>
             <td>{{ e.category_name }}</td>
             <td>{{ e.category_kind === 'mileage' ? e.mileage_km + ' km' : e.category_kind === 'per_diem' ? e.per_diem_days + ' day(s)' : '' }}</td>
@@ -113,6 +114,9 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
             <div class="ex-muted" *ngIf="!preview">No receipt yet.</div>
             <a *ngIf="form.receipt && !file" [href]="form.receipt" target="_blank" rel="noopener" class="ex-link">Open receipt</a>
             <div style="margin-top:6px"><input type="file" accept="image/*,application/pdf" (change)="onFile($event)" aria-label="Receipt"></div>
+            <div style="margin-top:6px" *ngIf="file && editable"><button type="button" class="ex-btn" (click)="readReceipt()" [disabled]="reading" data-read-receipt>{{ reading ? 'Reading…' : 'Read the receipt' }}</button>
+              <span class="ex-muted" *ngIf="readMsg" style="margin-left:6px">{{ readMsg }}</span></div>   <!-- v1.50.0 -->
+            <div class="ex-muted" *ngIf="form.receipt_read?.amount && !file" style="margin-top:4px">Receipt: {{ form.receipt_read.currency }} {{ form.receipt_read.amount }}{{ form.receipt_read.vat ? ' · VAT ' + form.receipt_read.vat : '' }}{{ form.receipt_read.tax_number ? ' · TRN ' + form.receipt_read.tax_number : '' }}</div>
           </div>
         </div>
       </div>
@@ -227,7 +231,31 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     if (this.objUrl) { URL.revokeObjectURL(this.objUrl); this.objUrl = ''; }
   }
 
+  // v1.50.0 receipt OCR on the server: fills amount, date, currency, merchant; the expense keeps what the receipt said
+  reading = false; readMsg = ''; receiptRead: any = null;
+  async readReceipt(): Promise<void> {
+    if (!this.file) return;
+    const fd = new FormData(); fd.append('receipt', this.file);
+    this.reading = true; this.readMsg = ''; this.cd.detectChanges();
+    try {
+      const r: any = await this.api.post('expenses/read-receipt/', fd);
+      this.receiptRead = r;
+      if (!r.ocr && !r.found.length) { this.readMsg = 'Reading receipts is not set up on this server (Tesseract) – enter the amount.'; }
+      else if (!r.found.length) { this.readMsg = 'Nothing readable – enter the details.'; }
+      else {
+        if (r.amount && !this.autoAmount) { this.form.amount = Number(r.amount); }
+        if (r.currency && this.currencies.includes(r.currency)) { this.form.currency = r.currency; }
+        if (r.date) { this.form.date = r.date; }
+        if (r.merchant && !this.form.merchant) { this.form.merchant = r.merchant; }
+        this.readMsg = 'Read: ' + [r.amount ? `${r.currency || ''} ${r.amount}` : '', r.vat ? `VAT ${r.vat}` : '', r.date || '', r.tax_number ? `TRN ${r.tax_number}` : ''].filter(Boolean).join(' · ') + ' – check before saving.';
+        this.changed();
+      }
+    } catch (e: any) { this.readMsg = ExpenseApiService.error(e); }
+    this.reading = false; this.cd.detectChanges();
+  }
+
   onFile(ev: Event): void {
+    this.receiptRead = null; this.readMsg = '';
     const input = ev.target as HTMLInputElement;
     const f = input.files && input.files.length ? input.files[0] : null;
     this.resetFile();
@@ -272,6 +300,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     Object.entries(b).forEach(([k, v]) => { if (v !== null && v !== undefined) fd.append(k, typeof v === 'boolean' ? (v ? 'true' : 'false') : String(v)); });
     if (this.form.id && b.report === null) fd.append('report', '');
     if (this.file) fd.append('receipt', this.file);
+    if (this.file && this.receiptRead) fd.append('receipt_read', JSON.stringify(this.receiptRead));   // v1.50.0
     this.busy = true;
     try {
       const saved: any = this.form.id ? await this.api.patch(`expenses/${this.form.id}/`, fd) : await this.api.post('expenses/', fd);

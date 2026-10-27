@@ -17,3 +17,9 @@
 .pb-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
 .pb-h { font-size: 14px; font-weight: 600; margin: 10px 0 4px; }
 .pb-hist { font-size: 12px; border-top: 1px solid #eceef5; padding: 5px 0; }
+
+/* v1.57.0 careers page */
+.pb-flag { margin-top: 6px; font-size: 11.5px; color: #9a3412; background: #fff7ed; border-radius: 6px; padding: 2px 6px; display: inline-block; }
+.pb-ans { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #f0f1f4; }
+.pb-ans.bad b { color: #9a3412; }
+.pb-cover { white-space: pre-line; font-size: 13px; color: #374151; }

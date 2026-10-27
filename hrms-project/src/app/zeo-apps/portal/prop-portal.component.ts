@@ -46,6 +46,12 @@ export class PropPortalApi {
     a.href = URL.createObjectURL(blob); a.download = f.name; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
+  async pdf(kind: string, id: number, name: string): Promise<void> {   // v1.40.0 lease / invoice / receipt / deposit statement / owner statement PDF
+    const blob = await firstValueFrom(this.http.get(this.url(`pdf/${kind}/${id}/`), { responseType: 'blob' }));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name + '.pdf'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
   static error(e: any, fallback = 'It could not be done.'): string {
     const b = e?.error;
     if (e?.status === 401) return 'The user name or password is not correct.';
@@ -107,6 +113,10 @@ const TAG: Record<string, string> = { Paid: 'done', 'Part paid': 'wait', Issued:
 <div class="pt-main" *ngIf="!api.me && err"><div class="pt-note err">{{ err }}</div></div>
 <div class="pt-main" *ngIf="api.me && d">
   <div class="pt-note ok" *ngIf="ok">{{ ok }}</div><div class="pt-note err" *ngIf="err">{{ err }}</div>
+  <!-- v1.40.0 announcements -->
+  <div class="pt-card" *ngIf="ann.length" style="border-left:4px solid #5b4fe0"><h2>Notices</h2>
+    <div *ngFor="let a of ann" style="padding:6px 0;border-bottom:1px solid #eef0f6"><b>{{ a.title }}</b> <span class="pt-muted" style="font-size:12px">{{ dd(a.from) }}{{ a.building ? ' · ' + a.building : '' }}</span>
+      <div style="font-size:13.5px;white-space:pre-wrap">{{ a.body }}</div></div></div>
 
   <!-- tenant -->
   <ng-container *ngIf="role === 'tenant'">
@@ -128,21 +138,49 @@ const TAG: Record<string, string> = { Paid: 'done', 'Part paid': 'wait', Issued:
       <h2>{{ l.unit }} · lease {{ l.number }} <span class="pt-tag" [ngClass]="tag(l.status)">{{ l.status }}</span></h2>
       <dl class="pt-kv"><dt>Period</dt><dd>{{ dd(l.start) }} – {{ dd(l.end) }}</dd><dt>Annual rent</dt><dd>{{ cur }} {{ m(l.rent) }} in {{ l.payments }} payment(s)</dd>
         <dt>Deposit</dt><dd>{{ cur }} {{ m(l.deposit) }}</dd></dl>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="pt-btn" (click)="api.pdf('lease', l.id, l.number)">Lease PDF</button></div>
+      <div class="pt-note" *ngIf="l.status_code === 'draft' && !l.accepted_on" style="margin-top:12px">Please read the lease PDF and accept the terms online.
+        <label style="display:block;margin-top:6px"><input type="checkbox" [(ngModel)]="accept[l.id]"> I accept the lease terms</label>
+        <button type="button" class="pt-btn green" style="margin-top:6px" [disabled]="!accept[l.id]" (click)="acceptLease(l)">Accept</button></div>
+      <p class="pt-muted" *ngIf="l.accepted_on">Accepted online on {{ dd(l.accepted_on) }}.</p>
       <div class="pt-note" *ngIf="l.status_code === 'active' && l.days_left <= 90 && !['renewing','leaving'].includes(l.renewal_status)" style="margin-top:12px">
         Your lease ends in {{ l.days_left }} days. Would you like to renew?
         <div style="margin-top:8px;display:flex;gap:8px"><button type="button" class="pt-btn green" (click)="renew(l, 'renew')">Yes, I want to renew</button>
           <button type="button" class="pt-btn" (click)="renew(l, 'leave')">No, I will move out</button></div></div>
       <p class="pt-muted" *ngIf="l.renewal_status === 'renewing'">You told us you want to renew – our leasing team will contact you.</p>
       <h2 style="margin-top:14px">Payments</h2>
-      <table class="pt-table"><tr><th>Due</th><th>For</th><th class="r">Amount</th><th class="r">Paid</th><th>Status</th><th>Invoice</th></tr>
-        <tr *ngFor="let b of l.bills"><td [style.color]="b.overdue ? '#b42318' : null">{{ dd(b.due_date) }}</td><td>{{ b.description }}</td><td class="r">{{ m(b.total) }}</td><td class="r">{{ m(b.paid) }}</td>
-          <td><span class="pt-tag" [ngClass]="b.overdue ? 'bad' : tag(b.status)">{{ b.overdue ? 'Overdue' : b.status }}</span></td><td>{{ b.invoice }}</td></tr></table>
+      <table class="pt-table"><tr><th>Due</th><th>For</th><th class="r">Amount</th><th class="r">Paid</th><th>Status</th><th></th></tr>
+        <tr *ngFor="let b of l.bills"><td [style.color]="b.overdue ? '#b42318' : null">{{ dd(b.due_date) }}</td><td>{{ b.description }}{{ b.credit ? ' (credit note)' : '' }}{{ b.disputed ? ' · in dispute' : '' }}</td><td class="r">{{ m(b.total) }}</td><td class="r">{{ m(b.paid) }}</td>
+          <td><span class="pt-tag" [ngClass]="b.overdue ? 'bad' : tag(b.status)">{{ b.overdue ? 'Overdue' : b.status }}</span></td>
+          <td style="white-space:nowrap"><a *ngIf="b.pay" class="pt-btn green" style="padding:2px 8px;font-size:12px;text-decoration:none" [href]="b.pay" target="_blank" rel="noopener" (click)="paying = b">Pay online</a>
+            <button type="button" class="pt-btn" style="padding:2px 8px;font-size:12px;margin-left:4px" (click)="api.pdf('bill', b.id, b.number)">PDF</button></td></tr></table>
+      <div class="pt-note" *ngIf="paying" style="margin-top:8px">Paid online? Enter the payment reference so we can match it: <input [(ngModel)]="payRef" placeholder="Transaction ref." style="height:30px;border:1px solid #dcdfea;border-radius:6px;padding:0 8px;margin:0 6px">
+        <button type="button" class="pt-btn primary" style="padding:2px 10px" [disabled]="!payRef" (click)="paid()">Send</button> <button type="button" class="pt-btn" style="padding:2px 10px" (click)="paying = null">Close</button></div>
       <ng-container *ngIf="l.cheques.length"><h2 style="margin-top:14px">Cheques</h2>
         <table class="pt-table"><tr><th>Cheque</th><th>Bank</th><th>Date</th><th class="r">Amount</th><th>Status</th></tr>
           <tr *ngFor="let c of l.cheques"><td>{{ c.cheque_no }}</td><td>{{ c.bank }}</td><td>{{ dd(c.date) }}</td><td class="r">{{ m(c.amount) }}</td><td><span class="pt-tag" [ngClass]="tag(c.status)">{{ c.status }}</span></td></tr></table></ng-container>
     </div>
     <div class="pt-card" *ngIf="d.files?.length"><h2>Documents</h2><button type="button" class="pt-file" *ngFor="let f of d.files" (click)="api.download(f)">📎 {{ f.name }}</button></div>
-    <div class="pt-card"><h2>My requests</h2>
+    <!-- v1.40.0 deposits -->
+    <div class="pt-card" *ngIf="dep.length"><h2>My deposits</h2>
+      <table class="pt-table"><tr><th>Lease</th><th>Unit</th><th class="r">Held</th><th>Move-out</th><th class="r">Deductions</th><th class="r">Refund</th><th></th></tr>
+        <tr *ngFor="let x of dep"><td>{{ x.lease }}</td><td>{{ x.unit }}</td><td class="r">{{ m(x.held) }}</td><td>{{ x.moveout ? x.moveout.status : '–' }}</td><td class="r">{{ x.moveout ? m(x.moveout.deductions) : '' }}</td>
+          <td class="r">{{ x.moveout ? m(x.moveout.refund) : '' }}<div class="pt-muted" *ngFor="let r of x.refunds" style="font-size:12px">{{ r.number }} · {{ r.status }}{{ r.paid_on ? ' ' + dd(r.paid_on) : '' }}</div></td>
+          <td><button type="button" class="pt-btn" style="padding:2px 8px;font-size:12px" *ngIf="x.moveout?.pdf" (click)="api.pdf('moveout', x.moveout.id, x.moveout.number)">Statement</button></td></tr></table></div>
+    <!-- v1.40.0 portal requests -->
+    <div class="pt-card"><h2>Requests to the office <button type="button" class="pt-btn" style="margin-left:8px;padding:2px 10px" (click)="preq = preq ? null : { kind: 'move_out', lease: myUnits()[0]?.id, wanted_on: '', text: '' }">+ New request</button></h2>
+      <div class="pt-form" *ngIf="preq">
+        <label>Request<select [(ngModel)]="preq.kind"><option value="move_in">Move-in date</option><option value="move_out">Move-out notice</option><option value="profile">Change my details</option><option value="noc">NOC letter</option><option value="parking">Parking / access card</option><option value="other">Other</option></select></label>
+        <label *ngIf="preq.kind !== 'profile'">Lease<select [(ngModel)]="preq.lease"><option *ngFor="let l of d.leases" [ngValue]="l.id">{{ l.unit }} · {{ l.number }}</option></select></label>
+        <label *ngIf="preq.kind === 'move_in' || preq.kind === 'move_out'">Date<input type="date" [(ngModel)]="preq.wanted_on"></label>
+        <ng-container *ngIf="preq.kind === 'profile'"><label>New phone<input [(ngModel)]="preq.phone"></label><label>New e-mail<input [(ngModel)]="preq.email"></label><label class="wide">New address<input [(ngModel)]="preq.address"></label><label>Emergency contact<input [(ngModel)]="preq.emergency_contact"></label></ng-container>
+        <label class="wide">Details<textarea [(ngModel)]="preq.text"></textarea></label>
+        <div class="wide" style="display:flex;gap:8px"><button type="button" class="pt-btn primary" [disabled]="busy" (click)="sendReq()">Send</button><button type="button" class="pt-btn" (click)="preq = null">Cancel</button></div>
+      </div>
+      <div class="pt-row" *ngFor="let r of preqs" style="cursor:default"><div class="m"><div class="t">{{ r.number }} · {{ r.kind }}{{ r.wanted_on ? ' · ' + dd(r.wanted_on) : '' }}</div><div class="s">{{ r.text }}<span *ngIf="r.answer"> · Answer: {{ r.answer }}</span></div></div>
+        <span class="pt-tag" [ngClass]="tag(r.status)">{{ r.status }}</span></div>
+      <p class="pt-muted" *ngIf="!preqs.length && !preq">No requests yet.</p></div>
+    <div class="pt-card"><h2>Maintenance requests</h2>
       <div class="pt-row" *ngFor="let r of d.requests"><div class="m"><div class="t">{{ r.number }} {{ r.title }}</div><div class="s">{{ r.place }} · {{ w(r.created) }}</div></div>
         <span class="pt-tag" [ngClass]="tag(r.status)">{{ r.status }}</span></div>
       <p class="pt-muted" *ngIf="!d.requests.length">No requests.</p>
@@ -165,7 +203,7 @@ const TAG: Record<string, string> = { Paid: 'done', 'Part paid': 'wait', Issued:
     <div class="pt-card"><h2>Statements</h2>
       <table class="pt-table"><tr><th>Statement</th><th>Period</th><th class="r">Collected</th><th class="r">Expenses</th><th class="r">Fees</th><th class="r">Net to you</th><th>Status</th></tr>
         <ng-container *ngFor="let s of d.statements"><tr (click)="open = open === s.id ? null : s.id" style="cursor:pointer"><td>{{ s.number }}</td><td>{{ dd(s.from) }} – {{ dd(s.to) }}</td>
-          <td class="r">{{ m(s.collected) }}</td><td class="r">{{ m(s.expenses) }}</td><td class="r">{{ m(s.fees) }}</td><td class="r"><b>{{ m(s.net) }}</b></td><td>{{ s.status }}</td></tr>
+          <td class="r">{{ m(s.collected) }}</td><td class="r">{{ m(s.expenses) }}</td><td class="r">{{ m(s.fees) }}</td><td class="r"><b>{{ m(s.net) }}</b></td><td>{{ s.status }} <button type="button" class="pt-btn" style="padding:2px 8px;font-size:12px" (click)="$event.stopPropagation(); api.pdf('statement', s.id, s.number)">PDF</button></td></tr>
           <tr *ngIf="open === s.id"><td colspan="7"><table class="pt-table"><tr *ngFor="let l of s.lines"><td>{{ dd(l.date) }}</td><td>{{ l.unit }}</td><td>{{ l.text }}</td><td class="r">{{ m(l.amount) }}</td></tr></table></td></tr>
         </ng-container></table>
       <p class="pt-muted" *ngIf="!d.statements.length">No statements yet.</p></div>
@@ -191,10 +229,11 @@ const TAG: Record<string, string> = { Paid: 'done', 'Part paid': 'wait', Issued:
     <div class="pt-card" *ngFor="let s of d.sales">
       <h2>{{ s.unit }} · contract {{ s.number }} <span class="pt-tag" [ngClass]="tag(s.status)">{{ s.status }}</span></h2>
       <dl class="pt-kv"><dt>Price</dt><dd>{{ cur }} {{ m(s.price) }}</dd><dt>Signed</dt><dd>{{ dd(s.signed_on) }}</dd><dt>Handover</dt><dd>{{ s.handed_over_on ? dd(s.handed_over_on) : 'planned ' + dd(s.handover_due) }}</dd></dl>
+      <button type="button" class="pt-btn" style="margin-top:8px" (click)="api.pdf('sale', s.id, s.number)">Agreement PDF</button>
       <h2 style="margin-top:14px">Instalments</h2>
       <table class="pt-table"><tr><th>Due</th><th>Instalment</th><th class="r">Amount</th><th class="r">Paid</th><th>Status</th></tr>
         <tr *ngFor="let b of s.bills"><td>{{ dd(b.due_date) }}</td><td>{{ b.description }}</td><td class="r">{{ m(b.total) }}</td><td class="r">{{ m(b.paid) }}</td>
-          <td><span class="pt-tag" [ngClass]="b.overdue ? 'bad' : tag(b.status)">{{ b.overdue ? 'Overdue' : b.status }}</span></td></tr></table>
+          <td><span class="pt-tag" [ngClass]="b.overdue ? 'bad' : tag(b.status)">{{ b.overdue ? 'Overdue' : b.status }}</span> <a *ngIf="b.pay" class="pt-btn green" style="padding:2px 8px;font-size:12px;text-decoration:none" [href]="b.pay" target="_blank" rel="noopener">Pay online</a></td></tr></table>
       <ng-container *ngIf="s.checklist?.length"><h2 style="margin-top:14px">Handover</h2>
         <div *ngFor="let c of s.checklist" style="font-size:13.5px;padding:3px 0">{{ c.done ? '☑' : '☐' }} {{ c.item }}</div></ng-container>
       <button type="button" class="pt-btn" style="margin-top:12px" *ngIf="d.maintenance && s.status === 'Handed over'" (click)="req = { unit: s.unit_id, title: '', description: '', kind: 'snag' }">Report a snag</button>
@@ -216,6 +255,7 @@ export class PropPortalComponent implements OnInit {
   notes: Record<number, string> = {};
   open: number | null = null;
   names: Record<string, string> = { tenant: 'My leases', owner: 'My properties', buyer: 'My purchases' };
+  ann: any[] = []; dep: any[] = []; preqs: any[] = []; preq: any = null; accept: Record<number, boolean> = {}; paying: any = null; payRef = '';   // v1.40.0
   dd = day; w = when; m = money;
   constructor(public api: PropPortalApi, private route: ActivatedRoute, private router: Router) {}
 
@@ -237,6 +277,21 @@ export class PropPortalComponent implements OnInit {
   async load(): Promise<void> {
     this.d = null; this.req = null; this.err = '';
     try { this.d = await this.api.get(this.role + '/'); } catch (e) { this.err = PropPortalApi.error(e); }
+    this.ann = await this.api.get('announcements/').catch(() => []);   // v1.40.0
+    this.preqs = await this.api.get('requests/').catch(() => []);
+    this.dep = this.role === 'tenant' ? await this.api.get('deposit/').catch(() => []) : [];
+  }
+
+  async acceptLease(l: any): Promise<void> {   // v1.40.0 e-acceptance
+    try { const r = await this.api.post('accept/', { lease: l.id, accept: true }); this.ok = r.message; await this.load(); } catch (e) { this.err = PropPortalApi.error(e); }
+  }
+  async paid(): Promise<void> {   // v1.40.0 online payment reference
+    try { const r = await this.api.post('pay/', { bill: this.paying.id, reference: this.payRef }); this.ok = r.message; this.paying = null; this.payRef = ''; await this.load(); } catch (e) { this.err = PropPortalApi.error(e); }
+  }
+  async sendReq(): Promise<void> {   // v1.40.0 portal requests
+    this.busy = true; this.err = '';
+    try { const r = await this.api.post('requests/', this.preq); this.ok = r.message; this.preq = null; this.preqs = await this.api.get('requests/'); } catch (e) { this.err = PropPortalApi.error(e); }
+    this.busy = false;
   }
 
   async send(): Promise<void> {

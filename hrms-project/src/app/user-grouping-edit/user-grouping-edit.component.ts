@@ -2894,7 +2894,8 @@ updateCategory(): void {
     .subscribe(
       (response) => {
         console.log('Group updated successfully:', response);
-        alert('Group Updated');
+        // v1.62.0 isolation: a shared standard group is saved as this company's own copy – the message says so
+        alert((response && (response as any).detail) || 'Group Updated');
         this.dialogRef.close();
         window.location.reload();
       },
@@ -2907,7 +2908,7 @@ updateCategory(): void {
 
         if (backendError && typeof backendError === 'object') {
           errorMsg = Object.keys(backendError)
-            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .map(key => `${key}: ${Array.isArray(backendError[key]) ? backendError[key].join(', ') : backendError[key]}`)   // v1.62.0 isolation: "detail" is a text
             .join('\n');
         }
 

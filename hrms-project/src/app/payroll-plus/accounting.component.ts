@@ -10,6 +10,7 @@ import { FLOW_CSS } from '../zeo-flow/flow.service';
 
 /**
  * v1.35.0 – Payroll → Accounting: payroll runs, month-end provisions, final settlements and expense claims as journals
+ * v1.40.0 – Property app sources (invoices / credit notes, receipts and refunds, owner payouts, commissions, vendor bills) and their accounts
  * for Odoo, Zoho Books, Excel / CSV (Tally, Sage, QuickBooks, Xero …) or any application that pulls them through the ZEO API.
  * Department, employee and branch posting: not posted / analytic account (reporting tag) / separate GL code / both.
  * API: accounting/api/…
@@ -84,6 +85,9 @@ function err(e: any): string {
         <select [(ngModel)]="flt" (change)="loadJ()" style="height:34px;border:1px solid #dcdfea;border-radius:8px">
           <option value="">{{ 'All journals' | t }}</option><option value="draft">{{ 'To fix' | t }}</option><option value="ready">{{ 'Ready to post' | t }}</option>
           <option value="failed">{{ 'Failed' | t }}</option><option value="posted,exported">{{ 'Posted / exported' | t }}</option><option value="reversed">{{ 'Reversed' | t }}</option>
+        </select>
+        <select [(ngModel)]="srcFlt" (change)="loadJ()" style="height:34px;border:1px solid #dcdfea;border-radius:8px">
+          <option value="">{{ 'Every source' | t }}</option><option *ngFor="let o of sourceOpts" [value]="o[0]">{{ o[1] | t }}</option>
         </select>
         <span class="sp" style="flex:1"></span>
         <button type="button" class="fw-btn" (click)="download('', 'xlsx')" [disabled]="!j?.counts.ready">{{ 'Download ready journals (Excel)' | t }}</button>
@@ -182,6 +186,26 @@ function err(e: any): string {
         <label class="fw-small">{{ 'To' | t }} <input type="date" [(ngModel)]="expTo" style="height:32px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px"></label>
         <button type="button" class="fw-btn sm primary" (click)="build({source:'expense', from: expFrom, to: expTo})">{{ 'Make journal' | t }}</button></div>
     </div>
+    <!-- v1.40.0 Property app -->
+    <div class="fw-card" *ngIf="src.property">
+      <div class="ac-row" style="margin-bottom:8px">
+        <h2 style="margin:0">{{ 'Property' | t }}</h2>
+        <select [(ngModel)]="propKind" style="height:32px;border:1px solid #dcdfea;border-radius:8px">
+          <option *ngFor="let k of propKinds" [value]="k[0]">{{ k[1] | t }} ({{ src.property[k[0]].length }})</option></select>
+        <span class="sp" style="flex:1"></span>
+        <button type="button" class="fw-btn sm" *ngIf="s?.connector === 'odoo' && propKind === 'bills' && rights.can_post" (click)="checkPaid()" [disabled]="busy">{{ 'Check paid status in Odoo' | t }}</button>
+        <button type="button" class="fw-btn sm primary" *ngIf="rights.can_post && propOpen().length" (click)="build({source: propSource(), ids: propOpen()})" [disabled]="busy">{{ 'Make journals for all' | t }} ({{ propOpen().length }})</button>
+      </div>
+      <p class="fw-muted">{{ 'Issued documents of the last 90 days. One journal per document; its number in the accounting app is written back on the Property record.' | t }}</p>
+      <table class="fw-table">
+        <tr><th>{{ 'Document' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Party' | t }}</th><th class="ac-num">{{ 'Amount' | t }}</th><th>{{ 'In accounting' | t }}</th><th>{{ 'Journal' | t }}</th><th></th></tr>
+        <tr *ngFor="let r of src.property[propKind]"><td>{{ r.label }}</td><td>{{ r.date | date:'dd/MM/yyyy' }}</td><td>{{ r.party }}</td><td class="ac-num">{{ r.amount | number:'1.2-2' }}</td>
+          <td class="fw-small">{{ r.status || '–' }}</td>
+          <td><a class="fw-link" *ngIf="r.journal" (click)="go('journals'); open(r.journal.id)">{{ r.journal.number }} ({{ r.journal.status }})</a></td>
+          <td><button type="button" class="fw-btn sm" *ngIf="rights.can_post && (!r.journal || ['draft','ready','failed','reversed'].includes(r.journal.status))" (click)="build({source: propSource(), id: r.id})">{{ (r.journal ? 'Build again' : 'Make journal') | t }}</button></td></tr>
+        <tr *ngIf="!src.property[propKind].length"><td colspan="7" class="fw-muted">{{ 'Nothing to post.' | t }}</td></tr>
+      </table>
+    </div>
   </ng-container>
 
   <!-- ============ posting rules and connection ============ -->
@@ -230,7 +254,27 @@ function err(e: any): string {
         <label>{{ 'Currency' | t }}<input [(ngModel)]="s.currency" maxlength="3" [disabled]="!rights.can_manage"></label>
         <label class="chk"><input type="checkbox" [(ngModel)]="s.auto_build" [disabled]="!rights.can_manage"> {{ 'Build the journal when a payroll run / settlement is approved' | t }}</label>
         <label class="chk"><input type="checkbox" [(ngModel)]="s.auto_post" [disabled]="!rights.can_manage"> {{ 'Post it at once when it has no problems' | t }}</label>
+        <label class="chk"><input type="checkbox" [(ngModel)]="s.partner_lines" [disabled]="!rights.can_manage"> {{ 'Business partner on receivable / payable lines (tenants, owners, vendors, brokers)' | t }}</label>   <!-- v1.44.0 -->
       </div>
+      <!-- v1.62.0: JV or real invoices / bills / payments -->
+      <ng-container *ngIf="s.connector === 'odoo' || s.connector === 'zoho'">
+        <h2 style="margin-top:14px">{{ 'Send documents as' | t }}</h2>
+        <div class="ac-form">
+          <label *ngFor="let c of s.choices.post_style" class="chk"><input type="radio" name="pstyle" [value]="c[0]" [(ngModel)]="s.post_style" [disabled]="!rights.can_manage"> {{ c[1] | t }}</label>
+          <ng-container *ngIf="s.post_style === 'documents'">
+            <ng-container *ngIf="s.connector === 'odoo'">
+              <label>{{ 'Sales journal code' | t }}<input [(ngModel)]="s.sales_journal_code" placeholder="INV" [disabled]="!rights.can_manage"></label>
+              <label>{{ 'Purchase journal code' | t }}<input [(ngModel)]="s.purchase_journal_code" placeholder="BILL" [disabled]="!rights.can_manage"></label>
+              <label>{{ 'Bank journal code' | t }}<input [(ngModel)]="s.bank_journal_code" placeholder="BNK1" [disabled]="!rights.can_manage"></label>
+            </ng-container>
+            <label>{{ 'Sales tax id (optional)' | t }}<input [(ngModel)]="s.sale_tax_ref" [placeholder]="'found by rate' | t" [disabled]="!rights.can_manage"></label>
+            <label>{{ 'Purchase tax id (optional)' | t }}<input [(ngModel)]="s.purchase_tax_ref" [placeholder]="'found by rate' | t" [disabled]="!rights.can_manage"></label>
+          </ng-container>
+        </div>
+        <p *ngIf="s.post_style === 'documents'" style="font-size:12px;color:#64748b;margin:6px 0 0">
+          {{ 'Property invoices go as customer invoices, credit notes as credit notes, receipts as payments matched to their invoices, and vendor bills as bills. Payroll, owner payouts, commissions and refunds stay journal vouchers. The tax is found by its rate unless you enter its id.' | t }}
+        </p>
+      </ng-container>
       <ng-container *ngIf="s.connector === 'odoo'">
         <h2 style="margin-top:14px">Odoo</h2>
         <div class="ac-form">
@@ -268,7 +312,7 @@ function err(e: any): string {
   <ng-container *ngIf="tab === 'accounts' && acc">
     <div class="fw-card">
       <div class="ac-row" style="margin-bottom:8px">
-        <h2 style="margin:0">{{ 'Accounts of each salary component and payroll item' | t }}</h2><span class="sp" style="flex:1"></span>
+        <h2 style="margin:0">{{ (hasProp() ? 'Accounts of each payroll and property item' : 'Accounts of each salary component and payroll item') | t }}</h2><span class="sp" style="flex:1"></span>
         <button type="button" class="fw-btn sm" *ngIf="isApp()" (click)="loadOptions()">{{ 'Read the chart of accounts' | t }}</button>
         <button type="button" class="fw-btn sm primary" *ngIf="rights.can_manage" (click)="saveAccounts()" [disabled]="busy">{{ 'Save' | t }}</button>
       </div>
@@ -311,6 +355,7 @@ function err(e: any): string {
           <button type="button" class="fw-btn sm" (click)="autoMap(false)" [disabled]="busy">{{ 'Match with the accounting app' | t }}</button>
           <button type="button" class="fw-btn sm" (click)="autoMap(true)" [disabled]="busy">{{ 'Match and create the missing' | t }}</button>
           <button type="button" class="fw-btn sm" *ngIf="dimKind === 'employee' && s?.employee_mode === 'partner'" (click)="partners()" [disabled]="busy">{{ 'Match / create partners' | t }}</button>
+          <button type="button" class="fw-btn sm" (click)="businessPartners()" [disabled]="busy" [title]="'Tenants, owners, customers and suppliers of the business partners list' | t">{{ 'Match / create business partners' | t }}</button>   <!-- v1.44.0 -->
         </ng-container>
         <button type="button" class="fw-btn sm primary" *ngIf="rights.can_manage" (click)="saveDims()" [disabled]="busy">{{ 'Save' | t }}</button>
       </div>
@@ -371,6 +416,13 @@ export class AccountingComponent implements OnInit {
   depts: any[] = [];
   flt = ''; dimKind = 'department'; dimQ = ''; clientName = ''; hookUrl = ''; newSecret: any;
   provDate = ''; expFrom = ''; expTo = '';
+  // v1.40.0 Property sources
+  srcFlt = ''; propKind = 'bills';
+  propKinds: [string, string, string][] = [['bills', 'Invoices / credit notes', 'prop_bill'], ['receipts', 'Receipts and refunds', 'prop_receipt'],
+    ['payouts', 'Owner payouts', 'prop_payout'], ['commissions', 'Commissions', 'prop_commission'], ['vendor_bills', 'Vendor bills', 'prop_vendor']];
+  sourceOpts: [string, string][] = [['payroll', 'Payroll run'], ['provision', 'Month-end provisions'], ['settlement', 'Final settlement'], ['expense', 'Expense claims'],
+    ['reversal', 'Reversal'], ['prop_bill', 'Property invoices / credit notes'], ['prop_receipt', 'Property receipts'], ['prop_payout', 'Owner payouts'],
+    ['prop_commission', 'Property commissions'], ['prop_vendor', 'Property vendor bills']];
   msg = ''; bad = false; busy = false;
   base = environment.apiBaseUrl;
   accFields: [string, string][] = [['payable_account', 'Salaries payable'], ['default_expense_account', 'Salary expense (no account set)'],
@@ -450,7 +502,7 @@ export class AccountingComponent implements OnInit {
 
   // journals
   async loadJ() {
-    try { this.j = await firstValueFrom(this.http.get<any>(API + 'journals/', this.p(this.flt ? { status: this.flt } : {}))); this.rights = { can_post: this.j.can_post, can_manage: this.j.can_manage }; }
+    try { this.j = await firstValueFrom(this.http.get<any>(API + 'journals/', this.p({ ...(this.flt ? { status: this.flt } : {}), ...(this.srcFlt ? { source: this.srcFlt } : {}) }))); this.rights = { can_post: this.j.can_post, can_manage: this.j.can_manage }; }
     catch (e) { this.fail(e); }
     this.cd.markForCheck();
   }
@@ -493,9 +545,21 @@ export class AccountingComponent implements OnInit {
     this.busy = true;
     try {
       const r = await firstValueFrom(this.http.post<any>(API + 'journals/build/', body, this.p()));
-      this.ok(`${r.number} – ${r.status_name}${r.problems?.length ? ' (' + r.problems.length + ' to fix)' : ''}`);
-      this.go('journals'); this.open(r.id);
+      this.ok(r.built ? `${r.built.length} journals made${r.errors?.length ? ', ' + r.errors.length + ' skipped: ' + r.errors.join('; ') : ''}`
+                      : `${r.number} – ${r.status_name}${r.problems?.length ? ' (' + r.problems.length + ' to fix)' : ''}`);
+      this.go('journals'); if (!r.built || r.built.length === 1) { this.open(r.id); }
     } catch (e) { this.fail(e); }
+    this.busy = false;
+  }
+
+  // v1.40.0 Property
+  propSource() { return this.propKinds.find(k => k[0] === this.propKind)?.[2] || 'prop_bill'; }
+  propOpen() { return (this.src?.property?.[this.propKind] || []).filter((r: any) => !r.journal || ['reversed'].includes(r.journal.status)).map((r: any) => r.id); }
+  hasProp() { return (this.acc?.items || []).some((i: any) => i.kind === 'property'); }
+  async checkPaid() {
+    this.busy = true;
+    try { const r = await firstValueFrom(this.http.post<any>(API + 'property/paid/', {}, this.p())); this.ok(`${r.checked} invoices checked, ${r.paid} paid in Odoo.`); await this.loadSrc(); }
+    catch (e) { this.fail(e); }
     this.busy = false;
   }
 
@@ -551,6 +615,13 @@ export class AccountingComponent implements OnInit {
       const r = await firstValueFrom(this.http.post<any>(API + 'dimensions/auto/', { kind: this.dimKind, create }, this.p()));
       this.ok(`${r.matched} matched, ${r.created} created (of ${r.total}).`); this.opts = null; await this.loadDims();
     } catch (e) { this.fail(e); }
+    this.busy = false;
+  }
+  /** v1.44.0: business partners (tenants, owners, customers, suppliers) → partners / contacts of the accounting app. */
+  async businessPartners() {
+    this.busy = true;
+    try { const r = await firstValueFrom(this.http.post<any>(API + 'partners/auto/', { business: true, create: true }, this.p())); this.ok(`${r.matched} business partners linked, ${r.created} created${r.left ? ', ' + r.left + ' left' : ''}.`); }
+    catch (e) { this.fail(e); }
     this.busy = false;
   }
   async partners() {

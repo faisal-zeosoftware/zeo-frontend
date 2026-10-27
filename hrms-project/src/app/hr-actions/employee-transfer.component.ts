@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 /**
  * README – Employee transfer (v1.11.0)
  * ------------------------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
         </div>
         <div class="lp-actions">
           <select [(ngModel)]="filter" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px" aria-label="Status">
-            <option value="">All transfers</option><option value="Scheduled">Scheduled</option><option value="Done">Done</option><option value="Cancelled">Cancelled</option></select>
+            <option value="">All transfers</option><option value="Requested – waiting for HR">Requested</option><option value="Scheduled">Scheduled</option><option value="Done">Done</option><option value="Cancelled">Cancelled</option></select>
           <button type="button" class="lp-btn primary" (click)="openNew()" *ngIf="!form">+ New transfer</button>
         </div>
       </div>
@@ -171,13 +172,17 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
           <tr *ngFor="let r of shown()">
             <td data-label="Number">{{ r.number }}</td>
             <td data-label="Employee"><a href="" (click)="$event.preventDefault(); openEmp(r)">{{ r.employee }}</a></td>
-            <td data-label="Effective date">{{ r.effective_date | date:'dd MMM yyyy' }}</td>
+            <td data-label="Effective date">{{ r.effective_date | date:'dd/MM/yyyy' }}</td>
             <td data-label="Branch move" class="ha-move"><ng-container *ngIf="r.to_branch && r.to_branch !== r.from_branch; else same">{{ r.from_branch || '–' }}<span class="arr">→</span>{{ r.to_branch }}</ng-container><ng-template #same>{{ r.from_branch || '–' }}</ng-template></td>
             <td data-label="Department move" class="ha-move"><ng-container *ngIf="r.to_department && r.to_department !== r.from_department; else same2">{{ r.from_department || '–' }}<span class="arr">→</span>{{ r.to_department }}</ng-container><ng-template #same2>{{ r.from_department || '–' }}</ng-template></td>
             <td data-label="Other changes" class="ha-move">{{ others(r) || '–' }}</td>
             <td data-label="Status"><span class="ha-tag" [ngClass]="tagClass(r.status)">{{ r.status }}</span></td>
             <td data-label="Actions"><div class="ha-row-actions">
               <button type="button" class="lp-btn" (click)="detail = r">{{ r.status === 'Done' ? 'What moved' : 'Details' }}</button>
+              <ng-container *ngIf="isRequest(r)">   <!-- v1.45.0 asked on the org chart -->
+                <button type="button" class="lp-btn primary" [disabled]="busy" (click)="act(r, 'approve')">Approve</button>
+                <button type="button" class="lp-btn danger" [disabled]="busy" (click)="act(r, 'reject')">Reject</button>
+              </ng-container>
               <ng-container *ngIf="r.status === 'Scheduled'">
                 <button type="button" class="lp-btn primary" [disabled]="busy" (click)="act(r, 'apply')">Carry out now</button>
                 <button type="button" class="lp-btn danger" [disabled]="busy" (click)="act(r, 'cancel')">Cancel</button>
@@ -197,20 +202,20 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
       <button type="button" class="lp-x" (click)="detail = null" aria-label="Close" style="color:#6b7185">×</button></header>
     <div class="body">
       <div class="ha-facts">
-        <div><span>Effective</span>{{ detail.effective_date | date:'dd MMM yyyy' }}</div>
+        <div><span>Effective</span>{{ detail.effective_date | date:'dd/MM/yyyy' }}</div>
         <div><span>Branch</span>{{ detail.from_branch || '–' }}<ng-container *ngIf="detail.to_branch"> → {{ detail.to_branch }}</ng-container></div>
         <div><span>Department</span>{{ detail.from_department || '–' }}<ng-container *ngIf="detail.to_department"> → {{ detail.to_department }}</ng-container></div>
         <div *ngIf="detail.to_designation"><span>New designation</span>{{ detail.to_designation }}</div>
         <div *ngIf="detail.to_category"><span>New category</span>{{ detail.to_category }}</div>
         <div *ngIf="detail.to_manager"><span>New manager</span>{{ detail.to_manager }}</div>
-        <div *ngIf="detail.done_at"><span>Carried out</span>{{ detail.done_at | date:'dd MMM yyyy, HH:mm' }}</div>
+        <div *ngIf="detail.done_at"><span>Carried out</span>{{ detail.done_at | date:'dd/MM/yyyy HH:mm' }}</div>
       </div>
       <p *ngIf="detail.reason" style="font-size:13px;margin:6px 0"><b>Reason:</b> {{ detail.reason }}</p>
       <div class="ha-card changes" *ngIf="detail.done?.length">
         <h3>What was moved</h3>
         <ul><li *ngFor="let l of detail.done">{{ l }}</li></ul>
       </div>
-      <p class="lp-muted" *ngIf="detail.status === 'Scheduled'">Scheduled – it is carried out on {{ detail.effective_date | date:'dd MMM yyyy' }}, or now with “Carry out now”. The full list of what moves is worked out on that day.</p>
+      <p class="lp-muted" *ngIf="detail.status === 'Scheduled'">Scheduled – it is carried out on {{ detail.effective_date | date:'dd/MM/yyyy' }}, or now with “Carry out now”. The full list of what moves is worked out on that day.</p>
       <p class="lp-muted" *ngIf="detail.status === 'Cancelled'">This transfer was cancelled – nothing was changed.</p>
     </div>
     <footer>
@@ -275,7 +280,8 @@ export class EmployeeTransferComponent implements OnInit {
   }
 
   shown(): any[] { return this.filter ? this.rows.filter(r => r.status === this.filter) : this.rows; }
-  tagClass(s: string): string { return s === 'Scheduled' ? 'sched' : s === 'Done' ? 'done' : s === 'Cancelled' ? 'cancel' : ''; }
+  tagClass(s: string): string { return s === 'Scheduled' || /^Requested/.test(s) ? 'sched' : s === 'Done' ? 'done' : s === 'Cancelled' || s === 'Rejected' ? 'cancel' : ''; }
+  isRequest(r: any): boolean { return /^Requested/.test(r.status || ''); }   // v1.45.0
   others(r: any): string {
     const org = Object.keys(r.org || {}).length;   // v1.12.0
     return [r.to_designation && 'Designation: ' + r.to_designation, r.to_category && 'Category: ' + r.to_category, r.to_manager && 'Manager: ' + r.to_manager,
@@ -355,14 +361,19 @@ export class EmployeeTransferComponent implements OnInit {
   }
 
   // ------------------------------------------------------------ scheduled actions
-  async act(r: any, action: 'apply' | 'cancel'): Promise<void> {
+  async act(r: any, action: 'apply' | 'cancel' | 'approve' | 'reject'): Promise<void> {
     const q = action === 'apply' ? `Carry out the transfer of ${r.employee} now (effective ${String(r.effective_date).split('-').reverse().join('/')})?`
+      : action === 'approve' ? `Approve the move of ${r.employee} to report to ${r.to_manager || 'the new manager'} (effective ${String(r.effective_date).split('-').reverse().join('/')})?`
+      : action === 'reject' ? `Reject the transfer request for ${r.employee}?`
       : `Cancel the scheduled transfer of ${r.employee}?`;
     if (!confirm(q)) { return; }
     this.busy = true; this.cd.detectChanges();
     try {
       const d = await firstValueFrom(this.http.post<any>(this.url(`hr-actions/api/transfers/${r.id}/${action}/`), {}));
-      if (action === 'apply') { this.say(`Transfer done for ${r.employee}:`, false, d?.done || []); } else { this.say(`Transfer of ${r.employee} cancelled.`); }
+      if (d?.status === 'done') { this.say(`Transfer done for ${r.employee}:`, false, d?.done || []); }
+      else if (d?.status === 'scheduled') { this.say(`Transfer of ${r.employee} approved – scheduled for ${String(r.effective_date).split('-').reverse().join('/')}.`); }
+      else if (d?.status === 'rejected') { this.say(`Transfer request for ${r.employee} rejected.`); }
+      else { this.say(`Transfer of ${r.employee} cancelled.`); }
       this.detail = null; this.lookupsLoaded = false; this.empSvc.refresh(); await this.load();   // v1.28.1
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { dmy } from '../shared-ui/z-present';   // v1.62.0 ui
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { exportExcel, exportPdf } from '../shared-ui/z-export';
@@ -192,7 +193,7 @@ export class ZpPlansComponent implements OnInit {
     const ends = (this.cur?.lines || []).map((l: any) => this.expEnd(l)).filter((x: any) => x) as Date[];
     return ends.length ? new Date(Math.max(...ends.map(x => x.getTime()))) : null;
   }
-  dd(v: any): string { if (!v) return '–'; const d = typeof v === 'string' ? new Date(v + 'T12:00:00') : v; return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
+  dd(v: any): string { if (!v) return '–'; const d = typeof v === 'string' ? new Date(v + 'T12:00:00') : v; return dmy(d); }   // v1.62.0 ui
   n(v: any): string { return Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
 }
 

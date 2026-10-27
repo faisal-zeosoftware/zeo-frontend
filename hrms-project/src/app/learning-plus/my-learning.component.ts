@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -66,7 +67,7 @@ import { LpApi } from './lp-api';
             <tbody>
               <tr *ngFor="let n of data.nominations">
                 <td>{{ n.course }}<div class="lp-muted">{{ n.session }}<span *ngIf="n.venue"> · {{ n.venue }}</span></div></td>
-                <td style="white-space:nowrap">{{ n.start_date | date:'dd/MM/yy' }}<span *ngIf="n.end_date !== n.start_date"> – {{ n.end_date | date:'dd/MM/yy' }}</span></td>
+                <td style="white-space:nowrap">{{ n.start_date | date:'dd/MM/yyyy' }}<span *ngIf="n.end_date !== n.start_date"> – {{ n.end_date | date:'dd/MM/yyyy' }}</span></td>
                 <td><span class="lp-tag" [ngClass]="tone(n.manager_status)">Mgr {{ n.manager_status }}</span> <span class="lp-tag" [ngClass]="tone(n.ld_status)">L&amp;D {{ n.ld_status }}</span></td>
                 <td><span class="lp-tag" [ngClass]="n.seat_status === 'confirmed' ? 'green' : n.seat_status === 'cancelled' ? 'red' : 'amber'">{{ n.seat_status }}</span></td>
                 <td>{{ n.passed === null ? '–' : n.passed ? 'Passed' : 'Not passed' }}<div class="lp-muted" *ngIf="n.attendance_percent !== null">{{ n.attendance_percent }}% attended</div></td>
@@ -79,7 +80,7 @@ import { LpApi } from './lp-api';
         <h2>My certificates</h2>
         <p class="lp-muted" *ngIf="!data.certificates.length">No certificates yet.</p>
         <div class="lp-mod" *ngFor="let c of data.certificates">
-          <span class="t">{{ c.title }}<div class="lp-muted">{{ c.number || '' }} · issued {{ c.issued_on | date:'dd MMM yyyy' }}<span *ngIf="c.expiry_date"> · expires {{ c.expiry_date | date:'dd MMM yyyy' }}</span></div></span>
+          <span class="t">{{ c.title }}<div class="lp-muted">{{ c.number || '' }} · issued {{ c.issued_on | date:'dd/MM/yyyy' }}<span *ngIf="c.expiry_date"> · expires {{ c.expiry_date | date:'dd/MM/yyyy' }}</span></div></span>
           <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ c.status }}</span>
           <button type="button" class="lp-btn small" (click)="pdf(c.id, c.number)">PDF</button>
         </div>

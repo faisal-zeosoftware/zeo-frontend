@@ -276,3 +276,29 @@
 .zas-row { display: flex; gap: 6px; align-items: center; } .zas-row input { flex: 1; }
 @media (max-width: 700px) { .zas-cal .d { min-height: 70px; } .zas-cal .it { font-size: 10px; } }
 @media (max-width: 991.98px) { .zas-field { padding-top: 64px; } }
+
+/* v1.41.0 business partners */
+.zmst { padding: 12px 16px; }
+.zmst-h { font-size: 15px; margin: 0 0 8px; color: #1B1640; }
+.zmst-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.zmst-chips small { color: #6B7185; }
+td.zmst-same { background: #FFF4DE; font-weight: 600; }
+
+/* v1.44.0 statement of account, stock valuation, partner balances */
+.zm-cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.zm-card { flex: 1 1 160px; border: 1px solid #dcdfea; border-radius: 8px; padding: 10px 14px; background: #fff; display: flex; flex-direction: column; gap: 2px; }
+.zm-card span { font-size: 12px; color: #6b7185; }
+.zm-card b { font-size: 18px; color: #1b1640; }
+.zm-card.bad { border-color: #d64550; } .zm-card.bad b { color: #d64550; }
+.zm-filters { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.zm-filters label { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+.zm-filters input, .zm-filters select { border: 1px solid #dcdfea; border-radius: 6px; padding: 4px 8px; }
+.hs-table td.r, .hs-table th.r { text-align: right; white-space: nowrap; }
+.zm-sub td { background: #f4f5fa; font-weight: 600; }
+.zm-over td { color: #b8730f; }
+.zm-age td, .zm-age th { text-align: right; }
+.zm-credit { border: 1px solid #d64550; background: #fff5f6; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }
+.zm-credit ul { margin: 4px 0 6px 18px; padding: 0; }
+.zm-einv { font-size: 13px; }
+.zm-einv.ok { color: #2e9d6a; } .zm-einv.miss { color: #b8730f; }
+@media print { .no-print, app-main-sidebar nav, .sidebar, .sub-sidebar, z-module-menu, header { display: none !important; } .zm-print { margin: 0; } }

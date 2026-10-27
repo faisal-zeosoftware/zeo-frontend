@@ -50,6 +50,9 @@
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
     <!-- selfie with the punch, photos of documents -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- v1.46.0 voice notes on records -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.camera.front" android:required="false" />
     <!-- fingerprint / face sign-in -->

@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -15,10 +18,32 @@ import { DepartmentServiceService } from '../department-master/department-servic
 @Component({
   selector: 'app-airticket-approval-level',
   templateUrl: './airticket-approval-level.component.html',
-  styleUrl: './airticket-approval-level.component.css'
+  styleUrls: ['./airticket-approval-level.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 
 export class AirticketApprovalLevelComponent {
+  // v1.62.0 air ticket: the workflows in words from /payroll-plus/api/air-tickets/levels/; actions open this screen's own form
+  at = atInject(AtUiService);
+  private atRouter = atInject(AtRouter);
+  private atRoute = atInject(AtRoute);
+  atRows: any[] = [];
+  atLoading = true;
+  atMsg = '';
+  async atLoad(): Promise<void> {
+    try { this.atRows = (await this.at.get('levels')).rows || []; this.atMsg = ''; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The approval levels could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atGo(p: string): void { this.atRouter.navigate(['..', p], { relativeTo: this.atRoute }); }
+  atEdit(id: number): void {
+    const row = (this.approvalLevels || []).find((x: any) => x.id === id);
+    if (row) { this.openEditModal(row); }
+  }
+  async atDelete(w: any): Promise<void> {
+    const what = this.at.t('the approval workflow of {0}', [w.branches.join(', ') || this.at.t('No branch')]);
+    if (await this.at.remove('level', w.id, what)) { this.approvalLevels = (this.approvalLevels || []).filter((x: any) => x.id !== w.id); await this.atLoad(); }
+  }
+
 
 
   
@@ -394,6 +419,7 @@ CreateAirticketApproverLevel(): void {
           isLoading: boolean = false;
 
 fetchEmployees(schema: string, branchIds: number[]): void {
+  this.atLoad();   // v1.62.0 air ticket
   this.isLoading = true;
   this.employeeService.getAirTicketApprovalLevelsNew(schema, branchIds).subscribe({
     next: (data: any) => {

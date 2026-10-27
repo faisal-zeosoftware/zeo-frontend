@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <!-- SIDEBAR BACKDROP (Mobile Only) -->
 <div class="sidebar-backdrop"
      [class.show]="isMenuOpen"
@@ -76,8 +77,16 @@
       <!-- Notification Dropdown (Desktop) -->
       <!-- v1.9.0: Ask ZEO AI – questions about the data in plain language -->
       <li class="nav-item"><z-app-launcher></z-app-launcher></li>   <!-- v1.20.0 HRMS / Projects / Settings -->
+      <li class="nav-item"><z-topbar-tools></z-topbar-tools></li>   <!-- v1.47.0 search (Ctrl+K), create (+), help -->
       <li class="nav-item"><z-cloud-banner></z-cloud-banner></li>   <!-- v1.23.0 ZEO Cloud: trial / renewal / grace / read-only -->
       <li class="nav-item"><z-ask></z-ask></li>
+      <!-- v1.45.0: inbox – messages, mentions, e-mail replies, approvals -->
+      <li class="nav-item">
+        <button type="button" class="zr-todo-btn" routerLink="/main-sidebar/inbox" [attr.aria-label]="'Inbox' | t" [title]="'Inbox' | t">
+          <mat-icon>inbox</mat-icon>
+          <span class="zr-badge" *ngIf="(inbox$ | async) as n">{{ n }}</span>
+        </button>
+      </li>
       <!-- v1.7.0: activities planned for me on any record -->
       <li class="nav-item" *ngIf="todo$ | async as t">
         <button type="button" class="zr-todo-btn" routerLink="/main-sidebar/todo" [attr.aria-label]="'My To-do: {0} due' | t:(t.overdue + t.today)" [title]="'My To-do' | t">
@@ -210,7 +219,7 @@
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                       </svg>
-                      {{ noti.created_at | date : "medium" }}
+                      {{ noti.created_at | date : 'dd/MM/yyyy HH:mm' }}
                     </div>
                     <div class="notification-message">
                       {{ noti.message }}
@@ -343,7 +352,7 @@
             <mat-icon>person</mat-icon>
           </div>
           <div class="user_logged_out">
-            <h1>{{ userDetails.username }}</h1>
+            <h1><a routerLink="/main-sidebar/settings/my-account" style="color:inherit;text-decoration:none" [title]="'Sign-in and out of office' | t" data-my-account-link>{{ displayName || userDetails.username }}</a></h1><!-- v1.62.0 ui: name, not sign-in name -->
           </div>
         </div>
       </li>
@@ -516,7 +525,7 @@
                           <circle cx="12" cy="12" r="10"></circle>
                           <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        {{ noti.created_at | date : "medium" }}
+                        {{ noti.created_at | date : 'dd/MM/yyyy HH:mm' }}
                       </div>
                       <div class="notification-message">
                         {{ noti.message }}
@@ -678,7 +687,7 @@
             <p class="m-0">{{ item.message }}</p>
             <div class="modal-noti-date">
               <mat-icon>schedule</mat-icon>
-              {{ item.created_at | date : "medium" }}
+              {{ item.created_at | date : 'dd/MM/yyyy HH:mm' }}
             </div>
           </div>
         </div>
@@ -694,6 +703,7 @@
 </div>
 
 <router-outlet></router-outlet>
+<z-imp-banner></z-imp-banner>   <!-- v1.52.0 -->
 
 <!-- Loader -->
 <div class="loader-container" [class.show]="isLoading">
@@ -726,3 +736,7 @@
     <p class="loc-hint">{{ 'Ticked locations filter every list; the working location is used for new records and their document numbers.' | t }}</p>
   </div>
 </ng-template>
+<!-- v1.47.0 command palette, release notes and guided tours (one each for the whole app) -->
+<z-palette></z-palette>
+<z-whats-new></z-whats-new>
+<z-tour></z-tour>

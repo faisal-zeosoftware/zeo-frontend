@@ -425,6 +425,42 @@ name="leave_type"
                         <input type="number" class="form-control" required [(ngModel)]="editAsset.encashment_days" placeholder="Enter Encashment Days"
                                [ngModelOptions]="{standalone: true}">
                       </div>
+
+                      <!-- v1.40.1: the formula can be changed on edit too (the amount is worked out again on save) -->
+                      <div class="col-md-12 mt-2" id="edit-formula-block">
+                        <div class="form-check">
+                          <input type="checkbox" id="editUseCustomFormula" class="form-check-input" [(ngModel)]="editUseCustomFormula"
+                                 [ngModelOptions]="{ standalone: true }" (change)="onEditFormulaCheckboxChange()" />
+                          <label class="form-check-label" for="editUseCustomFormula">Use custom encashment formula</label>
+                        </div>
+                        <div class="text-muted small mt-1" *ngIf="!editUseCustomFormula">
+                          Formula used: <code>{{ editAsset.formula || defaultFormula }}</code>
+                          <span *ngIf="editAsset.encashment_amount"> · current amount {{ editAsset.encashment_amount }}</span>
+                        </div>
+                        <div *ngIf="editUseCustomFormula" class="mt-2">
+                          <label>Encashment formula
+                            <i class="fa fa-question-circle text-muted ms-1" style="cursor: pointer;" (click)="toggleFormulaHelper()" title="Click to show/hide available variables"></i>
+                          </label>
+                          <textarea #editFormulaInput class="form-control formula-textarea" rows="2" [(ngModel)]="editAsset.formula" [ngModelOptions]="{ standalone: true }"
+                                    placeholder="e.g. basic_salary / fixed_days * encashment_days"
+                                    [ngClass]="{'error-field': editAsset.formula && !isFormulaValid(editAsset.formula)}"></textarea>
+                          <div *ngIf="editAsset.formula && !isFormulaValid(editAsset.formula)" class="error-message">
+                            Unknown variable(s): {{ getUnknownFormulaTokens(editAsset.formula).join(', ') }}
+                          </div>
+                          <div class="formula-operator-bar mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" *ngFor="let op of ['+', '-', '*', '/', '(', ')']" (click)="insertEditFormulaText(op)">{{ op }}</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" *ngFor="let v of ['basic_salary', 'total_salary', 'fixed_days', 'calendar_days', 'encashment_days']" (click)="insertEditFormulaText(v)">{{ v }}</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="editAsset.formula = defaultFormula"><i class="fa fa-undo"></i> Default</button>
+                          </div>
+                          <div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
+                            <div class="formula-helper-header"><strong>Available variables</strong> <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i></div>
+                            <div class="formula-variable-list">
+                              <span class="formula-variable-chip" *ngFor="let v of formulaVariables" (click)="insertEditFormulaText(v)">{{ v }}</span>
+                            </div>
+                          </div>
+                          <div class="text-muted small mt-1">The amount is calculated again with this formula when you click Update.</div>
+                        </div>
+                      </div>
                   
     <div class="col-md-6">
     <label>Status</label>

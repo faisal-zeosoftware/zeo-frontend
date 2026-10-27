@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -37,7 +38,7 @@ import { ProjectControlApiService, STATUS_LABEL, hrs } from './project-control-a
       <div class="pc-group" *ngFor="let g of groups">
         <header>
           <div class="who">{{ g.employee }}</div>
-          <div class="pc-muted">Week {{ g.week_start | date:'dd MMM' }} – {{ g.week_end | date:'dd MMM yyyy' }} ·
+          <div class="pc-muted">Week {{ g.week_start | date:'dd MMM' }} – {{ g.week_end | date:'dd/MM/yyyy' }} ·
             <b>{{ h(g.hours) }} h</b> ({{ h(g.billable_hours) }} billable)</div>
         </header>
         <div class="pc-rows">

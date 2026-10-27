@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -14,10 +17,28 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-airticket-request',
   templateUrl: './airticket-request.component.html',
-  styleUrl: './airticket-request.component.css'
+  styleUrls: ['./airticket-request.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 
 export class AirticketRequestComponent {
+  // v1.62.0 air ticket: readable rows from /payroll-plus/api/air-tickets/requests/; row actions open this screen's own form
+  at = atInject(AtUiService);
+  atRows: any[] = [];
+  atLoading = true;
+  atMsg = '';
+  async atLoad(branchIds: number[] = []): Promise<void> {
+    try { this.atRows = (await this.at.get('requests', { branch_id: branchIds })).rows || []; this.atMsg = ''; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The requests could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atEdit(id: number): void {
+    const row = (this.Requests || []).find((x: any) => x.id === id);
+    if (row) { this.openEditModal(row); }
+  }
+  async atDelete(r: any): Promise<void> {
+    if (await this.at.remove('request', r.id, `${r.number || ''} ${r.employee}`.trim())) { this.Requests = (this.Requests || []).filter((x: any) => x.id !== r.id); await this.atLoad(); }
+  }
+
 
 
   private dataSubscription?: Subscription;
@@ -759,6 +780,7 @@ mapAllocationNameToId() {
  isLoading: boolean = false;
 
   fetchEmployees(schema: string, branchIds: number[]): void {
+    this.atLoad(branchIds);   // v1.62.0 air ticket
     this.isLoading = true;
     this.employeeService.getairticketrequestNew(schema, branchIds).subscribe({
 

@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
+import { ZSuiteService } from '../shared-ui/z-suite.service';
 
 @Component({
   selector: 'app-payroll-controls',
@@ -18,7 +19,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
   styles: [`
 .pc-row{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid #eef0f2;max-width:900px}
 .pc-row input[type=checkbox]{margin-top:4px;width:18px;height:18px}.pc-row b{display:block}.pc-row p{margin:2px 0 0;font-size:13px;color:#5d6670}
-.pc-wps{margin-top:16px}.pc-wps p{font-size:13px;color:#5d6670;margin:2px 0 8px}.pc-tbl{width:100%;max-width:720px;border-collapse:collapse}.pc-tbl th,.pc-tbl td{padding:6px 8px;border-bottom:1px solid #eef0f5;text-align:start;font-size:13px}.pc-tbl input{height:32px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px;width:100%}
+.pc-freq{margin-top:16px;max-width:900px}.pc-freq>p{font-size:13px;color:#5d6670;margin:2px 0 4px}.pc-wps{margin-top:16px}.pc-wps p{font-size:13px;color:#5d6670;margin:2px 0 8px}.pc-tbl{width:100%;max-width:720px;border-collapse:collapse}.pc-tbl th,.pc-tbl td{padding:6px 8px;border-bottom:1px solid #eef0f5;text-align:start;font-size:13px}.pc-tbl input{height:32px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px;width:100%}
 .pc-sel{height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 6px;flex:0 0 300px;width:300px}
 .pc-row input[type=number]{width:80px;height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px}
 `],
@@ -48,6 +49,22 @@ import { ZRecordService } from '../shared-ui/z-record.service';
             <option value="month">The salary month (1st – last day)</option>
             <option value="attendance">The attendance cycle of the run</option></select>
           <span><b>Pay period in the WPS file</b><p>The pay start and end dates of each employee in the salary file: the calendar month, or the run's attendance cycle for a branch with a cut-off (e.g. 26 Aug – 25 Sep). Joiners start on their joining day, leavers end on their last working day.</p></span></div>
+        <div class="pc-row"><select [(ngModel)]="s.payslip_language" [disabled]="!s.can_edit" aria-label="Payslip language" class="pc-sel" data-payslip-lang>
+            <option value="reader">The reader's language</option>
+            <option value="en">English</option>
+            <option value="en_ar">English and Arabic on the same payslip</option></select>
+          <span><b>Payslip language</b><p><i>The reader's language:</i> English, or the language the user chose in ZEO (Arabic right to left). <i>English and Arabic:</i> every payslip PDF has each label in both languages on the same page – the usual request of the labour office. Employees can also download the English + Arabic payslip from My payslips.</p></span></div>   <!-- v1.50.0 -->
+        <div class="pc-freq" data-pay-freq>   <!-- v1.55.0 -->
+          <b>Pay frequencies</b>
+          <p>Every employee is paid monthly. Switch on another frequency to pay some employees on a pay calendar – Pay calendars appears in the Payroll menu only once one is on.</p>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.pay_weekly" [disabled]="!s.can_edit" data-pay-weekly>
+            <span><b>Weekly</b><p>Paid every week; the monthly salary is paid as 12 ÷ 52 of it each week.</p></span></label>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.pay_biweekly" [disabled]="!s.can_edit" data-pay-biweekly>
+            <span><b>Bi-weekly</b><p>Paid every two weeks; 12 ÷ 26 of the monthly salary each time.</p></span></label>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.pay_semimonthly" [disabled]="!s.can_edit" data-pay-semimonthly>
+            <span><b>Semi-monthly</b><p>Paid twice a month (1st – 15th and 16th – end of the month); half the monthly salary each time.</p></span></label>
+          <p>A frequency used by an active pay calendar cannot be switched off – deactivate the calendar first.</p>
+        </div>
         <div class="pc-wps" *ngIf="s.branch_wps?.length">
           <b>WPS establishment per branch</b>
           <p>A branch with its own MoHRE establishment card has its own WPS file: enter its employer ID and the routing code of its salary bank. Leave empty to use the company's (Settings → Company).</p>
@@ -65,7 +82,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
 })
 export class PayrollControlsComponent implements OnInit {
   s: any = null; busy = false; msg = ''; msgErr = false;
-  constructor(private http: HttpClient, private rec: ZRecordService, private cd: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private rec: ZRecordService, private cd: ChangeDetectorRef, private suite: ZSuiteService) {}
   private url(): string { return `${this.rec.api}/payroll-plus/api/settings/?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`; }
   async ngOnInit(): Promise<void> {
     try { this.s = await firstValueFrom(this.http.get<any>(this.url())); } catch (e: any) { this.msg = e?.error?.detail || 'Could not load the controls.'; this.msgErr = true; }
@@ -73,7 +90,7 @@ export class PayrollControlsComponent implements OnInit {
   }
   async save(): Promise<void> {
     this.busy = true;
-    try { this.s = await firstValueFrom(this.http.put<any>(this.url(), this.s)); this.msg = 'Controls saved.'; this.msgErr = false; }
+    try { this.s = await firstValueFrom(this.http.put<any>(this.url(), this.s)); this.msg = 'Controls saved.'; this.msgErr = false; this.suite.loadActive(true); }   // v1.55.0: menu follows the pay frequencies
     catch (e: any) { this.msg = e?.error?.detail || 'Could not save.'; this.msgErr = true; }
     this.busy = false; this.cd.detectChanges();
   }

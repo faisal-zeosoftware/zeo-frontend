@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -59,7 +60,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
       <div class="ap-note" *ngIf="a.pending?.disposal">Disposal {{ a.pending.disposal.number }} waits for approval.</div>
       <div class="ap-note err" *ngIf="a.status === 'lost' && a.pending?.loss">Reported lost / stolen ({{ a.pending.loss.number }}). It cannot be allocated until it is found.
         <button type="button" class="ex-link" (click)="go('losses')">Open the loss record</button></div>
-      <div class="ap-note" *ngIf="a.disposal">Disposed by {{ a.disposal.method | lowercase }} on {{ a.disposal.date | date:'dd MMM yyyy' }} ({{ a.disposal.number }}):
+      <div class="ap-note" *ngIf="a.disposal">Disposed by {{ a.disposal.method | lowercase }} on {{ a.disposal.date | date:'dd/MM/yyyy' }} ({{ a.disposal.number }}):
         value {{ m(a.disposal.value) }}, book value {{ m(a.disposal.book_value) }},
         <span class="ap-gl" [class.gain]="+a.disposal.gain_loss > 0" [class.loss]="+a.disposal.gain_loss < 0">{{ +a.disposal.gain_loss >= 0 ? 'gain' : 'loss' }} {{ m(abs(a.disposal.gain_loss)) }}</span></div>
 
@@ -74,23 +75,23 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
         <div class="ap-kv">
           <div><small>Asset code</small><b>{{ a.code }}</b></div><div><small>Barcode</small><b>{{ a.barcode }}</b></div><div><small>Type</small><b>{{ a.asset_type_name }}</b></div>
           <div><small>Branch</small><b>{{ a.branch_name || '–' }}</b></div><div><small>Location</small><b>{{ a.location || '–' }}</b></div><div><small>Department</small><b>{{ a.department_name || '–' }}</b></div>
-          <div><small>Purchase date</small><b>{{ a.purchase_date | date:'dd MMM yyyy' }}</b></div><div><small>Vendor</small><b>{{ a.vendor || '–' }}</b></div>
+          <div><small>Purchase date</small><b>{{ a.purchase_date | date:'dd/MM/yyyy' }}</b></div><div><small>Vendor</small><b>{{ a.vendor || '–' }}</b></div>
           <div><small>Invoice</small><b>{{ a.invoice_no || '–' }} <a *ngIf="a.invoice_file" class="ex-link" [href]="a.invoice_file" target="_blank" rel="noopener">open</a></b></div>
           <div><small>Purchase order</small><b>{{ a.purchase_order || '–' }}</b></div>
-          <div><small>Warranty</small><b>{{ a.warranty_start ? (a.warranty_start | date:'dd MMM yyyy') : '–' }} → {{ a.warranty_end ? (a.warranty_end | date:'dd MMM yyyy') : '–' }}</b></div>
-          <div><small>Insurance</small><b>{{ a.insurance_provider || '–' }} {{ a.insurance_policy_no }}<span *ngIf="a.insurance_expiry"> until {{ a.insurance_expiry | date:'dd MMM yyyy' }}</span></b></div>
+          <div><small>Warranty</small><b>{{ a.warranty_start ? (a.warranty_start | date:'dd/MM/yyyy') : '–' }} → {{ a.warranty_end ? (a.warranty_end | date:'dd/MM/yyyy') : '–' }}</b></div>
+          <div><small>Insurance</small><b>{{ a.insurance_provider || '–' }} {{ a.insurance_policy_no }}<span *ngIf="a.insurance_expiry"> until {{ a.insurance_expiry | date:'dd/MM/yyyy' }}</span></b></div>
           <div><small>Depreciation</small><b>{{ dep(a.depreciation_method) }}<span *ngIf="a.depreciation_method !== 'none'">, {{ a.useful_life_months }} months</span></b></div>
           <div><small>Salvage value</small><b>{{ a.salvage_value !== undefined ? m(a.salvage_value, a.currency) : '–' }}</b></div>
           <div><small>Meter reading</small><b>{{ a.meter_reading || '–' }}</b></div>
-          <div><small>Last verified</small><b>{{ a.last_verified_on ? (a.last_verified_on | date:'dd MMM yyyy') + ' – ' + a.last_verified_label : 'Never' }}</b></div>   <!-- v1.18.0 -->
-          <div><small>Next verification</small><b [class.ap-due]="a.verification_due && a.verification_due < todayStr">{{ a.verification_due ? (a.verification_due | date:'dd MMM yyyy') : '–' }}</b></div>
+          <div><small>Last verified</small><b>{{ a.last_verified_on ? (a.last_verified_on | date:'dd/MM/yyyy') + ' – ' + a.last_verified_label : 'Never' }}</b></div>   <!-- v1.18.0 -->
+          <div><small>Next verification</small><b [class.ap-due]="a.verification_due && a.verification_due < todayStr">{{ a.verification_due ? (a.verification_due | date:'dd/MM/yyyy') : '–' }}</b></div>
           <div *ngFor="let c of a.custom_fields"><small>{{ c.name }}</small><b>{{ c.value || '–' }}</b></div>
           <div style="grid-column:1/-1" *ngIf="a.notes"><small>Notes</small><b>{{ a.notes }}</b></div>
         </div>
         <div class="ex-panel" style="margin-top:16px" *ngIf="(a.depreciation_schedule || []).length">
           <div class="ex-h">Depreciation schedule</div>
           <div class="ap-scroll"><table class="ap-table"><thead><tr><th>Year</th><th>Until</th><th>Opening</th><th>Depreciation</th><th>Closing</th></tr></thead>
-            <tbody><tr *ngFor="let y of a.depreciation_schedule"><td>{{ y.year }}</td><td>{{ y.until | date:'dd MMM yyyy' }}</td><td>{{ m(y.opening) }}</td>
+            <tbody><tr *ngFor="let y of a.depreciation_schedule"><td>{{ y.year }}</td><td>{{ y.until | date:'dd/MM/yyyy' }}</td><td>{{ m(y.opening) }}</td>
               <td>{{ m(y.depreciation) }}</td><td>{{ m(y.closing) }}</td></tr></tbody></table></div>
         </div>
       </ng-container>
@@ -100,7 +101,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
         <div class="ap-hold" *ngIf="a.holder_detail as h; else store">
           <div class="ic">{{ (h.name || '?').slice(0, 1) }}</div>
           <div class="main"><div class="t" style="font-weight:700">{{ h.type === 'employee' ? 'With ' : 'At ' }}{{ h.name }}</div>
-            <div class="ex-muted">Since {{ h.since | date:'dd MMM yyyy' }}<span *ngIf="h.expected_return_date"> · expected back {{ h.expected_return_date | date:'dd MMM yyyy' }}</span>
+            <div class="ex-muted">Since {{ h.since | date:'dd/MM/yyyy' }}<span *ngIf="h.expected_return_date"> · expected back {{ h.expected_return_date | date:'dd/MM/yyyy' }}</span>
               <span *ngIf="h.custodian"> · custodian {{ h.custodian }}</span>
               <span *ngIf="h.type === 'employee'"> · receipt {{ lbl(h.ack_status) | lowercase }}</span></div></div>
         </div>
@@ -109,7 +110,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <div class="ex-rows">
             <div class="ex-row" *ngFor="let x of allocs">
               <div class="main"><div class="t">{{ x.employee || x.holder }}</div>
-                <div class="s">{{ x.assigned_date | date:'dd MMM yyyy' }} → {{ x.returned_date ? (x.returned_date | date:'dd MMM yyyy') : 'now' }}
+                <div class="s">{{ x.assigned_date | date:'dd/MM/yyyy' }} → {{ x.returned_date ? (x.returned_date | date:'dd/MM/yyyy') : 'now' }}
                   <span *ngIf="x.accessories"> · {{ x.accessories }}</span><span *ngIf="x.ack_condition_notes"> · remarks: {{ x.ack_condition_notes }}</span>
                   <span *ngIf="x.return_condition"> · returned {{ cond(x.return_condition) | lowercase }}</span></div></div>
               <div class="r"><span class="ex-tag" [ngClass]="cls(x.open ? (x.ack_status || 'approved') : 'closed')">{{ x.open ? (x.kind === 'employee' ? lbl(x.ack_status) : 'Shared') : 'Returned' }}</span>
@@ -120,13 +121,13 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           </div></div>
         <div class="ex-panel"><div class="ex-h">Transfers</div>
           <div class="ex-rows"><div class="ex-row" *ngFor="let t of transfers">
-            <div class="main"><div class="t">{{ t.number }} · {{ t.from }} → {{ t.to }}</div><div class="s">{{ t.transfer_date | date:'dd MMM yyyy' }} · {{ t.reason }}<span *ngIf="t.decision_note"> · {{ t.decision_note }}</span></div></div>
+            <div class="main"><div class="t">{{ t.number }} · {{ t.from }} → {{ t.to }}</div><div class="s">{{ t.transfer_date | date:'dd/MM/yyyy' }} · {{ t.reason }}<span *ngIf="t.decision_note"> · {{ t.decision_note }}</span></div></div>
             <div class="r"><span class="ex-tag" [ngClass]="cls(t.status)">{{ t.status_label }}</span></div></div>
             <p class="ex-muted" *ngIf="!transfers.length">No transfers.</p></div></div>
         <div class="ex-panel"><div class="ex-h">Damage and loss</div>
           <div class="ex-rows"><div class="ex-row" *ngFor="let d of incidents">
             <div class="main"><div class="t">{{ d.number }} · {{ d.kind_of_record === 'damage' ? 'Damage (' + d.severity_label + ')' : d.kind_label }}</div>
-              <div class="s">{{ (d.damage_date || d.loss_date) | date:'dd MMM yyyy' }} · {{ d.employee || 'no employee' }} · {{ d.description }}</div></div>
+              <div class="s">{{ (d.damage_date || d.loss_date) | date:'dd/MM/yyyy' }} · {{ d.employee || 'no employee' }} · {{ d.description }}</div></div>
             <div class="r"><div class="money" *ngIf="+d.recovery_amount">{{ m(d.recovery_amount) }}</div><span class="ex-tag" [ngClass]="cls(d.status)">{{ d.status_label }}</span></div></div>
             <p class="ex-muted" *ngIf="!incidents.length">None.</p></div></div>
       </ng-container>
@@ -137,8 +138,8 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <button type="button" class="ex-btn sm" *ngIf="r.maint_change && a.status !== 'disposed'" (click)="openAct('schedule')">+ Plan</button></div>
           <div class="ex-rows"><div class="ex-row" *ngFor="let s of schedules">
             <div class="main"><div class="t">{{ s.title }} – every {{ s.interval_value }} {{ s.interval_type }}</div>
-              <div class="s">Last done {{ s.last_done_date ? (s.last_done_date | date:'dd MMM yyyy') : '–' }}<span *ngIf="s.last_done_reading"> at {{ s.last_done_reading }}</span>
-                · next {{ s.next_due_date ? (s.next_due_date | date:'dd MMM yyyy') : ('at ' + s.next_due_reading) }}<span *ngIf="s.vendor"> · {{ s.vendor }}</span></div></div>
+              <div class="s">Last done {{ s.last_done_date ? (s.last_done_date | date:'dd/MM/yyyy') : '–' }}<span *ngIf="s.last_done_reading"> at {{ s.last_done_reading }}</span>
+                · next {{ s.next_due_date ? (s.next_due_date | date:'dd/MM/yyyy') : ('at ' + s.next_due_reading) }}<span *ngIf="s.vendor"> · {{ s.vendor }}</span></div></div>
             <div class="r"><span class="ex-tag" [ngClass]="s.due === 'overdue' ? 'rejected' : (s.due === 'due' ? 'pending' : 'draft')">{{ s.due === 'overdue' ? 'Overdue' : (s.due === 'due' ? 'Due soon' : (s.active ? 'Planned' : 'Off')) }}</span>
               <div><button type="button" class="ex-link" *ngIf="r.maint_change && a.status !== 'maintenance' && a.status !== 'disposed' && a.status !== 'lost'" (click)="startFromPlan(s)">Start</button>
                 <button type="button" class="ex-link" *ngIf="r.maint_change" (click)="removePlan(s)" style="margin-left:8px">Remove</button></div></div></div>
@@ -146,7 +147,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
         <div class="ex-panel"><div class="ex-h">Maintenance records</div>
           <div class="ex-rows"><div class="ex-row" *ngFor="let x of maint">
             <div class="main"><div class="t">{{ x.number }} · {{ x.kind_label }}<span *ngIf="x.vendor"> · {{ x.vendor }}</span></div>
-              <div class="s">{{ x.start_date | date:'dd MMM yyyy' }} → {{ x.end_date ? (x.end_date | date:'dd MMM yyyy') : 'open' }} · {{ x.description }}
+              <div class="s">{{ x.start_date | date:'dd/MM/yyyy' }} → {{ x.end_date ? (x.end_date | date:'dd/MM/yyyy') : 'open' }} · {{ x.description }}
                 <span *ngIf="x.downtime_hours"> · downtime {{ x.downtime_hours }} h</span><span *ngIf="x.result_label"> · {{ x.result_label }}</span></div></div>
             <div class="r"><div class="money">{{ m(x.cost) }}</div><span class="ex-tag" [ngClass]="cls(x.status)">{{ x.status_label }}</span>
               <div *ngIf="x.status === 'open' && r.maint_change"><button type="button" class="ex-link" (click)="closeMaint(x)">Complete</button></div></div></div>
@@ -159,7 +160,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <mat-icon>{{ icon(e.event) }}</mat-icon>
           <div class="txt">{{ e.summary }}
             <div class="ap-ch" *ngIf="e.changes && keys(e.changes).length"><span *ngFor="let k of keys(e.changes)"><b>{{ e.changes[k].label }}</b>: {{ e.changes[k].old || '–' }} → {{ e.changes[k].new || '–' }}</span></div>
-            <div class="meta">{{ e.at | date:'dd MMM yyyy, HH:mm' }} · {{ e.user }}</div></div>
+            <div class="meta">{{ e.at | date:'dd/MM/yyyy HH:mm' }} · {{ e.user }}</div></div>
         </div>
         <p class="ex-muted" *ngIf="!history.length">No history yet.</p>
       </ng-container>
@@ -171,7 +172,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
           <div class="ap-file" *ngFor="let f of files">
             <a [href]="f.url" target="_blank" rel="noopener"><img *ngIf="img(f.url)" [src]="f.url" [alt]="f.name"><div class="doc" *ngIf="!img(f.url)">{{ ext(f.name) }}</div></a>
             <div class="n" [title]="f.name">{{ f.name }}</div>
-            <div class="ex-muted" style="font-size:11px">{{ f.kind_label }}<span *ngIf="f.record_type"> · {{ f.record_type }}</span> · {{ f.uploaded_at | date:'dd MMM yyyy' }}</div>
+            <div class="ex-muted" style="font-size:11px">{{ f.kind_label }}<span *ngIf="f.record_type"> · {{ f.record_type }}</span> · {{ f.uploaded_at | date:'dd/MM/yyyy' }}</div>
             <button type="button" class="ex-link danger" *ngIf="r.master_change" (click)="removeFile(f)">Remove</button>
           </div>
         </div>

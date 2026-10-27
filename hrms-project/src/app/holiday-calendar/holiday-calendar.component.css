@@ -520,3 +520,7 @@ mat-icon {
     margin-left: 15%;
   }
 }
+
+/* v1.40.1: the calendar's extra fields on its card */
+.hc-udf { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 6px; font-size: 13px; color: #374151; }
+.hc-udf small { color: #6b7280; margin-right: 4px; }

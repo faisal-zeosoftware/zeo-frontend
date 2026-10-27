@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -227,7 +228,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <ng-container *ngIf="tab === 'History'">
           <div class="zk-card"><div class="zk-scroll"><table class="zk-table">
             <tr><th>{{ 'When' | t }}</th><th>{{ 'What' | t }}</th><th>{{ 'Who' | t }}</th></tr>
-            <tr *ngFor="let h of c.history"><td>{{ h.at | date:'d MMM y, HH:mm' }}</td><td>{{ h.text }}</td><td>{{ h.by || '–' }}</td></tr>
+            <tr *ngFor="let h of c.history"><td>{{ h.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ h.text }}</td><td>{{ h.by || '–' }}</td></tr>
           </table></div></div>
         </ng-container>
       </ng-container>

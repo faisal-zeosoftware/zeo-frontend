@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { dmy } from '../shared-ui/z-present';   // v1.62.0 ui
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -117,13 +118,13 @@ export function minutes(v: any): string {
 export function when(v: any): string {
   if (!v) return '';
   const d = new Date(v);
-  return d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return dmy(d, true);   // v1.62.0 ui
 }
 
 export function day(v: any): string {
   if (!v) return '';
   const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v);
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  return dmy(d);   // v1.62.0 ui
 }
 
 export const today = (): string => new Date().toISOString().slice(0, 10);

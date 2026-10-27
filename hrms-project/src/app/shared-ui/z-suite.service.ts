@@ -13,7 +13,7 @@ export type AppSuite = Exclude<Suite, 'common'>;
 
 @Injectable({ providedIn: 'root' })
 export class ZSuiteService {
-  readonly suite$ = new BehaviorSubject<AppSuite>(this.load('zeo-suite', 'hrms') as AppSuite);
+  readonly suite$ = new BehaviorSubject<AppSuite>((this.load('zeo-suite', 'hrms') === 'people' ? 'hrms' : this.load('zeo-suite', 'hrms')) as AppSuite);   // v1.38.1: People is part of HRMS
   readonly recent$ = new BehaviorSubject<string[]>(this.loadList());
   /** v1.21.0: the apps active in the selected company (Settings → Apps); null until loaded. Settings is always there. */
   readonly active$ = new BehaviorSubject<string[] | null>(null);
@@ -22,13 +22,22 @@ export class ZSuiteService {
   constructor(private http: HttpClient) {}
 
   /** Load (or reload after an activation) which apps the company uses. An older server without the Apps service: all apps. */
+  /** v1.56.1: the cookie that opens uploaded files (/media/ needs a login) – after sign-in and every 6 hours. */
+  private mediaAt = 0;
+  mediaCookie(): void {
+    if (Date.now() - this.mediaAt < 6 * 3600 * 1000) { return; }
+    this.mediaAt = Date.now();
+    this.http.post(`${environment.apiBaseUrl}/users/media-cookie/`, {}, { withCredentials: true }).subscribe({ error: () => { this.mediaAt = 0; } });
+  }
+
   loadActive(force = false): void {
+    this.mediaCookie();
     let schema = '';
     try { schema = localStorage.getItem('selectedSchema') || ''; } catch { schema = ''; }
     if (!schema || (!force && this.loadedFor === schema && this.active$.value)) { return; }
     this.loadedFor = schema;
-    this.http.get<{ active: string[] }>(`${environment.apiBaseUrl}/zeo-apps/api/apps/?lite=1&schema=${encodeURIComponent(schema)}`).subscribe({
-      next: r => { ZEO_FLAGS.apps = [...(r.active || [])]; this.active$.next([...(r.active || []), 'settings']); },
+    this.http.get<{ active: string[]; pay_cycles?: string[]; bare_login?: boolean }>(`${environment.apiBaseUrl}/zeo-apps/api/apps/?lite=1&schema=${encodeURIComponent(schema)}`).subscribe({
+      next: r => { ZEO_FLAGS.apps = [...(r.active || [])]; ZEO_FLAGS.payCycles = [...(r.pay_cycles || [])]; ZEO_FLAGS.bareLogin = !!r.bare_login; this.active$.next([...(r.active || []), 'settings']); },
       error: () => this.active$.next(null),
     });
   }

@@ -102,6 +102,18 @@ export class ZeoMobileService {
     const s = ps.toString();
     return `${this.server()}${path}${s ? (path.includes('?') ? '&' : '?') + s : ''}`;
   }
+  /** v1.56.1: uploaded files need a login – the phone app adds ?zm=<token> to file addresses (no shared cookie with the server). */
+  mediaToken = ''; private mediaAt = 0;
+  async refreshMedia(): Promise<void> {
+    if (this.mediaToken && Date.now() - this.mediaAt < 6 * 3600 * 1000) { return; }
+    try { const r: any = await this.post('/users/media-cookie/', {}, false); this.mediaToken = r?.token || ''; this.mediaAt = Date.now(); } catch { /* files without the token stay closed */ }
+  }
+  file(url: string | null | undefined): string {
+    if (!url) { return ''; }
+    if (!this.mediaToken || !/\/media\//.test(url) || /[?&]zm=/.test(url)) { return url; }
+    return url + (url.includes('?') ? '&' : '?') + 'zm=' + encodeURIComponent(this.mediaToken);
+  }
+
   get<T = any>(path: string, company = true, q: Record<string, any> = {}): Promise<T> {
     return firstValueFrom(this.http.get<T>(this.url(path, company, q), { headers: this.headers() }).pipe(timeout(30000)));
   }

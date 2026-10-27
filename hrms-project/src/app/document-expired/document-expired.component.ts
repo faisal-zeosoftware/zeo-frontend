@@ -310,7 +310,9 @@ if (this.userId !== null) {
       
       const dialogRef = this.dialog.open(DocumentEditComponent, {
         width:'80%',
-        height:'500px',
+        maxWidth: '1100px',
+        maxHeight: '92vh',   // v1.40.1: the whole form fits (a fixed 500px cut the employee field off)
+        autoFocus: false,
         data: { departmentId: departmentId }
         
       });

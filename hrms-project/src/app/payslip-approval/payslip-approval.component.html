@@ -70,7 +70,8 @@
     <table class="styled-table mt-2">
       <thead>
         <tr>
-          <th><input type="checkbox" [(ngModel)]="masterSelected" (change)="toggleAll()" /></th>
+          <!-- v1.40.1: this one checkbox column drives Approve / Reject and the list's Export (the list adopts it instead of adding its own) -->
+          <th><input type="checkbox" aria-label="Select all" [(ngModel)]="masterSelected" (change)="toggleAll()" /></th>
           <th>No</th>
           <th>Employee code</th>
           <th>Payroll name</th>
@@ -90,7 +91,7 @@
         <!-- Iterate filteredApprovals instead of Approvals -->
         <tr *ngFor="let payslip of filteredApprovals; let i = index">
           <td data-label="Select">
-            <input type="checkbox" [(ngModel)]="payslip.selected" />
+            <input type="checkbox" aria-label="Select" [(ngModel)]="payslip.selected" />
           </td>
           <td data-label="No">{{ i + 1 }}</td>
           <td data-label="Employee Code">{{ payslip.request?.employee }}</td>

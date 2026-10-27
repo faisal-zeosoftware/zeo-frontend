@@ -1,3 +1,4 @@
+import { ZImpBannerComponent } from './shared-ui/z-admin-pages.component';   // v1.52.0 viewing as another user
 import { ZCloudBannerComponent } from './zeo-cloud/z-cloud-banner.component';
 import { NO_ERRORS_SCHEMA, NgModule  } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -113,12 +114,17 @@ import { EssDashboardComponent } from './hr-modules/dashboards/ess-dashboard.com
 import { ZListDirective } from './shared-ui/z-list.directive';
 import { ZAskComponent } from './shared-ui/z-ask.component';
 import { ZAppLauncherComponent } from './shared-ui/z-app-launcher.component';   // v1.20.0
+import { ZPaletteComponent } from './shared-ui/z-palette.component';   // v1.47.0
+import { ZTopbarToolsComponent } from './shared-ui/z-topbar-tools.component';
+import { ZWhatsNewComponent } from './shared-ui/z-whats-new.component';
+import { ZTourComponent } from './shared-ui/z-tour.component';
 import { ZOrgPickDirective } from './shared-ui/z-org-pick.directive';
 import { ZModuleMenuComponent, ZAppTitleComponent } from './shared-ui/z-module-menu.component';
 import { ZDashDesignerComponent, ZDashOverviewComponent } from './shared-ui/z-dash.component';
 import { ZFieldDesignerComponent } from './shared-ui/z-field-designer.component';
 import { ZFieldInputComponent } from './shared-ui/z-field-input.component';
 import { ZEmpFieldsComponent } from './shared-ui/z-emp-fields.component';
+import { ZEmpPickComponent } from './shared-ui/z-emp-pick.component';   // v1.40.1
 import { COUNTRY_PACK_UI } from './shared-ui/country-pack.service';   // v1.14.0 country packs
 import { I18N_UI, I18nInterceptor, I18nService, startI18n } from './shared-ui/i18n.service';   // v1.15.0 language packs
 import { ZTranslateComponent } from './shared-ui/z-translate.component';   // v1.15.0 translated master data (Translate button)
@@ -129,7 +135,8 @@ import { ZRecordService } from './shared-ui/z-record.service';
 import { ZRecordServiceToken } from './shared-ui/z-list.service';
 import { ZListRecorderInterceptor } from './shared-ui/z-list.service';
 import { FormSettingsService } from './shared-ui/form-settings.service';
-import { APP_INITIALIZER } from '@angular/core';
+import { APP_INITIALIZER, NgZone } from '@angular/core';
+import { startDateInputs } from './shared-ui/z-date-input';   // v1.62.0 ui
 
 /** Load the company's form designer settings before the first screen opens (max 3 s). */
 export function loadFormSettings(fs: FormSettingsService) {
@@ -285,6 +292,7 @@ import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/la
 import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
 import { LateinEarlyoutEmailTemplateEditComponent } from './latein-earlyout-email-template-edit/latein-earlyout-email-template-edit.component';
 import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
+import { SalaryRegisterComponent } from './employee-salary/salary-register.component';   // v1.62.0 payroll
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -505,6 +513,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
      LateinEarlyoutEmailTemplateComponent,
      LateinEarlyoutEmailTemplateEditComponent,
      EmployeeSalaryComponent,
+     SalaryRegisterComponent,   // v1.62.0 payroll
      CompensatoryTransactionComponent,
      EmployeeFullAttendanceComponent,
      GeneralSidebarComponent,
@@ -522,10 +531,12 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
 
   ],
   imports: [
+    ZImpBannerComponent,   // v1.52.0
     EssDashboardComponent,
     ZListDirective,
     ZAskComponent,
     ZAppLauncherComponent,   // v1.20.0 app launcher (HRMS / Projects / Settings)
+    ZPaletteComponent, ZTopbarToolsComponent, ZWhatsNewComponent, ZTourComponent,   // v1.47.0 search, create, help, tours
     ZOrgPickDirective,
     ZModuleMenuComponent,
     ZDashDesignerComponent,
@@ -533,6 +544,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     ZFieldDesignerComponent,
     ZFieldInputComponent,
     ZEmpFieldsComponent,
+    ZEmpPickComponent,   // v1.40.1
     ZAppTitleComponent,
     ZEmpOrgFieldsComponent,
     ZIfOrgDirective,
@@ -599,7 +611,8 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     { provide: APP_INITIALIZER, useFactory: startI18n, deps: [I18nService], multi: true },   // v1.15.0: language at start
     { provide: ZRecordServiceToken, useExisting: ZRecordService },
     { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true },
-    { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { dateFormat: 'dd MMM yyyy' } },   // v1.19.0: 12 May 1990 in views
+    { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { dateFormat: 'dd/MM/yyyy' } },   // v1.62.0 ui: dd/mm/yyyy in views (was 12 May 1990)
+    { provide: APP_INITIALIZER, useFactory: (zone: NgZone) => () => zone.runOutsideAngular(() => startDateInputs()), deps: [NgZone], multi: true },   // v1.62.0 ui: date fields show dd/mm/yyyy
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }],                                   // v1.19.0: DD/MM/YYYY in date pickers
     
    

@@ -477,7 +477,10 @@ export class DocumentRequestApprovalsComponent {
         (apr.status ?? '').toLowerCase().includes(search) ||
         (apr.note ?? '').toLowerCase().includes(search) ||
         (apr.level ?? '').toString().toLowerCase().includes(search) ||
-        (apr.approver ?? '').toString().toLowerCase().includes(search);
+        (apr.approver ?? '').toString().toLowerCase().includes(search) ||
+        // v1.40.1: search the request too (employee, type, reason)
+        [apr.request_details?.employee, apr.request_details?.employee_name, apr.request_details?.request_type, apr.request_details?.reason]
+          .some((v: any) => (v ?? '').toString().toLowerCase().includes(search));
 
       const matchesStatus =
         !this.selectedStatus ||

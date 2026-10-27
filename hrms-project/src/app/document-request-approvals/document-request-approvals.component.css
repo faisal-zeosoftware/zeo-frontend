@@ -844,3 +844,5 @@ select:focus-visible {
   }
 
 }
+/* v1.40.1: request details on the approvals list / modal */
+.apr-muted { color: #8a87a6; font-size: 12px; margin-left: 6px; }

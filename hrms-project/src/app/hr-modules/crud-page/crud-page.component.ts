@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ZMoneyPipe } from '../../shared-ui/country-pack.service';   // v1.62.0 ui
 import { ZListDirective } from '../../shared-ui/z-list.directive';
 import { ZOrgPickDirective } from '../../shared-ui/z-org-pick.directive';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ type Opt = { value: any; label: string };
 @Component({
   selector: 'app-hr-crud-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent, ZMoneyPipe],   // v1.62.0 ui zmoney
   templateUrl: './crud-page.component.html',
   styleUrls: ['../hr-shared.css'],
 })
@@ -236,10 +237,12 @@ export class CrudPageComponent implements OnInit {
       const v = row?.[f.key];
       if (f.type === 'file') return;
       if (v !== undefined && v !== null) {
-        this.formModel[f.key] = f.type === 'datetime' && typeof v === 'string' ? v.slice(0, 16) : (f.type === 'json' ? JSON.stringify(v) : v);
+        this.formModel[f.key] = f.type === 'datetime' && typeof v === 'string' ? v.slice(0, 16) : (f.type === 'json' ? JSON.stringify(v) :
+          (f.type === 'questions' && Array.isArray(v) ? v.map((q: any) => ({ ...q, options: [...(q.options || [])], must: Array.isArray(q.must) ? [...q.must] : q.must })) :
+            (f.type === 'tags' && Array.isArray(v) ? [...v] : v)));
       } else if (f.default !== undefined) {
         this.formModel[f.key] = typeof f.default === 'function' ? f.default() : f.default;
-      } else if (f.type === 'multiselect' || f.type === 'chips') {
+      } else if (f.type === 'multiselect' || f.type === 'chips' || f.type === 'tags' || f.type === 'questions') {
         this.formModel[f.key] = [];
       } else if (f.type === 'checkbox') {
         this.formModel[f.key] = false;
@@ -273,6 +276,38 @@ export class CrudPageComponent implements OnInit {
     model[key] = arr;
   }
 
+  // v1.57.0 tags and question editors
+  tagKey(model: any, key: string, ev: KeyboardEvent): void {
+    const el = ev.target as HTMLInputElement;
+    if (ev.key === 'Enter' || ev.key === ',') {
+      ev.preventDefault();
+      this.addTag(model, key, el);
+    } else if (ev.key === 'Backspace' && !el.value && (model[key] || []).length) {
+      model[key] = model[key].slice(0, -1);
+    }
+  }
+  tagBlur(model: any, key: string, ev: Event): void { this.addTag(model, key, ev.target as HTMLInputElement); }
+  private addTag(model: any, key: string, el: HTMLInputElement): void {
+    const words = (el.value || '').split(',').map(w => w.trim()).filter(Boolean);
+    const cur: string[] = Array.isArray(model[key]) ? [...model[key]] : [];
+    words.forEach(w => { if (!cur.some(c => c.toLowerCase() === w.toLowerCase())) { cur.push(w); } });
+    model[key] = cur;
+    el.value = '';
+  }
+  removeTag(model: any, key: string, i: number): void { const cur = [...(model[key] || [])]; cur.splice(i, 1); model[key] = cur; }
+  addQ(model: any, key: string): void {
+    model[key] = [...(model[key] || []), { text: '', type: 'yes_no', options: [], required: true, must: null }];
+  }
+  moveQ(model: any, key: string, i: number, d: number): void {
+    const a = [...model[key]]; const [q] = a.splice(i, 1); a.splice(i + d, 0, q); model[key] = a;
+  }
+  splitOpts(v: string): string[] { return String(v || '').split('|').map(x => x.trim()).filter(Boolean); }
+  toggleMust(q: any, o: string): void {
+    const m: string[] = Array.isArray(q.must) ? [...q.must] : [];
+    const i = m.indexOf(o); i >= 0 ? m.splice(i, 1) : m.push(o);
+    q.must = m.length ? m : null;
+  }
+
   onFile(key: string, ev: Event): void {
     const input = ev.target as HTMLInputElement;
     this.formFiles[key] = input.files && input.files.length ? input.files[0] : null;
@@ -288,7 +323,12 @@ export class CrudPageComponent implements OnInit {
       if (f.type === 'json' && typeof v === 'string' && v.trim()) {
         try { v = JSON.parse(v); } catch { throw new Error(`${f.label}: invalid JSON`); }
       }
-      if (v === null && (f.type === 'multiselect' || f.type === 'chips')) v = [];
+      if (v === null && (f.type === 'multiselect' || f.type === 'chips' || f.type === 'tags' || f.type === 'questions')) v = [];
+      if (f.type === 'questions' && Array.isArray(v)) {
+        v = v.filter((q: any) => String(q.text || '').trim());
+        const bad = v.find((q: any) => q.type === 'choice' && (q.options || []).length < 2);
+        if (bad) { throw new Error(`"${bad.text}": give at least two answers, separated by |`); }
+      }
       if (v === null && !this.formEditId && !f.required) continue;
       clean[f.key] = v;
     }
@@ -298,7 +338,7 @@ export class CrudPageComponent implements OnInit {
     Object.entries(clean).forEach(([k, v]) => {
       if (Array.isArray(v)) {
         const field = fields.find(x => x.key === k);
-        if (field?.type === 'chips') fd.append(k, JSON.stringify(v));
+        if (field?.type === 'chips' || field?.type === 'tags' || field?.type === 'questions') fd.append(k, JSON.stringify(v));
         else v.forEach(x => fd.append(k, String(x)));
       } else if (v !== null) fd.append(k, typeof v === 'boolean' ? (v ? 'true' : 'false') : String(v));
     });

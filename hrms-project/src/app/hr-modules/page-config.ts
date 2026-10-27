@@ -8,7 +8,9 @@
 
 export type FieldType =
   | 'text' | 'textarea' | 'number' | 'date' | 'datetime' | 'time' | 'email' | 'url'
-  | 'select' | 'multiselect' | 'checkbox' | 'file' | 'chips' | 'json';
+  | 'select' | 'multiselect' | 'checkbox' | 'file' | 'chips' | 'json'
+  | 'tags'        // v1.57.0 free words (type and press Enter / comma)
+  | 'questions';  // v1.57.0 apply-form questions of a job opening
 
 export interface Lookup {
   /** API path, e.g. '/organisation/api/Department/' */

@@ -6,7 +6,8 @@ import { GoalWorkspaceComponent } from './goal-workspace/goal-workspace.componen
 import { CalibrationComponent } from './calibration/calibration.component';
 import { PipelineBoardComponent } from './pipeline-board/pipeline-board.component';
 import { CYCLE_PAGE, KPI_PAGE, OUTCOME_PAGE, PIP_PAGE, TEMPLATE_PAGE } from './configs/performance.config';
-import { APPROVAL_LEVEL_PAGE, CANDIDATE_PAGE, INTERVIEW_PAGE, JOB_PAGE, OFFER_PAGE, ONBOARDING_PAGE, REQUISITION_PAGE } from './configs/recruitment.config';
+import { APPROVAL_LEVEL_PAGE, CANDIDATE_PAGE, INTERVIEW_PAGE, JOB_PAGE, OFFER_PAGE, ONBOARDING_PAGE, REQUISITION_PAGE, TALENT_POOL_PAGE } from './configs/recruitment.config';
+import { ZCareersSettingsComponent } from '../careers/careers-settings.component';   // v1.57.0
 import { EssDashboardComponent } from './dashboards/ess-dashboard.component';
 import { ManagerDashboardComponent } from './dashboards/manager-dashboard.component';
 import { EXPENSE_ROUTES } from '../expense/expense.routes';   // v1.11.0
@@ -47,6 +48,8 @@ const RECRUITMENT_MENU: ModuleMenuItem[] = [
   { path: 'job-openings', label: 'Job openings', icon: 'work', model: 'jobopening' },
   { path: 'pipeline', label: 'Candidate pipeline', icon: 'view_kanban', model: 'application' },
   { path: 'candidates', label: 'Candidates', icon: 'badge', model: 'candidate' },
+  { path: 'talent-pools', label: 'Talent pools', icon: 'groups', model: 'talentpool' },          // v1.57.0
+  { path: 'careers-page', label: 'Careers page', icon: 'public', model: 'jobopening' },            // v1.57.0
   { path: 'interviews', label: 'Interviews', icon: 'event', model: 'interview' },
   { path: 'offers', label: 'Offer letters', icon: 'description', model: 'offer' },
   { path: 'onboarding', label: 'Pre-Onboarding & Visa', icon: 'flight_land', model: 'visastep' },
@@ -101,6 +104,8 @@ export const HR_MODULE_ROUTES: Routes = [
   { path: 'zeo-maintenance', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_APP_LAZY) },
   { path: 'zeo-assets', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_ASSETS_LAZY) },   // v1.33.0
   { path: 'zeo-people', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_PEOPLE_LAZY) },   // v1.36.0
+  { path: 'zeo-hr', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_HR_LAZY) },   // v1.48.0 HR operations
+  { path: 'zeo-masters', loadChildren: () => import('../zeo-apps/zeo-apps.routes').then(m => m.ZEO_MASTERS_LAZY) },   // v1.41.0 business partners (v1.44.0 statement, valuation)
   { path: 'zeo-ai', component: ZModuleShellComponent, data: { title: 'AI assistants' }, children: [{ path: '', redirectTo: 'payroll', pathMatch: 'full' }, { path: ':tab', component: ZeoAiComponent }] },   // v1.37.0 AI assistants
   { path: 'zeo-hse', loadChildren: () => import('../zeo-hse/zeo-hse.routes').then(m => m.ZEO_HSE_LAZY) },
   ...EMPLOYEE_PROFILE_ROUTES,                                           // v1.13.0
@@ -137,6 +142,8 @@ export const HR_MODULE_ROUTES: Routes = [
       page('job-openings', JOB_PAGE),
       { path: 'pipeline', component: PipelineBoardComponent },
       page('candidates', CANDIDATE_PAGE),
+      page('talent-pools', TALENT_POOL_PAGE),
+      { path: 'careers-page', component: ZCareersSettingsComponent },
       page('interviews', INTERVIEW_PAGE),
       page('offers', OFFER_PAGE),
       page('onboarding', ONBOARDING_PAGE),

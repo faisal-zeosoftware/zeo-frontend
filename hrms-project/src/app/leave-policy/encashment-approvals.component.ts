@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -43,7 +44,7 @@ import { COUNTRY_PACK_UI, cpPack } from '../shared-ui/country-pack.service';   /
         <tbody>
           <tr *ngFor="let r of rows">
             <td><a href="" (click)="$event.preventDefault(); open(r)">{{ r.employee }}</a></td><td>{{ r.leave_type }}</td><td>{{ r.days }}</td>
-            <td>{{ r.amount | number:'1.2-2' }}</td><td>{{ r.balance_now }}</td><td>{{ r.requested | date:'dd MMM yyyy' }}</td><td>{{ r.status }}</td>
+            <td>{{ r.amount | number:'1.2-2' }}</td><td>{{ r.balance_now }}</td><td>{{ r.requested | date:'dd/MM/yyyy' }}</td><td>{{ r.status }}</td>
             <td><span class="lp-ok" *ngIf="!r.problems.length && (r.status === 'Pending Approval' || r.status === 'Draft')">OK</span><span class="lp-bad" *ngFor="let p of r.problems">{{ p }} </span><span *ngIf="r.payroll_run">{{ r.payroll_run }}</span></td>
             <td class="enc-steps">
               <ng-container *ngIf="r.steps?.chain; else noChain">

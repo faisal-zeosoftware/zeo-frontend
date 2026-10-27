@@ -1089,6 +1089,12 @@ applyEmployeeFilter(): void {
   }
 }
 
+/** v1.40.1: "CODE - Name" of one chosen employee for the filter box */
+employeeLabel(code: string): string {
+  const e = (this.distinctEmployees || []).find((x: any) => x.employee_code === code);
+  return e ? `${e.employee_code} - ${e.emp_name}` : String(code || '');
+}
+
 selectAllEmployees(): void {
   this.selectedEmployees = this.distinctEmployees.map(emp => emp.employee_code);
   this.applyEmployeeFilter();

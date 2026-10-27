@@ -6,16 +6,12 @@
       <div class="header_section">
   
         <div class="row">
-            <div class="col-md-4">
-                <h1> Salary structure</h1>
+            <div class="col-md-7">
+                <h1>Salary structures</h1>
+                <!-- v1.62.0 payroll: one-line description -->
+                <p class="lp-desc" style="margin:6px 0 0;color:#6b7185;font-size:13px">The set of salary components each kind of employee gets; the amounts stay those of each employee (Employee salary).</p>
             </div>
   
-            <div class="col-md-3">
-                
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-  
-            </div>
             <div class="col-md-5">
                 <div class="button-group pull-right">
                     <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
@@ -225,12 +221,23 @@
     </div>
   
     <div class="employee-card">
-  
-
+      <!-- v1.40.1: search box for the Employee field; the list is searched and paged through the API -->
+      <div class="employee-search-bar d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+        <div class="input-group" style="max-width: 420px;">
+          <span class="input-group-text bg-white border-end-0"><i class="fa fa-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0" id="ss-emp-search" placeholder="Search employee by name or code"
+                 [(ngModel)]="SearchEmployee" [ngModelOptions]="{standalone: true}" (input)="onEmpSearch()" autocomplete="off">
+          <button *ngIf="SearchEmployee" class="btn btn-outline-secondary border-start-0" type="button" (click)="SearchEmployee = ''; onEmpSearch()"><i class="fa fa-times"></i></button>
+        </div>
+        <small class="text-muted">
+          <strong>{{ selectedEmpIds.size }}</strong> selected<span *ngIf="selectedEmpIds.size"> · <a href="javascript:void(0)" (click)="clearSelectedEmps()">clear</a></span>
+          · {{ empTotal }} employee(s)<span *ngIf="empLoading"> · loading…</span>
+        </small>
+      </div>
   
       <div class="table-responsive">
     
-        <table class="employee-table">
+        <table class="employee-table" zPlain>
     
           <thead>
     
@@ -238,10 +245,11 @@
     
               <th width="70">
     
+                <!-- v1.40.1: selects the employees on this page (the chosen ones are kept across pages and searches) -->
                 <mat-checkbox
-                  [(ngModel)]="allEmployeesSelected"
-                  [ngModelOptions]="{standalone:true}"
-                  (change)="toggleSelectAllEmployees()">
+                  [checked]="pageAllSelected()"
+                  [indeterminate]="pageSomeSelected()"
+                  (change)="toggleSelectPage($event.checked)">
                 </mat-checkbox>
     
               </th>
@@ -263,8 +271,8 @@
               <td data-label="checkbox">
     
                 <mat-checkbox
-                  [(ngModel)]="emp.selected"
-                  [ngModelOptions]="{standalone:true}">
+                  [checked]="selectedEmpIds.has(emp.id)"
+                  (change)="toggleEmp(emp, $event.checked)">
                 </mat-checkbox>
     
               </td>
@@ -336,7 +344,7 @@
     
         </table>
     
-<div class="pagination-container" *ngIf="totalPages > 0">
+<div class="pagination-container" *ngIf="totalPages > 1">
 
     <button
         class="page-btn"
@@ -346,7 +354,7 @@
     </button>
 
     <button class="page-number active">
-        {{ currentPage }}
+        {{ currentPage }} / {{ totalPages }}
     </button>
 
     <button

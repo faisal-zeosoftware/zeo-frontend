@@ -78,6 +78,11 @@ export class DesignationService {
   
   }
 
+  // v1.62.0 speed: only the signed-in user's own rights row (compact codenames in `codes`) – what a page's own rights check needs
+  getMyPermissions(selectedSchema: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/organisation/api/permissions/?schema=${selectedSchema}&me=1`);
+  }
+
   getjob_title(): Observable<any> {
     const url = `${this.baseUrl}/Designation/`;
     return this.http.get(url);

@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: wording (approval) -->
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
 
@@ -7,7 +8,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Document approvel level</h1>
+                <h1>Document approval level</h1>
             </div>
                <div class="col-md-3">
                     
@@ -70,7 +71,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create document request approvel level</h2>
+              <h2> Create document request approval level</h2>
             </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -191,7 +192,7 @@
                 </div>
             
                 <div class="col-md-2 d-flex align-items-end">
-                  <button class="form-control btn btn-danger w-100" (click)="removeLevel(i)">
+                  <button type="button" class="form-control btn btn-danger w-100" (click)="removeLevel(i)">
                     Remove
                   </button>
                 </div>
@@ -199,7 +200,8 @@
               </div>
             
               <!-- Add Button -->
-              <button class="btn btn-primary mt-2" (click)="addLevel()">
+              <!-- v1.40.1: type="button" - inside the form these used to submit it ("+ Add level" saved the level) -->
+              <button type="button" class="btn btn-primary mt-2" (click)="addLevel()">
                 + Add level
               </button>
             
@@ -236,7 +238,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit document approvel level</h2>
+    <h2>Edit document approval level</h2>
   </div>
     <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -459,7 +461,7 @@
           <!-- Show ALL approvers -->
           <td data-label="Approver">
     <div *ngFor="let lvl of docs.levels">
-      {{ lvl.approver }}
+      {{ (lvl.approver_name || lvl.approver) }}
     </div>
           </td>
 

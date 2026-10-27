@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -12,10 +15,30 @@ import { UserMasterService } from '../user-master/user-master.service';
 @Component({
   selector: 'app-airticket-approvals',
   templateUrl: './airticket-approvals.component.html',
-  styleUrl: './airticket-approvals.component.css'
+  styleUrls: ['./airticket-approvals.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 
 export class AirticketApprovalsComponent {
+  // v1.62.0 air ticket: what waits for me (or what I decided) from /payroll-plus/api/air-tickets/approvals/; Review opens this screen's own window
+  at = atInject(AtUiService);
+  atRows: any[] = [];
+  atBox: 'waiting' | 'decided' = 'waiting';
+  atWaiting = 0;
+  atLoading = true;
+  atMsg = '';
+  /** an approver without the view right still sees what waits for them (the server returns only their own steps) */
+  atCanSee = false;
+  async atLoad(): Promise<void> {
+    try { const r: any = await this.at.get('approvals', { box: this.atBox }); this.atRows = r.rows || []; this.atWaiting = r.waiting || 0; this.atMsg = ''; this.atCanSee = true; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The approvals could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atSwitch(box: 'waiting' | 'decided'): void { this.atBox = box; this.atLoading = true; this.atRows = []; this.atLoad(); }
+  atToggleDelegation(id: number): void {
+    const apr = (this.filteredApprovals || []).find((x: any) => x.id === id);
+    if (apr) { apr.showDelegation = !apr.showDelegation; }
+  }
+
   
   
   private dataSubscription?: Subscription;
@@ -281,6 +304,7 @@ export class AirticketApprovalsComponent {
 
 
   fetchEmployees(schema: string, branchIds: number[]): void {
+    this.atLoad();   // v1.62.0 air ticket (also after approve / reject)
     this.isLoading = true;
     this.EmployeeService.getApprovalslistAirticketNew(schema, branchIds).subscribe({
       next: (data: any) => {
@@ -692,6 +716,10 @@ selectedDelegationId: number | null = null;
     if (!selectedSchema || !this.selectedApproval) {
       return;
     }
+    if (!this.delegationForm.deligate_to) {   // v1.40.1
+      alert('Select the user to delegate to.');
+      return;
+    }
   
     const apiUrl =
       `${this.apiUrl}/payroll/api/airticket-approval/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
@@ -714,7 +742,11 @@ selectedDelegationId: number | null = null;
   
           alert("Delegated Successfully");
   
-          window.location.reload();
+          // v1.40.1: no full page reload – it wiped the "Delegated Successfully" message before anyone could read it;
+  
+          // the pop-ups close and the list is loaded again instead
+  
+          this.isAddFieldsModalOpen = false;
   
           this.closeDelegationModal();
   
@@ -729,6 +761,10 @@ selectedDelegationId: number | null = null;
   
           this.isLoading = false;
           console.error(err);
+  
+          // v1.40.1: tell the user why (already delegated, same user, no rights…) instead of failing silently
+  
+          alert(err?.error?.error || err?.error?.detail || 'The delegation could not be sent.');
   
         }
   

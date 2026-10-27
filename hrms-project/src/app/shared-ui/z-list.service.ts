@@ -96,6 +96,19 @@ export class ZListService {
     return this.dir$;
   }
 
+  // ---------- v1.62.0 ui: sign-in name → person (lists that show gdis_rajesh show "Rajesh Menon") ----------
+  private users$?: Observable<{ id: number; username: string; name: string; code: string }[]>;
+  private usersSchema = '';
+  userNames(): Observable<{ id: number; username: string; name: string; code: string }[]> {
+    const s = this.schema;
+    if (!this.users$ || this.usersSchema !== s) {
+      this.usersSchema = s;
+      this.users$ = this.http.get<any[]>(`${this.api}/tools/api/user-names/?schema=${s}`).pipe(
+        map(l => Array.isArray(l) ? l : []), catchError(() => of([])), shareReplay(1));
+    }
+    return this.users$;
+  }
+
   // ---------- permissions ----------
   permissions(): Observable<{ admin: boolean; codes: Set<string> }> {
     const s = this.schema;
@@ -108,6 +121,8 @@ export class ZListService {
           const p = all.find(x => me !== null && Number(x.profile) === me) || (all.length === 1 ? all[0] : {});
           const codes = new Set<string>();
           (p.groups || []).forEach((g: any) => (g.permissions || []).forEach((x: any) => codes.add(x.codename)));
+          (p.user_permissions || []).forEach((x: any) => codes.add(x.codename));
+          (p.codes || []).forEach((c: string) => codes.add(c));   // v1.38.0: compact ?me=1 answer – one list of codenames
           // only superusers receive other people's rows from this API
           const admin = !!p.is_superuser || (all.length > 1 && !all.some(x => me !== null && Number(x.profile) === me));
           return { admin, codes };
@@ -140,8 +155,15 @@ export class ZListService {
     return this.http.post(`${this.api}/organisation/api/masters/standard/?schema=${this.schema}`, { kind });
   }
 
-  importRows(endpoint: string, rows: any[], dryRun: boolean): Observable<any> {
-    return this.http.post(`${this.api}/tools/api/import/?schema=${this.schema}`, { endpoint, rows, dry_run: dryRun });
+  importRows(endpoint: string, rows: any[], dryRun: boolean, extra: any = {}): Observable<any> {
+    return this.http.post(`${this.api}/tools/api/import/?schema=${this.schema}`, { endpoint, rows, dry_run: dryRun, ...extra });
+  }
+  /** v1.52.0 – the column mapping remembered for this file layout, and undo of an import. */
+  importMapping(endpoint: string, headers: string[]): Observable<any> {
+    return this.http.get(`${this.api}/zeo-admin/api/import-mapping/?schema=${this.schema}&endpoint=${encodeURIComponent(endpoint)}&headers=${encodeURIComponent(JSON.stringify(headers))}`);
+  }
+  undoImport(batch: number): Observable<any> {
+    return this.http.post(`${this.api}/zeo-admin/api/imports/${batch}/undo/?schema=${this.schema}`, {});
   }
 }
 

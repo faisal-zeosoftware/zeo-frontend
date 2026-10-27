@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { dmy } from '../shared-ui/z-present';   // v1.62.0 ui
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -10,11 +11,13 @@ export const ZA_APPS: Record<string, { title: string; icon: string }> = {
   'zeo-maintenance': { title: 'Maintenance', icon: 'build' },
   'zeo-assets': { title: 'Asset Management', icon: 'inventory_2' },   // v1.33.0
   'zeo-people': { title: 'People', icon: 'diversity_3' },   // v1.36.0
+  'zeo-masters': { title: 'Business partners', icon: 'diversity_2' },   // v1.41.0 shared masters under every business app
+  'zeo-hr': { title: 'HR operations', icon: 'gavel' },   // v1.48.0
 };
 
 /** The app (slug) of a page URL: /main-sidebar/zeo-crm/... → zeo-crm. */
 export function appOf(url: string): string {
-  const m = /\/(zeo-crm|zeo-property|zeo-maintenance|zeo-assets|zeo-people)(\/|$|\?)/.exec(url || '');
+  const m = /\/(zeo-crm|zeo-property|zeo-maintenance|zeo-assets|zeo-people|zeo-masters|zeo-hr)(\/|$|\?)/.exec(url || '');
   return m ? m[1] : 'zeo-crm';
 }
 
@@ -87,12 +90,12 @@ export class ZaApiService {
 export function when(v: any): string {
   if (!v) return '';
   const d = new Date(v);
-  return isNaN(d.getTime()) ? String(v) : d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return isNaN(d.getTime()) ? String(v) : dmy(d, true);   // v1.62.0 ui: dd/mm/yyyy HH:mm
 }
 export function day(v: any): string {
   if (!v) return '';
   const d = new Date(String(v).length <= 10 ? v + 'T00:00:00' : v);
-  return isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  return isNaN(d.getTime()) ? String(v) : dmy(d);   // v1.62.0 ui: dd/mm/yyyy (was "27 Sept 2026")
 }
 export const today = (): string => new Date().toISOString().slice(0, 10);
 export const money = (v: any): string => (v === null || v === undefined || v === '') ? '–' : Number(v).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });

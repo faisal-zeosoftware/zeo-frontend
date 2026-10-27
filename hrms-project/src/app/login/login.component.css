@@ -1,10 +1,10 @@
-/* v1.22.2 – ZEO sign-in. Colours from the ZEO logo: plum (z) and dusty rose (eo). */
+/* v1.22.2 – ZEO sign-in. v1.38.0: the application's own palette (navy and indigo of the header and buttons), every app with its icon. */
 :host {
-  --plum: #5b2087;
-  --plum-dark: #461867;
-  --aubergine: #2a1638;
-  --rose: #d7a9a9;
-  --rose-soft: #f4e8e8;
+  --plum: #5b4fe0;
+  --plum-dark: #4a3fcf;
+  --aubergine: #1b1640;
+  --rose: #a89cf5;
+  --rose-soft: #eeedfd;
   --ink: #231b2e;
   --muted: #6e6578;
   --line: #e2dde7;
@@ -56,12 +56,15 @@ h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 6px
 .zl-brand::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--rose); }
 .zl-brand-in { max-width: 560px; }
 .zl-kicker { margin: 0 0 14px; color: var(--rose); font-size: 14px; font-weight: 500; }
-.zl-brand h2 { margin: 0 0 40px; font-size: 34px; line-height: 1.22; font-weight: 400; letter-spacing: -0.015em; color: #fff; }
-.zl-apps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px 36px; }
-.zl-apps li { border-top: 1px solid rgba(215, 169, 169, .35); padding-top: 12px; }
-.zl-apps b { display: block; font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px; }
-.zl-apps span { display: block; font-size: 13.5px; line-height: 1.5; color: #c9bdd3; }
-.zl-made { margin: 44px 0 0; font-size: 13px; color: #a898b4; }
+.zl-brand h2 { margin: 0 0 28px; font-size: 30px; line-height: 1.22; font-weight: 400; letter-spacing: -0.015em; color: #fff; }
+.zl-apps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }   /* v1.38.1: 8 tiles – HR spans two */
+.zl-apps li:first-child { grid-column: span 2; }
+.zl-apps li { display: flex; gap: 10px; align-items: flex-start; background: rgba(255, 255, 255, .06); border: 1px solid rgba(168, 156, 245, .25); border-radius: 12px; padding: 12px 12px 12px 10px; }
+.zl-apps li:last-child { grid-column: 1 / -1; background: rgba(91, 79, 224, .28); border-color: rgba(168, 156, 245, .5); }
+.zl-apps i { font-size: 22px; color: var(--rose); flex: none; margin-top: 1px; }
+.zl-apps b { display: block; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+.zl-apps span { display: block; font-size: 12.5px; line-height: 1.45; color: #c9c3ff; }
+.zl-made { margin: 30px 0 0; font-size: 13px; color: #a89cf5; }
 
 :host-context([dir='rtl']) .zl-brand::before { left: auto; right: 0; }
 :host-context([dir='rtl']) .zl-pw input { padding-right: 14px; padding-left: 72px; }
@@ -74,11 +77,23 @@ h1 { font-size: 28px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 6px
   .zl-page { grid-template-columns: 1fr; }
   .zl-brand { order: 2; padding: 40px 24px; }
   .zl-brand h2 { font-size: 24px; margin-bottom: 26px; }
-  .zl-apps { grid-template-columns: 1fr; gap: 14px; }
+  .zl-apps { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .zl-apps li:first-child { grid-column: 1 / -1; }
   .zl-form-side { padding: 32px 20px 40px; min-height: 100vh; }
 }
 @media (prefers-reduced-motion: reduce) { .zl-spin { animation: none; } .zl-field input, .zl-btn { transition: none; } }
 
 /* v1.23.0 ZEO Cloud sign-up link */
 .zl-signup { margin: 18px 0 0; font-size: 14px; color: #6e6578; }
-.zl-signup a { color: #5b2087; font-weight: 500; }
+.zl-signup a { color: #5b4fe0; font-weight: 500; }
+
+/* v1.54.0 single sign-on */
+.zl-sso { display: flex; flex-direction: column; margin: 2px 0 6px; }
+.zl-sso-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1d2033; border: 1px solid #cfd2e3; }
+.zl-sso-btn:hover:not(:disabled) { background: #f6f6fb; }
+.zl-sso-or { text-align: center; margin: 10px 0 0; }
+.zl-sso-mark { width: 18px; height: 18px; border-radius: 3px; background: var(--plum); flex: 0 0 18px; }
+.zl-sso-mark.k-microsoft { background: linear-gradient(90deg, #f25022 0 48%, transparent 48% 52%, #7fba00 52%) top / 100% 48% no-repeat,
+  linear-gradient(90deg, #00a4ef 0 48%, transparent 48% 52%, #ffb900 52%) bottom / 100% 48% no-repeat; border-radius: 0; }
+.zl-sso-mark.k-google { background: conic-gradient(#ea4335 0 25%, #fbbc05 0 50%, #34a853 0 75%, #4285f4 0); border-radius: 50%; }
+.zl-btn.zl-btn-2 { background: #fff; color: var(--plum); border: 1px solid var(--plum); }

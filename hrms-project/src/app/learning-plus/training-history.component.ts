@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +42,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
         <p class="lp-muted" *ngIf="!h.items.length">No training yet.</p>
         <ul class="lp-tl">
           <li *ngFor="let i of h.items" [class.fail]="i.passed === false" [class.online]="i.type === 'online'">
-            <div class="d">{{ i.date | date:'dd MMM yyyy' }} · {{ i.type === 'online' ? 'Online course' : i.session }}</div>
+            <div class="d">{{ i.date | date:'dd/MM/yyyy' }} · {{ i.type === 'online' ? 'Online course' : i.session }}</div>
             <div class="c">{{ i.course }}</div>
             <div class="f">
               <ng-container *ngIf="i.type === 'session'">
@@ -62,7 +63,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
           <h2>Certificates</h2>
           <p class="lp-muted" *ngIf="!h.certificates.length">None.</p>
           <div class="lp-mod" *ngFor="let c of h.certificates">
-            <span class="t">{{ c.title }}<div class="lp-muted">{{ c.issued_on | date:'dd MMM yyyy' }}<span *ngIf="c.expiry_date"> → {{ c.expiry_date | date:'dd MMM yyyy' }}</span></div></span>
+            <span class="t">{{ c.title }}<div class="lp-muted">{{ c.issued_on | date:'dd/MM/yyyy' }}<span *ngIf="c.expiry_date"> → {{ c.expiry_date | date:'dd/MM/yyyy' }}</span></div></span>
             <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ c.status }}</span>
             <button type="button" class="lp-btn small" (click)="pdf(c)">PDF</button>
           </div>

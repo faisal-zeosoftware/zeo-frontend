@@ -801,3 +801,49 @@ mat-sidenav-container {
 /* v1.37.1: dialog titles – one font and size on every screen (several component styles used "font-family: math",
    which browsers render as a serif, and varying sizes) */
 .modal h2, .modal-content h2 { font-family: Roboto, "Helvetica Neue", sans-serif !important; font-size: 17px !important; font-weight: 600 !important; text-transform: none !important; }
+
+/* ---------------------------------------------------------------- v1.39.0 form layout designer (shared-ui/z-form-arranger.service.ts) */
+.zfa-hidden { display: none !important; }
+.zfa-design .zfa-hidden { display: block !important; opacity: .45; }
+/* widths in a bootstrap row (flex) */
+.row > .zfa-w-quarter { flex: 0 0 25%; max-width: 25%; }
+.row > .zfa-w-third { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.row > .zfa-w-half { flex: 0 0 50%; max-width: 50%; }
+.row > .zfa-w-full { flex: 0 0 100%; max-width: 100%; }
+/* widths in a grid form (kit forms, designer fields) */
+.ex-form .zfa-w-full, .zr-grid .zfa-w-full, .er-form .zfa-w-full, .zfa-main.ex-form > .zfa-extra, .zfa-main.er-form > .zfa-extra, .zr-grid > .zfa-w-full { grid-column: 1 / -1; }
+.ex-form .zfa-w-quarter, .ex-form .zfa-w-third, .ex-form .zfa-w-half, .zr-grid .zfa-w-quarter, .zr-grid .zfa-w-third, .zr-grid .zfa-w-half, .er-form .zfa-w-quarter, .er-form .zfa-w-third, .er-form .zfa-w-half { grid-column: auto; }
+.er-form .zfa-w-half { grid-column: span 2; }
+.zfa-main.er-form > .zfa-extra { grid-column: auto; }
+.zfa-main.er-form > .zfa-extra .zf { margin: 0; }
+.zfa-main.ex-form > .zfa-extra { grid-column: auto; }
+.zfa-main.ex-form > .zfa-extra .zf { margin: 0; }
+.zfa-main.row > .zfa-extra { flex: 0 0 50%; max-width: 50%; padding: 0 15px; margin-bottom: 10px; }
+.zfa-main.row > .zfa-extra.zfa-w-full { flex: 0 0 100%; max-width: 100%; }
+.zfa-main.row > .zfa-extra.zfa-w-quarter { flex: 0 0 25%; max-width: 25%; }
+.zfa-main.row > .zfa-extra.zfa-w-third { flex: 0 0 33.3333%; max-width: 33.3333%; }
+.zfa-extra .zf-label { font-weight: 600; font-size: 13px; }
+/* section titles */
+.zfa-section { flex: 0 0 100%; max-width: 100%; grid-column: 1 / -1; font-size: 12.5px; font-weight: 700; color: #5b4fe0; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #e5e3f7; padding: 10px 15px 4px; margin: 4px 0 6px; }
+/* design mode */
+.zfa-design > * { position: relative; }
+.zfa-design > [draggable] > :not(.zfa-handle), .zfa-design > za-field > [draggable] > :not(.zfa-handle) { pointer-events: none; }
+.zfa-design > [draggable], .zfa-design > za-field > [draggable] { outline: 1.5px dashed #a89cf5; outline-offset: -2px; border-radius: 8px; cursor: grab; background: #fbfbfe; }
+.zfa-dragging { opacity: .4; }
+.zfa-handle { display: flex; align-items: center; gap: 6px; background: #eeedfd; border: 1px solid #c9c3ff; border-radius: 6px; padding: 2px 6px; margin-bottom: 4px; font-size: 11.5px; color: #1b1640; pointer-events: auto; }
+.zfa-handle .zfa-grip { cursor: grab; color: #5b4fe0; font-weight: 700; letter-spacing: -2px; }
+.zfa-handle .zfa-name { flex: 1; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.zfa-handle .zfa-w { font-size: 11px; height: 22px; border: 1px solid #c9c3ff; border-radius: 4px; background: #fff; }
+.zfa-handle button { border: 1px solid #c9c3ff; background: #fff; border-radius: 4px; height: 22px; padding: 0 5px; font-size: 12px; cursor: pointer; }
+.zfa-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #1b1640; color: #fff; border-radius: 8px; padding: 8px 12px; margin: 0 0 10px; font-size: 12.5px; }
+.zfa-bar span { color: #c9c3ff; }
+.zfa-bar .zfa-grow { flex: 1; }
+.zfa-btn { height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid #5b4fe0; background: transparent; color: #fff; font-size: 12.5px; cursor: pointer; }
+.zfa-btn.primary { background: #5b4fe0; }
+.zfa-btn.zfa-reset { border-color: #7a6fe8; color: #c9c3ff; }
+
+/* ---------------------------------------------------------------- v1.40.1 (bugs 28–29): no visible scrollbars anywhere, scrolling kept.
+   Every scrollable element keeps overflow: auto / scroll; only the bar is hidden (Chrome / Edge / Safari via ::-webkit-scrollbar, Firefox via
+   scrollbar-width). Mouse wheel, touch, keyboard and drag-scrolling work as before. */
+html, body, * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+*::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }

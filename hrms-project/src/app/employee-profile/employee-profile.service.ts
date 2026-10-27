@@ -74,7 +74,7 @@ export function eidProblem(v: string): string {
     if (i % 2 === 1) { d *= 2; if (d > 9) { d -= 9; } }
     sum += d;
   }
-  return sum % 10 === 0 ? '' : 'This Emirates ID number is not valid (the last digit does not match).';
+  return sum % 10 === 0 ? '' : 'This Emirates ID number is not valid (the last digit does not match). Check the number on the card.';   // v1.40.1: the full message
 }
 
 /** UAE IBAN check (AE + 21 digits, mod-97). v1.14.0: other countries (`country` = company pack) get the general IBAN check. */

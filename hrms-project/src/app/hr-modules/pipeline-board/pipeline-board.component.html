@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container hr-page">
   <div class="comapny_section">
     <div class="header_section">
@@ -24,7 +25,8 @@
                 <span class="pb-ini" [style.background]="color(a.id)">{{ initials(a.candidate_name) }}</span>
                 <div><b>{{ a.candidate_name }}</b><div class="muted">{{ a.candidate_nationality || '–' }} · {{ a.candidate_experience }} yrs</div></div>
               </div>
-              <div class="pb-card-bot"><span class="hr-stars"><i *ngFor="let s of stars(a.rating)" [class.on]="s">★</i></span><span class="muted">{{ a.candidate_source }}</span></div>
+              <div class="pb-card-bot"><span class="hr-stars"><i *ngFor="let s of stars(a.rating)" [class.on]="s">★</i></span><span class="muted">{{ a.source_label || a.candidate_source }}</span></div>
+              <div class="pb-flag" *ngIf="a.knockout_failed" title="A needed answer of the apply form was not given">⚠ Needed answers missed</div>
             </div>
           </div>
         </div>
@@ -36,10 +38,16 @@
           <dt>Stage</dt><dd>{{ selected.stage_label }}</dd>
           <dt>Nationality</dt><dd>{{ selected.candidate_nationality || '–' }}</dd>
           <dt>Experience</dt><dd>{{ selected.candidate_experience }} years</dd>
-          <dt>Source</dt><dd>{{ selected.candidate_source }}</dd>
-          <dt>Applied</dt><dd>{{ selected.applied_on | date:'dd MMM yyyy' }}</dd>
+          <dt>Source</dt><dd>{{ selected.source_label || selected.candidate_source }}</dd>
+          <dt>Applied</dt><dd>{{ selected.applied_on | date:'dd/MM/yyyy' }}</dd>
           <dt *ngIf="selected.rejection_reason">Rejection reason</dt><dd *ngIf="selected.rejection_reason">{{ selected.rejection_reason }}</dd>
         </dl>
+        <!-- v1.57.0 answers given on the careers page -->
+        <ng-container *ngIf="selected.answers?.length">
+          <h4 class="pb-h">Apply-form answers</h4>
+          <div class="pb-ans" *ngFor="let q of selected.answers" [class.bad]="q.ok === false"><span>{{ q.question }}</span><b>{{ q.answer }}<ng-container *ngIf="q.ok === false"> ⚠</ng-container></b></div>
+        </ng-container>
+        <ng-container *ngIf="selected.cover_letter"><h4 class="pb-h">Cover letter</h4><p class="pb-cover">{{ selected.cover_letter }}</p></ng-container>
         <div class="row">
           <div class="col-6 hr-field"><label>Screening score (0-100)</label><input type="number" class="form-control" [(ngModel)]="selected.screening_score"></div>
           <div class="col-6 hr-field"><label>Rating</label><select class="form-control" [(ngModel)]="selected.rating"><option [ngValue]="null">–</option><option *ngFor="let n of [1,2,3,4,5]" [ngValue]="n">{{ n }}</option></select></div>
@@ -50,7 +58,7 @@
           <button class="hr-mini hr-btn-red" *ngIf="selected.stage !== 'hired' && selected.stage !== 'rejected'" (click)="move(selected, 'rejected')">Reject</button>
         </div>
         <h4 class="pb-h">History</h4>
-        <div class="pb-hist" *ngFor="let h of selected.history"><b>{{ h.from_stage || '–' }} → {{ h.to_stage }}</b> <span class="muted">{{ h.changed_at | date:'dd MMM yyyy, HH:mm' }} · {{ h.changed_by_display }}</span><div *ngIf="h.note">{{ h.note }}</div></div>
+        <div class="pb-hist" *ngFor="let h of selected.history"><b>{{ h.from_stage || '–' }} → {{ h.to_stage }}</b> <span class="muted">{{ h.changed_at | date:'dd/MM/yyyy HH:mm' }} · {{ h.changed_by_display }}</span><div *ngIf="h.note">{{ h.note }}</div></div>
         <p class="muted">Schedule interviews under Interviews, and create the offer under Offer Letters.</p>
       </aside>
     </div>

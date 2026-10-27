@@ -5,6 +5,8 @@ import { MyAttendanceComponent } from './my-attendance.component';
 import { AttendanceBoardComponent } from './daily-board.component';
 import { PunchImportComponent } from './punch-import.component';
 import { AttendanceKioskComponent } from './kiosk.component';
+import { ApPhotosComponent, ApSetup149Component } from './ap-v149.component';   // v1.49.0
+import { ApKioskPinsComponent } from './ap-v151.component';   // v1.51.0
 import { CORRECTION_PAGE, DAY_PAGE, DEVICE_PAGE, IP_PAGE, KIOSK_PAGE, MISSING_PAGE, PUNCH_PAGE, RULE_PAGE } from './attendance-plus.config';
 
 /** Attendance Plus (v1.12.0) sub-menu: ESS pages first, then HR screens. */
@@ -19,7 +21,10 @@ export const ATTENDANCE_PLUS_MENU: ModuleMenuItem[] = [
   { path: 'rules', label: 'Attendance rules', icon: 'rule', model: 'attendance' },
   { path: 'devices', label: 'Devices', icon: 'router', model: 'attendance' },
   { path: 'kiosks', label: 'Kiosks', icon: 'tablet_mac', model: 'attendance' },
+  { path: 'kiosk-pins', label: 'Kiosk PINs', icon: 'pin', model: 'attendance' },   // v1.51.0
   { path: 'networks', label: 'Office networks (IP)', icon: 'lan', model: 'attendance' },
+  { path: 'photos', label: 'Punch photos', icon: 'photo_camera', model: 'attendance' },   // v1.49.0
+  { path: 'overtime-law', label: 'Overtime law and reasons', icon: 'gavel', model: 'attendance' },
 ];
 
 const page = (path: string, config: any) => ({ path, component: CrudPageComponent, data: { config } });
@@ -33,6 +38,9 @@ export const ATTENDANCE_PLUS_ROUTES: Routes = [
     children: [
       { path: '', redirectTo: 'my-attendance', pathMatch: 'full' },
       { path: 'my-attendance', component: MyAttendanceComponent },
+      { path: 'photos', component: ApPhotosComponent },               // v1.49.0
+      { path: 'kiosk-pins', component: ApKioskPinsComponent },        // v1.51.0
+      { path: 'overtime-law', component: ApSetup149Component },
       page('corrections', CORRECTION_PAGE),
       { path: 'board', component: AttendanceBoardComponent },
       page('days', DAY_PAGE),

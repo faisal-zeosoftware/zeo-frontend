@@ -44,6 +44,7 @@ export class AttendaceMarkingComponent {
 
 Employees: any[] = [];
 Punching: any[] = [];
+shown = 100;   // v1.56.1 rows drawn (Show more adds 200)
 EmployeeAllAttendance: any[] = [];
 
 

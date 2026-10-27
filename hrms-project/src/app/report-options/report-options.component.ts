@@ -4,6 +4,7 @@ import { SessionService } from '../login/session.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
+import { dashKept } from '../shared-ui/menu-config';
 
 @Component({
   selector: 'app-report-options',
@@ -52,6 +53,9 @@ export class ReportOptionsComponent {
     private DesignationService: DesignationService,
     private CatogaryService: CatogaryService
   ) {}
+
+  /** v1.40.1: opened from the Home dashboard – the report fills the page, no Reports menu. */
+  get fromDash(): boolean { return dashKept() === 'home'; }
 
   // starts open on desktop, closed on mobile
   isMenuOpen: boolean = window.innerWidth > 991.98;

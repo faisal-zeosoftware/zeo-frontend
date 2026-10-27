@@ -2,8 +2,108 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { fill, i18nT, packDir } from './i18n-core';
+import { environment } from '../../environments/environment';
 
 /** File exports used by every list toolbar. */
+
+// ------------------------------------------------------------------ v1.62.0 export control
+// Lists are exported in the browser, so before a file is made ZEO asks the server: the company may need the right "Can export
+// lists", a row limit, the password again (step-up) or a watermark on PDFs; every export is written to the export log.
+// When the server cannot be reached the export goes ahead (nothing new to protect – the rows are already on the screen).
+export interface ExportGate { ok: boolean; watermark?: boolean; label?: string; }
+
+async function stepUpFetch(info: any, token: string): Promise<boolean> {
+  try {
+    const m = await import('./z-step-up');
+    return await m.askStepUpFetch(info, token);
+  } catch { return false; }
+}
+
+let gatePassedAt = 0;
+const pendingUrls = new Set<string>();
+
+export async function exportGate(title: string, kind: string, rows: number): Promise<ExportGate> {
+  if (/template|how to fill/i.test(title || '')) { gatePassedAt = Date.now(); return { ok: true }; }   // an empty import template is not an export
+  const g = await askServer(title, kind, rows);
+  if (g.ok) { gatePassedAt = Date.now(); }
+  return g;
+}
+
+async function rowsOf(url: string, name: string): Promise<number> {
+  try {
+    const b = await (await fetch(url)).arrayBuffer();
+    if (name.endsWith('.csv')) {
+      const t = new TextDecoder().decode(b);
+      return Math.max(0, t.split(/\r?\n/).filter(l => l.trim()).length - 1);
+    }
+    const wb = XLSX.read(b, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    return Math.max(0, (XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[]).filter((r: any) => r && r.length).length - 1);
+  } catch { return -1; }
+}
+
+/** Downloads of lists that screens build themselves (an <a download> of a CSV / Excel blob) go through the same check. */
+export function installExportGuard(): void {
+  try {
+    const P = HTMLAnchorElement.prototype as any;
+    if (P.__zeoGuard) { return; }
+    P.__zeoGuard = true;
+    const origClick = P.click;
+    const origRevoke = URL.revokeObjectURL.bind(URL);
+    (URL as any).revokeObjectURL = (u: string) => { if (pendingUrls.has(u)) { setTimeout(() => (URL as any).revokeObjectURL(u), 3000); return; } origRevoke(u); };
+    P.click = function (this: HTMLAnchorElement): void {
+      const name = (this.download || '').toLowerCase();
+      const ext = (/\.(csv|xlsx|xls)$/.exec(name) || [])[1];
+      if (!ext || !String(this.href || '').startsWith('blob:') || Date.now() - gatePassedAt < 3000 || (this as any).__zeoOk) { return origClick.call(this); }
+      const a = this, url = String(this.href);
+      pendingUrls.add(url);
+      rowsOf(url, name).then(n => exportGate(name, ext === 'xls' ? 'xlsx' : ext, n)).then(g => {
+        if (g.ok) { (a as any).__zeoOk = true; origClick.call(a); }
+        setTimeout(() => pendingUrls.delete(url), 1500);
+      });
+    };
+  } catch { /* no DOM */ }
+}
+
+async function askServer(title: string, kind: string, rows: number): Promise<ExportGate> {
+  let token = '';
+  try { token = localStorage.getItem('auth_token') || ''; } catch { token = ''; }
+  if (!token) { return { ok: true }; }
+  const schema = (() => { try { return localStorage.getItem('selectedSchema') || ''; } catch { return ''; } })();
+  const url = `${environment.apiBaseUrl}/zeo-admin/api/exports/check/${schema ? '?schema=' + encodeURIComponent(schema) : ''}`;
+  const body = JSON.stringify({ screen: (typeof location !== 'undefined' ? location.pathname : '') + ' · ' + (title || ''), kind, rows });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    let r: Response;
+    try { r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body }); }
+    catch { return { ok: true }; }
+    if (r.ok) { try { return { ok: true, ...(await r.json()) }; } catch { return { ok: true }; } }
+    let j: any = {};
+    try { j = await r.json(); } catch { j = {}; }
+    if (r.status === 404 || r.status === 405) { return { ok: true }; }   // an older server
+    if (r.status === 403 && j?.code === 'step_up_required' && attempt === 0) {
+      if (await stepUpFetch(j, token)) { continue; }
+      return { ok: false };
+    }
+    try { alert(j?.detail || i18nT('The export was refused.')); } catch { /* no window */ }
+    return { ok: false };
+  }
+  return { ok: false };
+}
+
+/** "ZEO · user · time" on every page of a PDF made in the browser (company rule). */
+export function stampPdf(doc: jsPDF, label: string): void {
+  if (!label) { return; }
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i);
+    const w = doc.internal.pageSize.getWidth(), h = doc.internal.pageSize.getHeight();
+    doc.setFontSize(9); doc.setTextColor(150, 150, 160);
+    doc.text(label, 24, h - 12);
+    doc.setFontSize(18); doc.setTextColor(215, 215, 222);
+    for (let y = 120; y < h; y += 220) { doc.text(label, w / 2, y, { angle: 30, align: 'center' } as any); }
+  }
+  doc.setTextColor(0, 0, 0);
+}
 
 function stamp(): string {
   const d = new Date();
@@ -25,6 +125,10 @@ function download(blob: Blob, name: string): void {
 }
 
 export function exportExcel(title: string, headers: string[], rows: string[][], extraSheets: { name: string; rows: any[][] }[] = []): void {
+  exportGate(title, 'xlsx', rows.length).then(g => { if (g.ok) { writeExcel(title, headers, rows, extraSheets); } });
+}
+
+function writeExcel(title: string, headers: string[], rows: string[][], extraSheets: { name: string; rows: any[][] }[] = []): void {
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows.map(r => r.map(numberish))]);
   ws['!cols'] = headers.map((h, i) => ({ wch: Math.min(48, Math.max(10, h.length + 2, ...rows.slice(0, 200).map(r => String(r[i] ?? '').length + 1))) }));
   const wb = XLSX.utils.book_new();
@@ -45,6 +149,10 @@ export function csvText(headers: string[], rows: string[][]): string {
 }
 
 export function exportCsv(title: string, headers: string[], rows: string[][]): void {
+  exportGate(title, 'csv', rows.length).then(g => { if (g.ok) { writeCsv(title, headers, rows); } });
+}
+
+function writeCsv(title: string, headers: string[], rows: string[][]): void {
   const text = csvText(headers, rows);
   // BOM so Excel opens Arabic / accented text correctly
   download(new Blob(['﻿' + text], { type: 'text/csv;charset=utf-8' }), `${safeName(title)}_${stamp()}.csv`);
@@ -79,16 +187,19 @@ export function pdfNeedsArabic(title: string, headers: string[], rows: string[][
   return has(title) || has(subtitle) || headers.some(has) || rows.some(r => r.some(has));
 }
 
-export function exportPdf(title: string, headers: string[], rows: string[][], subtitle = ''): Promise<void> {
+export async function exportPdf(title: string, headers: string[], rows: string[][], subtitle = ''): Promise<void> {
+  const g = await exportGate(title, 'pdf', rows.length);
+  if (!g.ok) { return; }
+  const wm = g.watermark ? (g.label || '') : '';
   if (!pdfNeedsArabic(title, headers, rows, subtitle)) {
-    buildPdf(title, headers, rows, subtitle, null, false).save(`${safeName(title)}_${stamp()}.pdf`);
-    return Promise.resolve();
+    const d = buildPdf(title, headers, rows, subtitle, null, false); stampPdf(d, wm); d.save(`${safeName(title)}_${stamp()}.pdf`);
+    return;
   }
   const rtl = packDir() === 'rtl';
   return loadArabicFont()
     .then(font => buildPdf(title, headers, rows, subtitle, font, rtl))
     .catch(() => buildPdf(title, headers, rows, subtitle, null, rtl))   // font missing: still export (Latin only)
-    .then(doc => { doc.save(`${safeName(title)}_${stamp()}.pdf`); });
+    .then(doc => { stampPdf(doc, wm); doc.save(`${safeName(title)}_${stamp()}.pdf`); });
 }
 
 /** The PDF document (exported for tests); `font` = base64 TTF of the Arabic font or null for the standard font. */
@@ -170,6 +281,7 @@ function pdfGroupRow(g: XGroup, n: number, rtl: boolean): any[] {
 /** Excel: grouped lists get bold group rows with subtotals and Excel outline levels (the +/- buttons). */
 export async function exportModelExcel(m: XModel): Promise<void> {
   if (!m.levels.length) { exportExcel(m.title, m.headers, modelRows(m)); return; }
+  if (!(await exportGate(m.title, 'xlsx', modelRows(m).length)).ok) { return; }
   const wb = await buildGroupedWorkbook(m);
   const buf = await wb.xlsx.writeBuffer();
   download(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${safeName(m.title)}_${stamp()}.xlsx`);
@@ -219,20 +331,23 @@ export function exportModelCsv(m: XModel): void {
 }
 
 /** PDF: group header rows (bold, with subtotals) between the rows; Arabic / right-to-left handled as before. */
-export function exportModelPdf(m: XModel): Promise<void> {
+export async function exportModelPdf(m: XModel): Promise<void> {
   if (!m.levels.length) { return exportPdf(m.title, m.headers, modelRows(m), m.subtitle || ''); }
+  const g = await exportGate(m.title, 'pdf', modelRows(m).length);
+  if (!g.ok) { return; }
+  const wm = g.watermark ? (g.label || '') : '';
   const rows = modelRows(m);
   const all = [...rows, ...m.items.filter(i => i.group).map(i => [groupLabel(i.group!)])];
   const name = `${safeName(m.title)}_${stamp()}.pdf`;
   if (!pdfNeedsArabic(m.title, m.headers, all, m.subtitle || '')) {
-    buildPdf(m.title, m.headers, rows, m.subtitle || '', null, false, m.items).save(name);
-    return Promise.resolve();
+    const d = buildPdf(m.title, m.headers, rows, m.subtitle || '', null, false, m.items); stampPdf(d, wm); d.save(name);
+    return;
   }
   const rtl = packDir() === 'rtl';
   return loadArabicFont()
     .then(font => buildPdf(m.title, m.headers, rows, m.subtitle || '', font, rtl, m.items))
     .catch(() => buildPdf(m.title, m.headers, rows, m.subtitle || '', null, rtl, m.items))
-    .then(doc => { doc.save(name); });
+    .then(doc => { stampPdf(doc, wm); doc.save(name); });
 }
 
 function numberish(v: string): any {

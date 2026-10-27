@@ -45,6 +45,7 @@ const SECTIONS: Sec[] = [
     { key: 'driving_licence_categories', label: 'Categories', ph: 'Light vehicle, Motorcycle' }] },
   { title: 'Medical insurance', fields: [
     { key: 'insurance_provider', label: 'Insurance provider' }, { key: 'insurance_card_no', label: 'Card number' },
+    { key: 'insurance_issue_date', label: 'Issue date', type: 'date' },   // v1.40.1
     { key: 'insurance_expiry_date', label: 'Expiry date', type: 'date' }] },
 ];
 

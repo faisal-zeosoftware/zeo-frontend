@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { dmy } from './z-present';   // v1.62.0 ui
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -90,6 +91,6 @@ export class ZPeriodBarComponent implements OnInit {
   nice(s: string): string {
     if (!s) { return ''; }
     const d = new Date(s + 'T00:00:00');
-    return isNaN(d.getTime()) ? s : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return isNaN(d.getTime()) ? s : dmy(d);   // v1.62.0 ui dd/mm/yyyy
   }
 }

@@ -17,7 +17,7 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-pay-structure',
   templateUrl: './pay-structure.component.html',
-  styleUrl: './pay-structure.component.css'
+  styleUrls: ['./pay-structure.component.css', '../leave-policy/leave-policy.css', '../payroll-plus/pay162.css']
 })
 export class PayStructureComponent {
 
@@ -1374,4 +1374,45 @@ loadCAtegory(callback?: Function): void {
 
 
 
+
+  // ------------------------------------------------------------------ v1.62.0 payroll: readable pay structure rules
+  psName(p: any): string {
+    const b = (p.branch || []).join(', ');
+    const extra = [...(p.department || []), ...(p.category || []), ...(p.designation || [])];
+    return (b || 'All branches') + (extra.length ? ' – ' + extra.slice(0, 2).join(', ') + (extra.length > 2 ? ' …' : '') : '');
+  }
+  psScope(p: any): string {
+    const parts: string[] = [];
+    if (p.department?.length) { parts.push('Departments: ' + p.department.join(', ')); }
+    if (p.category?.length) { parts.push('Categories: ' + p.category.join(', ')); }
+    if (p.designation?.length) { parts.push('Designations: ' + p.designation.join(', ')); }
+    return parts.length ? parts.join(' · ') : 'Every employee of the branch';
+  }
+  psWeek(p: any): string {
+    const d: string[] = p.working_days || [];
+    const n: any = { SUN: 'Sun', MON: 'Mon', TUE: 'Tue', WED: 'Wed', THU: 'Thu', FRI: 'Fri', SAT: 'Sat' };
+    return d.length ? 'Work week: ' + d.map(x => n[x] || x).join(', ') : 'Work week from the branch week calendar';
+  }
+  psDays(p: any): string {
+    switch (p.salary_calculation_type) {
+      case 'FIXED_DAYS': return `Fixed ${p.fixed_working_days || 30} days a month`;
+      case 'ORGANIZATION_DAYS': return `Company working days (${p.fixed_working_days || '–'} a month)`;
+      default: return 'Calendar days of the month';
+    }
+  }
+  psCycle(p: any): string {
+    if (p.attendance_cycle_type === 'CUSTOM' && p.cycle_start_day) {
+      return `${this.psOrd(p.cycle_start_day)} to ${this.psOrd(p.cycle_end_day || p.cycle_start_day - 1)} of the next month`;
+    }
+    return 'Calendar month (1st to last day)';
+  }
+  psOt(v: string): string { return ({ ATTENDANCE: 'Attendance', MANUAL: 'Entered by HR', COMBINED: 'Attendance and HR entries' } as any)[v] || '–'; }
+  psOrd(n: number): string { const s = ['th', 'st', 'nd', 'rd']; const v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+  psDelete(p: any): void {
+    if (!confirm(`Delete the pay structure of ${this.psName(p)}? Its employees are then paid on calendar days.`)) { return; }
+    this.employeeService.deletePayStr(p.id).subscribe({
+      next: () => { this.overtimepol = this.overtimepol.filter((x: any) => x.id !== p.id); this.reloadList(); },
+      error: (e: any) => alert(e?.error?.detail || 'The pay structure could not be deleted.'),
+    });
+  }
 }

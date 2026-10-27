@@ -448,7 +448,7 @@
 
   <td data-label="Approver">
     <div *ngFor="let lvl of docs.levels">
-      {{ lvl.approver }}
+      {{ (lvl.approver_name || lvl.approver) }}
     </div>
   </td>
 

@@ -168,7 +168,7 @@ if (this.userId !== null) {
           
           
           try {
-            const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+            const permissionsData: any = await this.DesignationService.getMyPermissions(selectedSchema).toPromise();   // v1.62.0 speed: ?me=1 – own row only, not every user's full rights
             console.log('Permissions data:', permissionsData);
 
             if (Array.isArray(permissionsData) && permissionsData.length > 0) {
@@ -181,8 +181,10 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
-              } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+              } else if ((Array.isArray(firstItem.groups) && firstItem.groups.length > 0) || (Array.isArray(firstItem.codes) && firstItem.codes.length > 0)) {
+                // v1.62.0 speed: the ?me=1 answer gives the codenames in `codes` (its groups carry no permission rows)
+                const groupPermissions = [...(firstItem.groups || []).flatMap((group: any) => group.permissions || []),
+                                          ...(firstItem.codes || []).map((c: string) => ({ codename: c }))];
                 console.log('Group Permissions:', groupPermissions);
 
                

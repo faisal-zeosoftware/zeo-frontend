@@ -101,6 +101,9 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
   <div class="ap-card" *ngIf="form" id="ap-correction">
     <h2>Request a correction for {{ form.date | date:'EEEE d MMM yyyy' }}</h2>
     <div class="ap-form">
+      <!-- v1.49.0 reason list: proof photo / document and the monthly limit of each reason -->
+      <label *ngIf="reasons.length">Reason<select class="ap-input" [(ngModel)]="form.reason_code" (ngModelChange)="pickReason()" data-reason>
+        <option value="">Choose…</option><option *ngFor="let r of reasons" [value]="r.code">{{ r.name }}{{ r.needs_photo ? ' (photo)' : '' }}{{ r.needs_attachment ? ' (document)' : '' }}</option></select></label>
       <label>Type
         <select class="ap-input" [(ngModel)]="form.kind">
           <option value="missing_punch">Missing punch</option><option value="wrong_time">Wrong time</option>
@@ -110,7 +113,17 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
       <label>Correct clock-out<input class="ap-input" type="time" [(ngModel)]="form.out"></label>
       <label><span><input type="checkbox" [(ngModel)]="form.waive"> Ask to waive the late / early penalty</span></label>
       <label class="wide">Reason<textarea class="ap-input" [(ngModel)]="form.reason" placeholder="What happened? e.g. the device was down"></textarea></label>
-      <label class="wide">Attachment (optional)<input type="file" (change)="pickFile($event)"></label>
+      <label class="wide">{{ reason()?.needs_attachment ? 'Document (needed)' : 'Attachment (optional)' }}<input type="file" (change)="pickFile($event)"></label>
+      <div class="wide ap-proof" *ngIf="reason()?.needs_photo || photo || camOn">
+        <b>Proof photo{{ reason()?.needs_photo ? ' (needed)' : '' }}</b>
+        <video #cam playsinline muted autoplay [hidden]="!camOn" class="ap-video" style="max-height:220px"></video>
+        <img *ngIf="photo && !camOn" [src]="photo" alt="Proof photo" style="max-height:160px;border-radius:8px;display:block;margin:6px 0">
+        <div class="ap-tools">
+          <button type="button" class="ap-btn" *ngIf="!camOn" (click)="openCam()" data-cam>{{ photo ? 'Take again' : 'Open the camera' }}</button>
+          <button type="button" class="ap-btn primary" *ngIf="camOn" (click)="snap()" data-snap>Take the photo</button>
+          <label class="ap-btn" style="cursor:pointer">Or choose a photo<input type="file" accept="image/*" capture="environment" (change)="pickPhoto($event)" hidden></label>
+        </div>
+      </div>
     </div>
     <p class="ap-muted">A clock-out earlier than the clock-in is taken as the next day (night shift). Your manager approves first, then HR.</p>
     <div class="ap-tools">
@@ -250,17 +263,49 @@ export class MyAttendanceComponent implements OnInit, OnDestroy {
 
   startCorrection(d: any): void {
     this.form = { date: d.date, kind: d.status === 'missing_punch' ? 'missing_punch' : (d.status === 'absent' ? 'forgot' : 'wrong_time'),
-      in: d.first_in_local || '', out: d.last_out_local || '', reason: '', waive: false };
-    this.file = null;
+      in: d.first_in_local || '', out: d.last_out_local || '', reason: '', waive: false, reason_code: '' };
+    this.file = null; this.photo = ''; this.closeCam();
+    if (!this.reasons.length) { this.api.get('regularisation-reasons/').then((r: any) => { this.reasons = r || []; this.cdr.markForCheck(); }).catch(() => {}); }
     setTimeout(() => document.getElementById('ap-correction')?.scrollIntoView({ behavior: 'smooth' }));
   }
 
   pickFile(ev: Event): void { this.file = (ev.target as HTMLInputElement).files?.[0] || null; }
 
+  // v1.49.0 regularisation reasons and the proof photo
+  reasons: any[] = []; photo = ''; camOn = false; private camStream?: MediaStream;
+  @ViewChild('cam') cam?: ElementRef<HTMLVideoElement>;
+  reason(): any { return this.reasons.find(r => r.code === this.form?.reason_code); }
+  pickReason(): void { const r = this.reason(); if (r) { this.form.kind = r.kind; if (r.waive_penalty) { this.form.waive = true; } } }
+  async openCam(): Promise<void> {
+    try {
+      this.camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      this.camOn = true; this.cdr.detectChanges();
+      if (this.cam) { this.cam.nativeElement.srcObject = this.camStream; await this.cam.nativeElement.play().catch(() => {}); }
+    } catch { this.say('The camera could not be opened. Choose a photo instead.', true); }
+  }
+  snap(): void {
+    const v = this.cam?.nativeElement;
+    if (v && v.videoWidth) {
+      const c = document.createElement('canvas'); const w = Math.min(960, v.videoWidth);
+      c.width = w; c.height = Math.round(v.videoHeight * w / v.videoWidth);
+      c.getContext('2d')!.drawImage(v, 0, 0, c.width, c.height); this.photo = c.toDataURL('image/jpeg', 0.82);
+    }
+    this.closeCam();
+  }
+  closeCam(): void { this.camStream?.getTracks().forEach(t => t.stop()); this.camStream = undefined; this.camOn = false; this.cdr.markForCheck(); }
+  pickPhoto(ev: Event): void {
+    const f = (ev.target as HTMLInputElement).files?.[0]; if (!f) return;
+    const rd = new FileReader(); rd.onload = () => { this.photo = String(rd.result || ''); this.cdr.markForCheck(); }; rd.readAsDataURL(f);
+  }
+
   async sendCorrection(): Promise<void> {
     const f = this.form;
     if (!f.reason?.trim()) { this.say('Write the reason for the correction.', true); return; }
+    const rs = this.reason();
+    if (rs?.needs_photo && !this.photo) { this.say('This reason needs a proof photo – take one with the camera.', true); return; }
     const fd = new FormData();
+    if (f.reason_code) fd.append('reason_code', f.reason_code);
+    if (this.photo) fd.append('photo', this.photo);
     fd.append('date', f.date); fd.append('kind', f.kind); fd.append('reason', f.reason); fd.append('waive_penalty', f.waive ? 'true' : 'false');
     if (f.in) fd.append('proposed_in', `${f.date} ${f.in}`);
     if (f.out) fd.append('proposed_out', `${f.date} ${f.out}`);

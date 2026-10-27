@@ -4,7 +4,7 @@ import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 import { style } from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
-import { ActivatedRoute, Router, NavigationEnd  } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
@@ -15,7 +15,7 @@ import { ZListService } from '../shared-ui/z-list.service';
 import { visibleGroups, suiteForUrl } from '../shared-ui/z-module-menu.component';
 import { AppSuite, ZSuiteService } from '../shared-ui/z-suite.service';   // v1.20.0
 import { SUITES } from '../shared-ui/menu-config';
-import { appForUrl } from '../shared-ui/menu-config';
+import { appForUrl, dashKeep, isReportUrl, menuPicked, preferApp, takeMenuPicked } from '../shared-ui/menu-config';
 import { APP_VERSION } from '../shared-ui/version';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ElementRef, ViewChild } from '@angular/core';
@@ -54,6 +54,7 @@ export class MainSidebarComponent implements OnDestroy {
 
   userId: number | null | undefined;
   userDetails: any;
+  displayName = '';   // v1.62.0 ui
   userDetailss: any;
   username: any;
   selectedSchema: string | null = null;
@@ -109,6 +110,7 @@ export class MainSidebarComponent implements OnDestroy {
   // ---------- main menu (shared config, grouped, by user rights) ----------
   private menuAccess: { admin: boolean; codes: Set<string> } | null = null;
   get todo$() { return this.zrec.todoCounts$; }
+  get inbox$() { return this.zrec.inboxUnread$; }   // v1.45.0
   menuGroups: ReturnType<typeof visibleGroups> = visibleGroups(null);
   currentAppKey = '';
   appVersion = APP_VERSION;
@@ -118,12 +120,23 @@ export class MainSidebarComponent implements OnDestroy {
     this.markApp();
   }
 
+  /** v1.40.1: decided before the new page builds its menu – (1) a report opened from the Home dashboard keeps the Home
+   *  menu (no Reports sidebar), (2) a page listed in two apps (Leave → "My leave" is also in Self service) keeps the app
+   *  the user is in. A pick in the main menu or the app launcher goes to that app as before. */
+  private beforeNav(url: string): void {
+    const picked = takeMenuPicked();
+    if (!isReportUrl(url) || picked) { dashKeep(null); }
+    else if (this.currentAppKey === 'home') { dashKeep('home'); }
+    preferApp(picked ? '' : this.currentAppKey);
+  }
+
   private markApp(): void {
     this.currentAppKey = appForUrl(this.router.url)?.key || (this.router.url.includes('dashboard-contents') ? 'home' : this.router.url.includes('manager-dashboard') ? 'mgr' : '');
     // v1.20.0: a page of another app switches the menu to that app; shared pages (Calendar, My To-do) keep it
     const s = suiteForUrl(this.router.url);
     if (s && this.suites && s !== this.suites.suite) { this.suites.set(s); }
     if (this.suites && this.currentAppKey) { this.suites.touch(this.currentAppKey); }
+    preferApp(this.currentAppKey);   // v1.40.1
     if (this.suites) { this.suites.loadActive(); if (this.suites.active$.value) { this.keepActiveSuite(); } }
   }
 
@@ -157,6 +170,7 @@ export class MainSidebarComponent implements OnDestroy {
   /** A module was picked: its own menu opens, so the main menu folds (mobile: the drawer closes).
    *  v1.15.1: folding here is not saved – the user's fold / unfold choice stays for the next visit. */
   modulePicked(): void {
+    menuPicked();   // v1.40.1
     this.hideTip();
     if (this.isMenuOpen) { this.isMenuOpen = false; this.unlockBodyScroll(); }
   }
@@ -176,7 +190,27 @@ export class MainSidebarComponent implements OnDestroy {
 
   hideTip(): void { this.tip = null; }
 
-  @HostListener('document:keydown.escape') escTip(): void { this.hideTip(); }
+  @HostListener('document:keydown.escape', ['$event']) escTip(ev?: KeyboardEvent): void { this.hideTip(); this.escCloseDialog(ev); }
+
+  /** v1.56.1 release checklist (§7 "Close the pop-up any way"): Escape closes the top pop-up of every screen. Material dialogs close
+   *  themselves; for the screens' own pop-ups (ex-modal, zp-dialog, Bootstrap-style modals …) Escape presses their Cancel / Close / ×
+   *  button – nothing is saved and the screen's own close logic (reload of the list) runs. */
+  private escCloseDialog(ev?: KeyboardEvent): void {
+    if (ev?.defaultPrevented) { return; }
+    if (document.querySelector('.cdk-overlay-container mat-dialog-container, .cdk-overlay-container .mat-mdc-select-panel, .cdk-overlay-container .mat-mdc-autocomplete-panel')) { return; }
+    // v1.57.0: + .hr-modal (Performance / Recruitment / Learning pages: form, prompt and preview pop-ups)
+    const sel = '.ex-modal, .zp-dialog, .zk-dialog, .z-dialog, .modal.show, .modal.d-block, .modal[style*="display: block"], [role=dialog], .popup-overlay, .modal-overlay, .dialog-overlay, .hr-modal';
+    const shown = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter(e => e.offsetParent !== null || getComputedStyle(e).position === 'fixed')
+      .filter(e => getComputedStyle(e).visibility !== 'hidden' && getComputedStyle(e).display !== 'none')
+      .filter(e => !e.closest('[data-tour-card]'));   // v1.62.0: the guided-tour card closes itself (z-tour); Escape goes to the pop-up under it
+    const top = shown[shown.length - 1];
+    if (!top) { return; }
+    const btns = Array.from(top.querySelectorAll<HTMLElement>('button, a.btn, [role=button]')).filter(b => b.offsetParent !== null && !(b as HTMLButtonElement).disabled);
+    const txt = (b: HTMLElement) => (b.innerText || '').trim();
+    const pick = btns.find(b => /^(cancel|إلغاء)$/i.test(txt(b))) || btns.find(b => /^(close|إغلاق)$/i.test(txt(b)))
+      || btns.find(b => /^[×✕✖xX]$|^close$/.test(txt(b)) || /close|cancel|إغلاق/i.test(b.getAttribute('aria-label') || '') || /(^|[\s-])close([\s-]|$)/.test(b.className || ''));
+    if (pick) { pick.click(); ev?.preventDefault(); }
+  }
 
   /** v1.15.1: distinct icons – Organisation and Projects both used account_tree; 'monitoring' is not in the Material Icons font. */
   private static readonly ICON_FIX: Record<string, Record<string, string>> = {
@@ -326,6 +360,7 @@ export class MainSidebarComponent implements OnDestroy {
     this.buildMenu();
 
     this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) { this.beforeNav(event.url); }   // v1.40.1
       if (event instanceof NavigationEnd) {
         this.markApp();
       }
@@ -345,6 +380,8 @@ export class MainSidebarComponent implements OnDestroy {
         (userData: any) => {
           this.userDetails = userData;
           this.username = this.userDetails.username;
+          // v1.62.0 ui: the top bar shows the person's name, not the sign-in name (gdis_admin)
+          this.zlist.userNames().subscribe(l => { const me = (l || []).find(u => u.username === userData?.username); this.displayName = me?.name || ''; });
         },
         (error) => {
           console.error('Failed to fetch user details:', error);

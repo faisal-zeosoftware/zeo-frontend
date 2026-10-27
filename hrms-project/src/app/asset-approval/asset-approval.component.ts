@@ -453,6 +453,10 @@ export class AssetApprovalComponent {
     if (!selectedSchema || !this.selectedApproval) {
       return;
     }
+    if (!this.delegationForm.deligate_to) {   // v1.40.1
+      alert('Select the user to delegate to.');
+      return;
+    }
     const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
     const payload = {
       approver: this.userId,
@@ -464,7 +468,9 @@ export class AssetApprovalComponent {
         next: () => {
           this.isLoading = false;
           alert("Delegated Successfully");
-          window.location.reload();
+          // v1.40.1: no full page reload – it wiped the "Delegated Successfully" message before anyone could read it;
+          // the pop-ups close and the list is loaded again instead
+          this.isAddFieldsModalOpen = false;
           this.closeDelegationModal();
           this.fetchEmployees(
             selectedSchema,
@@ -474,6 +480,8 @@ export class AssetApprovalComponent {
         error: err => {
           this.isLoading = false;
           console.error(err);
+          // v1.40.1: tell the user why (already delegated, same user, no rights…) instead of failing silently
+          alert(err?.error?.error || err?.error?.detail || 'The delegation could not be sent.');
         }
       });
   }

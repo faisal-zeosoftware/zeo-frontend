@@ -3,7 +3,8 @@
     <mat-sidenav
       #sidenav
       class="sub-sidenav hide-scrollbar"
-      [opened]="isMobile ? isMenuOpen : true"
+      [class.zr-dash-hidden]="fromDash"
+      [opened]="fromDash ? false : (isMobile ? isMenuOpen : true)"
       [mode]="isMobile ? 'over' : 'side'"
       (closedStart)="isMenuOpen = false"
     >
@@ -27,7 +28,7 @@
       <button
         type="button"
         class="mobile-submenu-fab"
-        *ngIf="isMobile && !isMenuOpen"
+        *ngIf="isMobile && !isMenuOpen && !fromDash"
         (click)="toggleSidebarMenu()"
         aria-label="Open submenu">
         <mat-icon>menu</mat-icon>

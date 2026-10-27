@@ -15,9 +15,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ErField, ErService, ER_LIST, avatarColour, badgeClass, dmy, erPage, maskFor, money, num } from './er.service';
 import { zToast } from '../shared-ui/z-toast';
+import { ZRecordPanelComponent } from '../shared-ui/z-record-panel.component';
 import { i18nT, packLang } from '../shared-ui/i18n-core';
+import { CountryPackService } from '../shared-ui/country-pack.service';
+import { eidProblem, ibanProblem } from '../employee-profile/employee-profile.service';
+import { MatDialog } from '@angular/material/dialog';
+import { openDocFill } from '../ai-settings/doc-fill-dialog.component';   // v1.53.2
 
-type GroupKey = 'overview' | 'personal' | 'job' | 'documents' | 'pay' | 'time';
+type GroupKey = 'overview' | 'personal' | 'job' | 'documents' | 'pay' | 'time' | 'timeline';
 interface Table { key: string; group: string; title: string; noun: string; add: string; empty: string; edit: string; another: string; remove: string; added: string; saved: string; }
 
 const RELATIONS = ['Wife', 'Husband', 'Son', 'Daughter', 'Father', 'Mother', 'Brother', 'Sister', 'Other'];
@@ -53,17 +58,23 @@ const JOB_FIELDS: ErField[] = [
   { key: 'emp_ot_applicable', label: 'Overtime applies', type: 'bool' }, { key: 'is_ess', label: 'Self-service user', type: 'bool' },
 ];
 
+/** v1.40.1: the mask removed something the user typed (not just added the spaces / dashes of the format). */
+function dropped(before: string, after: string): boolean {
+  const k = (x: string) => (x || '').replace(/[\s-]/g, '').toUpperCase();
+  return k(before) !== k(after);
+}
+
 const MASK_NOTES: Record<string, string> = {
   route_code: 'Digits only – the UAE WPS routing code is the 9-digit bank routing number (letters are not accepted by the WPS file).',
   emirates_id: 'Emirates ID: 15 digits (784-YYYY-NNNNNNN-N).',
-  iban_number: 'IBAN: letters and digits only, no spaces.',
+  iban_number: 'IBAN: letters and digits only – other characters were removed.',   // v1.40.1: spaces are added by the screen, not an error
   person_id: 'MOHRE person code: digits only.',
 };
 
 @Component({
   selector: 'app-employee-record',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZRecordPanelComponent],   // v1.38.0 record footer
   styleUrls: ['./er.css'],
   templateUrl: './employee-record.component.html',
 })
@@ -73,7 +84,30 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   groups: { key: GroupKey; label: string; icon: string }[] = [
     { key: 'overview', label: 'Overview', icon: '◎' }, { key: 'personal', label: 'Personal', icon: '☺' }, { key: 'job', label: 'Job', icon: '▤' },
     { key: 'documents', label: 'UAE documents', icon: '▣' }, { key: 'pay', label: 'Pay', icon: '¤' }, { key: 'time', label: 'Time & assets', icon: '◷' },
+    { key: 'timeline', label: 'Timeline', icon: '⋮' },   // v1.45.0 employee journey
   ];
+  // v1.45.0 employee timeline (journey): every event ZEO records, filter by kind, warnings added here
+  journey: any[] | null = null; jTypes: { key: string; label: string }[] = []; jPick = new Set<string>();
+  warn: any = null; warnErr = '';
+  readonly J_ICON: Record<string, string> = { joined: 'login', probation: 'verified', transfer: 'swap_horiz', salary: 'payments', leave: 'beach_access',
+    award: 'emoji_events', warning: 'report', document: 'description', org: 'account_tree', field: 'edit', exit: 'logout' };
+  async loadJourney(): Promise<void> {
+    try {
+      const r: any = await this.api.get(`employee-profile/api/history/${this.id}/`);
+      this.journey = r.events || []; this.jTypes = r.types || [];
+      if (!this.jPick.size) { this.jTypes.filter(t => t.key !== 'field').forEach(t => this.jPick.add(t.key)); }
+    } catch { this.journey = []; }
+    this.cd.markForCheck();
+  }
+  jShown(): any[] { return (this.journey || []).filter(e => this.jPick.has(e.type)); }
+  jToggle(k: string): void { this.jPick.has(k) ? this.jPick.delete(k) : this.jPick.add(k); this.cd.markForCheck(); }
+  jYear(e: any, i: number): string | null { const y = String(e.date || e.at || '').slice(0, 4); const prev = i > 0 ? String(this.jShown()[i - 1].date || '').slice(0, 4) : ''; return y !== prev ? y : null; }
+  newWarning(): void { this.warn = { date: new Date().toISOString().slice(0, 10), level: 'written', subject: '', details: '' }; this.warnErr = ''; this.cd.markForCheck(); }
+  async saveWarning(): Promise<void> {
+    try { await this.api.post('hr-actions/api/warnings/', { employee: this.id, ...this.warn }); this.warn = null; zToast(i18nT('Warning recorded'), 'ok'); this.journey = null; await this.loadJourney(); }
+    catch (e) { this.warnErr = ErService.error(e, i18nT('The warning could not be saved.')); }
+    this.cd.markForCheck();
+  }
   T = TABLES; RELATIONS = RELATIONS; JOB_FIELDS = JOB_FIELDS;
   editing = ''; draft: any = {}; draftErr: Record<string, string> = {}; saving = false; dirty = false;
   menu = ''; showMissing = false;
@@ -95,7 +129,8 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (!e) { this.moved = null; }
   }
 
-  constructor(private api: ErService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
+  constructor(private api: ErService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef, private cp: CountryPackService,
+              private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.api.lookups().then(l => { this.look = l; this.cd.markForCheck(); }).catch(() => {});
@@ -125,6 +160,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
       this.nextId = i >= 0 ? (order[i + 1] ?? null) : this.d.next_id;
       if (this.group === 'time' && !this.att) { this.loadAtt(); }
       if (this.group === 'job' && !this.history) { this.loadHistory(); }
+      if (this.group === 'timeline' && !this.journey) { this.loadJourney(); }
     } catch (e: any) {
       this.err = e?.status === 404 || e?.status === 403 ? 'This employee is not in your branches or does not exist.' : ErService.error(e, 'The employee could not be loaded.');
     }
@@ -138,6 +174,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     this.router.navigate([], { queryParams: { tab: g === 'overview' ? null : g }, queryParamsHandling: 'merge', replaceUrl: true });
     if (g === 'time' && !this.att) { this.loadAtt(); }
     if (g === 'job' && !this.history) { this.loadHistory(); }
+    if (g === 'timeline' && !this.journey) { this.loadJourney(); }
     if (card) { setTimeout(() => document.getElementById('card-' + card)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }
   }
   step(id: number | null): void { if (id && this.leaveEdit()) { this.router.navigate([erPage(id)], { queryParams: { tab: this.group === 'overview' ? null : this.group } }); } }
@@ -196,12 +233,15 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     this.editing = card; this.draftErr = {}; this.dirty = false;
   }
   extraFields(x: any): ErField[] {
-    const skip = new Set([...Object.keys(x.numbers || {}), ...(x.fields || []).filter((k: string) => /_(issue_date|expiry_date|start|end)$/.test(k) || k === 'insurance_expiry_date')]);
+    // v1.40.1: only the card's own number(s), issue and expiry are shown on the fixed lines; every other field (the work
+    // permit number and its expiry date on the Labour card) is listed here (was: every *_expiry_date key was skipped)
+    const skip = new Set<string>([...Object.keys(x.numbers || {}), x.issue_field, x.expiry_field].filter(k => !!k));
     return this.fieldsOf('identity', (x.fields || []).filter((k: string) => !skip.has(k)));
   }
   extraValue(x: any, f: ErField): string {
     const v = x.extra?.[f.key];
     if (v === '' || v === null || v === undefined) { return '–'; }
+    if (f.type === 'date') { return dmy(v); }   // v1.40.1 work permit expiry date on the Labour card
     if (f.type === 'look' || f.type === 'fk') { const o = this.optionsOf(f).find(o => String(o.value) === String(v)); return o ? o.label : String(v); }
     return String(v);
   }
@@ -218,7 +258,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (m && typeof this.draft[f.key] === 'string') {
       const before = this.draft[f.key], after = m(before);
       this.draft[f.key] = after;
-      this.maskNote[f.key] = after !== before ? MASK_NOTES[f.key] || '' : '';
+      this.maskNote[f.key] = dropped(before, after) ? MASK_NOTES[f.key] || '' : '';   // v1.40.1
     }
   }
   cancel(): void { this.editing = ''; this.dirty = false; this.draft = {}; this.draftErr = {}; }
@@ -235,7 +275,10 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
         await this.api.put(`employee-profile/api/record/${this.id}/job/`, data);
       } else {
         const group = ['personal', 'contact', 'address'].includes(card) ? card : 'identity';
-        await this.api.post(`employee-profile/api/change/${this.id}/`, { group, data });
+        const r: any = await this.api.post(`employee-profile/api/change/${this.id}/`, { group, data });
+        // v1.40.1: a document that could not be put in the Document files list (no issue date, number used elsewhere) says so
+        const prob = r?.documents?.problems?.[card];
+        if (prob) { zToast(prob, 'info', false); }
       }
       zToast(i18nT('{0} saved', [i18nT(this.cardTitle(card))]), 'ok');
       this.editing = ''; this.dirty = false;
@@ -283,8 +326,11 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     // relation is a list (Wife, Husband, Son, Daughter, Father, Mother, …), not free text
     return f.map(x => (x.key === 'emp_relation' || x.key === 'relation') ? { ...x, type: 'select', options: RELATIONS.map(r => ({ value: r, label: r })) } : x);
   }
-  openPanel(tk: string, row?: any): void {
+  async openPanel(tk: string, row?: any): Promise<void> {
     const t = TABLES[tk];
+    if (!this.look) {   // v1.40.1: wait for the field lists (slow server) instead of opening a panel without fields
+      try { this.look = await this.api.lookups(); } catch { zToast(i18nT('The form could not be loaded. Please try again.'), 'err'); return; }
+    }
     const fields = this.panelFields(t);
     const values: any = {};
     fields.forEach(f => values[f.key] = row ? (row[f.key] ?? (f.type === 'bool' ? false : '')) : (f.type === 'bool' ? (f.key === 'is_active') : ''));
@@ -309,16 +355,51 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   }
   canSave(): boolean { return !!this.panel && this.panel.entries.every((e: any) => this.required(this.panel.table).every(k => e.values[k] !== '' && e.values[k] !== null && e.values[k] !== undefined)); }
   maskNote: Record<string, string> = {};
+  /** v1.40.1: Emirates ID (UAE companies) and IBAN (the company's country) are checked while typing – the server checks the same. */
+  live(f: ErField, v: any): string {
+    if (v === null || v === undefined || v === '') { return ''; }
+    if (f.key === 'emirates_id') {
+      if (!this.cp.allows('pack:AE')) { return ''; }
+      const digits = String(v).replace(/\D/g, '');
+      if (digits.length < 15) { return ''; }   // still typing
+      return i18nT(eidProblem(String(v)));
+    }
+    if (f.key === 'iban_number') {
+      const ae = this.cp.pack.pack === 'AE';
+      const s = String(v).replace(/\s/g, '');
+      if (s.length < (ae ? 23 : 15)) { return ''; }   // still typing
+      return i18nT(ibanProblem(s, ae ? 'AE' : this.cp.pack.country_code));
+    }
+    return '';
+  }
   // v1.28.1: when a mask drops what was typed (letters in the 9-digit WPS routing code, spaces in an IBAN) the screen says so
   maskIn(f: ErField, e: any): void {
     const m = maskFor(f.key);
     if (m && typeof e.values[f.key] === 'string') {
       const before = e.values[f.key], after = m(before);
       e.values[f.key] = after;
-      this.maskNote[f.key] = after !== before ? MASK_NOTES[f.key] || '' : '';
+      this.maskNote[f.key] = dropped(before, after) ? MASK_NOTES[f.key] || '' : '';   // v1.40.1
     }
   }
   fileFor(e: any, ev: any): void { e.file = ev.target.files?.[0] || null; }
+
+  /** v1.53.2 "Fill from document" on Document files: fills the form and can update the employee record (identity details,
+   *  date of birth, nationality, name). The record is reloaded when something was saved on it. */
+  async fillDoc(e: any): Promise<void> {
+    if (!e?.file || !this.panel) { return; }
+    const tf = this.panel.fields.find((f: ErField) => f.key === 'document_type');
+    const types = tf ? this.optionsOf(tf).map((o: any) => ({ id: o.value, type_name: o.label })) : [];
+    const v: any = await openDocFill(this.dialog, e.file, types, {
+      document_type: e.values.document_type, emp_doc_number: e.values.emp_doc_number,
+      emp_doc_issued_date: e.values.emp_doc_issued_date, emp_doc_expiry_date: e.values.emp_doc_expiry_date,
+    }, undefined, { empId: this.d?.can_edit ? this.id : null, inForm: true, above: true });
+    if (!v) { return; }
+    for (const k of ['document_type', 'emp_doc_number', 'emp_doc_issued_date', 'emp_doc_expiry_date']) {
+      if (v[k] !== undefined) { e.values[k] = k === 'document_type' && tf ? (this.optionsOf(tf).find((o: any) => String(o.value) === String(v[k]))?.value ?? v[k]) : v[k]; }
+    }
+    if (v.record_saved) { zToast(i18nT('The employee record was updated from the document.')); this.load(); }
+    this.cd.markForCheck();
+  }
   closePanel(): void { this.panel = null; }
   computed(t: Table, v: any): string {
     if (t.key === 'family' && v.ef_date_of_birth) { const b = new Date(v.ef_date_of_birth), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) { a--; } return `Age ${a}`; }
@@ -442,6 +523,27 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   pdf(p: any): void { this.api.open(p.pdf, `payslip-${this.d.header.code}-${String(p.month).slice(0, 7)}.pdf`).catch(e => zToast(ErService.error(e, 'The payslip could not be opened.'), 'err')); }
   attKeys(): string[] { return Object.keys(this.att?.totals || {}).filter(k => k !== 'future' && this.att.totals[k]); }
   hasFileField(p: any): boolean { return p.fields.some((f: ErField) => f.type === 'file'); }
+
+  // ---------------------------------------------------------------- v1.40.1 empty skill masters → "Load the standard list"
+  /** Languages / Marketing skills / Programming skills come from the Core masters; a new company has none, so the dropdown
+   *  offers the standard list (organisation/api/masters/standard/, the same mechanism as Department / Designation / Category). */
+  stdKind(f: ErField): string | null { return this.d?.can_edit && !this.optionsOf(f).length ? ErService.stdKind(f) : null; }
+  stdBusy = '';
+  async loadStd(f: ErField): Promise<void> {
+    const kind = ErService.stdKind(f); if (!kind || this.stdBusy) { return; }
+    const noun: Record<string, string> = { language: 'languages', marketing: 'marketing skills', programming: 'programming skills' };
+    this.stdBusy = kind;
+    try {
+      const r: any = await this.api.get('organisation/api/masters/standard/', { kind });
+      const missing = (r.items || []).filter((i: any) => !i.exists).map((i: any) => i.name);
+      if (!missing.length) { zToast(i18nT('Every standard entry is already in the list.'), 'info'); this.stdBusy = ''; return; }
+      if (!confirm(`${i18nT('Add these {0} {1} to the list?', [missing.length, i18nT(noun[kind])])}\n\n${missing.map((n: string) => '• ' + n).join('\n')}\n\n${i18nT('Nothing is changed or removed.')}`)) { this.stdBusy = ''; return; }
+      const res: any = await this.api.post('organisation/api/masters/standard/', { kind });
+      this.look = await this.api.lookups(true);
+      zToast(i18nT('{0} {1} added', [res?.created?.length || 0, i18nT(noun[kind])]), 'ok');
+    } catch (e) { zToast(ErService.error(e, i18nT('The standard list could not be loaded.')), 'err'); }
+    this.stdBusy = ''; this.cd.markForCheck();
+  }
 
   async loadHistory(): Promise<void> {
     try { const r: any = await this.api.get(`employee-profile/api/history/${this.id}/`); this.history = r.events || []; } catch { this.history = []; }

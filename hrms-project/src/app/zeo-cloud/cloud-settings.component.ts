@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -80,8 +81,8 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <p class="zk-note" *ngIf="hasPayLink()">{{ 'Pay online opens the invoice on the payment page of Adept. The subscription is renewed automatically once the payment is received.' | t }}</p>
         <div class="zk-scroll" *ngIf="a.invoices.length"><table class="zk-table">
           <tr><th>{{ 'Invoice' | t }}</th><th>{{ 'Date' | t }}</th><th>{{ 'Period' | t }}</th><th>{{ 'Amount' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
-          <tr *ngFor="let i of a.invoices"><td>{{ i.number }}</td><td>{{ i.issued_on | date:'d MMM y' }}</td>
-            <td>{{ i.period_from ? (i.period_from | date:'d MMM y') + ' – ' + (i.period_to | date:'d MMM y') : '–' }}</td>
+          <tr *ngFor="let i of a.invoices"><td>{{ i.number }}</td><td>{{ i.issued_on | date:'dd/MM/yyyy' }}</td>
+            <td>{{ i.period_from ? (i.period_from | date:'dd/MM/yyyy') + ' – ' + (i.period_to | date:'dd/MM/yyyy') : '–' }}</td>
             <td>{{ i.amount | number:'1.2-2' }} {{ i.currency }}</td><td><span class="zk-st" [ngClass]="i.state">{{ (i.state === 'paid' ? 'Paid' : i.state === 'void' ? 'Void' : 'Unpaid') | t }}</span><small *ngIf="i.odoo_ref">{{ i.odoo_ref }}</small></td>
             <!-- v1.28.0 online payment on Adept's Odoo page (cards, bank transfer) – ZEO never sees card data -->
             <td><a class="lp-btn primary" *ngIf="i.state === 'unpaid' && i.pay_url" [href]="i.pay_url" target="_blank" rel="noopener">{{ 'Pay online' | t }}</a></td></tr>

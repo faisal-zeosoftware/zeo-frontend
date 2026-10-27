@@ -12,6 +12,30 @@ import { HSE_BASE, HseApiService, csv, day, stClass, today, when } from './hse-a
   standalone: true,
   imports: [CommonModule, FormsModule],
   styleUrls: ['../expense/expense.css', './hse.css'],
+  // v1.56.1 release checklist: HSE forms had labels beside small boxes – the same field layout and picker as the app-kit forms
+  styles: [`.wide { grid-column: 1 / -1; }
+    :host > label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #6b7185; min-width: 0; }
+    :host > label > input:not([type=checkbox]):not([type=radio]):not([type=file]), :host > label > select, :host > label > textarea {
+      width: 100%; box-sizing: border-box; height: 38px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font: inherit; font-size: 13.5px;
+      font-weight: 400; color: #1d2033; background: #fff; }
+    :host > label > textarea { height: 76px; padding: 8px 10px; resize: vertical; }
+    :host > label > input:focus, :host > label > select:focus, :host > label > textarea:focus { outline: 2px solid #c9c3ff; border-color: #5b4fe0; }
+    :host > label.ck { flex-direction: row; align-items: center; gap: 8px; font-weight: 500; color: #2b2f42; font-size: 13px; }
+    :host > label.ck > input { width: 16px; height: 16px; accent-color: #5b4fe0; }
+    :host > label .zaf-h { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    :host input::placeholder { text-transform: none !important; color: #9aa0b4 !important; }
+    .zaf-pick { position: relative; display: block; }
+    .zaf-pick > input { width: 100%; box-sizing: border-box; height: 38px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 28px 0 10px;
+      font: inherit; font-size: 13.5px; font-weight: 400; color: #1d2033; background: #fff; }
+    .zaf-pick > input:focus { outline: 2px solid #c9c3ff; border-color: #5b4fe0; }
+    .zaf-caret { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #6b7185; font-size: 11px; pointer-events: none; }
+    .zaf-list { position: absolute; z-index: 30; left: 0; right: 0; top: 40px; max-height: 240px; overflow-y: auto; background: #fff;
+      border: 1px solid #dcdfea; border-radius: 8px; box-shadow: 0 8px 24px rgba(27,22,64,.14); padding: 4px 0; display: block; }
+    .zaf-list.up { top: auto; bottom: 40px; }
+    .zaf-opt, .zaf-empty { display: block; padding: 7px 12px; font-size: 13px; font-weight: 400; color: #1d2033; cursor: pointer; }
+    .zaf-opt.hi, .zaf-opt:hover { background: #f4f5fa; } .zaf-opt.on { font-weight: 600; color: #5b4fe0; }
+    .zaf-none { color: #6b7185; } .zaf-empty { color: #6b7185; cursor: default; }
+    :host-context([dir=rtl]) .zaf-pick > input { padding: 0 10px 0 28px; } :host-context([dir=rtl]) .zaf-caret { right: auto; left: 10px; }`],
   template: `
 <ng-container [ngSwitch]="kind">
   <label *ngSwitchCase="'bool'" class="ck"><input type="checkbox" [ngModel]="!!value" (ngModelChange)="set($event)"> {{ f.label }}</label>
@@ -22,9 +46,18 @@ import { HSE_BASE, HseApiService, csv, day, stClass, today, when } from './hse-a
   <label *ngSwitchCase="'choice'">{{ f.label }}{{ f.required ? ' *' : '' }}
     <select [ngModel]="value" (ngModelChange)="set($event)"><option [ngValue]="''">–</option>
       <option *ngFor="let c of choices" [ngValue]="c.value">{{ c.label }}</option></select></label>
-  <label *ngSwitchCase="'fk'">{{ f.label }}{{ f.required ? ' *' : '' }}
-    <select [ngModel]="value" (ngModelChange)="set($event)"><option [ngValue]="null">–</option>
-      <option *ngFor="let o of opts" [ngValue]="o.id">{{ o.label }}</option></select></label>
+  <label *ngSwitchCase="'fk'"><span class="zaf-h">{{ f.label }}{{ f.required ? ' *' : '' }}</span>
+    <span class="zaf-pick" (focusout)="pickBlur($event)">
+      <input type="text" role="combobox" autocomplete="off" [attr.aria-expanded]="open" [value]="open ? filter : selLabel()" placeholder="Search or choose…"
+             (focus)="openPick($event)" (click)="openPick($event)" (input)="filter = $any($event.target).value; open = true; hi = 0" (keydown)="pickKey($event)">
+      <span class="zaf-caret" aria-hidden="true">▾</span>
+      <span class="zaf-list" role="listbox" *ngIf="open" [class.up]="up">
+        <span class="zaf-opt zaf-none" role="option" (mousedown)="choose(null, $event)">–</span>
+        <span class="zaf-opt" role="option" *ngFor="let o of filtered().slice(0, 300); let i = index" [class.on]="o.id === value" [class.hi]="i === hi"
+              (mousedown)="choose(o.id, $event)">{{ o.label }}</span>
+        <span class="zaf-empty" *ngIf="!filtered().length">No match</span>
+      </span>
+    </span></label>
   <div *ngSwitchCase="'m2m'" class="wide" style="display:flex;flex-direction:column;gap:4px">
     <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
     <input type="search" [(ngModel)]="filter" placeholder="Filter…" style="height:30px;border:1px solid #dcdfea;border-radius:6px;padding:0 8px;font:inherit;font-size:12.5px">
@@ -70,8 +103,30 @@ export class HseFieldComponent implements OnChanges {
   set(v: any): void { this.value = v; this.valueChange.emit(v); }
   has(id: number): boolean { return (this.value || []).includes(id); }
   toggle(id: number): void { const v = [...(this.value || [])]; const i = v.indexOf(id); i >= 0 ? v.splice(i, 1) : v.push(id); this.set(v); }
-  filtered(): any[] { const q = this.filter.toLowerCase(); return q ? this.opts.filter(o => o.label.toLowerCase().includes(q)) : this.opts; }
+  filtered(): any[] { const q = this.filter.toLowerCase(); return q ? this.opts.filter(o => o.label.toLowerCase().includes(q) || o.id === this.value) : this.opts; }
   pick(ev: any): void { this.files.emit(Array.from(ev.target.files || [])); }
+
+  // v1.56.1 one picker (search and choose in one box) – as the app-kit forms
+  open = false;
+  hi = 0;
+  up = false;
+  selLabel(): string { const o = this.opts.find(x => x.id === this.value); return o ? o.label : ''; }
+  openPick(ev?: Event): void {
+    if (this.open) { return; }
+    const el = ev?.target as HTMLElement | undefined;
+    if (el) { const r = el.getBoundingClientRect(); const box = (el.closest('.body, .ex-modal') as HTMLElement | null)?.getBoundingClientRect();
+      const below = Math.min(window.innerHeight, box ? box.bottom : window.innerHeight) - r.bottom; this.up = below < 250 && r.top > 260; }
+    this.open = true; this.filter = ''; this.hi = Math.max(0, this.filtered().findIndex(o => o.id === this.value));
+  }
+  choose(id: any, ev?: Event): void { ev?.preventDefault(); this.set(id); this.open = false; this.filter = ''; }
+  pickBlur(ev: FocusEvent): void { const to = ev.relatedTarget as Node | null; if (!to || !(ev.currentTarget as HTMLElement).contains(to)) { this.open = false; this.filter = ''; } }
+  pickKey(ev: KeyboardEvent): void {
+    const list = this.filtered();
+    if (ev.key === 'ArrowDown') { this.open = true; this.hi = Math.min(list.length - 1, this.hi + 1); ev.preventDefault(); }
+    else if (ev.key === 'ArrowUp') { this.hi = Math.max(0, this.hi - 1); ev.preventDefault(); }
+    else if (ev.key === 'Enter' && this.open) { if (list[this.hi]) { this.choose(list[this.hi].id); } ev.preventDefault(); }
+    else if (ev.key === 'Escape' && this.open) { this.open = false; this.filter = ''; ev.preventDefault(); ev.stopPropagation(); }
+  }
 }
 
 /** Create / edit form of any register (fields from the register meta). */

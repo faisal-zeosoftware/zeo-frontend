@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -18,9 +21,30 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-air-ticket-policy',
   templateUrl: './air-ticket-policy.component.html',
-  styleUrl: './air-ticket-policy.component.css'
+  styleUrls: ['./air-ticket-policy.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 export class AirTicketPolicyComponent {
+  // v1.62.0 air ticket: readable policy cards from /payroll-plus/api/air-tickets/policies/; the card actions open this screen's own form
+  at = atInject(AtUiService);
+  private atRouter = atInject(AtRouter);
+  private atRoute = atInject(AtRoute);
+  atRows: any[] = [];
+  atLoading = true;
+  atMsg = '';
+  async atLoad(): Promise<void> {
+    try { this.atRows = (await this.at.get('policies')).rows || []; this.atMsg = ''; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The policies could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atGo(p: string): void { this.atRouter.navigate(['..', p], { relativeTo: this.atRoute }); }
+  atEdit(id: number): void {
+    const row = (this.LoanTypes || []).find((x: any) => x.id === id);
+    if (row) { this.openEditModal(row); }
+  }
+  async atDelete(p: any): Promise<void> {
+    if (await this.at.remove('policy', p.id, p.name)) { this.LoanTypes = (this.LoanTypes || []).filter((x: any) => x.id !== p.id); await this.atLoad(); }
+  }
+
 
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -708,6 +732,7 @@ mapDesigNameToId() {
             isLoading: boolean = false;
 
 fetchEmployees(schema: string, branchIds: number[]): void {
+  this.atLoad();   // v1.62.0 air ticket
   this.isLoading = true;
   this.employeeService.getairticketpolicyNew(schema, branchIds).subscribe({
     next: (data: any) => {

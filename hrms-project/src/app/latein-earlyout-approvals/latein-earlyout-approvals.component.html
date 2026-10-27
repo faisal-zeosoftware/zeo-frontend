@@ -47,7 +47,7 @@
     <tbody>
       <tr *ngFor="let apr of filteredApprovals">
         <td><a class="apr-link" (click)="selectedaprovaldetalis(apr.id)">{{ apr.lateinearlyout_request || 'Late in / early out request' }}</a></td>
-        <td>{{ apr.approver || '—' }}</td>
+        <td>{{ (apr.approver_name || apr.approver) || '—'  }}</td>
         <td>{{ apr.level || '—' }}</td>
         <td>{{ apr.note || '—' }}</td>
         <td><span
@@ -95,7 +95,7 @@
             </strong>
 
             <p>
-              {{ apr.approver || '—' }}
+              {{ (apr.approver_name || apr.approver) || '—'  }}
             </p>
 
           </div>
@@ -112,7 +112,7 @@
             </strong>
 
             <p>
-              {{ apr.delegation_details.delegate_to || '—' }}
+              {{ (apr.delegation_details.delegate_to_name || apr.delegation_details.delegate_to) || '—'  }}
             </p>
 
           </div>

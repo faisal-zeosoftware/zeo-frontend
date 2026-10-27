@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +41,7 @@ import { COUNTRY_PACK_UI, CountryPackService } from '../shared-ui/country-pack.s
       </div>
       <div class="es-rows">
         <div class="es-row" *ngFor="let r of filtered()">
-          <div class="main"><div class="t">{{ r.module_label }} · {{ r.document_number || ('#' + r.id) }}</div><div class="s">{{ r.summary }} · {{ r.date | date:'dd MMM yyyy' }}</div></div>
+          <div class="main"><div class="t">{{ r.module_label }} · {{ r.document_number || ('#' + r.id) }}</div><div class="s">{{ r.summary }} · {{ r.date | date:'dd/MM/yyyy' }}</div></div>
           <div class="r"><span class="es-tag" [ngClass]="r.status_key">{{ r.status }}</span></div>
         </div>
         <p class="es-muted" *ngIf="!loading && !rows.length">You have no requests yet.</p>

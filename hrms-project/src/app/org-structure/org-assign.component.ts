@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -60,7 +61,7 @@ import { ZEmpOrgFieldsComponent } from './z-emp-org-fields.component';
           <tr *ngFor="let r of rows">
             <td data-label="Employee">{{ r.employee }}</td>
             <td *ngFor="let c of cols" [attr.data-label]="c.label">{{ r[c.field] || '–' }}</td>
-            <td *ngIf="showEnd" data-label="Contract end">{{ r.contract_end_date ? (r.contract_end_date | date:'dd MMM yyyy') : '–' }}</td>
+            <td *ngIf="showEnd" data-label="Contract end">{{ r.contract_end_date ? (r.contract_end_date | date:'dd/MM/yyyy') : '–' }}</td>
             <td data-label="Actions"><button type="button" class="lp-btn" (click)="edit = r">Edit</button></td>
           </tr>
         </tbody>

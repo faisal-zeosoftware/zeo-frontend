@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: dates dd/MM/yyyy -->
 
 <!-- <div class="email_div"  >
   <mat-icon>chevron_left</mat-icon>
@@ -360,8 +361,8 @@
                       <p>{{ project.description }}</p>
         
                       <div class="project-dates mb-2">
-                        <span><strong>Start:</strong> {{ project.start_date | date:'dd MMM yyyy' }}</span>
-                        <span><strong>End:</strong> {{ project.end_date | date:'dd MMM yyyy' }}</span>
+                        <span><strong>Start:</strong> {{ project.start_date | date:'dd/MM/yyyy' }}</span>
+                        <span><strong>End:</strong> {{ project.end_date | date:'dd/MM/yyyy' }}</span>
                       </div>
         
                       <div *ngIf="project.document" class="mt-2 mb-3">
@@ -476,8 +477,8 @@
       <a class="zr-link" href="" (click)="openRecord('ProjectManagement.Task', task.id, $event)">Open the task</a>
 
       <div class="task-dates">
-        <span><strong>Start:</strong> {{ task.start_date | date:'dd MMM yyyy' }}</span>
-        <span><strong>End:</strong> {{ task.end_date | date:'dd MMM yyyy' }}</span>
+        <span><strong>Start:</strong> {{ task.start_date | date:'dd/MM/yyyy' }}</span>
+        <span><strong>End:</strong> {{ task.end_date | date:'dd/MM/yyyy' }}</span>
       </div>
 
       <!-- 👤 Task Managers -->
@@ -561,7 +562,7 @@
                     >
                       <small class="text-secondary">
                         <mat-icon style="font-size: 14px;" class="me-1">calendar_today</mat-icon>
-                        {{ policy.created_at | date:'dd MMM yyyy' }}
+                        {{ policy.created_at | date:'dd/MM/yyyy' }}
                       </small>
             
                       <div *ngIf="policy.policy_file">

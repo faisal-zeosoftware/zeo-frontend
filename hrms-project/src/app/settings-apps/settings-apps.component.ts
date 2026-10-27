@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -67,7 +68,7 @@ interface AppRow {
         <div><dt>{{ 'Industry' | t }}</dt><dd>{{ a.active || a.industry ? (a.industry_label || a.industry || '–') : '–' }}
           <small *ngIf="a.industry && a.industry_source === 'company'">{{ 'company industry' | t }}</small>
           <small *ngIf="a.industry && a.industry_source === 'chosen'">{{ 'chosen for this app' | t }}</small></dd></div>
-        <div *ngIf="a.activated_at"><dt>{{ 'Activated' | t }}</dt><dd>{{ a.activated_at | date:'d MMM y' }}<small *ngIf="a.activated_by">by {{ a.activated_by }}</small></dd></div>
+        <div *ngIf="a.activated_at"><dt>{{ 'Activated' | t }}</dt><dd>{{ a.activated_at | date:'dd/MM/yyyy' }}<small *ngIf="a.activated_by">by {{ a.activated_by }}</small></dd></div>
         <div *ngIf="a.roles?.length"><dt>{{ 'Permission groups' | t }}</dt><dd>{{ a.roles!.length }}
           <small><a routerLink="/main-sidebar/settings/user-grouping-master">Settings › Permission groups</a></small></dd></div>
       </dl>

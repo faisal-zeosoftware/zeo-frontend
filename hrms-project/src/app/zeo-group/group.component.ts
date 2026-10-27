@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { TPipe, ZDatePipe, i18nT } from '../shared-ui/i18n.service';
 import { MODULE_LINKS } from '../hr-modules/dashboards/dashboard.service';
+import { ZGroupCostComponent } from './group-cost.component';   // v1.53.0
 
 /**
  * v1.27.0 – Group view (Premium and Enterprise): one view across the companies of a group.
@@ -14,7 +15,7 @@ import { MODULE_LINKS } from '../hr-modules/dashboards/dashboard.service';
  */
 const API = `${environment.apiBaseUrl}/group/api`;
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
-type Tab = 'dashboard' | 'inbox' | 'feed' | 'reports' | 'copy' | 'transfer' | 'roles';
+type Tab = 'dashboard' | 'cost' | 'inbox' | 'feed' | 'reports' | 'copy' | 'transfer' | 'roles';
 function errText(e: any, fb: string): string {
   const d = e?.error;
   if (d && typeof d === 'object' && d.detail) { return String(d.detail); }
@@ -25,7 +26,7 @@ function errText(e: any, fb: string): string {
 @Component({
   selector: 'z-group',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TPipe, ZDatePipe],
+  imports: [CommonModule, FormsModule, RouterModule, TPipe, ZDatePipe, ZGroupCostComponent],
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./group.component.css'],
   templateUrl: './group.component.html',
@@ -38,6 +39,7 @@ export class GroupComponent implements OnInit {
   busy = false;
   tabs: { key: Tab; label: string; right: string }[] = [
     { key: 'dashboard', label: 'Dashboard', right: 'dashboard' },
+    { key: 'cost', label: 'Payroll in one currency', right: 'dashboard' },   // v1.53.0
     { key: 'inbox', label: 'Approvals', right: 'inbox' },
     { key: 'feed', label: 'Notifications', right: 'inbox' },
     { key: 'reports', label: 'Reports', right: 'reports' },

@@ -6,7 +6,7 @@ const API = '/expense/api/';
 const opt = (pairs: [string, string][]) => pairs.map(([value, label]) => ({ value, label }));
 
 const KINDS = opt([['general', 'General'], ['mileage', 'Mileage (km × rate)'], ['per_diem', 'Per diem (days × rate)'], ['travel', 'Travel'], ['hotel', 'Hotel'], ['meals', 'Meals']]);
-const ROLES = ['reporting_manager', 'manager_of_manager', 'department_head', 'branch_hr', 'company_hr', 'admin'];
+const ROLES = ['reporting_manager', 'functional_manager', 'manager_of_manager', 'department_head', 'branch_hr', 'company_hr', 'admin'];   // v1.58.0 + functional_manager
 const CATEGORY_LOOKUP = { endpoint: API + 'categories/', label: 'name', params: { active: 'true' } };
 const STATUS_COLORS = { draft: 'grey', submitted: 'orange', approved: 'green', rejected: 'red', closed: 'blue', requested: 'grey', paid: 'cyan', settled: 'blue' };
 
@@ -79,6 +79,7 @@ export const EXPENSE_POLICY_PAGE: PageConfig = {
         { key: 'per_expense_limit', label: 'Per expense', type: 'money' },
         { key: 'per_day_limit', label: 'Per day', type: 'money' },
         { key: 'per_report_limit', label: 'Per report', type: 'money' },
+        { key: 'per_month_limit', label: 'Per month', type: 'money' },   // v1.50.0
         { key: 'block_or_warn', label: 'When over', type: 'tag', tagColors: { warn: 'orange', block: 'red' } },
       ],
       fields: [
@@ -86,6 +87,7 @@ export const EXPENSE_POLICY_PAGE: PageConfig = {
         { key: 'per_expense_limit', label: 'Per expense (AED)', type: 'number', width: 4 },
         { key: 'per_day_limit', label: 'Per day (AED)', type: 'number', width: 4 },
         { key: 'per_report_limit', label: 'Per report (AED)', type: 'number', width: 4 },
+        { key: 'per_month_limit', label: 'Per month (AED)', type: 'number', width: 4 },   // v1.50.0
         { key: 'block_or_warn', label: 'When over the limit', type: 'select', default: 'warn', width: 12, options: opt([['warn', 'Warn (can still submit)'], ['block', 'Block (cannot submit)']]) },
       ],
       canAdd: () => true, canEdit: () => true, canDelete: () => true,
@@ -121,7 +123,7 @@ export const TRIP_PAGE: PageConfig = {
   title: 'Trips',
   itemName: 'Trip',
   endpoint: API + 'trips/',
-  intro: 'Plan a business trip and ask for an advance. Approval follows the expense policy levels; an approved trip with an advance creates the advance for finance to pay.',
+  intro: 'Request a business trip: travel, ticket, hotel, per diem and an advance. Approval follows the expense policy levels; an approved trip creates the advance for finance to pay, asks the travel desk to book (or uses the employee\'s air-ticket entitlement), and the trip shows every step up to the settlement of the expenses.',
   columns: [
     { key: 'number', label: 'Trip' },
     { key: 'employee_name', label: 'Employee' },
@@ -132,10 +134,12 @@ export const TRIP_PAGE: PageConfig = {
     { key: 'estimated_cost', label: 'Estimate', type: 'money' },
     { key: 'advance_requested', label: 'Advance', type: 'money' },
     { key: 'status', label: 'Status', type: 'tag', tagColors: STATUS_COLORS },
+    { key: 'booking_label', label: 'Booking', value: (r: any) => r.booking_status ? r.booking_label + (r.booking_ref ? ' ' + r.booking_ref : '') : '' },   // v1.50.0
     { key: 'waiting_for', label: 'Waiting for' },
   ],
   filters: [
     { key: 'status', label: 'Status', options: opt([['draft', 'Draft'], ['submitted', 'Submitted'], ['approved', 'Approved'], ['rejected', 'Rejected'], ['closed', 'Closed']]) },
+    { key: 'booking', label: 'Booking', options: opt([['to_book', 'To book'], ['booked', 'Booked']]) },   // v1.50.0 travel desk
     { key: 'mine', label: 'Show', options: opt([['1', 'Only my trips']]) },
   ],
   fields: [
@@ -146,6 +150,14 @@ export const TRIP_PAGE: PageConfig = {
     { key: 'end_date', label: 'End date', type: 'date', required: true, width: 6 },
     { key: 'estimated_cost', label: 'Estimated cost (AED)', type: 'number', default: 0, width: 6 },
     { key: 'advance_requested', label: 'Advance needed (AED)', type: 'number', default: 0, width: 6 },
+    // v1.50.0 travel request
+    { key: 'travel_mode', label: 'Travel by', type: 'select', default: 'air', width: 4, options: opt([['air', 'Air'], ['car', 'Car'], ['train', 'Train / bus'], ['other', 'Other']]) },
+    { key: 'travel_class', label: 'Class', type: 'select', default: 'economy', width: 4, showIf: (m: any) => m.travel_mode === 'air', options: opt([['economy', 'Economy'], ['premium', 'Premium economy'], ['business', 'Business'], ['first', 'First']]) },
+    { key: 'per_diem_days', label: 'Per diem days', type: 'number', default: 0, width: 4 },
+    { key: 'needs_ticket', label: 'Book a ticket', type: 'checkbox', default: false, width: 4 },
+    { key: 'use_ticket_entitlement', label: 'Use my air-ticket entitlement', type: 'checkbox', default: false, width: 4, showIf: (m: any) => !!m.needs_ticket },
+    { key: 'needs_hotel', label: 'Book a hotel', type: 'checkbox', default: false, width: 4 },
+    { key: 'hotel_nights', label: 'Hotel nights', type: 'number', default: 0, width: 4, showIf: (m: any) => !!m.needs_hotel },
     { key: 'employee_id', label: 'Employee (HR – empty = me)', type: 'select', lookup: LOOKUPS.employees, width: 12, createOnly: true },
     { key: 'notes', label: 'Notes', type: 'textarea', width: 12 },
   ],
@@ -155,10 +167,17 @@ export const TRIP_PAGE: PageConfig = {
     { label: 'Submit', action: 'submit', color: 'blue', showIf: r => r.status === 'draft' || r.status === 'rejected' },
     { label: 'Approve', action: 'approve', color: 'green', showIf: r => r.status === 'submitted' },
     { label: 'Reject', action: 'reject', color: 'red', showIf: r => r.status === 'submitted', prompt: [{ key: 'note', label: 'Reason', type: 'textarea', required: true }] },
+    { label: 'Book', action: 'book', color: 'blue', showIf: r => r.status === 'approved' && r.booking_status === 'to_book' && r.can_book,   // v1.50.0 travel desk
+      prompt: [{ key: 'reference', label: 'Booking reference (PNR / confirmation)', type: 'text', required: true }, { key: 'cost', label: 'Cost (AED)', type: 'number' },
+        { key: 'note', label: 'Note (flight, hotel)', type: 'text' }] },
     { label: 'Close', action: 'close', color: 'grey', showIf: r => r.status === 'approved', confirm: 'Close this trip?' },
   ],
-  detailFields: [{ key: 'notes', label: 'Notes' }],
+  detailFields: [{ key: 'notes', label: 'Notes' }, { key: 'booking_note', label: 'Booking' }],
   children: [
+    { title: 'Trip journey', endpoint: '', rowsFrom: 'journey', parentKey: 'trip',   // v1.50.0 request → approval → advance → booking → expenses → settlement
+      columns: [{ key: 'step', label: 'Step' },
+        { key: 'state', label: 'Status', type: 'tag', tagColors: { done: 'green', now: 'orange', todo: 'grey', stop: 'red' } },
+        { key: 'detail', label: 'Details' }, { key: 'amount', label: 'AED', type: 'money' }, { key: 'date', label: 'On', type: 'date' }] },
     { title: 'Approval', endpoint: '', rowsFrom: 'approvals', parentKey: 'trip',
       columns: [{ key: 'level', label: 'Level' }, { key: 'approver', label: 'Approver' }, { key: 'role_label', label: 'Role' },
         { key: 'status', label: 'Status', type: 'tag', tagColors: { pending: 'orange', waiting: 'grey', approved: 'green', rejected: 'red', skipped: 'grey' } },

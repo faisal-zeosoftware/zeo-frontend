@@ -94,6 +94,7 @@ import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.serv
             <button type="button" class="lp-btn" (click)="template()">Template</button>
           </ng-container>
           <button type="button" class="lp-btn" (click)="action('check')">Check</button>
+          <button type="button" class="lp-btn" (click)="loadSkills()" data-skills-cover>Skills cover</button>
           <button type="button" class="lp-btn primary" *ngIf="p.can?.submit" (click)="action('submit')">Send for approval</button>
           <button type="button" class="lp-btn primary" *ngIf="p.can?.approve" (click)="action('approve')">Approve</button>
           <button type="button" class="lp-btn danger" *ngIf="p.can?.approve" (click)="reject()">Send back</button>
@@ -126,6 +127,25 @@ import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.serv
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="sp-panel" *ngIf="sk" style="margin-top:12px" data-skill-gaps>   <!-- v1.61.0 skills-based scheduling -->
+          <h2>Skills cover <button type="button" class="lp-btn" style="float:right" (click)="sk = null; cand = null">Close</button></h2>
+          <p class="lp-muted" *ngIf="!sk.shifts_with_needs">No shift says which skills it needs – add them in Shift master › Skills needed.</p>
+          <p class="lp-muted" *ngIf="sk.shifts_with_needs && !sk.gaps.length">Every planned shift has the skills it needs ({{ sk.checked }} checks{{ view === 'week' ? ', this week' : '' }}).</p>
+          <div class="lp-scroll" *ngIf="sk.gaps.length">
+            <table class="lp-mini" zPlain><thead><tr><th>Day</th><th>Shift</th><th>Skill needed</th><th>Have / need</th><th></th></tr></thead>
+              <tbody><ng-container *ngFor="let g of sk.gaps">
+                <tr [attr.data-gap]="g.date + '-' + g.shift_id + '-' + g.skill_id"><td>{{ nice(g.date) }}</td><td>{{ g.shift }}</td><td>{{ g.skill }} (level {{ g.level }}+)</td>
+                  <td class="lp-bad">{{ g.have }} / {{ g.needed }}</td>
+                  <td><button type="button" class="lp-btn" (click)="findCover(g)" data-find-cover>Who can cover</button></td></tr>
+                <tr *ngIf="cand && cand.g === g"><td colspan="5">
+                  <p class="lp-muted" *ngIf="!cand.rows.length">Nobody on this roster has {{ g.skill }} at level {{ g.level }} and is free that day.</p>
+                  <div *ngFor="let c of cand.rows" style="display:flex;gap:10px;align-items:center;padding:3px 0" [attr.data-cand]="c.employee_id">
+                    <b>{{ c.name }}</b><span class="lp-muted">{{ c.code }} · level {{ c.level }} · {{ c.now === 'free' ? 'not planned' : (c.now === 'off' ? 'day off' : 'on ' + c.now_shift) }}{{ c.availability === 'unavailable' ? ' · said unavailable' : '' }}</span>
+                    <button type="button" class="lp-btn primary" *ngIf="p.can?.edit" (click)="putOn(g, c)" data-put-on>Put on {{ g.shift }}</button></div>
+                </td></tr>
+              </ng-container></tbody></table>
+          </div>
         </div>
         <ul class="sp-problems" *ngIf="problems.length">
           <li *ngFor="let x of problems" [ngClass]="x.level"><b>{{ x.employee }}</b> · {{ nice(x.date) }} – {{ x.message }}</li>
@@ -169,6 +189,7 @@ export class SpRosterComponent implements OnInit {
   p: any = null; grid: any = null; problems: any[] = [];
   view: 'week' | 'all' = 'week'; weekFrom = '';
   cellEdit: any = null;
+  sk: any = null; cand: any = null;   // v1.61.0 skills cover
   uploadRows: any[] = []; uploadErrors = 0; uploadFile: File | null = null;
   msg = ''; msgErr = false; busy = false;
   nice = niceDate;
@@ -231,6 +252,25 @@ export class SpRosterComponent implements OnInit {
       this.say('Saved.');
       await this.loadGrid();
     } catch (err) { this.say(SpApiService.error(err), true); }
+  }
+  async loadSkills(): Promise<void> {
+    const q = this.view === 'week' ? { from: this.weekFrom, to: addDays(this.weekFrom, 6) } : {};
+    try { this.sk = await this.api.get(`periods/${this.p.id}/skills/`, q); this.cand = null; } catch (e) { this.say(SpApiService.error(e), true); }
+    this.cd.markForCheck();
+  }
+  async findCover(g: any): Promise<void> {
+    if (this.cand?.g === g) { this.cand = null; return; }
+    try { const r: any = await this.api.get(`periods/${this.p.id}/skills/`, { date: g.date, shift: g.shift_id, skill: g.skill_id, level: g.level }); this.cand = { g, rows: r.candidates }; }
+    catch (e) { this.say(SpApiService.error(e), true); }
+    this.cd.markForCheck();
+  }
+  async putOn(g: any, c: any): Promise<void> {
+    try {
+      const r: any = await this.api.post(`periods/${this.p.id}/cells/`, { cells: [{ employee: c.employee_id, date: g.date, shift: g.shift_id, off: false, note: `cover: ${g.skill}` }] });
+      this.problems = r.problems || [];
+      this.say(`${c.name} is on ${g.shift} on ${this.nice(g.date)}.`);
+      await this.loadGrid(); await this.loadSkills();
+    } catch (e) { this.say(SpApiService.error(e), true); }
   }
   async action(a: string, body: any = {}): Promise<void> {
     if (a === 'publish' && !confirm('Publish this roster? Every employee on it gets their schedule.')) return;

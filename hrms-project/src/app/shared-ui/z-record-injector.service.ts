@@ -4,11 +4,12 @@ import { filter } from 'rxjs';
 import { ZRecordService, RecordCtx } from './z-record.service';
 import { ZRecordPanelComponent } from './z-record-panel.component';
 import { appForUrl } from './menu-config';
+import { ZFormArrangerService } from './z-form-arranger.service';   // v1.39.0
 
 /** Form containers the screens use: Angular Material dialogs, the screens' own pop-ups and the HR module dialogs. */
 const CONTAINERS = 'mat-dialog-container, .modal-content, .hr-modal-box, .modal-dialog-custom, .ex-modal';   // v1.22.0: + .ex-modal (add-on apps, Expenses)
 const FOOTERS = '.modal-footer, .modal-footer-custom, mat-dialog-actions, [mat-dialog-actions], .mat-mdc-dialog-actions, .hr-modal-foot, .dialog-actions, .form-actions, .button-group, .btn-group-footer';
-const SKIP = '.zl-modal, .zd-modal, z-record-panel, .cdk-overlay-pane .mat-mdc-select-panel, .swal2-container, [data-zr-off]';
+const SKIP = '.zl-modal, .zd-modal, z-record-panel, .cdk-overlay-pane .mat-mdc-select-panel, .swal2-container, [data-zr-off], .z-no-record';   // v1.53.2 + .z-no-record (dialog panelClass)
 
 interface Mounted { ref: ComponentRef<ZRecordPanelComponent>; host: HTMLElement; box: HTMLElement; }
 
@@ -26,7 +27,7 @@ export class ZRecordInjector {
   private pageTimer: any;
 
   constructor(private rec: ZRecordService, private appRef: ApplicationRef, private env: EnvironmentInjector,
-              private zone: NgZone, private router: Router) {}
+              private zone: NgZone, private router: Router, private arranger: ZFormArrangerService) {}
 
   start(): void {
     if (this.obs) { return; }
@@ -119,6 +120,7 @@ export class ZRecordInjector {
       this.appRef.attachView(ref.hostView);
       ref.changeDetectorRef.detectChanges();
       this.mounted.push({ ref, host, box });
+      setTimeout(() => this.arranger.apply(box, endpoint), 400);   // v1.39.0: the company's layout of this form
     });
   }
 
@@ -136,8 +138,16 @@ export class ZRecordInjector {
       }
       // a Bootstrap grid footer (row > col-md-8 empty + col-md-2 Cancel + col-md-2 Add): the buttons go straight into the
       // row and the empty columns are dropped, so the row itself becomes the one button line
+      // v1.40.1: only when that row holds nothing but the buttons – the approval "Send delegation" pop-ups keep the
+      // Send button in a col-md-12 of the SAME row as the Request / Delegator / Delegate to fields; treating that row
+      // as the button line moved the record panel ("More details") above the fields and squeezed the fields to the right
       if (/(^|\s)col(-[a-z]+)?(-\d+)?(\s|$)/.test(footer.className) && footer.parentElement && footer.parentElement.classList.contains('row')) {
         const row = footer.parentElement;
+        if (row.querySelector('input, select, textarea, mat-select')) {   // v1.40.1
+          host.classList.add('col-12');   // the panel stays where it was inserted: after the fields, before the button column
+          footer.classList.add('zr-footer');
+          return;
+        }
         Array.from(row.querySelectorAll('button')).forEach(b => row.appendChild(b));
         Array.from(row.children).forEach(c => { if (c.tagName !== 'BUTTON' && c.tagName !== 'Z-RECORD-PANEL' && !c.querySelector('button, input, select, textarea, z-record-panel') && !(c.textContent || '').trim()) { c.remove(); } });
         if (host.parentElement === row) { row.parentElement?.insertBefore(host, row); }   // the record panel stays above the button line

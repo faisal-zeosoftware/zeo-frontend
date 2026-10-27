@@ -1,3 +1,6 @@
+import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
+import { AtUiService } from '../air-ticket-ui/at-ui.service';
 
 import { Component } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
@@ -14,10 +17,29 @@ import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-airticket-escalation',
   templateUrl: './airticket-escalation.component.html',
-  styleUrl: './airticket-escalation.component.css'
+  styleUrls: ['./airticket-escalation.component.css', '../air-ticket-ui/at.css']   // v1.62.0 air ticket
 })
 
 export class AirticketEscalationComponent {
+  // v1.62.0 air ticket: escalation in words from /payroll-plus/api/air-tickets/levels/; actions open this screen's own form
+  // (the old top "Reset selected" sat next to a delete that called the general request endpoint)
+  at = atInject(AtUiService);
+  private atRouter = atInject(AtRouter);
+  private atRoute = atInject(AtRoute);
+  atRows: any[] = [];
+  atLoading = true;
+  atMsg = '';
+  async atLoad(): Promise<void> {
+    try { this.atRows = (await this.at.get('levels')).rows || []; this.atMsg = ''; }
+    catch (e) { this.atMsg = this.at.err(e, this.at.t('The escalation could not be loaded.')); }
+    this.atLoading = false;
+  }
+  atGo(p: string): void { this.atRouter.navigate(['..', p], { relativeTo: this.atRoute }); }
+  atEdit(id: number): void {
+    const row = (this.GeneralReq || []).find((x: any) => x.id === id);
+    if (row) { this.openEditModal(row); }
+  }
+
   
 
   private dataSubscription?: Subscription;
@@ -767,6 +789,7 @@ nextPage(): void {
                 isLoading: boolean = false;
 
 fetchEmployees(schema: string, branchIds: number[]): void {
+  this.atLoad();   // v1.62.0 air ticket
   this.isLoading = true;
   this.employeeService.getEscalationsAirticketNew(schema, branchIds).subscribe({
     next: (data: any) => {

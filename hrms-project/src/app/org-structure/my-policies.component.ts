@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -33,9 +34,9 @@ import { OrgSettingsService } from './org-settings.service';
         <div class="os-card" *ngFor="let p of rows" [class.on]="!p.acknowledged && p.requires_ack">
           <h3>{{ p.title }} <span class="os-tag" style="margin-left:auto" [ngClass]="p.acknowledged ? 'ok' : p.requires_ack ? 'warn' : ''">{{ p.status }}</span></h3>
           <p *ngIf="p.description">{{ p.description }}</p>
-          <p>Version {{ p.version }} · {{ p.version_date | date:'dd MMM yyyy' }}
-            <ng-container *ngIf="!p.acknowledged && p.requires_ack && p.due_date"> · please confirm by {{ p.due_date | date:'dd MMM yyyy' }}</ng-container>
-            <ng-container *ngIf="p.acknowledged"> · confirmed {{ p.acknowledged_at | date:'dd MMM yyyy, HH:mm' }}</ng-container></p>
+          <p>Version {{ p.version }} · {{ p.version_date | date:'dd/MM/yyyy' }}
+            <ng-container *ngIf="!p.acknowledged && p.requires_ack && p.due_date"> · please confirm by {{ p.due_date | date:'dd/MM/yyyy' }}</ng-container>
+            <ng-container *ngIf="p.acknowledged"> · confirmed {{ p.acknowledged_at | date:'dd/MM/yyyy HH:mm' }}</ng-container></p>
           <div class="row2">
             <button type="button" class="lp-btn" *ngIf="p.has_file" (click)="openFile(p)">Open document</button>
             <button type="button" class="lp-btn primary" *ngIf="!p.acknowledged && p.requires_ack" [disabled]="busy" (click)="ack(p)">I have read and accept</button>

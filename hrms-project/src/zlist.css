@@ -296,3 +296,45 @@ table.zl-table > thead > tr > th .zl-grip:hover, table.zl-table > thead > tr > t
 .zl-vwerr { background: var(--zl-bad-bg); color: var(--zl-bad); border-radius: 8px; padding: 8px 10px; margin: 6px 4px; font-size: 12.5px; }
 .zl-xnote { margin: 0 10px 6px; max-width: 320px; }
 @media (max-width: 760px) { .zl-menu-views { width: calc(100vw - 24px); } }
+
+/* v1.45.0 mass actions on the selected rows */
+.zl-massbtn { height: 26px; padding: 0 10px; margin: 0 6px; font-size: 12px; }
+.zl-mass { width: min(560px, 100%); }
+.zl-fl { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 500; color: var(--zl-text); margin: 0 0 10px; }
+.zl-fl input, .zl-fl select, .zl-fl textarea { border: 1px solid var(--zl-line); border-radius: 7px; padding: 6px 9px; font: inherit; font-weight: 400; }
+.zl-mass .zl-chk { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 10px; }
+tr.zl-gone { display: none !important; }
+/* v1.46.0 totals row, colour rules, cell editing, team views */
+tfoot[data-zl="tot"] td { background: #f4f5fa; border-top: 2px solid var(--zl-line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.zl-avg { color: var(--zl-muted); font-size: 11.5px; }
+tr.zl-rc-red > td { background: #fdecee !important; } tr.zl-rc-amber > td { background: #fff5e0 !important; } tr.zl-rc-green > td { background: #e8f6ee !important; }
+tr.zl-rc-blue > td { background: #e8f0fc !important; } tr.zl-rc-grey > td { background: #f1f2f6 !important; }
+td.zl-cc-red { background: #fdecee !important; color: #b42336; font-weight: 600; } td.zl-cc-amber { background: #fff5e0 !important; color: #8a5a00; font-weight: 600; }
+td.zl-cc-green { background: #e8f6ee !important; color: #1e7a4c; font-weight: 600; } td.zl-cc-blue { background: #e8f0fc !important; color: #1f5fb4; } td.zl-cc-grey { background: #f1f2f6 !important; }
+.zl-sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; border: 1px solid var(--zl-line); }
+.zl-rules { display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px; font-size: 12.5px; }
+.zl-ruleadd { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 8px; }
+.zl-ruleadd select, .zl-ruleadd input, .zl-sel { height: 28px; border: 1px solid var(--zl-line); border-radius: 6px; font-size: 12px; padding: 0 5px; }
+.zl-sel { margin-bottom: 8px; }
+table.zl-inline tbody td { cursor: text; }
+.zl-cellin { width: 100%; min-width: 80px; height: 28px; border: 1px solid var(--zl-primary); border-radius: 5px; padding: 0 6px; font: inherit; }
+td.zl-saved { background: #e8f6ee !important; transition: background 1s; }
+.zl-team select { margin-left: 6px; height: 26px; border: 1px solid var(--zl-line); border-radius: 6px; }
+
+/* ---------- v1.62.0 ui: column types set by the list (z-present.ts) ---------- */
+table.zl-table td.zl-k-date, table.zl-table th.zl-k-date,
+table.zl-table td.zl-k-short, table.zl-table td.zl-k-person { white-space: nowrap; }
+table.zl-table td.zl-k-money, table.zl-table td.zl-k-num { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+table.zl-table > thead > tr > th.zl-k-money, table.zl-table > thead > tr > th.zl-k-num { text-align: right; }
+[dir=rtl] table.zl-table td.zl-k-money, [dir=rtl] table.zl-table td.zl-k-num,
+[dir=rtl] table.zl-table > thead > tr > th.zl-k-money, [dir=rtl] table.zl-table > thead > tr > th.zl-k-num { text-align: left; }
+table.zl-table th .zl-cur { font-weight: 400; opacity: .85; text-transform: none; }
+table.zl-table td.zl-k-long { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+table.zl-table td.zl-k-long[data-zl-tip] { cursor: help; }
+/* an employee code alone: the name first, the code muted */
+table.zl-table td.zl-hascode { color: var(--zl-muted); font-size: 12px !important; }
+table.zl-table td.zl-hascode .zl-pname { color: var(--zl-text); font-size: 13px; font-weight: 500; margin-inline-end: 6px; }
+/* wide lists scroll inside their card instead of cutting the last columns */
+.zl-scroll { overflow-x: auto; max-width: 100%; min-width: 0; }
+/* v1.62.0 ui: native date fields painted as dd/mm/yyyy while not edited (shared-ui/z-date-input.ts) */
+input.zdi-on::-webkit-datetime-edit { opacity: 0; }

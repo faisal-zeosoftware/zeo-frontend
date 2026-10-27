@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -54,7 +55,7 @@ import { AssetFormComponent } from './asset-form.component';
             <td>{{ a.serial_number }}</td>
             <td>{{ a.branch_name }}</td>
             <td>{{ a.holder ? a.holder.name : '' }}</td>
-            <td>{{ a.warranty_end ? (a.warranty_end | date:'dd MMM yyyy') : '' }}</td>
+            <td>{{ a.warranty_end ? (a.warranty_end | date:'dd/MM/yyyy') : '' }}</td>
             <td class="money">{{ a.book_value !== undefined && a.book_value !== null ? m(a.book_value, a.currency) : '' }}</td>
             <td><span class="ex-tag" [ngClass]="cls(a.status)">{{ a.status_label }}</span></td>
             <td>{{ a.condition === 'healthy' ? 'Healthy' : a.condition === 'minor_damage' ? 'Minor damage' : a.condition === 'major_damage' ? 'Major damage' : a.condition }}</td>

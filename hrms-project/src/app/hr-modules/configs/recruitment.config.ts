@@ -110,6 +110,7 @@ export const JOB_PAGE: PageConfig = {
     { key: 'openings', label: 'Openings' },
     { key: 'applicant_count', label: 'Applicants' },
     { key: 'channels', label: 'Published on', type: 'list' },
+    { key: 'on_careers_page', label: 'On careers page', type: 'bool' },   // v1.57.0
     { key: 'closing_date', label: 'Closing', type: 'date' },
     { key: 'status', label: 'Status', type: 'tag', tagColors: JOB_STATUS },
   ],
@@ -122,6 +123,7 @@ export const JOB_PAGE: PageConfig = {
     { key: 'designation', label: 'Designation', type: 'select', lookup: LOOKUPS.designations, width: 4 },
     { key: 'branch', label: 'Branch', type: 'select', lookup: LOOKUPS.branches, width: 4 },
     { key: 'location', label: 'Location', type: 'text', width: 4 },
+    { key: 'workplace', label: 'Workplace', type: 'select', default: 'onsite', width: 4, options: opt([['onsite', 'On site'], ['hybrid', 'Hybrid'], ['remote', 'Remote']]) },   // v1.57.0
     { key: 'experience_min_years', label: 'Min experience (yrs)', type: 'number', default: 0, width: 4 },
     { key: 'closing_date', label: 'Closing date', type: 'date', width: 4 },
     { key: 'min_salary', label: 'Min salary (AED)', type: 'number', width: 4 },
@@ -130,19 +132,46 @@ export const JOB_PAGE: PageConfig = {
     { key: 'channels', label: 'Publish on', type: 'chips', chipOptions: CHANNELS, width: 12, default: () => ['Careers page'] },
     { key: 'description', label: 'Job description', type: 'textarea', required: true, width: 12 },
     { key: 'requirements', label: 'Requirements', type: 'textarea', width: 12 },
+    // v1.57.0 asked on the careers page; "Needed answer" flags applications that do not meet it (they are not refused)
+    { key: 'questions', label: 'Questions on the apply form', type: 'questions', width: 12,
+      help: 'Asked on the careers page. An application that does not give the needed answer is flagged in the pipeline, not refused.' },
   ],
   canDelete: r => r.status === 'draft',
   rowActions: [
     { label: 'Publish', action: 'publish', color: 'green', showIf: r => r.status === 'draft' || r.status === 'on_hold' },
     { label: 'Pipeline', color: 'blue', route: () => '/main-sidebar/recruitment-options/pipeline', showIf: r => r.applicant_count > 0 },
+    // v1.57.0 talent pools
+    { label: 'Matching candidates', action: 'matching_candidates', method: 'get', color: 'cyan', document: matchingDoc },
+    { label: 'Add to a talent pool', action: 'to_pool', color: 'grey', showIf: r => r.applicant_count > 0,
+      prompt: [{ key: 'pool', label: 'Talent pool', type: 'select', required: true, lookup: { endpoint: API + 'talent-pools/', label: (p: any) => p.name } },
+               { key: 'stages', label: 'Candidates', type: 'select', required: true, default: 'rejected,withdrawn',
+                 options: opt([['rejected,withdrawn', 'Not selected (rejected or withdrawn)'], ['applied,screening,interview,offer,rejected,withdrawn', 'Everyone not hired']]) }] },
     { label: 'Close', action: 'close', color: 'grey', showIf: r => ['published', 'interviewing', 'on_hold'].includes(r.status), prompt: [{ key: 'status', label: 'Close as', type: 'select', required: true, options: opt([['filled', 'Filled'], ['closed', 'Closed'], ['on_hold', 'On hold']]) }] },
   ],
 };
 
+/** v1.57.0 earlier candidates that match a job (tags / skills), who agreed that we keep their CV */
+function matchingDoc(d: any): string {
+  const esc = (v: any) => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+  const rows = d?.candidates || [];
+  if (!rows.length) { return `<h2>Matching candidates – ${esc(d?.job)}</h2><p>No earlier candidate who agreed that we keep the CV has matching tags or skills.</p>`; }
+  return `<h2>Matching candidates – ${esc(d.job)}</h2><p>Earlier candidates who agreed that we keep their CV, with tags or skills that match the title or the requirements. Put them in a talent pool and use <b>Re-engage</b> to tell them about the job.</p>` +
+    '<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><tr><th>#</th><th>Name</th><th>E-mail</th><th>Experience</th><th>Matches</th><th>Tags</th></tr>' +
+    rows.map((c: any) => `<tr><td>${c.id}</td><td>${esc(c.name)}</td><td>${esc(c.email)}</td><td>${esc(c.experience_years)}</td><td>${esc(c.matches.join(', '))}</td><td>${esc((c.tags || []).join(', '))}</td></tr>`).join('') + '</table>';
+}
+
 const VISA = opt([['uae_national', 'UAE National'], ['gcc_national', 'GCC National'], ['own_visa', 'Own / family visa'], ['employment_visa', 'Employment visa (needs transfer)'],
   ['visit_visa', 'Visit visa'], ['outside_uae', 'Outside UAE - needs sponsorship'], ['golden_visa', 'Golden visa']]);
 const SOURCE = opt([['careers', 'Careers page'], ['linkedin', 'LinkedIn'], ['bayt', 'Bayt'], ['naukrigulf', 'Naukrigulf'], ['indeed', 'Indeed'], ['nafis', 'Nafis portal'],
-  ['referral', 'Employee referral'], ['agency', 'Recruitment agency'], ['walk_in', 'Walk-in'], ['other', 'Other']]);
+  ['referral', 'Employee referral'], ['agency', 'Recruitment agency'], ['walk_in', 'Walk-in'], ['talent_pool', 'Talent pool'], ['other', 'Other']]);
+
+function duplicatesDoc(groups: any[]): string {
+  const esc = (v: any) => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+  if (!groups?.length) { return '<h2>Possible duplicate candidates</h2><p>No candidates share an e-mail or a phone number.</p>'; }
+  return '<h2>Possible duplicate candidates</h2><p>Candidates that share an e-mail or a phone number. Open one and use <b>Merge into…</b> to keep one record.</p>' +
+    groups.map(g => `<h3>${esc(g.reason)}</h3><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><tr><th>#</th><th>Name</th><th>E-mail</th><th>Phone</th><th>Applied for</th></tr>` +
+      g.candidates.map((c: any) => `<tr><td>${c.id}</td><td>${esc(c.name)}</td><td>${esc(c.email)}</td><td>${esc(c.phone)}</td><td>${esc((c.applications || []).join(', '))}</td></tr>`).join('') + '</table>').join('');
+}
 
 export const CANDIDATE_PAGE: PageConfig = {
   title: 'Candidates',
@@ -158,8 +187,14 @@ export const CANDIDATE_PAGE: PageConfig = {
     { key: 'expected_salary', label: 'Expected (AED)', type: 'money' },
     { key: 'visa_status', label: 'Visa status' },
     { key: 'source', label: 'Source' },
+    { key: 'tags', label: 'Tags', type: 'list' },                 // v1.57.0
+    { key: 'may_contact', label: 'May contact', type: 'bool' },
   ],
-  searchKeys: ['full_name', 'email', 'skills', 'current_employer'],
+  filters: [
+    { key: 'pool', label: 'Talent pool', lookup: { endpoint: API + 'talent-pools/', label: (p: any) => p.name } },
+    { key: 'contactable', label: 'Consent', options: [{ value: '1', label: 'May contact (consent in force)' }] },
+  ],
+  searchKeys: ['full_name', 'email', 'skills', 'current_employer', 'tags'],
   detailFields: [
     { key: 'full_name', label: 'Name' }, { key: 'email', label: 'Email' }, { key: 'phone', label: 'Phone' }, { key: 'nationality', label: 'Nationality' },
     { key: 'current_location', label: 'Location' }, { key: 'current_employer', label: 'Current employer' }, { key: 'current_designation', label: 'Current role' },
@@ -167,6 +202,10 @@ export const CANDIDATE_PAGE: PageConfig = {
     { key: 'visa_status', label: 'Visa status' }, { key: 'skills', label: 'Skills' }, { key: 'languages', label: 'Languages' },
     { key: 'applications', label: 'Applications', value: r => (r.applications_summary || []).map((a: any) => `${a.job_code} (${a.stage})`).join(', ') || '–' },
     { key: 'cv', label: 'CV', value: r => (r.cv ? 'Uploaded' : '–') },
+    { key: 'tags', label: 'Tags', value: r => (r.tags || []).join(', ') || '–' },
+    { key: 'pools', label: 'Talent pools', value: r => (r.pools || []).join(', ') || '–' },
+    { key: 'consent_until', label: 'May contact until', value: r => (r.consent_to_retain ? (r.consent_until ? dmy(r.consent_until) : 'No end date') : 'No consent') },
+    { key: 'last_contacted', label: 'Last contacted', type: 'datetime' },
   ],
   fields: [
     { key: 'first_name', label: 'First name', type: 'text', required: true, width: 4 },
@@ -190,13 +229,28 @@ export const CANDIDATE_PAGE: PageConfig = {
     { key: 'languages', label: 'Languages', type: 'text', width: 6, placeholder: 'English, Arabic' },
     { key: 'cv', label: 'CV (PDF)', type: 'file', width: 6 },
     { key: 'consent_to_retain', label: 'Data retention', type: 'checkbox', help: 'Candidate agreed we keep the CV for future roles', width: 6 },
+    { key: 'consent_until', label: 'May contact until', type: 'date', width: 6, showIf: m => !!m.consent_to_retain },   // v1.57.0
+    { key: 'linkedin', label: 'LinkedIn profile', type: 'url', width: 6, placeholder: 'https://www.linkedin.com/in/…' },
+    { key: 'tags', label: 'Tags', type: 'tags', width: 12, placeholder: 'Skills, roles … (Enter after each)' },
     { key: 'notes', label: 'Notes', type: 'textarea', width: 12 },
   ],
   canDelete: true,
+  // v1.45.0 the same person applied twice: list the duplicates, merge one candidate into the other
+  rowActions: [
+    { label: 'Add to talent pool', action: 'add_to_pool', color: 'cyan',   // v1.57.0
+      prompt: [{ key: 'pool', label: 'Talent pool', type: 'select', required: true, lookup: { endpoint: API + 'talent-pools/', label: (p: any) => p.name } },
+               { key: 'note', label: 'Note', type: 'text' }] },
+    { label: 'Merge into…', action: 'merge', color: 'orange', confirm: 'Its applications, documents, notes and files move to the candidate you keep, and this one is deleted.',
+      prompt: [{ key: 'into', label: 'Keep this candidate', type: 'select', required: true, lookup: { endpoint: API + 'candidates/', label: (r: any) => `${r.full_name || r.first_name} – ${r.email}` } }] },
+  ],
+  toolbarActions: [
+    { label: 'Possible duplicates', action: 'duplicates', method: 'get', color: 'grey', document: duplicatesDoc },
+  ],
   children: [
     {
       title: 'Applications', endpoint: API + 'applications/', parentKey: 'candidate',
-      columns: [{ key: 'job_title', label: 'Job' }, { key: 'stage', label: 'Stage', type: 'tag', tagColors: { applied: 'grey', screening: 'cyan', interview: 'blue', offer: 'orange', hired: 'green', rejected: 'red' } }, { key: 'screening_score', label: 'Score' }, { key: 'rating', label: 'Rating', type: 'stars' }],
+      columns: [{ key: 'job_title', label: 'Job' }, { key: 'stage', label: 'Stage', type: 'tag', tagColors: { applied: 'grey', screening: 'cyan', interview: 'blue', offer: 'orange', hired: 'green', rejected: 'red' } }, { key: 'screening_score', label: 'Score' }, { key: 'rating', label: 'Rating', type: 'stars' },
+        { key: 'source_label', label: 'From' }, { key: 'knockout_failed', label: 'Needed answers missed', type: 'bool' }],
       fields: [
         { key: 'job', label: 'Job opening', type: 'select', required: true, lookup: { endpoint: API + 'job-openings/', label: (r: any) => `${r.job_code} - ${r.title}`, params: { status: 'published,interviewing' } }, width: 12 },
         { key: 'rating', label: 'Initial rating (1-5)', type: 'number', width: 6 },
@@ -324,6 +378,7 @@ export const OFFER_PAGE: PageConfig = {
   canDelete: r => r.status === 'draft' || r.status === 'pending_approval',
   rowActions: [
     { label: 'Letter', action: 'letter', method: 'get', color: 'grey', document: offerLetter },
+    { label: 'PDF', color: 'grey', route: r => `/main-sidebar/print-view/offer_letter/${r.id}` },   // v1.62.0 print – the company's design (Settings › Print templates)
     { label: 'Approve', action: 'approve', color: 'green', showIf: r => r.status === 'draft' || r.status === 'pending_approval' },
     { label: 'Send', action: 'send', color: 'blue', showIf: r => r.status === 'approved', confirm: 'Mark the offer as sent to the candidate?' },
     { label: 'Accepted', action: 'accept', color: 'green', showIf: r => r.status === 'sent', confirm: 'Candidate accepted? This starts the visa / onboarding checklist.' },
@@ -381,6 +436,63 @@ export const ONBOARDING_PAGE: PageConfig = {
         { key: 'is_done', label: 'Done', type: 'checkbox', width: 3 },
       ],
       canDelete: () => true,
+    },
+  ],
+};
+
+
+// ====================================================================== v1.57.0 talent pools
+const MEMBER_STATUS = { active: 'grey', contacted: 'blue', interested: 'green', not_interested: 'red', applied: 'cyan', hired: 'green' };
+
+export const TALENT_POOL_PAGE: PageConfig = {
+  title: 'Talent pools',
+  itemName: 'Talent pool',
+  endpoint: API + 'talent-pools/',
+  model: 'talentpool',
+  intro: 'Groups of candidates to come back to – silver medallists, CVs sent from the careers page, skills you hire often. Re-engage e-mails only go to candidates who agreed that we keep their CV.',
+  columns: [
+    { key: 'name', label: 'Pool' },
+    { key: 'tags', label: 'Tags', type: 'list' },
+    { key: 'member_count', label: 'Candidates' },
+    { key: 'contactable', label: 'May contact' },
+    { key: 'owner', label: 'Owner' },
+    { key: 'last_campaign', label: 'Last e-mail', type: 'datetime' },
+  ],
+  searchKeys: ['name', 'description', 'tags'],
+  fields: [
+    { key: 'name', label: 'Name', type: 'text', required: true, width: 6, placeholder: 'MEP engineers' },
+    { key: 'owner', label: 'Owner', type: 'select', lookup: LOOKUPS.users, width: 6 },
+    { key: 'tags', label: 'Tags', type: 'tags', width: 12, placeholder: 'Skills or roles this pool is for' },
+    { key: 'description', label: 'Description', type: 'textarea', width: 12 },
+  ],
+  canDelete: r => !r.is_general,
+  rowActions: [
+    { label: 'Re-engage', action: 'reengage', color: 'green', showIf: r => r.contactable > 0,
+      prompt: [{ key: 'job', label: 'About the job (optional)', type: 'select', lookup: { endpoint: API + 'job-openings/', label: (j: any) => `${j.job_code} – ${j.title}`, params: { status: 'published,interviewing' } } },
+               { key: 'subject', label: 'Subject', type: 'text', required: true, default: 'A new opportunity that matches your profile' },
+               { key: 'message', label: 'Message', type: 'textarea', required: true,
+                 default: 'You applied with us before and we kept your CV with your agreement. A new role has opened that may suit you – the link below opens it on our careers page.' }] },
+  ],
+  children: [
+    {
+      title: 'Candidates', endpoint: API + 'talent-pool-members/', parentKey: 'pool',
+      columns: [{ key: 'candidate_name', label: 'Name' }, { key: 'email', label: 'E-mail' }, { key: 'tags', label: 'Tags', type: 'list' },
+        { key: 'experience_years', label: 'Exp (yrs)' }, { key: 'may_contact', label: 'May contact', type: 'bool' },
+        { key: 'status', label: 'Status', type: 'tag', tagColors: MEMBER_STATUS }, { key: 'last_contacted', label: 'Last e-mail', type: 'datetime' }, { key: 'note', label: 'Note' }],
+      fields: [
+        { key: 'candidate', label: 'Candidate', type: 'select', required: true, createOnly: true, width: 12,
+          lookup: { endpoint: API + 'candidates/', label: (c: any) => `${c.full_name} – ${c.email}` } },
+        { key: 'status', label: 'Status', type: 'select', default: 'active', width: 6,
+          options: opt([['active', 'Active'], ['contacted', 'Contacted'], ['interested', 'Interested'], ['not_interested', 'Not interested'], ['applied', 'Applied again'], ['hired', 'Hired']]) },
+        { key: 'note', label: 'Note', type: 'text', width: 6 },
+      ],
+      canDelete: () => true,
+    },
+    {
+      title: 'E-mails sent', endpoint: API + 'talent-campaigns/', parentKey: 'pool',
+      columns: [{ key: 'sent_at', label: 'Sent', type: 'datetime' }, { key: 'subject', label: 'Subject' }, { key: 'job', label: 'Job' },
+        { key: 'sent_count', label: 'Sent to' }, { key: 'skipped_count', label: 'Left out', value: (r: any) => (r.skipped || []).length }, { key: 'sent_by', label: 'By' }],
+      canAdd: () => false, canEdit: () => false, canDelete: () => false,
     },
   ],
 };

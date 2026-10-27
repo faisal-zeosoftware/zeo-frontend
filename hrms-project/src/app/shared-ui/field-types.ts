@@ -1,4 +1,5 @@
 import { cpText } from './country-pack.service';   // v1.14.0
+import { presentText } from './z-present';   // v1.62.0 ui
 /** Field types offered by every form designer (employee custom fields and extra fields on any screen). */
 export interface FieldType { value: string; label: string; icon: string; options?: boolean; hint: string; }
 
@@ -94,7 +95,7 @@ export function showValue(v: any): string {
   if (Array.isArray(v)) { return v.join(', '); }
   if (typeof v === 'boolean') { return v ? 'Yes' : 'No'; }
   if (typeof v === 'object') { return v.name || v.code || ''; }
-  return String(v);
+  return presentText(String(v)) ?? String(v);   // v1.62.0 ui: dd/mm/yyyy dates, Yes / No, labels for codes, names for sign-in names
 }
 
 /** Browser-side check before saving (the server checks again). Returns an error message or ''. */

@@ -201,6 +201,21 @@ export function i18nLocalize<T>(cfg: T): T {
 const HARD_TAGS = new Set(['INPUT', 'TEXTAREA', 'CODE', 'PRE', 'SCRIPT', 'STYLE', 'MAT-ICON', 'svg', 'SVG', 'NOSCRIPT', 'KBD', 'SAMP']);
 const HARD_CLASS = /(^|\s)(zl-data|material-icons[\w-]*|material-symbols[\w-]*|zl-cell-data)(\s|$)/;
 /** Inside data cells (tbody td) only these are translated: buttons and the list footer / empty-state rows. */
+// v1.38.0: short status / choice words that are texts of the application even inside a data cell (Approved, Pending, Yes …).
+// User data (names, codes, free text) is never in this list, so it stays as typed.
+const CELL_TERMS = new Set(['approved', 'rejected', 'pending', 'cancelled', 'canceled', 'active', 'inactive', 'draft', 'submitted', 'closed', 'open', 'paid',
+  'unpaid', 'yes', 'no', 'completed', 'complete', 'in progress', 'on hold', 'expired', 'processing', 'published', 'confirmed', 'available', 'assigned',
+  'new', 'done', 'overdue', 'partial', 'partially paid', 'reviewed', 'to review', 'waiting', 'won', 'lost', 'qualified', 'converted', 'disqualified',
+  'nurture', 'sent', 'accepted', 'released', 'locked', 'hot', 'warm', 'cold', 'good', 'fair', 'poor', 'low', 'medium', 'high', 'very high', 'critical',
+  'urgent', 'normal', 'resolved', 'escalated', 'reopened', 'scheduled', 'started', 'planned', 'posted', 'cleared', 'bounced', 'returned', 'issued',
+  'verified', 'missing', 'damaged', 'found', 'not found', 'under review', 'not started', 'half day', 'full day', 'present', 'absent', 'late', 'leave',
+  'holiday', 'weekend', 'male', 'female', 'checked out / assigned', 'in store', 'in use', 'maintenance', 'disposed', 'retired', 'archived', 'blocked',
+  'approval', 'auto approval', 'requested', 'enrolled', 'ended', 'suspended', 'delivered', 'invoiced', 'quoted', 'ordered', 'received', 'minor damage',
+  'major damage', 'healthy', 'ok', 'failed', 'running', 'success', 'error', 'skipped', 'retry', 'changes requested', 'waiting for approval', 'exception',
+  'to do', 'in review', 'finished', 'live', 'expiring', 'valid', 'invalid', 'manual', 'automatic', 'monthly', 'yearly', 'weekly', 'daily', 'quarterly',
+  'rent', 'sale', 'buy', 'lease', 'owned', 'leased', 'rented', 'borrowed', 'ready', 'not ready', 'n/a', 'none', 'all', 'other', 'others', 'unknown']);
+function isCellTerm(s: string): boolean { const t = s.trim().toLowerCase(); return t.length > 0 && t.length <= 24 && CELL_TERMS.has(t); }
+
 const ALLOW_ROW = /(^|\s)(zl-emptyrow|zl-placeholder|no-data|empty-row|zl-empty)(\s|$)/;
 const ATTRS = ['placeholder', 'title', 'aria-label'];
 /** Form fields: their value / content is never touched, their placeholder / title / aria-label is. */
@@ -385,7 +400,7 @@ export class DomTranslator {
     for (let c = node.firstChild; c; c = c.nextSibling) {
       const type = c.nodeType;
       if (type === 3) {
-        if (!cell) { this.text(c as Text, force); }
+        if (!cell || isCellTerm((c as Text).data)) { this.text(c as Text, force); }   // v1.38.0: status words in data cells follow the language
       } else if (type === 1) {
         const el = c as Element;
         if (this.hard(el)) {

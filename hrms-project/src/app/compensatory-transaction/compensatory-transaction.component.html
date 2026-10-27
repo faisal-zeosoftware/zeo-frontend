@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: wording -->
 <div class="container"  *ngIf="hasViewPermission">
     <div class="comapny_section">
         <div class="header_section">
@@ -93,7 +94,7 @@
                                   
                       <div class="col-md-6">
                         <label>Days</label>
-                        <input type="number" class="form-control" required [(ngModel)]="days" placeholder="Enter  Days"
+                        <input type="number" class="form-control" required [(ngModel)]="days" placeholder="Enter days"
                                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days}">
                         <div *ngIf="registerButtonClicked && !days" class="error-message"> Days is required.</div>
                       </div>
@@ -172,7 +173,7 @@
                                   
                       <div class="col-md-6">
                         <label>Days</label>
-                        <input type="number" class="form-control" required [(ngModel)]="editAsset.days" placeholder="Enter  Days"
+                        <input type="number" class="form-control" required [(ngModel)]="editAsset.days" placeholder="Enter days"
                                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days}">
                         <div *ngIf="registerButtonClicked && !days" class="error-message"> Days is required.</div>
                       </div>

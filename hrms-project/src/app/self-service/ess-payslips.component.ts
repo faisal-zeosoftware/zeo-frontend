@@ -1,3 +1,4 @@
+import { OtBreakdownComponent } from '../attendance-plus/ap-v149.component';   // v1.49.0
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { EssApiService, money } from './ess-api.service';
 @Component({
   selector: 'app-ess-payslips',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OtBreakdownComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -43,13 +44,15 @@ import { EssApiService, money } from './ess-api.service';
           <p class="es-muted" *ngIf="d && !d.payslips.length">No approved payslips yet.</p>
         </div>
         <div class="es-panel" *ngIf="sel">
-          <div class="es-h">{{ sel.period }} <button type="button" class="es-btn sm" (click)="pdf(sel)">Download PDF</button></div>
+          <div class="es-h">{{ sel.period }} <button type="button" class="es-btn sm" (click)="pdf(sel)">Download PDF</button>
+            <button type="button" class="es-btn sm" (click)="pdf(sel, 'en_ar')" data-pdf-bi title="Every label in English and Arabic">English + العربية</button></div>
           <table class="es-table" zPlain>
             <tr *ngFor="let l of sel.lines"><td>{{ l.name }}</td><td class="es-muted">{{ l.type }}</td><td style="text-align:right">{{ m(l.amount) }}</td></tr>
             <tr><td><b>Gross</b></td><td></td><td style="text-align:right"><b>{{ m(sel.gross) }}</b></td></tr>
             <tr><td><b>Deductions</b></td><td></td><td style="text-align:right"><b>{{ m(sel.deductions) }}</b></td></tr>
             <tr><td><b>Net pay</b></td><td></td><td style="text-align:right"><b>{{ m(sel.net) }}</b></td></tr>
           </table>
+          <app-ot-breakdown [year]="sel.year" [month]="sel.month"></app-ot-breakdown>   <!-- v1.49.0 how the overtime was calculated -->
         </div>
       </div>
     </div>
@@ -75,8 +78,8 @@ export class EssPayslipsComponent implements OnInit {
     this.cd.detectChanges();
   }
 
-  async pdf(p: any): Promise<void> {
-    try { await this.api.download(`payslips/${p.id}/pdf/`, `payslip-${p.year}-${String(p.month).padStart(2, '0')}.pdf`); }
+  async pdf(p: any, lang = ''): Promise<void> {   // v1.50.0 lang 'en_ar': English and Arabic on the same payslip
+    try { await this.api.download(`payslips/${p.id}/pdf/` + (lang ? `?lang=${lang}` : ''), `payslip-${p.year}-${String(p.month).padStart(2, '0')}${lang ? '-' + lang : ''}.pdf`); }
     catch (e: any) { this.msg = EssApiService.error(e, 'The payslip PDF could not be downloaded.'); this.cd.detectChanges(); }
   }
 }

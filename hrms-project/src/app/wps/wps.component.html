@@ -1,100 +1,92 @@
+<!-- v1.62.0 payroll: the runs with their WPS state (not made / made on … by … / bank-ready), Make / Download; the file itself is generated as before -->
 <div class="container">
-    <div class="comapny_section" *ngIf="hasViewPermission">
-        <!-- v1.14.0: the SIF file is a UAE file – other countries see why the page is empty -->
-        <div class="com_list" *zCountry="'!wps_sif'">
-          <h2>{{ 'wps_file' | zc }}</h2>
-          <hr>
-          <p>The WPS SIF salary file is used only by UAE companies. Your company's country does not use it.
-             An administrator can turn it on under Settings → Country settings.</p>
+  <div class="comapny_section" *ngIf="hasViewPermission">
+    <div class="com_list" *zCountry="'!wps_sif'">
+      <h2>{{ 'wps_file' | zc }}</h2>
+      <hr>
+      <p>The WPS SIF salary file is used only by UAE companies. Your company's country does not use it.
+         An administrator can turn it on under Settings → Country settings.</p>
+    </div>
+    <ng-container *zCountry="'wps_sif'">
+      <div class="header_section">
+        <div class="py-wrap py-head">
+          <div>
+            <h1 class="page-title">WPS file</h1>
+            <p class="lp-desc">The salary information file (SIF) of each approved payroll run for the bank – Wage Protection System. Make it, check who is left out, then download it for the bank.</p>
+          </div>
+          <div class="py-tools">
+            <label class="py-muted" style="display:flex;align-items:center;gap:6px"><input type="checkbox" [(ngModel)]="showAll"> Show runs not approved yet</label>
+          </div>
         </div>
-        <div class="com_list " *zCountry="'wps_sif'">
+      </div>
 
-                <h2>WPS</h2>
-                <hr>
-                
-        
-                <div class="row ">
-                  <div class="col-md-6">
-                    <label>Select payroll</label>
-                    <div class="custom-sel">
-                      <select class="form-control" [(ngModel)]="selectedPayrollId" [ngModelOptions]="{ standalone: true }">
-                        <option *ngFor="let payroll of Payrolls" [value]="payroll.id">
-                          {{ payroll.name }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <!-- OK button triggers posting and fetching SIF -->
-                  
-                </div>
-                <div class="row">
-                  <div class="col-md-10"></div>
-                  <div class="col-md-2">
-                    <button type="button" class="btn btn-full btn-success mt-4" (click)="fetchSIFData()">OK</button>
+      <div class="com_list mt-4">
+        <p class="py-msg err" *ngIf="wpsMsg">{{ wpsMsg }}</p>
+        <div class="py-scroll">
+          <table class="py-t" zPlain data-py-wpslist>
+            <thead><tr><th>Payroll run</th><th>Branches</th><th class="num">Employees</th><th class="num">Net pay (AED)</th><th>Pay date</th><th>WPS file</th><th></th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of shownRuns()" [attr.data-py-wps]="r.id" [style.background]="isSel(r) ? '#f6f5ff' : null">
+                <td><span class="nm">{{ r.name || r.period }}</span><span class="sub">{{ r.period }} · {{ r.kind_label }}</span></td>
+                <td>{{ r.branches.join(' · ') }}</td>
+                <td class="num">{{ r.headcount }}</td>
+                <td class="num"><b>{{ r.net | number:'1.2-2' }}</b></td>
+                <td>{{ r.payment_date ? (r.payment_date | date:'dd/MM/yyyy') : '–' }}</td>
+                <td><span class="py-pill" [ngClass]="{ok: r.wps.state === 'ready' || r.wps.state === 'paid', wait: r.wps.state === 'gaps'}">{{ r.wps.label }}</span>
+                  <span class="sub" *ngIf="r.wps.at">{{ r.wps.at | date:'dd/MM/yyyy HH:mm' }}{{ r.wps.by ? ' · ' + r.wps.by.split(' (')[0] : '' }}</span></td>
+                <td style="white-space:nowrap;text-align:end">
+                  <ng-container *ngIf="ready(r)">
+                    <button type="button" class="py-btn sm" [class.primary]="!r.wps.done" (click)="make(r)" data-py-wpsmake>{{ r.wps.done ? 'Check again' : 'Make' }}</button>
+                    <button type="button" class="py-btn sm" style="margin-inline-start:6px" *ngIf="hasExportPermission && r.wps.done" (click)="download(r)" data-py-wpsdl>Download</button>
+                  </ng-container>
+                  <span class="py-muted" *ngIf="!ready(r)">Approve the run first</span>
+                </td>
+              </tr>
+              <tr *ngIf="!shownRuns().length && !wpsLoading"><td colspan="7" class="py-empty"><b>No approved payroll run yet</b><p>A run gets its WPS file once it is approved (Payroll › Payroll runs).</p></td></tr>
+            </tbody>
+          </table>
+        </div>
 
-                  </div>
-                </div>
-           
+        <div *ngIf="sifData" class="py-panel" style="margin-top:18px" data-py-sif>
+          <h3><span>WPS file – {{ selectedRun()?.name || selectedRun()?.period }}</span>
+            <span class="py-tools">
+              <button type="button" class="py-btn sm" *ngIf="hasExportPermission" (click)="downloadSIFStyledExcel()">Download Excel</button>
+              <button type="button" class="py-btn sm primary" *ngIf="hasExportPermission" (click)="downloadSIFFile()" data-py-sifdl>Download SIF for the bank</button>
+              <button type="button" class="py-x" (click)="closeFile()" aria-label="Close">×</button></span></h3>
+          <div class="py-tiles" *ngIf="sifData.summary" style="margin-top:4px">
+            <div class="py-tile"><span>Employees in the file</span><b>{{ sifData.summary.employees }}</b></div>
+            <div class="py-tile hi"><span>Total</span><b><i class="py-cur">{{ sifData.summary.currency }}</i>{{ sifData.summary.total_salary | number:'1.2-2' }}</b></div>
+            <div class="py-tile"><span>Employer ID</span><b style="font-size:15px">{{ sifData.summary.employer_id }}</b></div>
+            <div class="py-tile"><span>Bank routing code</span><b style="font-size:15px">{{ sifData.summary.routing_code }}</b></div>
+            <div class="py-tile"><span>Left out</span><b [class.py-neg]="sifData.summary.skipped">{{ sifData.summary.skipped }}</b></div>
+          </div>
+          <p class="py-msg err" *ngFor="let w of sifData.warnings || []">{{ w }}</p>
 
-                             
-                <div *ngIf="sifData">
-                  <div class="row mt-4">
-                    <div class="col-md-6">
-                      <h4 class="mt-3">Unified SIF table</h4>
-                    </div>
-                    <div class="col-md-6 text-right" *ngIf="hasExportPermission">
-                      <button type="button" class="btn btn-info mt-2 mr-2" (click)="downloadSIFStyledExcel()">
-                        Download Excel
-                      </button>
-                      <button type="button" class="btn btn-success mt-2" (click)="downloadSIFFile()">
-                        Download SIF
-                      </button>
-                    </div>
-                  </div>
-                
-<!-- v1.26.0: summary, what blocks the file, employee rows (EDR) and the control row (SCR) shown separately -->
-<div class="wps-sum" *ngIf="sifData.summary">
-  <div><b>{{ sifData.summary.employees }}</b><span>employees in the file</span></div>
-  <div><b>{{ sifData.summary.total_salary | number:'1.2-2' }}</b><span>total ({{ sifData.summary.currency }})</span></div>
-  <div><b>{{ sifData.summary.employer_id }}</b><span>employer ID</span></div>
-  <div><b>{{ sifData.summary.routing_code }}</b><span>employer bank routing code</span></div>
-  <div [class.bad]="sifData.summary.skipped"><b>{{ sifData.summary.skipped }}</b><span>employees left out</span></div>
-</div>
-<div class="wps-warn" *ngFor="let w of sifData.warnings || []">⚠ {{ w }}</div>
+          <div *ngIf="sifData.skipped_employees?.length">
+            <div class="py-sec">Employees left out of the file</div>
+            <table class="py-t" zPlain>
+              <thead><tr><th>Employee</th><th>Reason</th></tr></thead>
+              <tbody><tr *ngFor="let sk of sifData.skipped_employees"><td>{{ sk.emp_code }}</td><td>{{ sk.reason }}</td></tr></tbody>
+            </table>
+          </div>
 
-<h5 class="mt-3">Employee rows (EDR)</h5>
-<div class="table-responsive wps-scroll">
-  <table class="styled-table wps-table mt-2" zPlain>
-    <thead>
-      <tr><th *ngFor="let key of edrKeys()">{{ key }}</th></tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let edrItem of sifData.edr">
-        <td *ngFor="let key of edrKeys()" [attr.data-label]="key">{{ edrItem[key] ?? '-' }}</td>
-      </tr>
-      <tr *ngIf="!sifData.edr?.length"><td [attr.colspan]="edrKeys().length">No employee can be paid through WPS yet – see the list below.</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<h5 class="mt-3">Control row (SCR)</h5>
-<p class="wps-scr" *ngIf="sifData.scr">SCR · employer {{ sifData.scr['Person ID'] }} · bank {{ sifData.scr['Routing Code'] }} · created {{ sifData.scr['IBAN Number'] }} {{ sifData.scr['Pay Start Date'] }} · salary month {{ sifData.scr['Pay End Date'] }} · {{ sifData.scr['Number of Days'] }} rows · total {{ sifData.scr['Fixed Income'] }} {{ sifData.scr['Variable Income'] }}</p>
-
-<div *ngIf="sifData.skipped_employees?.length">
-  <h5 class="mt-3">Employees left out of the file</h5>
-  <div class="table-responsive wps-scroll">
-    <table class="styled-table wps-table" zPlain>
-      <thead><tr><th>Employee</th><th>Reason</th></tr></thead>
-      <tbody><tr *ngFor="let sk of sifData.skipped_employees"><td>{{ sk.emp_code }}</td><td>{{ sk.reason }}</td></tr></tbody>
-    </table>
+          <div class="py-sec">Employee rows (EDR)</div>
+          <div class="py-scroll" style="max-height:420px">
+            <table class="py-t" zPlain>
+              <thead><tr><th>Person ID</th><th>Routing code</th><th>IBAN / card</th><th>From</th><th>To</th><th class="num">Days</th><th class="num">Fixed</th><th class="num">Variable</th><th class="num">Leave days</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let e of sifData.edr">
+                  <td><span class="py-code">{{ e['Person ID'] }}</span></td><td>{{ e['Routing Code'] }}</td><td><span class="py-code">{{ e['IBAN Number'] }}</span></td>
+                  <td>{{ e['Pay Start Date'] | date:'dd/MM/yyyy' }}</td><td>{{ e['Pay End Date'] | date:'dd/MM/yyyy' }}</td>
+                  <td class="num">{{ e['Number of Days'] }}</td><td class="num">{{ e['Fixed Income'] | number:'1.2-2' }}</td>
+                  <td class="num">{{ e['Variable Income'] | number:'1.2-2' }}</td><td class="num">{{ e['Days on Leave'] || '0' }}</td></tr>
+                <tr *ngIf="!sifData.edr?.length"><td colspan="9" class="py-muted">No employee can be paid through WPS yet – see the list above.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="py-muted" *ngIf="sifData.scr" style="margin-top:10px">Control row (SCR): employer {{ sifData.scr['Person ID'] }} · bank {{ sifData.scr['Routing Code'] }} · created {{ sifData.scr['IBAN Number'] }} {{ sifData.scr['Pay Start Date'] }} · salary month {{ sifData.scr['Pay End Date'] }} · {{ sifData.scr['Number of Days'] }} rows · total {{ sifData.scr['Fixed Income'] }} {{ sifData.scr['Variable Income'] }}</p>
+        </div>
+      </div>
+    </ng-container>
   </div>
-</div>
-
-
-                </div>
-                
-            </div>
-
-        </div>
 </div>

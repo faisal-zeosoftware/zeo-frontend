@@ -1,7 +1,7 @@
 import { AfterViewInit, Directive, ElementRef, NgZone, OnDestroy, inject } from '@angular/core';
 import { ORG_KEYS$, orgKeys } from './z-org-keys';
 import { OrgSettingsService } from '../org-structure/org-settings.service';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { DirEmp, ZListService } from './z-list.service';
 import { XItem, XModel, csvText, exportCsv, exportExcel, exportModelCsv, exportModelExcel, exportModelPdf, modelCsv, readSheet } from './z-export';
 import { SavedViewItem, ViewData, ZSavedViewsService } from './z-saved-views';   // v1.16.0 saved views
@@ -9,6 +9,7 @@ import { ZRecordService } from './z-record.service';
 import { showValue } from './field-types';
 import { VCol, VIEW_LABEL, ViewKind, ViewState, availableViews, calendarHtml, defaults, graphHtml, kanbanHtml, pivotData, pivotHtml } from './z-views';
 import { i18nOriginal, i18nT as T } from './i18n-core';   // v1.15.0: list texts in the user's language
+import { paintColumns, personCell, presentEl, rawText, setUserNames } from './z-present';   // v1.62.0 ui
 
 /**
  * Same list experience on every screen (attaches itself to every data table):
@@ -28,7 +29,7 @@ import { i18nOriginal, i18nT as T } from './i18n-core';   // v1.15.0: list texts
 
 type Kind = 'text' | 'number' | 'date';
 interface Col { idx: number; label: string; kind: Kind; skip: boolean; facet: boolean; org?: OrgKey; }
-interface Row { el: HTMLTableRowElement; seq: number; cells: string[]; emp?: DirEmp | null; }
+interface Row { el: HTMLTableRowElement; seq: number; cells: string[]; raw: string[]; emp?: DirEmp | null; }   // v1.62.0 ui raw: the cell texts before the presentation pass
 type OrgKey = string;   // v1.12.0: branch, department, designation, category + the org fields switched on (see z-org-keys.ts)
 interface Chip { type: 'search' | 'filter' | 'custom' | 'date'; key: string; label: string; values?: string[]; col?: number; op?: string; text?: string; from?: string; to?: string; }
 
@@ -38,6 +39,7 @@ const EMP_HEAD = /(employee|^emp\b|emp code|emp id|staff|^name$|employee name|re
 const SIZES = [50, 100, 500, 1000];
 const EXCLUDE = '.modal, .modal-content, .modal-dialog, mat-dialog-container, .cdk-overlay-pane, .zd-panel, .hr-modal, .hr-detail, .zl-modal, .payslip, .print-area, #print-section, .no-zlist, [zPlain], .fc, mat-calendar';
 
+const OPS: Record<string, string> = { '>': 'greater than', '<': 'less than', '=': 'equals', contains: 'contains', empty: 'is empty', past: 'date passed', soon: 'date within (days)' };   // v1.46.0
 const ICON: Record<string, string> = {
   star: '<svg viewBox="0 0 24 24" width="13" height="13" fill="#f5b301" stroke="#d99a00" stroke-width="1.5"><path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9z"/></svg>',
   search: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
@@ -106,6 +108,11 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private rows: Row[] = [];
   private seqOf = new WeakMap<HTMLTableRowElement, number>();
   private selected = new WeakSet<HTMLTableRowElement>();
+  // v1.40.1: a screen with its own checkbox column (header select-all + row checkboxes, e.g. payslip approval) keeps
+  // that one column: the list adopts it for Export / "N selected" instead of adding a second one. The screen's
+  // checkbox is then the single source of truth – the list reads it and, when it selects rows itself, sets it and
+  // fires `change` so the screen's ngModel follows.
+  private ownSel = false;
   private dir: DirEmp[] = [];
   private dirByCode = new Map<string, DirEmp>();
   private dirByName = new Map<string, DirEmp>();
@@ -124,6 +131,12 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private view: ViewKind = 'list';
   private vst: ViewState = {};
   private hideCols = new Set<string>();
+  // v1.46.0 totals row, colour rules, editing cells in the list
+  private totals = '';
+  private rules: { col: string; op: string; value: string; color: string; scope: 'row' | 'cell' }[] = [];
+  private inline = false;
+  private teams: { id: number; name: string }[] = [];
+  private teamsLoaded = false;
   private hasLayout = false;   // v1.13.0: a saved column layout exists
   private optDone = false;     // v1.13.0: optional columns hidden once
   private viewEl?: HTMLElement;
@@ -220,6 +233,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       }
       this.schedule(0);
     }));
+    // v1.62.0 ui: sign-in names (gdis_rajesh) in lists show the person
+    this.subs.push(this.z.userNames().subscribe(list => { setUserNames(list, this.z.schema); this.schedule(0); }));
     this.obs = new MutationObserver(recs => {
       if (this.mutating) { return; }
       const relevant = recs.some(r => {
@@ -319,7 +334,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private scan(): void {
     if (!this.active) { return; }
     // v1.16.0: designer fields and the user's column order first, so the headings below are read in screen order
-    this.quiet(() => { this.addExtraCells(); this.applyOrder(); });
+    this.quiet(() => { this.adoptOwnSel(); this.addExtraCells(); this.applyOrder(); });   // v1.40.1 adoptOwnSel
     const heads = this.headCells();
     const labels = heads.map(h => this.labelOf(h));
     this.ownGroups = false;
@@ -328,11 +343,15 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.quiet(() => trs.forEach(tr => Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell')).forEach((c, i) => {
       if (!c.getAttribute('data-label') && labels[i]) { c.setAttribute('data-label', T(labels[i])); }
     })));
+    // v1.62.0 ui: one way to show values – dd/mm/yyyy dates, Yes / No, labels for codes, names for sign-in names
+    const cellsOf = (tr: HTMLTableRowElement) => Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell')) as HTMLElement[];
+    this.quiet(() => trs.forEach(tr => cellsOf(tr).forEach((c, i) => { if (c.dataset['zl'] === undefined && !SKIP_HEAD.test(labels[i] || 'x')) { presentEl(c); } })));
     this.rows = trs.map(tr => {
       if (!this.seqOf.has(tr)) { this.seqOf.set(tr, ++SEQ); }
-      const cells = Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell')).map(c => this.cellText(c as HTMLElement));
+      const cells = cellsOf(tr).map(c => this.cellText(c as HTMLElement));
+      const raw = cellsOf(tr).map(c => rawText(c).replace(/\s+/g, ' ').trim());
       this.tagStatus(tr);
-      return { el: tr, seq: this.seqOf.get(tr)!, cells };
+      return { el: tr, seq: this.seqOf.get(tr)!, cells, raw };
     });
     // columns
     const cols: Col[] = labels.map((label, idx) => {
@@ -370,6 +389,17 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     }
     this.hasEmp = empIdx >= 0;
     for (const r of this.rows) { r.emp = empIdx >= 0 ? this.matchEmp(r.cells[empIdx]) : null; }
+    // v1.62.0 ui: an employee column with the code only shows the name first; column types set alignment and wrapping
+    this.quiet(() => {
+      if (empIdx >= 0) {
+        for (const r of this.rows) {
+          const td = cellsOf(r.el)[empIdx];
+          if (td && r.emp && r.emp.code && !r.cells.some((x, i) => i !== empIdx && r.emp && x.toLowerCase().includes((r.emp.name || '~').toLowerCase()))) { personCell(td, r.emp.name, r.emp.code); }
+        }
+      }
+      paintColumns(heads, cols, trs, cellsOf, empIdx);
+    });
+    this.rows.forEach(r => { r.cells = cellsOf(r.el).map(c => this.cellText(c)); });
     this.endpoint = null;
     this.paintHead();
     this.loadExtras();
@@ -522,7 +552,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       for (const r of this.rows) {
         const show = pageRows.has(r) && !this.isCollapsed(r);
         this.unit(r).classList.toggle('zl-off', !show);
-        r.el.classList.toggle('zl-picked', this.selected.has(r.el));
+        r.el.classList.toggle('zl-picked', this.isSel(r.el));
         this.ensureSelCell(r.el);
       }
       this.table.querySelectorAll('tr.zl-placeholder').forEach(p => (p as HTMLElement).classList.toggle('zl-off', this.rows.length > 0));
@@ -537,6 +567,140 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.paintFoot(ordered.length, start, grouped ? ordered.length : Math.min(start + this.size, ordered.length), pages);
     this.applyColumns();
     this.paintViews();
+    this.paintTotals(ordered);   // v1.46.0
+    this.paintRules();
+  }
+
+  // ------------------------------------------------------------------ v1.46.0 totals row and colour rules
+  private numberCols(): Col[] {
+    return this.cols.filter(c => c.kind === 'number' && !c.skip && !/(^id$|code|phone|mobile|no\.?$|number|year)/i.test(c.label));
+  }
+
+  private paintTotals(list: Row[]): void {
+    this.quiet(() => {
+      this.table.querySelectorAll('tfoot[data-zl="tot"]').forEach(x => x.remove());
+      if (!this.totals || !list.length || this.view !== 'list') { return; }
+      const nc = new Map(this.numberCols().map(c => [c.idx, c]));
+      if (!nc.size) { return; }
+      const heads = this.headCells();
+      const tf = document.createElement('tfoot'); tf.dataset['zl'] = 'tot';
+      const tr = document.createElement('tr'); tr.className = 'zl-totrow';
+      const sel = document.createElement('td'); sel.className = 'zl-selcell'; tr.appendChild(sel);
+      heads.forEach((th, i) => {
+        const td = document.createElement('td');
+        td.className = th.classList.contains('zl-colhide') ? 'zl-colhide' : '';
+        const c = nc.get(i);
+        if (c) {
+          const vals = list.map(r => num(r.cells[i])).filter((v): v is number => v !== null);
+          const sum = vals.reduce((a, b) => a + b, 0);
+          const f = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+          const parts = [];
+          if (this.totals === 'sum' || this.totals === 'both') { parts.push(`<b>${f(sum)}</b>`); }
+          if ((this.totals === 'avg' || this.totals === 'both') && vals.length) { parts.push(`<span class="zl-avg">${T('avg')} ${f(sum / vals.length)}</span>`); }
+          td.innerHTML = parts.join('<br>');
+        } else if (i === 0) { td.innerHTML = `<b>${T(this.totals === 'avg' ? 'Average' : 'Total')}</b> <span class="zl-muted">(${list.length})</span>`; }
+        tr.appendChild(td);
+      });
+      tf.appendChild(tr);
+      this.table.appendChild(tf);
+    });
+  }
+
+  private ruleHit(rule: { op: string; value: string }, text: string): boolean {
+    const t = (text || '').trim();
+    const v = (rule.value || '').trim();
+    const n = num(t), nv = num(v);
+    switch (rule.op) {
+      case '>': return n !== null && nv !== null && n > nv;
+      case '<': return n !== null && nv !== null && n < nv;
+      case '=': return n !== null && nv !== null ? n === nv : t.toLowerCase() === v.toLowerCase();
+      case 'contains': return !!v && t.toLowerCase().includes(v.toLowerCase());
+      case 'empty': return !t || t === '–' || t === '-';
+      case 'past': { const d = parseDate(t); return !!d && d.getTime() < new Date(new Date().toDateString()).getTime(); }
+      case 'soon': { const d = parseDate(t); const now = new Date(new Date().toDateString()).getTime(); return !!d && d.getTime() >= now && d.getTime() <= now + (Number(v) || 30) * 86400000; }
+      default: return false;
+    }
+  }
+
+  private paintRules(): void {
+    const colours = ['red', 'amber', 'green', 'blue', 'grey'];
+    this.quiet(() => {
+      for (const r of this.rows) {
+        colours.forEach(c => r.el.classList.remove('zl-rc-' + c));
+        Array.from(r.el.cells).forEach(td => colours.forEach(c => td.classList.remove('zl-cc-' + c)));
+      }
+      if (!this.rules.length) { return; }
+      for (const r of this.rows) {
+        for (const rule of this.rules) {
+          const col = this.cols.find(c => c.label === rule.col);
+          if (!col || !this.ruleHit(rule, r.cells[col.idx])) { continue; }
+          if (rule.scope === 'cell') {
+            const tds = Array.from(r.el.cells).filter(c => !c.classList.contains('zl-selcell'));
+            tds[col.idx]?.classList.add('zl-cc-' + rule.color);
+          } else { r.el.classList.add('zl-rc-' + rule.color); }
+        }
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------ v1.46.0 editing a cell in the list (double-click)
+  private editKey(item: any, text: string, label: string): string | null {
+    if (!item || typeof item !== 'object') { return null; }
+    const t = (text || '').trim();
+    const norm = (x: string) => x.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const hits = Object.keys(item).filter(k => {
+      const v = item[k];
+      if (k === 'id' || /(_label|_display|_name|_by|_at|number)$/i.test(k) || (v !== null && typeof v === 'object')) { return false; }
+      if (v === null || v === '') { return t === '' || t === '–' || t === '-'; }
+      const sv = String(v).trim();
+      if (sv === t) { return true; }
+      const a = num(sv), b = num(t);
+      return a !== null && b !== null && a === b && typeof v === 'number' || (a !== null && b !== null && a === b && /^-?\d+(\.\d+)?$/.test(sv));
+    });
+    if (hits.length === 1) { return hits[0]; }
+    const byName = hits.find(k => norm(k).includes(norm(label)) || norm(label).includes(norm(k)));
+    return byName || null;
+  }
+
+  private startEdit(td: HTMLTableCellElement): void {
+    const tr = td.parentElement as HTMLTableRowElement;
+    const row = this.rows.find(r => r.el === tr);
+    if (!row || td.classList.contains('zl-selcell') || td.querySelector('input,button,select,a') || td.dataset['zl']) { return; }
+    const cells = Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell'));
+    const idx = cells.indexOf(td);
+    const col = this.cols[idx];
+    const hit = this.rec.rowRecord(tr);
+    const ep = hit?.endpoint || this.endpoint;
+    const key = hit ? this.editKey(hit.item, row.raw[idx] ?? row.cells[idx], col?.label || '') : null;   // v1.62.0 ui raw text
+    if (!hit || !ep || !key) { this.toast('This cell cannot be changed in the list – open the record.', true); return; }
+    const old = hit.item[key];
+    const inp = document.createElement('input');
+    inp.className = 'zl-cellin';
+    inp.type = typeof old === 'number' || (col?.kind === 'number') ? 'number' : /^\d{4}-\d{2}-\d{2}$/.test(String(old || '')) ? 'date' : 'text';
+    inp.value = old === null || old === undefined ? '' : String(old);
+    const keep = td.innerHTML;
+    this.quiet(() => { td.innerHTML = ''; td.appendChild(inp); });
+    inp.focus(); inp.select();
+    let done = false;
+    const finish = async (save: boolean) => {
+      if (done) { return; } done = true;
+      const val: any = inp.type === 'number' ? (inp.value === '' ? null : Number(inp.value)) : inp.value;
+      if (!save || String(val ?? '') === String(old ?? '')) { this.quiet(() => { td.innerHTML = keep; }); return; }
+      try {
+        const saved = await this.call('PATCH', `${ep}${hit.id}/`, { [key]: val });
+        hit.item[key] = saved && saved[key] !== undefined ? saved[key] : val;
+        const show = saved && saved[key] !== undefined ? saved[key] : val;
+        this.quiet(() => { td.textContent = show === null ? '' : String(show); });
+        row.cells[idx] = td.textContent || ''; row.raw[idx] = row.cells[idx];
+        td.classList.add('zl-saved'); setTimeout(() => td.classList.remove('zl-saved'), 1500);
+        this.toast('Saved.');
+      } catch (e: any) {
+        this.quiet(() => { td.innerHTML = keep; });
+        this.toast(e?.message || 'Not saved.', true);
+      }
+    };
+    inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') { finish(true); } if (ev.key === 'Escape') { finish(false); } });
+    inp.addEventListener('blur', () => finish(true));
   }
 
   private isCollapsed(r: Row): boolean {
@@ -609,12 +773,47 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     return false;
   }
 
+  // ------------------------------------------------------------------ v1.40.1: selection helpers (own column aware)
+  private ownCb(tr: HTMLTableRowElement): HTMLInputElement | null {
+    const c = tr.cells[0];
+    return c && c.classList.contains('zl-own') ? c.querySelector('input[type=checkbox]') as HTMLInputElement | null : null;
+  }
+  private isSel(tr: HTMLTableRowElement): boolean { const cb = this.ownCb(tr); return cb ? cb.checked : this.selected.has(tr); }
+  private setSel(tr: HTMLTableRowElement, on: boolean): void {
+    const cb = this.ownCb(tr);
+    // a click toggles it the way the user would (ngModel / mat-checkbox follow); setting .checked alone would not
+    if (cb) { if (cb.checked !== on) { cb.click(); } return; }
+    on ? this.selected.add(tr) : this.selected.delete(tr);
+  }
+  private static checkCell(c: HTMLTableCellElement | undefined): boolean {
+    if (!c || c.classList.contains('zl-selcell')) { return false; }
+    const cb = c.querySelector('input[type=checkbox]');
+    return !!cb && !c.querySelector('input:not([type=checkbox]), select, textarea, button, a') && SKIP_HEAD.test(i18nOriginal(c, 'input').replace(/\s+/g, ' ').trim());
+  }
+  /** The screen's own checkbox column (first cell of the heading and of the rows) becomes the list's selection column. */
+  private adoptOwnSel(): void {
+    const hr = this.headRow();
+    if (!hr) { return; }
+    const th = hr.cells[0] as HTMLTableCellElement | undefined;
+    if (th && !th.classList.contains('zl-selcell') && ZListDirective.checkCell(th)) {
+      const sample = this.dataRows().find(tr => tr.cells.length > 1);
+      if (!sample || ZListDirective.checkCell(sample.cells[0] as HTMLTableCellElement)) { this.ownSel = true; th.classList.add('zl-selcell', 'zl-own'); }
+    }
+    if (!this.ownSel) { return; }
+    for (const tr of this.dataRows()) {
+      const c = tr.cells[0] as HTMLTableCellElement | undefined;
+      if (c && !c.classList.contains('zl-selcell') && c.querySelector('input[type=checkbox]')) { c.classList.add('zl-selcell', 'zl-own'); }
+    }
+  }
+
   private ensureSelCell(tr: HTMLTableRowElement): void {
     let first = tr.cells[0] as HTMLTableCellElement | undefined;
     if (first && first.classList.contains('zl-selcell')) {
+      if (first.classList.contains('zl-own')) { return; }   // v1.40.1: the screen's checkbox is the state
       const cb = first.querySelector('input') as HTMLInputElement; if (cb) { cb.checked = this.selected.has(tr); }
       return;
     }
+    if (this.ownSel && first && first.querySelector('input[type=checkbox]')) { first.classList.add('zl-selcell', 'zl-own'); return; }   // v1.40.1: row re-drawn by the screen
     const td = document.createElement('td');
     td.className = 'zl-selcell'; td.dataset['zl'] = 'sel';
     td.innerHTML = `<input type="checkbox" aria-label="Select row" ${this.selected.has(tr) ? 'checked' : ''}>`;
@@ -669,8 +868,10 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (all) {
       all.onchange = () => {
         const start = (this.page - 1) * this.size;
-        this.visible.slice(start, start + this.size).forEach(r => all.checked ? this.selected.add(r.el) : this.selected.delete(r.el));
+        // v1.40.1: the screen's own select-all means every listed row (its handler sets them all), not just the page
+        (this.ownSel ? this.visible : this.visible.slice(start, start + this.size)).forEach(r => this.setSel(r.el, all.checked));
         this.render();
+        if (this.ownSel) { setTimeout(() => { this.paintBar(); this.paintFootSel(); }, 0); }
       };
     }
   }
@@ -814,7 +1015,17 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (kind === 'export') { this.fillExport(m); }
     if (kind === 'import') { this.fillImport(m); }
     if (kind === 'columns') { this.fillColumns(m); }
-    if (kind === 'views') { this.fillViews(m); }
+    if (kind === 'views') {
+      this.fillViews(m);
+      if (!this.teamsLoaded) {   // v1.46.0 teams to share a view with
+        this.teamsLoaded = true;
+        this.sv.groups().subscribe({ next: g => {
+          this.teams = g;
+          const sel = m.querySelector('[data-vwteam]') as HTMLSelectElement | null;
+          if (sel) { sel.innerHTML = `<option value="">${T('– only me –')}</option>` + g.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join(''); }
+        }, error: () => { /* older server */ } });
+      }
+    }
     const r = btn.getBoundingClientRect();
     const w = m.offsetWidth;
     m.style.top = `${r.bottom + window.scrollY + 6}px`;
@@ -949,7 +1160,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     const noExport = new Set<string>((this.extra?.fields || []).filter((f: any) => f.show_in_export === false).map((f: any) => f.label));
     const cols = this.cols.filter(c => !c.skip && !this.hideCols.has(c.label) && !noExport.has(c.label));
     const extra = this.hasEmp ? orgKeys().filter(o => !this.cols.some(c => c.org === o.key)) : [];
-    const src = selectedOnly ? this.visible.filter(r => this.selected.has(r.el)) : this.visible;
+    const src = selectedOnly ? this.visible.filter(r => this.isSel(r.el)) : this.visible;
     const headers = [...cols.map(c => T(c.label)), ...extra.map(o => T(o.label))];   // v1.15.0: in the user's language
     const cellsOf = (r: Row) => [...cols.map(c => r.cells[c.idx] || ''), ...extra.map(o => (r.emp as any)?.[o.key] || '')];
     // number columns get subtotals – the same columns as the group rows on screen
@@ -1074,7 +1285,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   }
 
   private fillImport(m: HTMLElement): void {
-    if (!this.endpoint) { this.endpoint = this.z.endpointFor(this.rows.map(r => r.cells)); }
+    if (!this.endpoint) { this.endpoint = this.z.endpointFor(this.rows.map(r => r.raw)); }   // v1.62.0 ui raw
     const own = this.ownImportButton();
     const parts: string[] = [];
     if (this.endpoint) {
@@ -1168,21 +1379,73 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         <button type="button" class="zl-btn" data-close>${T('Cancel')}</button><button type="button" class="zl-btn primary" data-go disabled>${T('Import')}</button></div>
     </div>`;
     document.body.appendChild(modal);
+    // v1.52.0: the columns can be matched by hand, the matching is remembered for the same file layout, and an import can be undone
     let ready: any[] = [];
+    let sheet: { headers: string[]; rows: any[] } = { headers: [], rows: [] };
+    let fields: any[] = [];
+    let fileName = '';
+    const map = new Map<string, string>();
+    let remembered = false;
     const res = modal.querySelector('.zl-result') as HTMLElement;
     const go = modal.querySelector('[data-go]') as HTMLButtonElement;
     let imported = false;   // v1.37.1: the list reloads however the window is closed (X, outside click, Escape) once rows were imported
     const close = () => { modal.remove(); if (imported) { location.reload(); } };
+    const mapping = () => { const o: any = {}; sheet.headers.forEach(h => { o[h] = map.get(h) || ''; }); return o; };
+    const buildRows = () => sheet.rows.map(r => { const o: any = {}; map.forEach((k, h) => { if (k) { o[k] = r[h]; } }); return o; });
+    const mapTable = () => {
+      const opts = (h: string) => `<option value="">${T('– not imported –')}</option>` + fields.map(f =>
+        `<option value="${esc(f.key)}"${map.get(h) === f.key ? ' selected' : ''}>${esc(f.label)}${f.required ? ' *' : ''}</option>`).join('');
+      return `<details class="zl-map"${remembered || [...map.values()].some(v => !v) ? ' open' : ''}><summary>${T('Columns of the file')}${remembered ? ' – ' + T('matched as last time') : ''}</summary>
+        <table class="zl-ptable" zPlain><thead><tr><th>${T('Column in the file')}</th><th>${T('Field')}</th></tr></thead><tbody>${sheet.headers.map((h, i) =>
+          `<tr><td>${esc(h)}</td><td><select data-map="${i}" aria-label="${esc(h)}">${opts(h)}</select></td></tr>`).join('')}</tbody></table></details>`;
+    };
+    const check = () => {
+      const missing = fields.filter(f => f.required && ![...map.values()].includes(f.key));
+      if (![...map.values()].some(v => v)) { res.innerHTML = `<div class="zl-sum bad">${T('None of the columns match this screen. Choose the field of each column below, or download the template.')}</div>${mapTable()}`; go.disabled = true; return; }
+      const rows = buildRows();
+      if (!rows.length) { res.innerHTML = `<div class="zl-sum bad">${T('The file has no data rows.')}</div>`; return; }
+      go.disabled = true; ready = [];
+      this.z.importRows(this.endpoint!, rows, true).subscribe({
+        next: (r: any) => {
+          const bad = (r.results || []).filter((x: any) => !x.ok);
+          ready = (r.results || []).filter((x: any) => x.ok).map((x: any) => rows[x.row - 1]);
+          res.innerHTML = `<div class="zl-sum ${bad.length ? 'warn' : 'ok'}">${bad.length ? T('{0} rows ready · {1} rows need fixing (they will be skipped).', [`<b>${r.ok}</b>`, `<b>${bad.length}</b>`]) : T('{0} rows ready.', [`<b>${r.ok}</b>`])}</div>
+            ${missing.length ? `<p class="zl-warn">${T('Required columns not in the file: {0}', [missing.map(m2 => esc(m2.label)).join(', ')])}</p>` : ''}
+            ${mapTable()}${this.problemTable(bad)}`;
+          go.disabled = !ready.length; go.textContent = ready.length ? T('Import {0} rows', [ready.length]) : T('Import');
+        },
+        error: (err: any) => { res.innerHTML = `<div class="zl-sum bad">${esc(err?.error?.detail || T('The file could not be checked.'))}</div>${mapTable()}`; },
+      });
+    };
+    modal.addEventListener('change', (e) => {
+      const sel = (e.target as HTMLElement).closest('select[data-map]') as HTMLSelectElement | null;
+      if (!sel) { return; }
+      const h = sheet.headers[Number(sel.dataset['map'])];
+      if (sel.value) { map.forEach((k, hh) => { if (k === sel.value && hh !== h) { map.set(hh, ''); } }); }   // one column per field
+      map.set(h, sel.value); remembered = false; check();
+    });
     modal.addEventListener('click', async (e) => {
       const t = e.target as HTMLElement;
       if (t === modal || t.closest('[data-close]')) { close(); return; }
       if (t.closest('[data-tpl]')) { this.downloadTemplate(false); return; }
+      const ub = t.closest('[data-undo-import]') as HTMLButtonElement | null;
+      if (ub) {
+        if (!confirm(T('Undo this import? The records it created are deleted.'))) { return; }
+        ub.disabled = true;
+        this.z.undoImport(Number(ub.dataset['undoImport'])).subscribe({
+          next: (u: any) => { ub.replaceWith(Object.assign(document.createElement('div'), { className: 'zl-sum warn', textContent: T('Undone: {0} records deleted.', [u.deleted]) + (u.kept?.length ? ' ' + T('{0} kept – they are used by other records.', [u.kept.length]) : '') })); },
+          error: (err: any) => { ub.disabled = false; this.toast(err?.error?.detail || T('It could not be undone.'), true); },
+        });
+        return;
+      }
       if (t.closest('[data-go]') && ready.length) {
         go.disabled = true; go.textContent = T('Importing…');
-        this.z.importRows(this.endpoint!, ready, false).subscribe({
+        this.z.importRows(this.endpoint!, ready, false, { headers: sheet.headers, mapping: mapping(), file_name: fileName, label: this.title() }).subscribe({
           next: (r: any) => {
             const bad = (r.results || []).filter((x: any) => !x.ok);
             res.innerHTML = `<div class="zl-sum ok">${T('{0} of {1} rows imported.', [r.ok, r.total])}</div>${this.problemTable(bad)}
+              ${r.batch && r.ok ? `<p><button type="button" class="zl-btn" data-undo-import="${r.batch}">${T('Undo this import')}</button>
+                <span class="zl-muted">${T('Also later under Settings › Import history.')}</span></p>` : ''}
               <p class="zl-muted">${T('The list refreshes when you close this window.')}</p>`;
             go.textContent = T('Imported'); ready = []; imported = true;
           },
@@ -1193,33 +1456,21 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     (modal.querySelector('input[type=file]') as HTMLInputElement).addEventListener('change', async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) { return; }
+      fileName = file.name;
       (modal.querySelector('.zl-drop span') as HTMLElement).textContent = file.name;
       res.innerHTML = `<p class="zl-muted">${T('Checking the file…')}</p>`; go.disabled = true; ready = [];
       try {
-        const [fields, sheet] = await Promise.all([this.loadFields(), readSheet(file)]);
+        [fields, sheet] = await Promise.all([this.loadFields(), readSheet(file)]);
+        map.clear(); remembered = false;
+        let saved: any = null;
+        try { saved = (await firstValueFrom(this.z.importMapping(this.endpoint!, sheet.headers)))?.mapping; } catch { saved = null; }
         const norm = (s: string) => s.toLowerCase().replace(/\*/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-        const map = new Map<string, string>();
         for (const h of sheet.headers) {
+          if (saved && h in saved && (saved[h] === '' || fields.some(f => f.key === saved[h]))) { map.set(h, saved[h]); remembered = true; continue; }
           const f = fields.find(x => norm(x.label) === norm(h) || norm(x.key) === norm(h));
-          if (f) { map.set(h, f.key); }
+          map.set(h, f ? f.key : '');
         }
-        const missing = fields.filter(f => f.required && ![...map.values()].includes(f.key));
-        if (!map.size) { res.innerHTML = `<div class="zl-sum bad">${T('None of the columns match this screen. Download the template and copy your data into it.')}</div>`; return; }
-        const rows = sheet.rows.map(r => { const o: any = {}; map.forEach((k, h) => { o[k] = r[h]; }); return o; });
-        if (!rows.length) { res.innerHTML = `<div class="zl-sum bad">${T('The file has no data rows.')}</div>`; return; }
-        this.z.importRows(this.endpoint!, rows, true).subscribe({
-          next: (r: any) => {
-            const bad = (r.results || []).filter((x: any) => !x.ok);
-            ready = (r.results || []).filter((x: any) => x.ok).map((x: any) => rows[x.row - 1]);
-            const unknown = sheet.headers.filter(h => !map.has(h));
-            res.innerHTML = `<div class="zl-sum ${bad.length ? 'warn' : 'ok'}">${bad.length ? T('{0} rows ready · {1} rows need fixing (they will be skipped).', [`<b>${r.ok}</b>`, `<b>${bad.length}</b>`]) : T('{0} rows ready.', [`<b>${r.ok}</b>`])}</div>
-              ${missing.length ? `<p class="zl-warn">${T('Required columns not in the file: {0}', [missing.map(m2 => esc(m2.label)).join(', ')])}</p>` : ''}
-              ${unknown.length ? `<p class="zl-muted">${T('Ignored columns: {0}', [unknown.map(esc).join(', ')])}</p>` : ''}
-              ${this.problemTable(bad)}`;
-            go.disabled = !ready.length; go.textContent = ready.length ? T('Import {0} rows', [ready.length]) : T('Import');
-          },
-          error: (err: any) => { res.innerHTML = `<div class="zl-sum bad">${esc(err?.error?.detail || T('The file could not be checked.'))}</div>`; },
-        });
+        check();
       } catch (err: any) {
         res.innerHTML = `<div class="zl-sum bad">${esc(typeof err === 'string' ? err : err?.message || T('The file could not be read.'))}</div>`;
       }
@@ -1262,7 +1513,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       }
       if (t.hasAttribute('data-selall')) {
         const on = (t as HTMLInputElement).checked;
-        this.visible.forEach(r => on ? this.selected.add(r.el) : this.selected.delete(r.el));
+        this.visible.forEach(r => this.setSel(r.el, on));
         this.render();
       }
     });
@@ -1270,8 +1521,9 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       const b = (e.target as HTMLElement).closest('[data-pg],[data-act]') as HTMLElement | null;
       if (!b) { return; }
       if (b.dataset['pg']) { this.page += Number(b.dataset['pg']); this.render(); this.anchor.scrollIntoView({ block: 'nearest' }); }
-      if (b.dataset['act'] === 'unselect') { this.rows.forEach(r => this.selected.delete(r.el)); this.render(); }
+      if (b.dataset['act'] === 'unselect') { this.rows.forEach(r => this.setSel(r.el, false)); this.render(); }
       if (b.dataset['act'] === 'exportsel') { this.openMenu('export', this.bar!.querySelector('[data-menu=export]') as HTMLElement); }
+      if (b.dataset['act'] === 'mass') { this.openMass(); }   // v1.45.0
     });
     // row checkboxes + group toggles + "clear filters" (delegated on the table)
     this.table.addEventListener('change', (e) => {
@@ -1279,11 +1531,19 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       const cell = cb.closest('td.zl-selcell');
       if (!cell) { return; }
       const tr = cell.parentElement as HTMLTableRowElement;
-      cb.checked ? this.selected.add(tr) : this.selected.delete(tr);
+      if (!cell.classList.contains('zl-own')) { cb.checked ? this.selected.add(tr) : this.selected.delete(tr); }   // v1.40.1 own column: the checkbox is the state
       tr.classList.toggle('zl-picked', cb.checked);
       this.paintBar(); this.paintFootSel();
     });
+    this.table.addEventListener('dblclick', (e) => {   // v1.46.0 edit a cell in the list
+      if (!this.inline) { return; }
+      const td = (e.target as HTMLElement).closest('td') as HTMLTableCellElement | null;
+      if (td && td.closest('tbody') && !td.closest('[data-zl]')) { e.preventDefault(); e.stopPropagation(); this.startEdit(td); }
+    }, true);
     this.table.addEventListener('click', (e) => {
+      // v1.40.1: the screen's own row checkbox (mat-checkbox stops the change event) – the state is read after the click
+      const own = (e.target as HTMLElement).closest('td.zl-own');
+      if (own) { setTimeout(() => { const tr = own.parentElement as HTMLTableRowElement; tr.classList.toggle('zl-picked', this.isSel(tr)); this.paintBar(); this.paintFootSel(); }, 0); }
       const b = (e.target as HTMLElement).closest('[data-act]') as HTMLElement | null;
       if (!b || !b.closest('[data-zl]')) { return; }
       if (b.dataset['act'] === 'toggle') { const p = b.dataset['path']!; this.collapsed.has(p) ? this.collapsed.delete(p) : this.collapsed.add(p); this.render(); }
@@ -1291,13 +1551,13 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     });
   }
 
-  private selCount(): number { return this.rows.filter(r => this.selected.has(r.el)).length; }
+  private selCount(): number { return this.rows.filter(r => this.isSel(r.el)).length; }
 
   private paintFootSel(): void {
     if (!this.foot) { return; }
     const n = this.selCount();
     const info = this.foot.querySelector('.zl-selinfo') as HTMLElement;
-    info.innerHTML = n ? `${T('{0} selected', [`<b>${n}</b>`])} <button type="button" class="zl-link" data-act="exportsel">${T('Export')}</button><button type="button" class="zl-link" data-act="unselect">${T('Clear')}</button>` : '';
+    info.innerHTML = n ? `${T('{0} selected', [`<b>${n}</b>`])} <button type="button" class="zl-btn primary zl-massbtn" data-act="mass">${T('Action')} ▾</button><button type="button" class="zl-link" data-act="exportsel">${T('Export')}</button><button type="button" class="zl-link" data-act="unselect">${T('Clear')}</button>` : '';
     const all = this.foot.querySelector('[data-selall]') as HTMLInputElement;
     all.checked = n > 0 && n >= this.visible.length;
     all.indeterminate = n > 0 && n < this.visible.length;
@@ -1318,7 +1578,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (hp) {
       const start = (this.page - 1) * this.size;
       const pageRows = this.visible.slice(start, start + this.size);
-      hp.checked = pageRows.length > 0 && pageRows.every(r => this.selected.has(r.el));
+      hp.checked = pageRows.length > 0 && pageRows.every(r => this.isSel(r.el));
     }
   }
 
@@ -1342,11 +1602,16 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.hideCols = new Set(Array.isArray(d.hide) ? d.hide : []);
     if (Array.isArray(d.order)) { this.order = d.order.filter((x: any) => typeof x === 'string'); }
     if (d.widths && typeof d.widths === 'object') { this.widths = { ...d.widths }; }
+    this.totals = typeof d.totals === 'string' ? d.totals : '';
+    this.rules = Array.isArray(d.rules) ? d.rules.filter((r: any) => r && r.col && r.op) : [];
+    this.inline = !!d.inline;
+    this.table.classList.toggle('zl-inline', this.inline);
     this.hasLayout = true;
   }
 
   private saveLayout(): void {
-    const data: any = { view: this.view, vst: this.vst, hide: [...this.hideCols], order: this.order, widths: this.widths };
+    const data: any = { view: this.view, vst: this.vst, hide: [...this.hideCols], order: this.order, widths: this.widths,
+                        totals: this.totals, rules: this.rules, inline: this.inline };   // v1.46.0
     if (this.legacyFavs.length) { data.fav = this.legacyFavs; }
     try { localStorage.setItem('zl-layout:' + this.layoutKey, JSON.stringify(data)); } catch { /* ignore */ }
     clearTimeout(this.saveTimer);
@@ -1361,11 +1626,26 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       m.innerHTML = `<div class="zl-sec-h">${T('Columns')}${movable ? ` <span class="zl-hint">${T('– use the arrows to move a column, drag a heading edge to resize')}</span>` : ''}</div>
       <div class="zl-colist">${cols.map((c, i) => `<div class="zl-colrow"><label class="zl-check"><input type="checkbox" data-col="${esc(c.label)}" ${this.hideCols.has(c.label) ? '' : 'checked'}> ${esc(T(c.label))}</label>${movable ? `<span class="zl-mv">
         <button type="button" data-mv="-1" data-mvcol="${esc(c.label)}" aria-label="${esc(T('Move {0} up', [T(c.label)]))}" ${i === 0 ? 'disabled' : ''}>▲</button><button type="button" data-mv="1" data-mvcol="${esc(c.label)}" aria-label="${esc(T('Move {0} down', [T(c.label)]))}" ${i === cols.length - 1 ? 'disabled' : ''}>▼</button></span>` : ''}</div>`).join('')}</div>
+      <div class="zl-sec-h">${T('Totals row')}</div>
+      <select class="zl-sel" data-totals><option value="">${T('No totals')}</option><option value="sum" ${this.totals === 'sum' ? 'selected' : ''}>${T('Sum of the number columns')}</option>
+        <option value="avg" ${this.totals === 'avg' ? 'selected' : ''}>${T('Average')}</option><option value="both" ${this.totals === 'both' ? 'selected' : ''}>${T('Sum and average')}</option></select>
+      <div class="zl-sec-h">${T('Colour rules')}</div>
+      <div class="zl-rules">${this.rules.map((r, i) => `<div class="zl-rule"><span class="zl-sw zl-cc-${esc(r.color)}"></span>${esc(T(r.col))} ${esc(OPS[r.op] || r.op)} ${esc(r.value || '')} <small class="zl-muted">(${r.scope === 'cell' ? T('cell') : T('row')})</small>
+        <button type="button" class="zl-link" data-rdel="${i}" aria-label="${T('Remove rule')}">×</button></div>`).join('') || `<p class="zl-muted">${T('Colour rows or cells, e.g. expiry date passed → red.')}</p>`}</div>
+      <div class="zl-ruleadd"><select data-rcol>${cols.map(c => `<option value="${esc(c.label)}">${esc(T(c.label))}</option>`).join('')}</select>
+        <select data-rop>${Object.entries(OPS).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('')}</select>
+        <input data-rval placeholder="${T('value')}" size="8">
+        <select data-rcolor><option value="red">${T('Red')}</option><option value="amber">${T('Amber')}</option><option value="green">${T('Green')}</option><option value="blue">${T('Blue')}</option><option value="grey">${T('Grey')}</option></select>
+        <select data-rscope><option value="row">${T('whole row')}</option><option value="cell">${T('the cell')}</option></select>
+        <button type="button" class="zl-apply" data-radd>${T('Add')}</button></div>
+      <label class="zl-check zl-inl"><input type="checkbox" data-inline ${this.inline ? 'checked' : ''}> ${T('Edit cells in the list (double-click a cell; Enter saves, Esc cancels)')}</label>
       <div class="zl-mfoot"><button type="button" class="zl-link" data-all>${T('Show all')}</button>${movable || Object.keys(this.widths).length ? `<button type="button" class="zl-link" data-colreset>${T('Original order and widths')}</button>` : ''}<span class="zl-grow"></span><span class="zl-muted">${T('Saved for you on this screen')}</span></div>`;
     };
     paint();
     m.addEventListener('change', (e) => {
       const cb = e.target as HTMLInputElement; const lab = cb.dataset['col'];
+      if (cb.hasAttribute('data-totals')) { this.totals = (cb as any).value; this.saveLayout(); this.render(); return; }   // v1.46.0
+      if (cb.hasAttribute('data-inline')) { this.inline = cb.checked; this.saveLayout(); this.table.classList.toggle('zl-inline', this.inline); return; }
       if (!lab) { return; }
       cb.checked ? this.hideCols.delete(lab) : this.hideCols.add(lab);
       if (this.cols.filter(c => c.label && !this.hideCols.has(c.label)).length === 0) { this.hideCols.delete(lab); cb.checked = true; }
@@ -1385,6 +1665,13 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         (m.querySelector(`[data-mvcol="${CSS.escape(labels[j])}"][data-mv="${mv.dataset['mv']}"]`) as HTMLElement | null)?.focus();
       }
       if (t.closest('[data-colreset]')) { this.widths = {}; this.rekey(() => { this.order = []; }); this.saveLayout(); paint(); }
+      if (t.closest('[data-radd]')) {   // v1.46.0 colour rule
+        const g = (k: string) => (m.querySelector(`[data-${k}]`) as HTMLInputElement).value;
+        this.rules = [...this.rules, { col: g('rcol'), op: g('rop'), value: g('rval'), color: g('rcolor'), scope: g('rscope') as any }];
+        this.saveLayout(); this.paintRules(); paint();
+      }
+      const del = t.closest('[data-rdel]') as HTMLElement | null;
+      if (del) { this.rules = this.rules.filter((_, i) => i !== Number(del.dataset['rdel'])); this.saveLayout(); this.paintRules(); paint(); }
     });
   }
 
@@ -1545,6 +1832,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       groupBy: this.groupBy.map(k => this.keyToRef(k)),
       sort: this.sortRef(),
       columns: { order: this.order.length ? this.cols.map(c => c.label) : [], hide: [...this.hideCols], widths: { ...this.widths } },
+      totals: this.totals, rules: this.rules,
       size: this.size,
       view: this.view,
       vst: this.vst,
@@ -1560,6 +1848,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.view = d.view && VIEW_LABEL[d.view as ViewKind] ? d.view as ViewKind : 'list';
     this.vst = d.vst && typeof d.vst === 'object' ? { ...d.vst } : {};
     this.order = Array.isArray(cols.order) ? cols.order.filter(x => typeof x === 'string') : [];
+    this.totals = typeof d.totals === 'string' ? d.totals : '';   // v1.46.0
+    this.rules = Array.isArray(d.rules) ? d.rules : [];
     this.applied = true;
     this.hasLayout = true;
     this.scan();   // moves the columns
@@ -1640,7 +1930,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     const star = (v: SavedViewItem) => v.id === this.defaultId ? `<span class="zl-vwstar" title="${T('Your default view')}">${ICON['star']}</span>` : '';
     const list = this.views.length
       ? `<div class="zl-vwlist">${this.views.map(v => `<button type="button" class="zl-vw${v.id === this.viewId ? ' on' : ''}" data-vw="${v.id}">
-          ${star(v)}<span class="zl-vwname">${esc(v.name)}</span>${v.shared ? `<span class="zl-vwtag">${T('Shared')}</span>` : ''}${!v.mine ? `<span class="zl-vwby">${esc(T('by {0}', [v.owner || T('another user')]))}</span>` : ''}</button>`).join('')}</div>`
+          ${star(v)}<span class="zl-vwname">${esc(v.name)}</span>${v.shared ? `<span class="zl-vwtag">${T('Shared')}</span>` : (v.share_groups || []).length ? `<span class="zl-vwtag">${T('Team')}</span>` : ''}${!v.mine ? `<span class="zl-vwby">${esc(T('by {0}', [v.owner || T('another user')]))}</span>` : ''}</button>`).join('')}</div>`
       : `<p class="zl-muted">${T('No saved views yet. Set up the list – search, filters, group by, sort, columns – then save it below.')}</p>`;
     const changed = cur ? this.changedFrom(cur) : false;
     const curSec = cur ? `<div class="zl-sec"><div class="zl-sec-h">${T('View in use: {0}', [esc(cur.name)])}</div>
@@ -1661,6 +1951,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         <div class="zl-range"><input class="zl-favname" data-vwname maxlength="80" placeholder="${T('Name of the view')}" aria-label="${T('Name of the view')}"><button type="button" class="zl-apply" data-va="save">${T('Save view')}</button></div>
         <label class="zl-check"><input type="checkbox" data-vwdef> ${T('Make it my default (the list opens like this)')}</label>
         ${this.canShare ? `<label class="zl-check"><input type="checkbox" data-vwshare> ${T('Share with everyone in the company')}</label>` : ''}
+        <label class="zl-check zl-team">${T('Share with a team')} <select data-vwteam><option value="">${T('– only me –')}</option>${this.teams.map(g => `<option value="${g.id}">${esc(g.name)}</option>`).join('')}</select></label>
         <p class="zl-muted">${T('A view keeps the search, filters, group by, sort, columns (order and widths), rows per page and the view mode.')}</p>
       </div>
       <p class="zl-vwerr" data-vwerr hidden></p>
@@ -1693,8 +1984,9 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         if (!name) { err('', 'Give the view a name.'); (m.querySelector('[data-vwname]') as HTMLInputElement).focus(); return; }
         const def = (m.querySelector('[data-vwdef]') as HTMLInputElement).checked;
         const shared = !!(m.querySelector('[data-vwshare]') as HTMLInputElement | null)?.checked;
+        const team = Number((m.querySelector('[data-vwteam]') as HTMLSelectElement | null)?.value || 0);
         b.disabled = true;
-        this.sv.create({ screen: this.layoutKey, name, data: this.currentState(), shared, default: def }).subscribe({
+        this.sv.create({ screen: this.layoutKey, name, data: this.currentState(), shared, default: def, share_groups: team ? [team] : [] }).subscribe({
           next: v => { this.views = [...this.views.filter(x => x.id !== v.id), v].sort((a, c) => Number(!a.mine) - Number(!c.mine) || a.name.localeCompare(c.name)); this.viewId = v.id; if (def) { this.defaultId = v.id; } this.paintViewsBtn(); this.toast(T('View "{0}" saved.', [v.name])); this.closeMenu(); },
           error: x => { b.disabled = false; err(x, 'The view could not be saved. Try again.'); },
         });
@@ -1736,7 +2028,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private paintViews(): void {
     if (!this.bar) { return; }
     const cols = this.vcols();
-    const avail = this.ownGroups ? ['list' as ViewKind] : availableViews(cols);
+    let avail = this.ownGroups ? ['list' as ViewKind] : availableViews(cols);
+    if (/\/report-options\/r\//.test(location.pathname)) { avail = avail.filter(v => v !== 'kanban' && v !== 'calendar'); }   // v1.62.0 reports: List · Graph · Pivot
     if (!avail.includes(this.view)) { this.view = 'list'; }
     const box = this.bar.querySelector('.zl-views') as HTMLElement;
     const html = avail.length > 1 ? avail.map(v => `<button type="button" role="tab" class="zl-vbtn${v === this.view ? ' on' : ''}" aria-selected="${v === this.view}" data-act="view" data-view="${v}" title="${T(VIEW_LABEL[v])}">${ICON[v]}<span>${T(VIEW_LABEL[v])}</span></button>`).join('') : '';
@@ -1797,22 +2090,34 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   // ------------------------------------------------------------------ v1.7.0: designer fields as columns
   private loadExtras(): void {
     if (this.ownGroups || !this.rows.length) { return; }
-    const ep = this.z.endpointFor(this.rows.slice(0, 40).map(r => r.cells));
+    const ep = this.z.endpointFor(this.rows.slice(0, 40).map(r => r.raw));   // v1.62.0 ui raw
     if (!ep) { return; }
     const ids = new Map<HTMLTableRowElement, string>();
     for (const r of this.rows) { const hit = this.rec.rowRecord(r.el); if (hit) { ids.set(r.el, hit.id); } }
     const sig = ep + ':' + [...ids.values()].join(',');
     if (sig === this.extraSig || !ids.size) { return; }
     this.extraSig = sig;
-    this.rec.listValues(ep, [...new Set(ids.values())]).subscribe({
-      next: (res: any) => {
-        const fields = (res.fields || []).filter((f: any) => f.show_in_list);
-        if (!fields.length) { if (this.extra) { this.extra = null; this.removeExtraCells(); this.schedule(0); } return; }
-        this.extra = { endpoint: ep, fields, values: res.values || {}, ids };
-        this.schedule(0);
-      },
-      error: () => { /* no extra fields */ },
+    const uniq = [...new Set(ids.values())];
+    // v1.45.0: the colour tags of the rows come as one more column (filter and group by work on it like on any column)
+    let fields: any[] | null = null, values: Record<string, Record<string, any>> = {}, tags: Record<string, any[]> | null = null;
+    const done = () => {
+      if (fields === null || tags === null) { return; }
+      const cols = [...fields];
+      const tagged = Object.values(tags).some(t => (t || []).length);
+      if (tagged) {
+        cols.push({ name: '__tags', label: T('Tags'), tags: true });
+        for (const [id, t] of Object.entries(tags)) { (values[id] ||= {})['__tags'] = t; }
+      }
+      if (!cols.length) { if (this.extra) { this.extra = null; this.removeExtraCells(); this.schedule(0); } return; }
+      this.extra = { endpoint: ep, fields: cols, values, ids };
+      this.removeExtraCells();
+      this.schedule(0);
+    };
+    this.rec.listValues(ep, uniq).subscribe({
+      next: (res: any) => { fields = (res.fields || []).filter((f: any) => f.show_in_list); values = res.values || {}; done(); },
+      error: () => { fields = []; done(); },
     });
+    this.rec.tagValues(ep, uniq).subscribe({ next: (t: any) => { tags = t || {}; done(); }, error: () => { tags = {}; done(); } });
   }
 
   private removeExtraCells(): void {
@@ -1834,8 +2139,171 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       let id = this.extra.ids.get(tr);
       if (!id) { id = this.rec.rowRecord(tr)?.id; if (id) { this.extra.ids.set(tr, id); } }
       const vals = (id && this.extra.values[id]) || {};
-      fields.forEach((f: any, i: number) => { const td = document.createElement('td'); td.dataset['zl'] = 'xc'; td.dataset['zo'] = 'x' + i; td.textContent = showValue(vals[f.name]); tr.appendChild(td); });
+      fields.forEach((f: any, i: number) => {
+        const td = document.createElement('td'); td.dataset['zl'] = 'xc'; td.dataset['zo'] = 'x' + i;
+        if (f.tags) {   // v1.45.0 colour tags: the text is the tag names (filter / group by), shown as chips
+          const t = (vals[f.name] || []) as any[];
+          td.innerHTML = t.map(x => `<span class="zr-tag c-${esc(x.color)}">${esc(x.name)}</span>`).join(' ');
+          td.title = t.map(x => x.name).join(', ');
+        } else { td.textContent = showValue(vals[f.name]); }
+        tr.appendChild(td);
+      });
     }
+  }
+
+  // ------------------------------------------------------------------ v1.45.0 mass actions on the selected rows
+  private async call(method: string, path: string, body?: any): Promise<any> {
+    const sch = localStorage.getItem('selectedSchema') || '';
+    const res = await fetch(`${this.z.api}${path}${path.includes('?') ? '&' : '?'}schema=${encodeURIComponent(sch)}`, {
+      method, headers: { Authorization: 'Bearer ' + (localStorage.getItem('auth_token') || ''), 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body) });
+    const txt = await res.text();
+    let data: any = null;
+    try { data = txt ? JSON.parse(txt) : null; } catch { data = null; }
+    if (!res.ok) { throw new Error((data && (data.detail || data.error)) || `Error ${res.status}`); }
+    return data;
+  }
+
+  private selectedIds(): { ids: string[]; rows: Map<string, HTMLTableRowElement>; missing: number } {
+    const rows = new Map<string, HTMLTableRowElement>();
+    let missing = 0;
+    for (const r of this.rows) {
+      if (!this.isSel(r.el)) { continue; }
+      const hit = this.rec.rowRecord(r.el);
+      if (hit?.id) { rows.set(String(hit.id), r.el); } else { missing++; }
+    }
+    return { ids: [...rows.keys()], rows, missing };
+  }
+
+  private async openMass(): Promise<void> {
+    const ep = this.endpoint || this.z.endpointFor(this.rows.slice(0, 40).map(r => r.raw));   // v1.62.0 ui raw
+    const sel = this.selectedIds();
+    if (!ep || !sel.ids.length) { this.toast('The selected rows could not be matched to their records – open them one by one.', true); return; }
+    const kit = /^\/(zeo-[a-z]+)\/api\/r\/([a-z_]+)\/$/.exec(ep);
+    let reg: any = null;
+    if (kit) {
+      try { reg = ((await this.call('GET', `/${kit[1]}/api/registers/`)) || []).find((r: any) => r.kind === kit[2]) || null; } catch { reg = null; }
+    }
+    const opts: { v: string; l: string }[] = [
+      { v: 'tag_add', l: T('Add a tag') }, { v: 'tag_remove', l: T('Remove a tag') }, { v: 'message', l: T('Send a message to the followers') },
+      { v: 'activity', l: T('Schedule an activity') }, { v: 'follow', l: T('Follow') }, { v: 'export', l: T('Export the selected rows') },
+    ];
+    if (reg) {
+      for (const a of reg.actions || []) { opts.push({ v: 'do:' + a.name, l: a.label }); }
+      for (const f of (reg.form || []).filter((x: any) => x.type === 'choice' && (x.choices || []).length)) { opts.push({ v: 'set:' + f.name, l: T('Change {0}', [f.label]) }); }
+      if (reg.deletable) { opts.push({ v: 'delete', l: T('Delete') }); }
+    } else {
+      opts.push({ v: 'delete', l: T('Delete') });
+    }
+    const modal = document.createElement('div');
+    modal.className = 'zl-modal'; modal.dataset['zl'] = 'modal';
+    modal.innerHTML = `<div class="zl-dialog zl-mass" role="dialog" aria-modal="true" aria-label="${T('Action on the selected rows')}">
+      <div class="zl-dh"><h3>${T('{0} selected rows', [sel.ids.length])}</h3><button type="button" class="zl-x" data-close aria-label="${T('Close')}">${ICON['x']}</button></div>
+      <div class="zl-db">
+        ${sel.missing ? `<p class="zl-muted">${T('{0} selected rows could not be matched to a record and are left out.', [sel.missing])}</p>` : ''}
+        <label class="zl-fl">${T('Action')}<select data-what>${opts.map(o => `<option value="${esc(o.v)}">${esc(o.l)}</option>`).join('')}</select></label>
+        <div class="zl-mass-f"></div>
+        <div class="zl-result"></div>
+      </div>
+      <div class="zl-df"><span class="zl-grow"></span><button type="button" class="zl-btn" data-close>${T('Cancel')}</button><button type="button" class="zl-btn primary" data-go>${T('Apply')}</button></div>
+    </div>`;
+    document.body.appendChild(modal);
+    const what = modal.querySelector('[data-what]') as HTMLSelectElement;
+    const box = modal.querySelector('.zl-mass-f') as HTMLElement;
+    const res = modal.querySelector('.zl-result') as HTMLElement;
+    let users: any[] = [], tags: any[] = [];
+    const today = new Date().toISOString().slice(0, 10);
+    const input = (name: string, label: string, type = 'text', extra = '') => `<label class="zl-fl">${esc(label)}<input data-f="${name}" type="${type}" ${extra}></label>`;
+    const paint = async () => {
+      const v = what.value;
+      if (v === 'tag_add' || v === 'tag_remove') {
+        if (!tags.length) { try { tags = await this.call('GET', '/chatter/api/tags/'); } catch { tags = []; } }
+        box.innerHTML = input('tag', T('Tag'), 'text', 'list="zl-mass-tags" placeholder="' + T('Type or pick a tag') + '"') +
+          `<datalist id="zl-mass-tags">${tags.map(t => `<option value="${esc(t.name)}">`).join('')}</datalist>`;
+      } else if (v === 'message') {
+        box.innerHTML = input('subject', T('Subject (optional)')) + `<label class="zl-fl">${T('Message')}<textarea data-f="body" rows="4"></textarea></label>
+          <p class="zl-muted">${T('Each record gets the message in its history; its followers get it in their inbox and by e-mail.')}</p>`;
+      } else if (v === 'activity') {
+        if (!users.length) { try { users = await this.call('GET', '/chatter/api/users/'); } catch { users = []; } }
+        box.innerHTML = `<label class="zl-fl">${T('Type')}<select data-f="activity_type">${[['todo', 'To-do'], ['call', 'Call'], ['meeting', 'Meeting'], ['email', 'E-mail'], ['follow_up', 'Follow-up']]
+          .map(([a, b]) => `<option value="${a}">${T(b)}</option>`).join('')}</select></label>` + input('summary', T('Summary')) + input('due_date', T('Due date'), 'date', `value="${today}"`) +
+          `<label class="zl-fl">${T('Assigned to')}<select data-f="assigned_to">${users.map(u => `<option value="${u.id}">${esc(u.name)}</option>`).join('')}</select></label>`;
+      } else if (v.startsWith('do:')) {
+        const a = (reg?.actions || []).find((x: any) => 'do:' + x.name === v);
+        const parts: string[] = [];
+        for (const f of a?.fields || []) {
+          if (String(f.type).startsWith('opt:')) {
+            let o: any[] = [];
+            try { o = await this.call('GET', `/${kit![1]}/api/options/${String(f.type).slice(4)}/`); } catch { o = []; }
+            parts.push(`<label class="zl-fl">${esc(f.label)}${f.required ? ' *' : ''}<select data-f="${esc(f.name)}"><option value="">–</option>${o.map((x: any) => `<option value="${x.id}">${esc(x.label)}</option>`).join('')}</select></label>`);
+          } else if (f.type === 'bool') {
+            parts.push(`<label class="zl-chk"><input type="checkbox" data-f="${esc(f.name)}"> ${esc(f.label)}</label>`);
+          } else if (f.type === 'file' || f.type === 'files') {
+            parts.push(`<p class="zl-muted">${T('"{0}" needs a file – run this action one record at a time.', [esc(f.label)])}</p>`);
+          } else {
+            parts.push(input(f.name, f.label + (f.required ? ' *' : ''), f.type === 'date' ? 'date' : f.type === 'number' || f.type === 'money' ? 'number' : 'text'));
+          }
+        }
+        box.innerHTML = (a?.confirm ? `<p class="zl-warn">${esc(a.confirm)}</p>` : '') + parts.join('') +
+          `<p class="zl-muted">${T('Rows where this is not possible now are skipped and listed.')}</p>`;
+      } else if (v.startsWith('set:')) {
+        const f = (reg?.form || []).find((x: any) => 'set:' + x.name === v);
+        box.innerHTML = `<label class="zl-fl">${esc(f?.label || '')}<select data-f="value">${(f?.choices || []).map((c: any) => `<option value="${esc(c[0] ?? c.value)}">${esc(c[1] ?? c.label)}</option>`).join('')}</select></label>`;
+      } else if (v === 'delete') {
+        box.innerHTML = `<p class="zl-warn">${T('The selected records are deleted. Records in use are skipped. This cannot be undone.')}</p>`;
+      } else { box.innerHTML = ''; }
+    };
+    const val = (n: string): any => { const el = box.querySelector(`[data-f="${n}"]`) as HTMLInputElement | null; return el ? (el.type === 'checkbox' ? el.checked : el.value) : ''; };
+    const vals = (): any => { const o: any = {}; box.querySelectorAll('[data-f]').forEach(e => { const el = e as HTMLInputElement; o[el.dataset['f']!] = el.type === 'checkbox' ? el.checked : el.value; }); return o; };
+    what.addEventListener('change', paint);
+    await paint();
+    let changed = false;
+    const close = () => { modal.remove(); if (changed) { document.dispatchEvent(new CustomEvent('zeo-list-changed', { detail: { endpoint: ep } })); this.extraSig = ''; this.loadExtras(); } };
+    modal.addEventListener('click', async (e) => {
+      const t = e.target as HTMLElement;
+      if (t === modal || t.closest('[data-close]')) { close(); return; }
+      if (!t.closest('[data-go]')) { return; }
+      const v = what.value;
+      const go = t.closest('[data-go]') as HTMLButtonElement;
+      if (v === 'export') { modal.remove(); this.openMenu('export', this.bar!.querySelector('[data-menu=export]') as HTMLElement); return; }
+      if (v === 'delete' && !confirm(T('Delete {0} records?', [sel.ids.length]))) { return; }
+      go.disabled = true; res.innerHTML = `<p class="zl-muted">${T('Working…')}</p>`;
+      try {
+        let okN = 0; const bad: { id: string; error: string }[] = [];
+        if (['tag_add', 'tag_remove', 'message', 'activity', 'follow'].includes(v)) {
+          const body: any = { endpoint: ep, ids: sel.ids, action: v, page: location.pathname.replace(/\/\d+$/, '') };
+          if (v.startsWith('tag')) { if (!val('tag').trim()) { throw new Error(T('Type the tag.')); } body.tags = [val('tag').trim()]; }
+          Object.assign(body, v === 'message' || v === 'activity' ? vals() : {});
+          const r = await this.call('POST', '/chatter/api/mass/', body);
+          okN = r.done; if (r.skipped) { bad.push({ id: '', error: T('{0} rows not allowed for you', [r.skipped]) }); }
+        } else if (kit && (v.startsWith('do:') || v.startsWith('set:') || v === 'delete')) {
+          const body: any = { ids: sel.ids.map(Number), ...vals() };
+          if (v.startsWith('do:')) { body.action = v; } else if (v.startsWith('set:')) { body.action = 'set'; body.field = v.slice(4); } else { body.action = 'delete'; }
+          const r = await this.call('POST', `/${kit[1]}/api/r/${kit[2]}/bulk/`, body);
+          okN = (r.done || []).length; for (const f of r.failed || []) { bad.push({ id: String(f.id), error: f.error }); }
+          if (v === 'delete') { for (const id of r.done || []) { sel.rows.get(String(id))?.classList.add('zl-gone'); } }
+        } else if (v === 'delete') {
+          for (const id of sel.ids) {
+            try { await this.call('DELETE', `${ep}${id}/`); okN++; sel.rows.get(id)?.classList.add('zl-gone'); }
+            catch (err: any) { bad.push({ id, error: err.message }); }
+          }
+        }
+        changed = okN > 0;
+        res.innerHTML = `<div class="zl-sum ${bad.length ? 'bad' : 'ok'}">${T('Done for {0} of {1} records.', [okN, sel.ids.length])}</div>` +
+          (bad.length ? `<table class="zl-ptable" zPlain><thead><tr><th>${T('Record')}</th><th>${T('Why not')}</th></tr></thead><tbody>${bad.slice(0, 100).map(b =>
+            `<tr><td>${esc(b.id ? (this.rowLabel(sel.rows.get(b.id)) || '#' + b.id) : '')}</td><td>${esc(b.error)}</td></tr>`).join('')}</tbody></table>` : '');
+        go.textContent = T('Done');
+        if (!bad.length) { setTimeout(close, 900); } else { go.disabled = false; go.textContent = T('Apply'); }
+      } catch (err: any) {
+        res.innerHTML = `<div class="zl-sum bad">${esc(err?.message || T('It could not be done.'))}</div>`; go.disabled = false;
+      }
+    });
+  }
+
+  private rowLabel(tr?: HTMLTableRowElement): string {
+    if (!tr) { return ''; }
+    const c = Array.from(tr.cells).filter(td => !td.classList.contains('zl-selcell')).slice(0, 2).map(td => (td.innerText || '').trim()).filter(Boolean);
+    return c.join(' · ').slice(0, 80);
   }
 
   private hideOwnControls(): void {

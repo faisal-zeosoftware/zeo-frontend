@@ -108,11 +108,21 @@ export class MConnectComponent {
     <button type="button" class="mbtn soft" *ngIf="bioReady" (click)="bio()" [disabled]="busy">
       <span class="material-icons" aria-hidden="true">fingerprint</span>{{ 'Sign in with fingerprint' | t }}</button>
     <label class="mfield">{{ 'E-mail or employee code' | t }}
-      <input name="u" [(ngModel)]="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email"></label>
-    <label class="mfield">{{ 'Password' | t }}
+      <input name="u" [(ngModel)]="username" (ngModelChange)="ssoCheck()" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="email"></label>
+    <!-- v1.54.0 single sign-on: the sign-in opens in the phone's browser, the app waits for it -->
+    <button type="button" class="mbtn soft" *ngIf="sso" (click)="ssoStart()" [disabled]="busy" data-m-sso>
+      <span class="material-icons" aria-hidden="true">key</span>{{ sso.provider.name | t }}</button>
+    <label class="mfield" *ngIf="!sso || sso.password">{{ 'Password' | t }}
       <span style="position:relative;display:block"><input name="p" [(ngModel)]="password" [type]="show ? 'text' : 'password'" autocomplete="current-password">
         <button type="button" (click)="show = !show" [attr.aria-label]="(show ? 'Hide password' : 'Show password') | t"
           style="position:absolute;inset-inline-end:4px;top:3px;width:44px;height:44px;border:0;background:none;color:#6e6578"><span class="material-icons">{{ show ? 'visibility_off' : 'visibility' }}</span></button></span></label>
+  </ng-container>
+  <ng-container *ngIf="step === 6">
+    <h1>{{ 'Finish in your browser' | t }}</h1>
+    <p class="lead">{{ 'Sign in with your company account in the browser that opened, and check that it shows this code:' | t }}</p>
+    <div style="font-size:34px;letter-spacing:8px;font-weight:700;color:#5b2087;text-align:center;margin:8px 0" data-m-sso-code>{{ ssoCode }}</div>
+    <p class="lead">{{ 'The app continues by itself when you are signed in.' | t }}</p>
+    <button type="button" class="mlink" (click)="ssoOpen()">{{ 'Open the browser again' | t }}</button>
   </ng-container>
   <ng-container *ngIf="step === 2">
     <h1>{{ 'Confirm it is you' | t }}</h1>
@@ -123,6 +133,11 @@ export class MConnectComponent {
     <p class="lead">{{ 'We sent the code to your registered e-mail or phone.' | t }}</p>
     <label class="mfield">{{ 'Code' | t }}<input name="otp" [(ngModel)]="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8"></label>
   </ng-container>
+  <ng-container *ngIf="step === 5">
+    <h1>{{ 'Authenticator code' | t }}</h1>
+    <p class="lead">{{ 'Type the 6-digit code of your authenticator app, or a recovery code.' | t }}</p>
+    <label class="mfield">{{ 'Code' | t }}<input name="totp" [(ngModel)]="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="12"></label>
+  </ng-container>
   <ng-container *ngIf="step === 4">
     <span class="material-icons" style="font-size:56px;color:#5b2087" aria-hidden="true">fingerprint</span>
     <h1>{{ 'Use your fingerprint next time?' | t }}</h1>
@@ -130,10 +145,10 @@ export class MConnectComponent {
   </ng-container>
   <div class="mmsg" *ngIf="msg" role="alert">{{ msg }}</div>
   <div class="mmsg" *ngIf="old">{{ 'This app is older than your server allows. Update ZEO from the Play Store.' | t }}</div>
-  <button type="submit" class="mbtn" [disabled]="busy">
+  <button type="submit" class="mbtn" [disabled]="busy" *ngIf="step !== 6 && (step !== 1 || !sso || sso.password)">
     <span class="spin" *ngIf="busy"></span>{{ label() | t }}</button>
   <button type="button" class="mlink" *ngIf="step === 4" (click)="done()">{{ 'Not now' | t }}</button>
-  <button type="button" class="mlink" *ngIf="step === 2 || step === 3" (click)="step = 1; msg = ''">{{ 'Back' | t }}</button>
+  <button type="button" class="mlink" *ngIf="step === 2 || step === 3 || step === 5 || step === 6" (click)="ssoStop(); step = 1; msg = ''; otp = ''">{{ 'Back' | t }}</button>
   <div class="mf-foot">
     <button type="button" class="mlink" style="padding:0" (click)="change()">{{ 'Change server' | t }}</button>
     <z-lang-picker variant="select" [reload]="true" [showAlways]="true"></z-lang-picker></div>
@@ -154,12 +169,13 @@ export class MLoginComponent implements OnInit {
     this.bioReady = b.ok && this.m.biometricOn();
     this.cd.detectChanges();
   }
-  label(): string { return ({ 1: 'Sign in', 2: 'Send the code', 3: 'Confirm', 4: 'Use fingerprint' } as any)[this.step]; }
+  label(): string { return ({ 1: 'Sign in', 2: 'Send the code', 3: 'Confirm', 4: 'Use fingerprint', 5: 'Confirm' } as any)[this.step]; }
 
   async submit(): Promise<void> {
     if (this.step === 1) { return this.signIn(); }
     if (this.step === 2) { return this.sendCode(); }
     if (this.step === 3) { return this.verify(); }
+    if (this.step === 5) { return this.verifyTotp(); }
     return this.enableBio();
   }
   private async run(fn: () => Promise<void>): Promise<void> {
@@ -174,6 +190,7 @@ export class MLoginComponent implements OnInit {
       try { await this.m.post('/users/validate-credentials/', body, false); }
       catch (e: any) { if (e?.status === 0 || e?.name === 'TimeoutError') { throw e; } throw new Error(T('The e-mail, employee code or password is not correct.')); }
       const r: any = await this.m.post('/users/token/', body, false);
+      if (r?.two_factor === 'totp') { this.challenge = r.challenge; this.otp = ''; this.step = 5; return; }   // v1.52.0
       this.m.storeLogin({ access: r.access, refresh: r.refresh, user_id: r.user_id });
       const u: any = await this.m.get(`/users/api/user/${r.user_id}/`, false);
       this.m.storeLogin({ access: r.access, refresh: r.refresh, user_id: r.user_id, username: u.username, email: u.email, is_ess: u.is_ess, is_superuser: u.is_superuser });
@@ -196,6 +213,19 @@ export class MLoginComponent implements OnInit {
       await this.offerBio();
     });
   }
+  challenge = '';
+  /** v1.52.0 – the authenticator app code (no e-mail code after it). */
+  verifyTotp(): Promise<void> {
+    return this.run(async () => {
+      const code = this.otp.replace(/\s/g, '');
+      if (!code) { throw new Error(T('Enter the code.')); }
+      let r: any;
+      try { r = await this.m.post('/users/2fa/login/', { challenge: this.challenge, code }, false); }
+      catch (e: any) { if (e?.status === 401) { this.step = 1; } if (e?.status === 400 || e?.status === 401 || e?.status === 403) { throw new Error(e?.error?.detail || T('The code is not correct.')); } throw e; }
+      this.m.storeLogin({ access: r.access, refresh: r.refresh, user_id: r.user_id, username: r.username, email: r.email, is_ess: r.is_ess, is_superuser: r.is_superuser });
+      await this.offerBio();
+    });
+  }
   private async offerBio(): Promise<void> {
     const b = await this.m.biometricAvailable();
     if (b.ok && !this.m.biometricOn()) { this.bioKind = T(b.kind || 'fingerprint'); this.step = 4; return; }
@@ -210,6 +240,52 @@ export class MLoginComponent implements OnInit {
   done(): Promise<void> { return this.run(() => this.m.afterLogin()); }
   bio(): Promise<void> { return this.run(async () => { await this.m.unlock(); await this.m.afterLogin(); }); }
   change(): void { this.router.navigate(['/m/connect']); }
+
+  // ---------------------------------------------------------------- v1.54.0 single sign-on
+  sso: any = null; ssoCode = ''; private ssoUrl = ''; private ssoPoll = ''; private ssoTimer: any; private ssoFor = ''; private ssoUntil = 0;
+  ssoCheck(): void {
+    clearTimeout(this.ssoTimer);
+    const email = (this.username || '').trim().toLowerCase();
+    const domain = email.includes('@') ? email.split('@')[1] : '';
+    if (!domain.includes('.')) { this.sso = null; this.ssoFor = ''; return; }
+    if (domain === this.ssoFor) { return; }
+    this.ssoTimer = setTimeout(async () => {
+      try { const r: any = await this.m.get(`/users/sso/discover/?email=${encodeURIComponent(email)}`, false); this.ssoFor = domain; this.sso = r?.sso ? r : null; }
+      catch { this.sso = null; }
+      this.cd.detectChanges();
+    }, 450);
+  }
+  ssoStart(): Promise<void> {
+    return this.run(async () => {
+      const r: any = await this.m.get(`/users/sso/start/${this.sso.provider.id}/?device=1&email=${encodeURIComponent(this.username.trim())}`, false);
+      this.ssoUrl = r.url; this.ssoPoll = r.poll; this.ssoCode = r.code; this.ssoUntil = Date.now() + 9 * 60000;
+      this.step = 6;
+      this.ssoOpen();
+      this.ssoWait();
+    });
+  }
+  ssoOpen(): void { if (this.ssoUrl) { window.open(this.ssoUrl, '_system'); } }
+  ssoStop(): void { clearTimeout(this.ssoTimer); this.ssoPoll = ''; }
+  private ssoWait(): void {
+    clearTimeout(this.ssoTimer);
+    if (!this.ssoPoll || this.step !== 6) { return; }
+    if (Date.now() > this.ssoUntil) { this.step = 1; this.msg = T('The sign-in took too long. Start again.'); this.cd.detectChanges(); return; }
+    this.ssoTimer = setTimeout(async () => {
+      let r: any = null;
+      try { r = await this.m.get(`/users/sso/device/poll/${this.ssoPoll}/`, false); }
+      catch (e: any) { if (e?.status === 404) { this.step = 1; this.msg = T('The sign-in took too long. Start again.'); this.cd.detectChanges(); return; } }
+      if (r?.ticket) {
+        await this.run(async () => {
+          const x: any = await this.m.post('/users/sso/exchange/', { ticket: r.ticket }, false);
+          this.m.storeLogin({ access: x.access, refresh: x.refresh, user_id: x.user_id, username: x.username, email: x.email, is_ess: x.is_ess, is_superuser: x.is_superuser });
+          this.ssoPoll = '';
+          await this.offerBio();
+        });
+        return;
+      }
+      this.ssoWait();
+    }, 2000);
+  }
 }
 
 /** v1.25.0 – /m/companies: a login with several companies (or several customers on ZEO Cloud). */

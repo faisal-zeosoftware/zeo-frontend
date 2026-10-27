@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -32,7 +33,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
         <div class="es-row" *ngFor="let d of docs">
           <div class="main">
             <div class="t">{{ d.type }} · {{ d.number }}</div>
-            <div class="s">Issued {{ d.issued | date:'dd MMM yyyy' }} · expires {{ d.expiry | date:'dd MMM yyyy' }}<span *ngIf="d.pending_request"> · a new copy is waiting for HR</span></div>
+            <div class="s">Issued {{ d.issued | date:'dd/MM/yyyy' }} · expires {{ d.expiry | date:'dd/MM/yyyy' }}<span *ngIf="d.pending_request"> · a new copy is waiting for HR</span></div>
           </div>
           <div class="r">
             <span class="es-tag" [ngClass]="d.badge.state">{{ d.badge.label }}</span>
@@ -45,7 +46,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
       <div class="es-h" style="margin-top:20px">Letters from HR</div>
       <div class="es-rows">
         <div class="es-row" *ngFor="let l of letters">
-          <div class="main"><div class="t">{{ l.letter_label }}</div><div class="s">{{ l.reference_no }} · {{ l.decided_at | date:'dd MMM yyyy' }}</div></div>
+          <div class="main"><div class="t">{{ l.letter_label }}</div><div class="s">{{ l.reference_no }} · {{ l.decided_at | date:'dd/MM/yyyy' }}</div></div>
           <div class="r"><button type="button" class="es-btn sm" (click)="letter(l)">Download PDF</button></div>
         </div>
         <p class="es-muted" *ngIf="!letters.length && !loading">No letters yet. <button type="button" class="es-link" (click)="router.navigate([base + '/letters'])">Request a letter</button></p>

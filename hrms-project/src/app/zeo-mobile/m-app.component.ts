@@ -93,7 +93,7 @@ export class MShellComponent implements OnInit, OnDestroy {
 <header class="band">
   <div class="band-top">
     <button type="button" class="band-co" (click)="companies()"><span>{{ company }}</span><span class="material-icons" aria-hidden="true">expand_more</span></button>
-    <a class="avatar" routerLink="/m/more" [attr.aria-label]="'More' | t"><img *ngIf="h?.employee?.photo" [src]="h.employee.photo" alt=""><ng-container *ngIf="!h?.employee?.photo">{{ initials() }}</ng-container></a>
+    <a class="avatar" routerLink="/m/more" [attr.aria-label]="'More' | t"><img *ngIf="h?.employee?.photo" [src]="m.file(h.employee.photo)" alt=""><ng-container *ngIf="!h?.employee?.photo">{{ initials() }}</ng-container></a>
   </div>
   <h1>{{ greet() }}</h1>
   <div class="sub" *ngIf="h?.employee">{{ h.employee.code }} · {{ h.employee.designation || h.employee.department }}</div>
@@ -159,7 +159,7 @@ export class MHomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void { clearInterval(this.tick); }
   private clock(): void { this.now = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); }
   async load(): Promise<void> {
-    try { this.h = this.m.home = await this.m.get('/mobile-co/api/home/'); this.msg = ''; if (!this.company) { this.company = this.m.companyName(); } }
+    try { await this.m.refreshMedia(); this.h = this.m.home = await this.m.get('/mobile-co/api/home/'); this.msg = ''; if (!this.company) { this.company = this.m.companyName(); } }
     catch (e: any) { if (e?.status === 401) { this.router.navigate(['/m']); return; } this.msg = errText(e, 'Could not load. Pull down or open again.'); }
     this.cd.detectChanges();
   }
@@ -239,7 +239,7 @@ export class MAttendanceComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void { clearInterval(this.tick); }
   async load(): Promise<void> {
-    try { this.h = this.m.home = await this.m.get('/mobile-co/api/home/'); this.msg = ''; } catch (e) { this.msg = errText(e, 'Could not load. Pull down or open again.'); }
+    try { await this.m.refreshMedia(); this.h = this.m.home = await this.m.get('/mobile-co/api/home/'); this.msg = ''; } catch (e) { this.msg = errText(e, 'Could not load. Pull down or open again.'); }
     this.cd.detectChanges();
   }
   canPunch(): boolean { const ms = this.h?.punch?.methods; return !this.h?.punch?.error && (!ms || ms.includes('mobile')); }

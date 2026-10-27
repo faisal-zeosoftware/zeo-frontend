@@ -1,3 +1,4 @@
+// v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -69,7 +70,7 @@ interface Row { project: number; project_title: string; task: number | null; tas
       <!-- week bar -->
       <div class="pc-weekbar">
         <button type="button" class="pc-btn sm" (click)="go(-7)" aria-label="Previous week">‹ Prev</button>
-        <span class="lbl">{{ week | date:'dd MMM' }} – {{ weekEnd() | date:'dd MMM yyyy' }}</span>
+        <span class="lbl">{{ week | date:'dd MMM' }} – {{ weekEnd() | date:'dd/MM/yyyy' }}</span>
         <button type="button" class="pc-btn sm" (click)="go(7)" aria-label="Next week">Next ›</button>
         <button type="button" class="pc-btn sm" (click)="thisWeek()">This week</button>
         <span class="pc-muted" *ngIf="grid">

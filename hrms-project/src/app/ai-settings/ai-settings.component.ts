@@ -69,7 +69,8 @@ import { AiProvider, AiSettings, AiSettingsApi, AiSettingsPatch, AiTestResult } 
             <ul>
               <li *ngIf="f.use_ask">{{ s.data_sent.ask }}</li>
               <li *ngIf="f.use_documents">{{ s.data_sent.documents }}</li>
-              <li *ngIf="!f.use_ask && !f.use_documents">Nothing – both features below are switched off, so the built-in AI is used.</li>
+              <li *ngIf="f.use_tickets">{{ s.data_sent.tickets }}</li>
+              <li *ngIf="!f.use_ask && !f.use_documents && !f.use_tickets">Nothing – the features below are switched off, so the built-in AI is used.</li>
             </ul>
             <p>{{ s.data_sent.general }} Every external call is logged (who, when, feature and size – never the content). If the provider cannot be reached, the built-in AI answers instead.</p>
           </div>
@@ -123,6 +124,12 @@ import { AiProvider, AiSettings, AiSettingsApi, AiSettingsPatch, AiTestResult } 
               </h3>
               <p>“Fill from document” on employee documents. The text of the document is sent, not the file. Off: the built-in reader is used.</p>
             </div>
+            <div class="os-card" [class.on]="f.use_tickets" data-use-tickets>
+              <h3>HR tickets
+                <label class="os-switch"><input type="checkbox" [(ngModel)]="f.use_tickets" aria-label="Use the external AI for HR tickets"><span class="tr"></span>{{ f.use_tickets ? 'On' : 'Off' }}</label>
+              </h3>
+              <p>Suggests the category and priority of new HR tickets from the subject and the question. Off: the built-in rules (category keywords) suggest them.</p>
+            </div>
           </div>
           <label class="ai-ack" *ngIf="f.mode === 'external' && s.mode !== 'external'">
             <input type="checkbox" [(ngModel)]="ack"> I have read what is sent to the external provider and my company allows it.
@@ -157,7 +164,7 @@ import { AiProvider, AiSettings, AiSettingsApi, AiSettingsPatch, AiTestResult } 
 })
 export class AiSettingsComponent implements OnInit {
   s: AiSettings | null = null;
-  f = { mode: 'builtin', provider: 'anthropic', api_url: '', model: '', api_key: '', clear_key: false, use_ask: true, use_documents: false, monthly_limit: 500 };
+  f = { mode: 'builtin', provider: 'anthropic', api_url: '', model: '', api_key: '', clear_key: false, use_ask: true, use_documents: false, use_tickets: false, monthly_limit: 500 };
   tested: AiTestResult | null = null;
   ack = false;
   busy = false; saving = false; testing = false; msg = ''; err = false;
@@ -179,7 +186,7 @@ export class AiSettingsComponent implements OnInit {
   private fill(s: AiSettings): void {
     this.s = s;
     this.f = { mode: s.mode, provider: s.provider, api_url: s.api_url, model: s.model, api_key: '', clear_key: false,
-      use_ask: s.use_ask, use_documents: s.use_documents, monthly_limit: s.monthly_limit };
+      use_ask: s.use_ask, use_documents: s.use_documents, use_tickets: !!s.use_tickets, monthly_limit: s.monthly_limit };
     this.saved = this.snapshot();
     this.ack = false;
   }
@@ -201,7 +208,7 @@ export class AiSettingsComponent implements OnInit {
     if (!Number.isInteger(n) || n < 1 || n > 1000000) {
       this.err = true; this.msg = 'Enter a monthly limit between 1 and 1,000,000 calls.'; return;
     }
-    const body: AiSettingsPatch = { use_ask: this.f.use_ask, use_documents: this.f.use_documents, monthly_limit: n };
+    const body: AiSettingsPatch = { use_ask: this.f.use_ask, use_documents: this.f.use_documents, use_tickets: this.f.use_tickets, monthly_limit: n };
     // a server without external AI keeps a company's earlier "external" choice unused – only "built-in" can be chosen
     if (this.f.mode === 'builtin' || this.s.server_external_allowed) { body.mode = this.f.mode; }
     if (this.s.server_external_allowed) {

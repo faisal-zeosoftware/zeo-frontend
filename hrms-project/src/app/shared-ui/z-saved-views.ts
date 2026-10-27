@@ -20,11 +20,14 @@ export interface ViewData {
   view?: string;
   vst?: any;
   collapsed?: string[];   // closed groups (by group values)
+  totals?: string;        // v1.46.0 'sum' | 'avg' | 'both'
+  rules?: ColourRule[];   // v1.46.0 conditional formatting
 }
+export interface ColourRule { col: string; op: string; value: string; color: string; scope: 'row' | 'cell'; }
 
 export interface SavedViewItem {
   id: number; screen: string; name: string; shared: boolean; mine: boolean; owner: string;
-  data: ViewData; can_edit: boolean; is_default: boolean; updated_at?: string;
+  data: ViewData; can_edit: boolean; is_default: boolean; updated_at?: string; share_groups?: number[];
 }
 
 export interface SavedViewList { screen: string; views: SavedViewItem[]; default_id: number | null; can_share: boolean; }
@@ -38,10 +41,11 @@ export class ZSavedViewsService {
   private url(p = '', q = ''): string { return `${this.api}/views/api/views/${p}?schema=${this.s}${q}`; }
 
   list(screen: string): Observable<SavedViewList> { return this.http.get<SavedViewList>(this.url('', `&screen=${encodeURIComponent(screen)}`)); }
-  create(body: { screen: string; name: string; data: ViewData; shared?: boolean; default?: boolean }): Observable<SavedViewItem> {
+  groups(): Observable<{ id: number; name: string; mine: boolean }[]> { return this.http.get<any[]>(`${this.api}/views/api/views/groups/?schema=${this.s}`); }   // v1.46.0 teams
+  create(body: { screen: string; name: string; data: ViewData; shared?: boolean; default?: boolean; share_groups?: number[] }): Observable<SavedViewItem> {
     return this.http.post<SavedViewItem>(this.url(), body);
   }
-  update(id: number, body: { name?: string; data?: ViewData; shared?: boolean }): Observable<SavedViewItem> {
+  update(id: number, body: { name?: string; data?: ViewData; shared?: boolean; share_groups?: number[] }): Observable<SavedViewItem> {
     return this.http.patch<SavedViewItem>(this.url(`${id}/`), body);
   }
   remove(id: number): Observable<any> { return this.http.delete(this.url(`${id}/`)); }

@@ -123,26 +123,30 @@ setDropdownValues(): void {
   }
 
   updateDocument(): void {
+    // v1.40.1: the renewed copy is sent only when one was chosen (an empty value is not a file), the employee goes as
+    // its id (GET shows the name in emp_id, which the API rejected), and the API's own message is shown on failure.
+    this.registerButtonClicked = true;
+    const d = this.documentData || {};
+    if (!d.emp_doc_number || !d.emp_doc_issued_date || !d.emp_doc_expiry_date || !d.document_type) { alert('Document number, issue date, expiry date and document type are required.'); return; }
+    if (d.emp_doc_expiry_date <= d.emp_doc_issued_date) { alert('The expiry date must be after the issue date.'); return; }
     const formData = new FormData();
-    formData.append('emp_doc_document', this.selectedFile || ''); // Use new file if selected, otherwise use existing file
-  
-    // Append other document data
-    formData.append('emp_doc_number', this.documentData.emp_doc_number);
-    formData.append('emp_doc_issued_date', this.documentData.emp_doc_issued_date);
-    formData.append('emp_doc_expiry_date', this.documentData.emp_doc_expiry_date);
-    formData.append('document_type', this.documentData.document_type);
-    formData.append('emp_id', this.documentData.emp_id);
+    if (this.selectedFile) { formData.append('emp_doc_document', this.selectedFile); }
+    formData.append('emp_doc_number', d.emp_doc_number);
+    formData.append('emp_doc_issued_date', d.emp_doc_issued_date);
+    formData.append('emp_doc_expiry_date', d.emp_doc_expiry_date);
+    formData.append('document_type', d.document_type);
+    if (d.emp_id_id) { formData.append('emp_id', String(d.emp_id_id)); }
   
     this.employeeService.updateCategory(this.documentData.id, formData)
       .subscribe((response) => {
         console.log('Document updated successfully', response);
         alert('Document updated successfully ');
-        window.location.reload();
-        // Redirect or perform other actions as needed
+        this.closeDialog(true);
       }, (error) => {
         console.error('Failed to update document', error);
-        alert('Failed to update document Try Again ');
-        // Handle error appropriately
+        const e = error?.error;
+        const msg = e && typeof e === 'object' ? Object.keys(e).map(k => `${k}: ${Array.isArray(e[k]) ? e[k].join(', ') : e[k]}`).join('\n') : (typeof e === 'string' ? e.slice(0, 300) : '');
+        alert('Failed to update the document.' + (msg ? '\n' + msg : ' Please try again.'));
       });
   }
   
@@ -179,8 +183,10 @@ setDropdownValues(): void {
 
 
 
-  isImage(src: string): boolean {
-    return src.toLowerCase().endsWith('.jpg') || src.toLowerCase().endsWith('.jpeg') || src.toLowerCase().endsWith('.png') || src.toLowerCase().endsWith('.gif');
+  isImage(src: string | null | undefined): boolean {
+    // v1.40.1: a document without a file (null) broke the whole dialog – the form stayed empty
+    const s = String(src || '').toLowerCase().split('?')[0];
+    return /\.(jpe?g|png|gif|webp)$/.test(s);
   }
 
   // updateCategory(): void {
@@ -207,9 +213,11 @@ setDropdownValues(): void {
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
-    this.employeeService.getEmployees(selectedSchema).subscribe(
+    // v1.40.1: the light employee list (code + name) instead of the full employee records
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
-        this.Employees = result;
+        this.Employees = Array.isArray(result) ? result : (result?.results || []);
         console.log(' fetching Companies:');
 
       },
@@ -274,9 +282,13 @@ filterEmployees() {
 
  
   ClosePopups(){
-    // this.ref.close('Closed using function');
+    this.closeDialog(false);   // v1.40.1: close the dialog (the list reloads itself) instead of reloading the page
+  }
+
+  /** v1.40.1: closes the dialog when opened as one; a page reload only when there is no dialog to close. */
+  private closeDialog(changed: boolean): void {
+    try { if (this.dialogRef) { this.dialogRef.close(changed); return; } } catch { /* not a dialog */ }
     window.location.reload();
-    
   }
 
 

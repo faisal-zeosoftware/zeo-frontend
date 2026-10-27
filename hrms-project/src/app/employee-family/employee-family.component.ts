@@ -474,7 +474,7 @@ async fillFromDocument(doc: any): Promise<void> {
   const v = await openDocFill(this.dialog, doc.selectedFile, this.DocumentTypes || [], {
     document_type: doc.document_type, emp_doc_number: doc.emp_doc_number,
     emp_doc_issued_date: doc.emp_doc_issued_date, emp_doc_expiry_date: doc.emp_doc_expiry_date,
-  });
+  }, undefined, { empId: this.emp_id, inForm: true });   // v1.53.2 also "Update the employee record"
   if (!v) { return; }
   if (v.document_type !== undefined) { doc.document_type = String(v.document_type); }
   if (v.emp_doc_number !== undefined) { doc.emp_doc_number = v.emp_doc_number; }

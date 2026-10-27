@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,21 +14,59 @@ import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
   standalone: true,
   imports: [CommonModule, FormsModule],
   styleUrls: ['../expense/expense.css', './za.css'],
-  styles: ['.wide { grid-column: 1 / -1; } .za-items .hs-scroll { overflow-x: auto; }'],   // v1.33.0: wide inputs span the form (the form grid is in the parent component)
+  // v1.33.0: wide inputs span the form (the form grid is in the parent component)
+  // v1.56.0: the form styles (.ex-form label / input) belong to the parent form, so Angular never applied them to the fields (labels beside
+  // small uneven boxes): the same layout here – label above, full-width inputs, one height, text-area label on top
+  styles: [`.wide { grid-column: 1 / -1; } .za-items .hs-scroll { overflow-x: auto; }
+    :host > label, :host > div > label.zaf { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #6b7185; min-width: 0; }
+    :host > label > input:not([type=checkbox]):not([type=radio]), :host > label > select, :host > label > textarea {
+      width: 100%; box-sizing: border-box; height: 38px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font: inherit; font-size: 13.5px;
+      font-weight: 400; color: #1d2033; background: #fff; }
+    :host > label > textarea { height: 76px; padding: 8px 10px; resize: vertical; }
+    :host > label > input[type=search] { height: 32px; font-size: 12.5px; }
+    :host > label > input:focus, :host > label > select:focus, :host > label > textarea:focus { outline: 2px solid #c9c3ff; border-color: #5b4fe0; }
+    :host > label.ck { flex-direction: row; align-items: center; gap: 8px; font-weight: 500; color: #2b2f42; font-size: 13px; }
+    :host > label.ck > input { width: 16px; height: 16px; accent-color: #5b4fe0; }
+    :host > label .zaf-h { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    :host > label .za-link { font-weight: 500; color: #5b4fe0; background: #eeedfd; border-radius: 10px; padding: 0 8px; }
+    :host > label .zaf-help { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%;
+      background: #eeedfd; color: #5b4fe0; font-size: 10px; font-weight: 700; cursor: help; }
+    .zaf-pick { position: relative; display: block; }
+    .zaf-pick > input { width: 100%; box-sizing: border-box; height: 38px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 28px 0 10px;
+      font: inherit; font-size: 13.5px; font-weight: 400; color: #1d2033; background: #fff; }
+    .zaf-pick > input:focus { outline: 2px solid #c9c3ff; border-color: #5b4fe0; }
+    .zaf-caret { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #6b7185; font-size: 11px; pointer-events: none; }
+    .zaf-list { position: absolute; z-index: 30; left: 0; right: 0; top: 40px; max-height: 240px; overflow-y: auto; background: #fff;
+      border: 1px solid #dcdfea; border-radius: 8px; box-shadow: 0 8px 24px rgba(27,22,64,.14); padding: 4px 0; display: block; }
+    .zaf-list.up { top: auto; bottom: 40px; }
+    .zaf-opt, .zaf-empty { display: block; padding: 7px 12px; font-size: 13px; font-weight: 400; color: #1d2033; cursor: pointer; }
+    .zaf-opt.hi, .zaf-opt:hover { background: #f4f5fa; } .zaf-opt.on { font-weight: 600; color: #5b4fe0; }
+    .zaf-none { color: #6b7185; } .zaf-empty { color: #6b7185; cursor: default; }
+    :host input::placeholder, :host textarea::placeholder { text-transform: none !important; color: #9aa0b4 !important; }
+    :host-context([dir=rtl]) .zaf-pick > input { padding: 0 10px 0 28px; } :host-context([dir=rtl]) .zaf-caret { right: auto; left: 10px; }`],
   template: `
 <ng-container [ngSwitch]="kind">
   <label *ngSwitchCase="'bool'" class="ck"><input type="checkbox" [ngModel]="!!value" (ngModelChange)="set($event)"> {{ f.label }}</label>
   <label *ngSwitchCase="'bool3'">{{ f.label }}
     <select [ngModel]="value === true ? 'y' : value === false ? 'n' : ''" (ngModelChange)="set($event === 'y' ? true : $event === 'n' ? false : null)">
       <option value="">–</option><option value="y">Yes</option><option value="n">No</option></select></label>
-  <label *ngSwitchCase="'textarea'" class="wide">{{ f.label }}{{ f.required ? ' *' : '' }}<textarea [ngModel]="value" (ngModelChange)="set($event)" rows="3"></textarea></label>
-  <label *ngSwitchCase="'choice'">{{ f.label }}{{ f.required ? ' *' : '' }}
+  <label *ngSwitchCase="'textarea'" class="wide"><span class="zaf-h">{{ f.label }}{{ f.required ? ' *' : '' }}<span class="zaf-help" *ngIf="helpText" [title]="helpText" [attr.aria-label]="helpText" tabindex="0">?</span></span><textarea [ngModel]="value" (ngModelChange)="set($event)" rows="3" [placeholder]="placeholder"></textarea></label>
+  <label *ngSwitchCase="'choice'"><span class="zaf-h">{{ f.label }}{{ f.required ? ' *' : '' }}<span class="zaf-help" *ngIf="helpText" [title]="helpText" [attr.aria-label]="helpText" tabindex="0">?</span></span>
     <select [ngModel]="value" (ngModelChange)="set($event)"><option [ngValue]="''">–</option>
       <option *ngFor="let c of choices" [ngValue]="c.value">{{ c.label }}</option></select></label>
-  <label *ngSwitchCase="'fk'">{{ f.label }}{{ f.required ? ' *' : '' }}<span class="za-link" *ngIf="f.link" style="margin-left:6px">{{ linkName }}</span>
-    <input *ngIf="opts.length > 15" type="search" [(ngModel)]="filter" placeholder="Search…" style="margin-bottom:4px">
-    <select [ngModel]="value" (ngModelChange)="set($event)"><option [ngValue]="null">–</option>
-      <option *ngFor="let o of filtered()" [ngValue]="o.id">{{ o.label }}</option></select></label>
+  <label *ngSwitchCase="'fk'"><span class="zaf-h">{{ f.label }}{{ f.required ? ' *' : '' }}<span class="za-link" *ngIf="f.link">{{ linkName }}</span><span class="zaf-help" *ngIf="helpText" [title]="helpText" [attr.aria-label]="helpText" tabindex="0">?</span></span>
+    <!-- v1.56.1 one picker: type to search, choose from the same box (it was a search box above a drop-down) -->
+    <span class="zaf-pick" (focusout)="pickBlur($event)">
+      <input type="text" role="combobox" autocomplete="off" [attr.aria-expanded]="open" [value]="open ? filter : selLabel()" [placeholder]="placeholder || 'Search or choose…'"
+             (focus)="openPick($event)" (click)="openPick($event)" (input)="filter = $any($event.target).value; open = true; hi = 0" (keydown)="pickKey($event)">
+      <span class="zaf-caret" aria-hidden="true">▾</span>
+      <span class="zaf-list" role="listbox" *ngIf="open" [class.up]="up">
+        <span class="zaf-opt zaf-none" role="option" (mousedown)="choose(null, $event)">–</span>
+        <span class="zaf-opt" role="option" *ngFor="let o of filtered().slice(0, 300); let i = index" [class.on]="o.id === value" [class.hi]="i === hi"
+              (mousedown)="choose(o.id, $event)">{{ o.label }}</span>
+        <span class="zaf-empty" *ngIf="!filtered().length">No match</span>
+      </span>
+    </span></label>
   <div *ngSwitchCase="'m2m'" class="wide" style="display:flex;flex-direction:column;gap:4px">
     <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
     <input type="search" [(ngModel)]="filter" placeholder="Filter…" style="height:30px;border:1px solid #dcdfea;border-radius:6px;padding:0 8px;font:inherit;font-size:12.5px">
@@ -44,6 +82,24 @@ import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
         <td><input type="number" [(ngModel)]="p.amount" (ngModelChange)="set(value)" style="width:110px"></td><td><input type="date" [(ngModel)]="p.due" (ngModelChange)="set(value)"></td>
         <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)">×</button></td></tr></table>
     <button type="button" class="hs-rlink" (click)="set((value || []).concat([{ label: '', percent: null, amount: null, due: '' }]))">+ Add instalment</button>
+  </div>
+  <div *ngSwitchCase="'table'" class="wide za-items">   <!-- v1.40.0 generic table editor (columns from the register) -->
+    <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
+    <div class="hs-scroll"><table class="hs-table" zPlain>
+      <tr><th *ngFor="let c of f.columns" [class.r]="c.type === 'number'">{{ c.label }}</th><th></th></tr>
+      <tr *ngFor="let row of value || []; let i = index">
+        <td *ngFor="let c of f.columns" [ngSwitch]="c.type">
+          <input *ngSwitchCase="'number'" type="number" step="any" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)" class="r" style="width:100px">
+          <input *ngSwitchCase="'date'" type="date" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)">
+          <input *ngSwitchCase="'bool'" type="checkbox" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)">
+          <select *ngSwitchCase="'choice'" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)"><option [ngValue]="''">–</option>
+            <option *ngFor="let o of colChoices(c)" [ngValue]="o.value">{{ o.label }}</option></select>
+          <select *ngSwitchCase="'opt'" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)" style="min-width:140px"><option [ngValue]="null">–</option>
+            <option *ngFor="let o of colOpts[c.options] || []" [ngValue]="o.id">{{ o.label }}</option></select>
+          <input *ngSwitchDefault [(ngModel)]="row[c.key]" (ngModelChange)="set(value)" style="min-width:110px">
+        </td>
+        <td><button type="button" class="ex-btn sm" (click)="value.splice(i, 1); set(value)">×</button></td></tr></table></div>
+    <button type="button" class="hs-rlink" (click)="addRow()">+ Add line</button>
   </div>
   <div *ngSwitchCase="'items'" class="wide za-items">
     <span style="font-size:12px;font-weight:600;color:#6b7185">{{ f.label }}</span>
@@ -109,8 +165,8 @@ import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
         <input [(ngModel)]="r.note" (ngModelChange)="set(value)" placeholder="Note"><input type="number" [(ngModel)]="r.cost" (ngModelChange)="set(value)" placeholder="0">
       </ng-container></div>
   </div>
-  <label *ngSwitchDefault>{{ f.label }}{{ f.required ? ' *' : '' }}
-    <input [type]="htmlType" [ngModel]="value" (ngModelChange)="set($event)" [step]="kind === 'decimal' ? 'any' : null" [readonly]="f.readonly"></label>
+  <label *ngSwitchDefault><span class="zaf-h">{{ f.label }}{{ f.required ? ' *' : '' }}<span class="zaf-help" *ngIf="helpText" [title]="helpText" [attr.aria-label]="helpText" tabindex="0">?</span></span>
+    <input [type]="htmlType" [ngModel]="value" (ngModelChange)="set($event)" [step]="kind === 'decimal' ? 'any' : null" [readonly]="f.readonly" [placeholder]="placeholder"></label>
 </ng-container>`,
 })
 export class ZaFieldComponent implements OnChanges {
@@ -137,11 +193,16 @@ export class ZaFieldComponent implements OnChanges {
     }
     if (t.startsWith('opt:')) { this.kind = 'fk'; opt = t.slice(4); }
     else if (t.startsWith('opt-multi:')) { this.kind = 'm2m'; opt = t.slice(10); }
-    else if (t === 'json') this.kind = this.f.name === 'plan' ? 'plan' : this.f.name === 'items' ? 'items' : ({ questions: 'questions', fields: 'fields', steps: 'steps' } as any)[this.f.name] || 'lines';
+    else if (t === 'json') this.kind = this.f.columns?.length ? 'table' : this.f.name === 'plan' ? 'plan' : this.f.name === 'items' && /product/i.test(this.f.help || '') ? 'items' : ({ questions: 'questions', fields: 'fields', steps: 'steps' } as any)[this.f.name] || 'lines';
     else { this.kind = t; this.choices = this.f?.choices || []; if (t === 'fk' || t === 'm2m') opt = this.f.options; }
     if (this.kind === 'results' && !this.value && this.ctx?.results) this.set(JSON.parse(JSON.stringify(this.ctx.results)));
     if (this.kind === 'checklist' && !Array.isArray(this.value)) this.set((this.ctx?.checklist || []).map((c: any, i: number) => c.done ? i : -1).filter((i: number) => i >= 0));
     if (['questions', 'fields', 'steps'].includes(this.kind)) { if (!Array.isArray(this.value)) this.set([]); return; }   // v1.36.0 People editors
+    if (this.kind === 'table') {   // v1.40.0
+      if (!Array.isArray(this.value)) this.set([]);
+      for (const c of this.f.columns) if (c.type === 'opt' && c.options && !this.colOpts[c.options]) this.colOpts[c.options] = await this.api.options(c.options).catch(() => []);
+      return;
+    }
     if (this.kind === 'items') {   // v1.33.0 quotation / sales order lines
       [this.opts, this.taxes] = await Promise.all([this.api.options('products').catch(() => []), this.api.options('tax-codes').catch(() => [])]);
       this.prods = {};
@@ -154,11 +215,47 @@ export class ZaFieldComponent implements OnChanges {
     }
   }
 
+  colOpts: Record<string, any[]> = {};   // v1.40.0 table editor
+  colChoices(c: any): any[] { return (c.options || '').split('|').map((x: string) => { const [v, l] = x.split('='); return { value: v, label: l || v }; }); }
+  addRow(): void { const row: any = {}; for (const c of this.f.columns) row[c.key] = c.type === 'bool' ? false : c.type === 'opt' ? null : c.type === 'number' ? null : ''; this.set((this.value || []).concat([row])); }
   get htmlType(): string { return ({ int: 'number', decimal: 'number', date: 'date', datetime: 'datetime-local' } as any)[this.kind] || 'text'; }
   set(v: any): void { this.value = v; this.valueChange.emit(v); }
   has(id: number): boolean { return (this.value || []).includes(id); }
   toggle(id: number): void { const v = [...(this.value || [])]; const i = v.indexOf(id); i >= 0 ? v.splice(i, 1) : v.push(id); this.set(v); }
   filtered(): any[] { const q = this.filter.toLowerCase(); return q ? this.opts.filter(o => o.label.toLowerCase().includes(q) || o.id === this.value) : this.opts; }
+
+  // v1.56.1 one picker (search and choose in one box), help icon and placeholder from the field's help
+  open = false;
+  hi = 0;
+  get helpText(): string { const h = String(this.f?.help || '').trim(); return h && !/^[\[{]/.test(h) ? h : ''; }
+  get placeholder(): string {
+    const h = this.helpText, n = String(this.f?.name || '');
+    if (this.f?.placeholder) { return this.f.placeholder; }
+    if (h && h.length <= 48) { return h; }
+    if (/email/.test(n)) { return 'name@company.ae'; }
+    if (/phone|mobile|whatsapp/.test(n)) { return '+971 50 123 4567'; }
+    if (/url|website|link/.test(n)) { return 'https://'; }
+    if (this.kind === 'decimal') { return '0.00'; }
+    return '';
+  }
+  selLabel(): string { const o = this.opts.find(x => x.id === this.value); return o ? o.label : ''; }
+  up = false;
+  openPick(ev?: Event): void {
+    if (this.open) { return; }
+    const el = ev?.target as HTMLElement | undefined;   // near the bottom of the pop-up / window: the list opens upwards
+    if (el) { const r = el.getBoundingClientRect(); const box = (el.closest('.body, .ex-modal') as HTMLElement | null)?.getBoundingClientRect();
+      const below = Math.min(window.innerHeight, box ? box.bottom : window.innerHeight) - r.bottom; this.up = below < 250 && r.top > 260; }
+    this.open = true; this.filter = ''; this.hi = Math.max(0, this.filtered().findIndex(o => o.id === this.value));
+  }
+  choose(id: any, ev?: Event): void { ev?.preventDefault(); this.set(id); this.open = false; this.filter = ''; }
+  pickBlur(ev: FocusEvent): void { const to = ev.relatedTarget as Node | null; if (!to || !(ev.currentTarget as HTMLElement).contains(to)) { this.open = false; this.filter = ''; } }
+  pickKey(ev: KeyboardEvent): void {
+    const list = this.filtered();
+    if (ev.key === 'ArrowDown') { this.open = true; this.hi = Math.min(list.length - 1, this.hi + 1); ev.preventDefault(); }
+    else if (ev.key === 'ArrowUp') { this.hi = Math.max(0, this.hi - 1); ev.preventDefault(); }
+    else if (ev.key === 'Enter' && this.open) { if (list[this.hi]) { this.choose(list[this.hi].id); } ev.preventDefault(); }
+    else if (ev.key === 'Escape' && this.open) { this.open = false; this.filter = ''; ev.preventDefault(); ev.stopPropagation(); }   // the pop-up stays open
+  }
   lines(t: string): string[] { return t.split('\n').map(x => x.trim()).filter(x => x); }
 
   // v1.33.0 line items
@@ -196,11 +293,19 @@ export class ZaFieldComponent implements OnChanges {
     <div class="body">
       <p class="hs-note info" *ngIf="reg.help && !id">{{ reg.help }}</p>
       <p class="hs-note err" *ngIf="err">{{ err }}</p>
-      <div class="hs-acts" *ngIf="dup"><button type="button" class="ex-btn sm" (click)="force = true; save()">Save anyway</button>
+      <div class="hs-acts" *ngIf="dup"><button type="button" class="ex-btn sm primary" *ngIf="dup.partner && hasPartnerField()" (click)="usePartner()">Use {{ dup.number }}</button>   <!-- v1.41.0 -->
+        <button type="button" class="ex-btn sm" (click)="force = true; save()">{{ dup.partner ? 'Save as a new partner' : 'Save anyway' }}</button>
         <button type="button" class="ex-btn sm" (click)="openDup.emit(dup)">Open {{ dup.number }}</button></div>
+      <div class="zm-credit" *ngIf="credit">   <!-- v1.44.0 credit control -->
+        <b>Credit {{ credit.hold ? 'hold' : 'limit' }} – {{ credit.name }} ({{ credit.number }})</b>
+        <ul><li *ngFor="let r of credit.reasons">{{ r }}</li></ul>
+        <div class="hs-acts"><button type="button" class="ex-btn sm" *ngIf="credit.can_force" (click)="forceCredit = true; save()">Save anyway</button>
+          <button type="button" class="ex-btn sm" (click)="statement(credit.partner)">Statement of account</button></div>
+      </div>
       <div class="ex-form">
-        <ng-container *ngFor="let f of fields">
-          <za-field [f]="f" [api]="api" [(value)]="v[f.name]" [class.wide]="['textarea','m2m','json'].includes(f.type)"></za-field>
+        <ng-container *ngFor="let f of fields; let i = index">
+          <h3 class="za-sec" *ngIf="moreAt > 0 && i === moreAt">More details</h3>   <!-- v1.56.1 section title on long forms -->
+          <za-field [f]="f" [api]="api" [(value)]="v[f.name]" [attr.data-field]="f.name" [class.wide]="['textarea','m2m','json'].includes(f.type)"></za-field>
         </ng-container>
         <label class="wide" *ngIf="!id && reg.files">Attachments<input type="file" multiple (change)="files = toList($any($event.target).files)"></label>
       </div>
@@ -211,7 +316,8 @@ export class ZaFieldComponent implements OnChanges {
     </footer>
   </div>
 </div>`,
-  styles: [':host ::ng-deep za-field.wide { grid-column: 1 / -1; } :host ::ng-deep za-field { display: contents; }'],
+  styles: [':host ::ng-deep za-field.wide { grid-column: 1 / -1; } :host ::ng-deep za-field { display: contents; }',
+    '.za-sec { grid-column: 1 / -1; margin: 10px 0 0; padding-top: 12px; border-top: 1px solid #ebedf3; font-size: 13px; font-weight: 700; color: #1b1640; }'],
 })
 export class ZaFormComponent implements OnInit {
   @Input() reg: any;
@@ -229,13 +335,24 @@ export class ZaFormComponent implements OnInit {
   busy = false;
   dup: any = null;
   force = false;
+  credit: any = null;   // v1.44.0
+  forceCredit = false;
+  private nav = inject(Router);
+  statement(id: number): void { this.closed.emit(); this.nav.navigate(['/main-sidebar/zeo-masters/r/partner', id, 'statement']); }
 
   get fields(): any[] { return (this.reg?.form || []).filter((f: any) => !(f.name in this.preset) && !(f.restricted && this.values?.restricted_hidden) && !f.readonly); }
+  /** v1.56.1: long forms (more than 10 fields) get a "More details" title after the last required field (at least the first 6 fields stay on top) */
+  get moreAt(): number {
+    const fs = this.fields; if (fs.length <= 10) { return 0; }
+    let last = -1; fs.forEach((f: any, i: number) => { if (f.required) { last = i; } });
+    const at = Math.max(6, last + 1); return at < fs.length - 2 ? at : 0;
+  }
 
   ngOnInit(): void {
     this.label = this.label || this.reg.label;
     for (const f of this.reg.form) {
       let val = this.values?.[f.name];
+      if (val === undefined && this.id === null && f.default !== undefined && f.default !== null) val = f.default;   // v1.58.0 model default
       if (val === undefined) val = f.type === 'bool' ? false : f.type === 'm2m' ? [] : f.type === 'json' ? [] : (f.type === 'fk' || f.type === 'bool3') ? null : '';
       if (val === null && ['choice', 'text', 'textarea'].includes(f.type)) val = '';
       if (f.type === 'date' && !val && !this.id && f.required) val = today();
@@ -247,18 +364,26 @@ export class ZaFormComponent implements OnInit {
 
   toList(fl: FileList | null): File[] { return fl ? Array.from(fl) : []; }
 
+  /** v1.41.0: the form belongs to a business partner (CRM contact, tenant, owner, vendor…). */
+  hasPartnerField(): boolean { return this.fields.some(f => f.name === 'partner'); }
+  /** v1.41.0: use the partner the duplicate check found – its name, phones, e-mail and ID fill this record. */
+  usePartner(): void { if (!this.dup) { return; } this.v['partner'] = this.dup.id; this.dup = null; this.save(); }
+
   async save(): Promise<void> {
-    this.err = ''; this.dup = null;
-    const miss = this.fields.filter(f => f.required && (this.v[f.name] === '' || this.v[f.name] === null || this.v[f.name] === undefined));
+    this.err = ''; this.dup = null; this.credit = null;
+    // v1.41.0: with a business partner chosen, the master fields come from the partner (the server fills them)
+    const fromPartner = !this.id && this.hasPartnerField() && !!this.v['partner'];
+    const miss = this.fields.filter(f => f.required && !(fromPartner && f.type !== 'fk' && f.type !== 'choice') && (this.v[f.name] === '' || this.v[f.name] === null || this.v[f.name] === undefined));
     if (miss.length) { this.err = miss.map(f => f.label).join(', ') + ' required.'; return; }
     this.busy = true;
     const body: any = { ...this.v, ...this.preset };
     if (this.force) body.force_duplicate = true;
+    if (this.forceCredit) body.force_credit = true;
     try {
       const r = this.id ? await this.api.patch(`r/${this.reg.kind}/${this.id}/`, body)
         : await this.api.post(`r/${this.reg.kind}/`, this.files.length ? ZaApiService.form(body, this.files) : body);
       this.saved.emit(r);
-    } catch (e: any) { this.err = ZaApiService.error(e); this.dup = e?.error?.duplicate || null; }
+    } catch (e: any) { this.err = ZaApiService.error(e); this.dup = e?.error?.duplicate || null; this.credit = e?.error?.credit || null; if (this.credit) this.err = ''; }
     this.busy = false;
   }
 }
@@ -287,7 +412,8 @@ export class ZaFormComponent implements OnInit {
     </footer>
   </div>
 </div>`,
-  styles: [':host ::ng-deep za-field.wide { grid-column: 1 / -1; } :host ::ng-deep za-field { display: contents; }'],
+  styles: [':host ::ng-deep za-field.wide { grid-column: 1 / -1; } :host ::ng-deep za-field { display: contents; }',
+    '.za-sec { grid-column: 1 / -1; margin: 10px 0 0; padding-top: 12px; border-top: 1px solid #ebedf3; font-size: 13px; font-weight: 700; color: #1b1640; }'],
 })
 export class ZaActionComponent implements OnInit {
   @Input() act: any;
@@ -341,7 +467,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
             <span class="hs-tabs2" *ngIf="boardKey || kind === 'activity'"><button type="button" [class.on]="!board && !cal" (click)="cal = false; showBoard(false)">List</button>
               <button type="button" *ngIf="boardKey" [class.on]="board" (click)="cal = false; showBoard(true)">Board</button>
               <button type="button" *ngIf="kind === 'activity'" [class.on]="cal" (click)="showCal()">Calendar</button></span>
-            <button type="button" class="ex-btn primary" *ngIf="reg.can_create" (click)="creating = true">+ New {{ term(reg.label).toLowerCase() }}</button>
+            <button type="button" class="ex-btn primary" *ngIf="reg.can_create" (click)="creating = true">+ New {{ lowerWords(term(reg.label)) }}</button><!-- v1.62.0 ui: HR / PRO stay capitals -->
           </div>
         </div>
         <div class="hs-filters">
@@ -375,10 +501,12 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
           <table class="hs-table za-list">
             <thead><tr><th *ngFor="let c of reg.cols" [class.r]="c.type === 'decimal'">{{ c.label }}</th></tr></thead>
             <tbody>
-            <tr class="click" *ngFor="let r of rows" (click)="open(r.id)">
+            <tr class="click" *ngFor="let r of rows" (click)="rowClick($event, r.id)">
               <td *ngFor="let c of reg.cols; let i = index" [class.r]="c.type === 'decimal'">
-                <span *ngIf="c.name === 'status' || c.name === 'review_status'" class="hs-b" [ngClass]="cls(r[c.name])">{{ show(r, c) }}</span>
-                <span *ngIf="c.name !== 'status' && c.name !== 'review_status'" [class.hs-code]="i === 0 && (c.name === 'number' || c.name === 'code')">{{ show(r, c) }}</span>
+                <!-- v1.38.0: choice labels, yes / no and status badges are texts of the application, so they follow the user's language (data-translate) -->
+                <span *ngIf="c.name === 'status' || c.name === 'review_status'" class="hs-b" [ngClass]="cls(r[c.name])" data-translate>{{ show(r, c) }}</span>
+                <span *ngIf="c.name !== 'status' && c.name !== 'review_status'" [class.hs-code]="i === 0 && (c.name === 'number' || c.name === 'code')"
+                      [attr.data-translate]="c.type === 'choice' || c.type === 'bool' || c.type === 'bool3' || c.choices ? '' : null">{{ show(r, c) }}</span>
               </td>
             </tr>
             </tbody>
@@ -401,9 +529,40 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
           </div>
           <div class="ex-actions">
             <button type="button" class="ex-btn" *ngIf="d.can_edit" (click)="editing = true">Edit</button>
+            <button type="button" class="ex-btn" *ngIf="reg.can_duplicate" (click)="duplicate()" title="A copy with a new number">Duplicate</button>   <!-- v1.45.0 -->
+            <button type="button" class="ex-btn" *ngIf="d.pdf && !d.totals" (click)="pdf()">{{ d.pdf }} PDF</button>   <!-- v1.40.0 -->
+            <button type="button" class="ex-btn" *ngIf="d.partner && app !== 'zeo-masters'" (click)="openPartner(d.partner)" [title]="d.partner_label || ''">Business partner</button>   <!-- v1.41.0 -->
             <button type="button" *ngFor="let a of d.actions" class="ex-btn" [class.primary]="a.style === 'primary'" [class.danger]="a.style === 'danger'" (click)="ok = ''; msg = ''; action = a">{{ a.label }}</button>
           </div>
         </div>
+      </div>
+      <!-- v1.41.0 business partner: the app records of this partner, and a possible duplicate side by side -->
+      <div class="com_list mt-3 zmst" *ngIf="app === 'zeo-masters' && d.used_in?.length">
+        <h3 class="zmst-h">Used in apps</h3>
+        <div class="zmst-chips"><button type="button" class="ex-btn sm" *ngFor="let u of d.used_in" (click)="openUse(u)" [disabled]="!u.url && !u.id">{{ u.app }} · {{ u.record }} {{ u.number }}<small *ngIf="u.roles"> – {{ u.roles }}</small></button></div>
+      </div>
+      <!-- v1.44.0 balances, credit and e-invoice readiness of a business partner -->
+      <div class="com_list mt-3 zmst" *ngIf="app === 'zeo-masters' && reg.kind === 'partner' && (d.balances || d.einvoice)">
+        <div class="ex-head" style="margin-bottom:6px"><h3 class="zmst-h">Balance{{ d.balances?.company ? ' (company ' + d.balances.company + ')' : '' }}</h3>
+          <button type="button" class="ex-btn sm" *ngIf="d.statement" (click)="openStatement(d.statement)">Statement of account</button></div>
+        <div class="zm-cards" *ngIf="d.balances">
+          <div class="zm-card"><span>Receivable</span><b>{{ money(d.balances.receivable) }}</b></div>
+          <div class="zm-card"><span>Payable</span><b>{{ money(d.balances.payable) }}</b></div>
+          <div class="zm-card" [class.bad]="d.balances.overdue > 0"><span>Overdue</span><b>{{ money(d.balances.overdue) }}</b></div>
+          <div class="zm-card" *ngIf="d.balances.open_orders"><span>Open sales orders</span><b>{{ money(d.balances.open_orders) }}</b></div>
+          <div class="zm-card" *ngIf="d.balances.credit_limit !== null && d.balances.credit_limit !== undefined" [class.bad]="d.balances.available < 0"><span>Credit available</span><b>{{ money(d.balances.available) }}</b></div>
+          <div class="zm-card bad" *ngIf="d.balances.credit_hold"><span>Credit</span><b>On hold</b></div>
+        </div>
+        <p class="zm-einv mt-2" *ngIf="d.einvoice" [class.ok]="!d.einvoice.missing.length" [class.miss]="d.einvoice.missing.length">
+          E-invoicing{{ d.einvoice.country ? ' (' + d.einvoice.country + ')' : '' }}: {{ d.einvoice.missing.length ? 'missing ' + d.einvoice.missing.join(', ') : 'ready' }}</p>
+      </div>
+      <div class="com_list mt-3 zmst" *ngIf="app === 'zeo-masters' && d.compare?.length === 2">
+        <h3 class="zmst-h">Side by side</h3>
+        <div class="hs-scroll"><table class="hs-table" zPlain>
+          <tr><th></th><th>First</th><th>Second</th></tr>
+          <tr *ngFor="let k of compareKeys"><th>{{ k[1] }}</th><td [class.zmst-same]="d.compare[0][k[0]] && d.compare[0][k[0]] === d.compare[1][k[0]]">{{ d.compare[0][k[0]] || '–' }}</td>
+            <td [class.zmst-same]="d.compare[1][k[0]] && d.compare[0][k[0]] === d.compare[1][k[0]]">{{ d.compare[1][k[0]] || '–' }}</td></tr>
+        </table></div>
       </div>
       <div class="com_list mt-4">
         <p class="hs-note ok" *ngIf="ok">{{ ok }}</p>
@@ -437,11 +596,14 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
             <div class="hs-card" *ngIf="d.steps?.length"><h3>Actions · {{ d.progress || 0 }}%</h3><div class="za-bar"><span [style.width.%]="d.progress || 0"></span></div>
               <div class="za-check" *ngFor="let x of d.steps" style="margin-top:6px"><span>{{ x.done ? '☑' : '☐' }}</span> <b>{{ x.area }}</b> – {{ x.action }} <span class="hs-muted">{{ x.kind }}{{ x.due ? ' · due ' + dd(x.due) : '' }}</span></div></div>
             <div class="hs-card" *ngIf="d.questions?.length && kind === 'survey'"><h3>Questions</h3><ol style="padding-left:18px;font-size:13.5px"><li *ngFor="let q of d.questions">{{ q.text }} <span class="hs-muted">({{ q.type }})</span></li></ol></div>
-            <div class="hs-card" *ngIf="d.items?.length"><h3>Lines</h3>
+            <div class="hs-card" *ngIf="d.items?.length && !hasTable('items')"><h3>Lines</h3>
               <div class="hs-scroll"><table class="hs-table" zPlain><tr><th>#</th><th>Product / description</th><th class="r">Qty</th><th>Unit</th><th class="r">Unit price</th><th class="r">Disc %</th><th class="r">Tax %</th><th class="r">Net</th><th class="r">Total</th></tr>
                 <tr *ngFor="let l of d.items; let i = index"><td>{{ i + 1 }}</td><td><b>{{ l.product_label }}</b><div class="hs-muted" *ngIf="l.description && l.description !== l.product_label">{{ l.description }}</div>
                   <span class="hs-b bad" *ngIf="l.below_min">below minimum price</span></td>
                   <td class="r">{{ l.qty }}</td><td>{{ l.uom }}</td><td class="r">{{ money(l.unit_price) }}</td><td class="r">{{ l.discount_pct || '' }}</td><td class="r">{{ l.tax_rate }}</td><td class="r">{{ money(l.net) }}</td><td class="r">{{ money(l.total) }}</td></tr></table></div></div>
+            <div class="hs-card" *ngFor="let t of d.tables || []"><h3>{{ t.label }}</h3>   <!-- v1.40.0 table fields -->
+              <div class="hs-scroll"><table class="hs-table" zPlain><tr><th *ngFor="let c of t.columns" [class.r]="c.type === 'number'">{{ c.label }}</th></tr>
+                <tr *ngFor="let row of t.rows"><td *ngFor="let c of t.columns" [class.r]="c.type === 'number'">{{ tv(c, row) }}</td></tr></table></div></div>
             <div class="hs-card" *ngIf="d.lines?.length"><h3>Statement lines</h3>
               <table class="hs-table" zPlain><tr><th>Date</th><th>Unit</th><th>Line</th><th class="r">Amount</th></tr>
                 <tr *ngFor="let l of d.lines"><td>{{ dd(l.date) }}</td><td>{{ l.unit }}</td><td>{{ l.text }}</td><td class="r" [style.color]="l.amount < 0 ? '#b42318' : null">{{ money(l.amount) }}</td></tr></table></div>
@@ -485,7 +647,11 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
             <div class="hs-card" *ngIf="d.sla"><h3>Service level</h3>
               <dl class="hs-kv"><dt>Respond by</dt><dd [style.color]="d.sla.response_late ? '#b42318' : null">{{ w(d.sla.response_due) }}</dd>
                 <dt>Fix by</dt><dd [style.color]="d.sla.resolve_late ? '#b42318' : null">{{ w(d.sla.resolve_due) }}</dd>
-                <dt>Cost so far</dt><dd>{{ money(d.cost_total) }}</dd></dl></div>
+                <ng-container *ngIf="d.cost_total !== undefined"><dt>Cost so far</dt><dd>{{ money(d.cost_total) }}</dd></ng-container>
+                <ng-container *ngIf="d.sla.state"><dt>Now</dt><dd [style.color]="d.sla.state.includes('late') ? '#b42318' : '#1d6b37'">{{ d.sla.state }}</dd></ng-container></dl></div>
+            <div class="hs-card" *ngIf="d.conversation?.length" data-conversation><h3>Conversation</h3>   <!-- v1.51.0 HR helpdesk -->
+              <div *ngFor="let m of d.conversation" style="padding:6px 0;border-bottom:1px solid #eef0f2;white-space:pre-wrap;font-size:13px">
+                <div class="hs-muted">{{ m.from_employee ? 'Employee' : (m.by || 'HR') }}{{ m.internal ? ' · internal note' : '' }}{{ m.kind === 'resolved' ? ' · solution' : '' }} · {{ w(m.at) }}</div>{{ m.text }}</div></div>
             <div class="hs-card" *ngIf="d.tenant"><h3>Tenant (Property)</h3><b>{{ d.tenant.name }}</b><div class="hs-muted">{{ d.tenant.lease }} · {{ d.tenant.phone }} {{ d.tenant.email }}</div></div>
             <div class="hs-card" *ngIf="d.current"><h3>Current lease</h3><b>{{ d.current.tenant }}</b><div class="hs-muted">{{ d.current.lease }} · ends {{ dd(d.current.end) }} · rent {{ money(d.current.rent) }}</div></div>
             <div class="hs-card" *ngIf="d.work_orders?.length"><h3>Maintenance</h3>
@@ -547,6 +713,7 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
   get hasStatus(): boolean { return this.reg?.cols.some((c: any) => c.name === 'status'); }
 
   ngOnInit(): void {
+    document.addEventListener('zeo-list-changed', this.listChanged);
     this.sub = this.route.paramMap.subscribe(async pm => {
       this.app = appOf(this.router.url);
       this.api = this.za.for(this.app);
@@ -575,8 +742,34 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void { this.sub?.unsubscribe(); }
+  ngOnDestroy(): void { this.sub?.unsubscribe(); document.removeEventListener('zeo-list-changed', this.listChanged); }
+  /** v1.45.0: ticking a row's checkbox (list selection for mass actions) does not open the record. */
+  rowClick(ev: Event, id: number): void {
+    const t = ev.target as HTMLElement;
+    if (t.closest('td.zl-selcell, input, label')) { return; }
+    // v1.46.0: with "edit cells in the list" on, a double-click edits the cell – wait a moment before opening the record
+    if (t.closest('table.zl-inline')) {
+      clearTimeout(this.clickTimer);
+      if ((ev as MouseEvent).detail > 1) { return; }
+      this.clickTimer = setTimeout(() => { if (!document.querySelector('input.zl-cellin')) { this.open(id); } }, 320);
+      return;
+    }
+    this.open(id);
+  }
+  private clickTimer: any = null;
+  /** v1.45.0: a mass action on the list changed rows – load them again. */
+  private listChanged = () => { if (!this.id && this.reg) { this.load(); } };
+  /** v1.45.0 Duplicate: a copy of this record with a new number; it opens. */
+  async duplicate(): Promise<void> {
+    this.msg = ''; this.ok = '';
+    try {
+      const r = await this.api.post(`r/${this.kind}/${this.id}/duplicate/`, {});
+      this.router.navigate([base(this.app), 'r', this.kind, r.id]);
+      setTimeout(() => this.ok = 'Copy made – check it and save your changes.', 600);
+    } catch (e) { this.msg = ZaApiService.error(e); }
+  }
 
+  lowerWords(s: string): string { return (s || '').split(' ').map(w => /^[A-Z0-9]{2,}$/.test(w) ? w : w.toLowerCase()).join(' '); }   // v1.62.0 ui
   term(label: string): string {
     const t = this.info?.terms || {};
     const k = (label || '').toLowerCase();
@@ -693,6 +886,15 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
   doneCount(c: any[]): number { return c.filter(x => x.done).length; }
   open(id: number): void { this.router.navigate([base(this.app), 'r', this.kind, id]); }
   goRec(kind: string, id: number): void { this.router.navigate([base(this.app), 'r', kind, id]); }
+  /** v1.41.0 business partners */
+  readonly compareKeys: [string, string][] = [['number', 'Number'], ['name', 'Name'], ['kind', 'Individual / company'], ['mobile', 'Mobile'], ['email', 'E-mail'],
+    ['id_number', 'ID number'], ['tax_id', 'Tax no.'], ['roles', 'Roles'], ['used_in', 'Used in'], ['created', 'Created']];
+  openPartner(id: number): void { this.router.navigate(['/main-sidebar/zeo-masters/r/partner', id]); }
+  openStatement(id: number): void { this.router.navigate(['/main-sidebar/zeo-masters/r/partner', id, 'statement']); }   // v1.44.0
+  openUse(u: any): void {
+    if (u?.url) { this.router.navigateByUrl(u.url); return; }   // v1.42.0 Projects, HSE, HRMS pages
+    if (u?.slug && u?.kind && u?.id) { this.router.navigate(['/main-sidebar', u.slug, 'r', u.kind, u.id]); }
+  }
   back(): void { this.router.navigate([base(this.app), 'r', this.kind]); }
   created(r: any): void { this.creating = false; this.open(r.id); }
 
@@ -721,10 +923,20 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
 
   go(url: string): void { this.router.navigateByUrl(url); }   // v1.36.0
   objKeys(o: any): string[] { return Object.keys(o || {}); }
+  hasTable(n: string): boolean { return (this.d?.tables || []).some((t: any) => t.name === n); }   // v1.40.0
+  tv(c: any, row: any): string {   // v1.40.0 a table cell on the record page
+    const v = row[c.key];
+    if (c.type === 'opt') return row[c.key + '_label'] || v || '';
+    if (c.type === 'number') return v === null || v === undefined || v === '' ? '' : money(v);
+    if (c.type === 'bool') return v ? 'Yes' : 'No';
+    if (c.type === 'date') return v ? this.dd(v) : '';
+    if (c.type === 'choice' && v) { const hit = (c.options || '').split('|').map((x: string) => x.split('=')).find((x: string[]) => x[0] === v); return hit ? (hit[1] || hit[0]) : v; }
+    return v === null || v === undefined ? '' : String(v);
+  }
 
   pdf(): void {   // v1.33.0 quotation / sales order PDF
     const name = `${this.d?.number || this.kind}.pdf`;
-    const path = this.kind === 'quotation' ? `quotation/${this.id}/pdf/` : `sales-order/${this.id}/pdf/`;
+    const path = this.kind === 'quotation' ? `quotation/${this.id}/pdf/` : this.kind === 'sales_order' ? `sales-order/${this.id}/pdf/` : `r/${this.kind}/${this.id}/pdf/`;   // v1.40.0 any register with a printed document
     this.api.file(path, name).catch(e => this.msg = ZaApiService.error(e));
   }
 

@@ -137,7 +137,7 @@ export const KIOSK_PAGE: PageConfig = {
     + 'it keeps working without a login. "Show site QR" displays a code that changes every few seconds for employees to scan with their phone.',
   columns: [
     { key: 'name', label: 'Kiosk' }, { key: 'branch_display', label: 'Branch' }, { key: 'allow_qr', label: 'QR / card', type: 'bool' },
-    { key: 'allow_pin', label: 'Code + PIN', type: 'bool' }, { key: 'allow_face', label: 'Face', type: 'bool' }, { key: 'show_site_qr', label: 'Site QR', type: 'bool' },
+    { key: 'allow_pin', label: 'Code + PIN', type: 'bool' }, { key: 'allow_face', label: 'Face', type: 'bool' }, { key: 'show_site_qr', label: 'Site QR', type: 'bool' }, { key: 'take_photo', label: 'Photo', type: 'bool' }, { key: 'self_service', label: 'Self-service', type: 'bool' },
     { key: 'last_seen', label: 'Last used', type: 'datetime' }, ACTIVE,
   ],
   fields: [
@@ -147,6 +147,8 @@ export const KIOSK_PAGE: PageConfig = {
     { key: 'allow_face', label: 'Accept face recognition', type: 'checkbox', default: false, width: 4 },
     { key: 'show_site_qr', label: 'Show a rotating site QR', type: 'checkbox', default: false, width: 4 },
     { key: 'site_qr_seconds', label: 'Site QR changes every (seconds)', type: 'number', default: 30, width: 4, showIf: m => !!m.show_site_qr },
+    { key: 'take_photo', label: 'Take a photo with every punch (front camera)', type: 'checkbox', default: false, width: 4 },   // v1.49.0
+    { key: 'self_service', label: 'Self-service: payslips, leave balance, ask for leave (ID + PIN)', type: 'checkbox', default: false, width: 4 },   // v1.51.0
     { key: 'is_active', label: 'Active', type: 'checkbox', default: true, width: 4 },
   ],
   detailFields: [{ key: 'token', label: 'Kiosk link', value: (r: any) => `${location.origin}/attendance-kiosk/${r.token}?schema=${localStorage.getItem('selectedSchema') || ''}` }],
@@ -217,6 +219,7 @@ export const CORRECTION_PAGE: PageConfig = {
     { key: 'number', label: 'Number' },   // v1.22.1 document number
     { key: 'employee_display', label: 'Employee' }, { key: 'date', label: 'Date', type: 'date' }, { key: 'kind_label', label: 'Type' },
     { key: 'proposed_in_local', label: 'Correct in' }, { key: 'proposed_out_local', label: 'Correct out' }, { key: 'reason', label: 'Reason' },
+    { key: 'reason_code', label: 'Reason code' }, { key: 'photo', label: 'Proof photo', type: 'bool' },   // v1.49.0
     { key: 'status_label', label: 'Status', type: 'tag', colorKey: 'status', tagColors: { manager: 'orange', hr: 'blue', approved: 'green', rejected: 'red', cancelled: 'grey' } },
   ],
   filters: [
@@ -235,7 +238,8 @@ export const CORRECTION_PAGE: PageConfig = {
     { key: 'attachment', label: 'Attachment (optional)', type: 'file', width: 12 },
   ],
   canEdit: false, canDelete: false,
-  detailFields: [{ key: 'manager_note', label: 'Manager note' }, { key: 'hr_note', label: 'HR note' }],
+  detailFields: [{ key: 'manager_note', label: 'Manager note' }, { key: 'hr_note', label: 'HR note' },
+    { key: 'photo', label: 'Proof photo (address)', value: (r: any) => r.photo || '' }],   // v1.49.0
   rowActions: [
     { label: 'Approve (manager)', icon: 'check', action: 'manager_approve', color: 'green', showIf: r => r.can_manager_act },
     { label: 'Reject (manager)', icon: 'close', action: 'manager_reject', color: 'red', showIf: r => r.can_manager_act, prompt: [{ key: 'note', label: 'Why is it rejected?', type: 'textarea', required: true }] },
