@@ -3,6 +3,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { rememberHttpError } from './z-toast';
+import { isSetupRequired, showSetupGate } from './z-setup-gate';   // v1.62.1
 
 /** v1.28.1 – keeps the server's reason of the last failed request so a generic "Failed …" message on any screen can
  *  show it (see withServerReason in z-toast.ts). Nothing is changed in the error itself. */
@@ -30,6 +31,9 @@ export class ZHttpErrorInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(catchError((e: HttpErrorResponse) => {
       // every failed save / delete; a failed read only when the server gave a reason of its own (not a bare 404 / HTML page)
       const b = e?.error, said = b && typeof b === 'object' && (typeof b.detail === 'string' || typeof b.error === 'string');
+      // v1.62.1 a new company that has not finished the required setup steps: the notice with "Continue the setup"
+      // (employees: the friendly notice) instead of the screen's own error message
+      if (isSetupRequired(e)) { showSetupGate(b); rememberHttpError('', 0); return throwError(() => e); }
       if (req.method !== 'GET' || said) { rememberHttpError(httpErrorText(e), e?.status || 0); }
       return throwError(() => e);
     }));

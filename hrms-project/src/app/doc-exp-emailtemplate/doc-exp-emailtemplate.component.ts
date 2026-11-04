@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { emailTemplateForm, zFormThenReload } from '../shared-ui/z-forms';   // v1.62.1
 import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
@@ -15,6 +16,7 @@ import { SessionService } from '../login/session.service';
 import { DocExpEmailtemplateEditComponent } from '../doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
 import { combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-doc-exp-emailtemplate',
   templateUrl: './doc-exp-emailtemplate.component.html',
@@ -539,6 +541,7 @@ toggleAllDesignations(): void {
 
 
 openPopus(): void {
+  zFormThenReload(emailTemplateForm('/employee/api/doc-exp-emailtemplate/', 'document expiry e-mail template', 'template_name')); return;   // v1.62.1 one shared template editor
 
   this.iscreateLoanApp = true;
 
@@ -780,7 +783,7 @@ getDesignationNames(ids: number[]): string {
 
 
 
-  deleteSelectedAssetType() {
+  async deleteSelectedAssetType() {
     const selectedEmployeeIds = this.tempEmails
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -790,7 +793,7 @@ getDesignationNames(ids: number[]): string {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Email Template?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Email Template?'))) {
       let total = selectedEmployeeIds.length;
       let completed = 0;
 
@@ -828,6 +831,7 @@ getDesignationNames(ids: number[]): string {
 
 
   openEditPopuss(selectedTemplate: any): void {
+    zFormThenReload(emailTemplateForm('/employee/api/doc-exp-emailtemplate/', 'document expiry e-mail template', 'template_name'), selectedTemplate); return;   // v1.62.1 one shared template editor
     this.dialog.open(DocExpEmailtemplateEditComponent, {
       width: '80%',
       height: '700px',
@@ -920,4 +924,10 @@ filterBranches(): any[] {
   );
 }
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { EARLY_EXIT_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
@@ -13,6 +15,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { MatOption } from '@angular/material/core';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import { CountryService } from '../country.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-early-exit-policy',
@@ -644,6 +647,7 @@ export class EarlyExitPolicyComponent {
     
     
       openPopus(): void {
+    zFormThenReload(EARLY_EXIT_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
         this.iscreateLoanApp = true;
     
         // reset branch
@@ -1107,6 +1111,7 @@ export class EarlyExitPolicyComponent {
       editAsset: any = {}; // holds the asset being edited
     
   openEditModal(policy: any): void {
+    zFormThenReload(EARLY_EXIT_FORM, { id: policy?.id }); return;   // v1.62.10 (item 175) new-design form
   
     this.editAsset = { ...policy };
   
@@ -1191,7 +1196,7 @@ export class EarlyExitPolicyComponent {
   }
     
     
-    deleteSelectedEarlyexitPolicy() {
+    async deleteSelectedEarlyexitPolicy() {
       const selectedEmployeeIds = this.LoanTypes
         .filter(employee => employee.selected)
         .map(employee => employee.id);
@@ -1201,7 +1206,7 @@ export class EarlyExitPolicyComponent {
         return;
       }
   
-      if (confirm('Are you sure you want to delete the selected Early Exit Policy?')) {
+      if ((await zConfirm('Are you sure you want to delete the selected Early Exit Policy?'))) {
   
         let total = selectedEmployeeIds.length;
         let completed = 0;
@@ -1359,4 +1364,10 @@ export class EarlyExitPolicyComponent {
     }
   
 
+  // v1.62.10 (item 175): Delete on the row – the old "delete selected" with only this row ticked
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEarlyexitPolicy();
+  }
 }

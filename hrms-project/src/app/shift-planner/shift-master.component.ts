@@ -15,6 +15,7 @@ const EMPTY = { name: '', code: '', start_time: '09:00', end_time: '18:00', brea
   shift_allowance: 0, night_allowance: 0, branch_ids: [] as number[], notes: '', segments: [] as any[], skills: [] as any[] };
 
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on this list
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-sp-shift-master',
@@ -172,7 +173,7 @@ export class SpShiftMasterComponent implements OnInit {
     this.busy = false;
   }
   async remove(s: any): Promise<void> {
-    if (!confirm(`Delete the shift “${s.name}”?`)) return;
+    if (!(await zConfirm(`Delete the shift “${s.name}”?`))) return;
     try { await this.api.delete(`shift-master/${s.id}/`); this.say('Shift deleted.'); await this.load(); } catch (e) { this.say(SpApiService.error(e), true); }
   }
   template(): void { this.api.download('template/shifts/', {}, 'shift_upload_template.csv'); }

@@ -37,12 +37,12 @@ import { COUNTRY_PACK_UI, CountryPackService } from '../shared-ui/country-pack.s
       <p class="es-msg err" *ngIf="msg">{{ msg }}</p>
       <div class="es-tabs">
         <button type="button" class="es-tab" [class.on]="!module" (click)="module = ''">All</button>
-        <button type="button" class="es-tab" *ngFor="let m of modules()" [class.on]="module === m.key" (click)="module = m.key">{{ m.label }}</button>
+        <button type="button" class="es-tab" *ngFor="let m of modules(); trackBy: trackMod" [class.on]="module === m.key" (click)="module = m.key">{{ m.label }}</button>
       </div>
       <div class="es-rows">
         <div class="es-row" *ngFor="let r of filtered()">
-          <div class="main"><div class="t">{{ r.module_label }} · {{ r.document_number || ('#' + r.id) }}</div><div class="s">{{ r.summary }} · {{ r.date | date:'dd/MM/yyyy' }}</div></div>
-          <div class="r"><span class="es-tag" [ngClass]="r.status_key">{{ r.status }}</span></div>
+          <div class="main"><div class="t">{{ r.module_label }}<ng-container *ngIf="r.document_number || r.number"> · {{ r.document_number || r.number }}</ng-container><!-- v1.62.0 people: no '#41' record ids --></div><div class="s">{{ r.summary }} · {{ r.date | date:'dd/MM/yyyy' }}</div></div>
+          <div class="r"><span class="es-tag" [ngClass]="r.status_key">{{ cap(r.status) }}</span></div>
         </div>
         <p class="es-muted" *ngIf="!loading && !rows.length">You have no requests yet.</p>
       </div>
@@ -70,6 +70,8 @@ import { COUNTRY_PACK_UI, CountryPackService } from '../shared-ui/country-pack.s
 </div>`,
 })
 export class EssClaimsComponent implements OnInit {
+  /** v1.62.0 people: one casing for status words (REJECTED / approved → Rejected / Approved) */
+  cap(v: any): string { const t = String(v ?? '').replace(/_/g, ' ').toLowerCase(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
   rows: any[] = []; types: any[] = []; module = ''; loading = false; busy = false; msg = ''; ok = ''; ferr = '';
   f: any = null; file: File | null = null; empId: number | null = null; branchId: number | null = null;
 
@@ -84,6 +86,7 @@ export class EssClaimsComponent implements OnInit {
     await this.load();
   }
 
+  trackMod(_i: number, m: { key: string }): string { return m.key; }   // v1.62.1: new objects each check – the tab click was lost
   modules(): { key: string; label: string }[] {
     const seen = new Map<string, string>();
     this.rows.forEach(r => seen.set(r.module, r.module_label));

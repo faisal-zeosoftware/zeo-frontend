@@ -5,6 +5,7 @@ import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/ro
 import { filter, Subscription } from 'rxjs';
 import { I18N_UI, i18nLang } from '../shared-ui/i18n.service';
 import { errText, T, ZeoMobileService } from './m.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const KIND: Record<string, string> = { in: 'Check in', out: 'Check out', break_out: 'Break', break_in: 'Back from break', lunch_out: 'Lunch', lunch_in: 'Back from lunch' };
 
@@ -352,7 +353,7 @@ export class MLeaveComponent implements OnInit {
     this.busy = false; this.cd.detectChanges();
   }
   async withdraw(r: any): Promise<void> {
-    if (!confirm(T('Withdraw this leave request?'))) { return; }
+    if (!(await zConfirm(T('Withdraw this leave request?')))) { return; }
     try { await this.m.del(`/calendars/api/emp-leave-request/${r.id}/`); this.ok = T('Leave request withdrawn.'); await this.load(); }
     catch (e) { this.msg = errText(e, 'The request could not be withdrawn.'); this.cd.detectChanges(); }
   }

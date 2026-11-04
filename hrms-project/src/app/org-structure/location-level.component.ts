@@ -9,6 +9,7 @@ import { TPipe } from '../shared-ui/i18n.service';
 import { FLOW_CSS } from '../zeo-flow/flow.service';
 import { ZLocationService } from '../shared-ui/z-location.service';
 import { OrgSettingsService } from './org-settings.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.30.0 – Location level: three pages of HR › Organisation.
@@ -296,7 +297,7 @@ export class LocationNumberingComponent implements OnInit {
     this.busy = false; this.cd.detectChanges();
   }
   async del(r: any): Promise<void> {
-    if (!confirm('Delete this series? Numbers already given stay on their records.')) { return; }
+    if (!(await zConfirm('Delete this series? Numbers already given stay on their records.'))) { return; }
     try { await firstValueFrom(this.http.delete(API + `location-numbering/${r.id}/`, { params: { schema: schema() } })); await this.load(); }
     catch (e) { this.msg = err(e); this.bad = true; this.cd.detectChanges(); }
   }

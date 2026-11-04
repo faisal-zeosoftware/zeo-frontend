@@ -65,7 +65,7 @@ const TILE_ICON: Record<string, string> = {
         <p class="zal-none" *ngIf="!hits.length">{{ 'Nothing found' | t }}</p>
       </div>
       <div class="zal-grid" *ngIf="!q.trim()">
-        <button type="button" *ngFor="let t of tiles(view)" class="zal-tile" [class.cur]="t.key === current" (click)="go(t.link, t.suite, t.key)">
+        <button type="button" *ngFor="let t of tiles(view); trackBy: trackTile" class="zal-tile" [class.cur]="t.key === current" (click)="go(t.link, t.suite, t.key)">
           <mat-icon aria-hidden="true">{{ t.icon }}</mat-icon><span>{{ t.label }}</span></button>
       </div>
     </div>
@@ -203,6 +203,9 @@ export class ZAppLauncherComponent implements OnInit, OnDestroy {
     }
     this.hits = out.filter(h => !h.suite || this.ss.isActive(h.suite)).slice(0, 14);
   }
+  /** v1.62.1 bug 30-10 #1: tiles() builds new objects on every check, so without trackBy each check (the mouse-down on a
+   *  tile is one) re-created the buttons and the click was lost – only the search list (a stored array) opened pages. */
+  trackTile(_i: number, t: Tile): string { return t.key + '|' + t.link; }
   first(): void { const h = this.hits[0]; if (h) { this.go(h.link, h.suite, h.appKey); } }
 
   go(link: string, suite: AppSuite | null, key: string): void {

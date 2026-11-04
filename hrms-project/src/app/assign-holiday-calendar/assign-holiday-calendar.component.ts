@@ -12,6 +12,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 
 import { combineLatest, Subscription } from 'rxjs';
+import { coveredIds, empMatches, PickFilters, relatedTo, searchHit } from '../assign-weekcalendar/assign-pick';   // v1.62.1 items 193/194
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-assign-holiday-calendar',
   templateUrl: './assign-holiday-calendar.component.html',
@@ -501,8 +503,8 @@ export class AssignHolidayCalendarComponent {
 
 
 
-  deleteAssignedWeekend(id: number): void {
-    if (confirm('Are you sure you want to delete this record?')) {
+  async deleteAssignedWeekend(id: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this record?'))) {
       const selectedSchema = this.authService.getSelectedSchema();
 
       if (selectedSchema) {
@@ -555,35 +557,7 @@ FilterEmployee() {
 
   editSearchEmployee = '';
 
-  FilterEditEmployee() {
-    const search = this.editSearchEmployee.toLowerCase().trim();
-    
-    // Get currently selected employee IDs before filtering
-    const selectedEmpIds = this.editFilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
-
-    if (!search) {
-      // No search - show all employees with their selection state preserved
-      this.editFilteredEmployees = this.Employee.map(emp => ({
-        ...emp,
-        selected: selectedEmpIds.includes(emp.id)
-      }));
-    } else {
-      // Search by first name, last name, or employee code
-      this.editFilteredEmployees = this.Employee.filter(emp =>
-        (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
-        (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search)) ||
-        (emp.emp_code && emp.emp_code.toLowerCase().includes(search))
-      ).map(emp => ({
-        ...emp,
-        selected: selectedEmpIds.includes(emp.id)
-      }));
-    }
-
-    this.editCurrentPage = 1;
-    this.updateEditPagination();
-  }
+  FilterEditEmployee() { this.applyEditEmployeeFilter(); }   // v1.62.1: search keeps the ticks (filters + search in one place)
 
   // loadWeekendCalendar(): void {
 
@@ -659,9 +633,13 @@ FilterEmployee() {
       this.FilteredEmployees
         .filter(x => x.selected)
         .map(x => x.id);
+    // v1.62.1 (items 193/194): "related to" from what was picked (weekends sent none – the assignment reached nobody;
+    // holidays always sent "branch" – a department-only assignment reached nobody)
+    const relNew = relatedTo({ branch: this.selectedBranches, department: this.selectedDepartments, category: this.selectedCategories,
+                               designation: this.selectedDesignations }, new Set<number>(selectedEmployees), this.FilteredEmployees.map((x: any) => x.id));
 
     const companyData = {
-      related_to: this.related_to,
+      related_to: relNew,
 
       holiday_model: this.holiday_model,
 
@@ -673,7 +651,7 @@ FilterEmployee() {
 
       designation: this.selectedDesignations,
 
-      employee: selectedEmployees
+      employee: relNew === 'employee' ? selectedEmployees : []
 
       // Add other form field values to the companyData object
     };
@@ -1144,7 +1122,7 @@ editPagedEmployees: any[] = [];
 editAllEmployeesSelected = false;
 
 editCurrentPage = 1;
-editItemsPerPage = 3;
+editItemsPerPage = 10;   // v1.62.1: was 3 rows a page
 
 
 
@@ -1198,18 +1176,13 @@ openEditModal(asset: any): void {
       )
       .map(x => x.id);
 
-  this.editFilteredEmployees =
-    this.Employee.map(emp => ({
-      ...emp,
-      selected: asset.employee?.some(
-        (e: any) =>
-          e == emp.id ||
-          e == emp.emp_code
-      )
-    }));
-
+  // v1.62.1 (items 193/194): the employees the assignment covers are ticked – for an assignment by branch,
+  // department, category or designation too (before only an employee-by-employee assignment showed ticks)
+  this.editSearchEmployee = '';
+  this.editOnlySel = false;
+  this.editSel = coveredIds(asset, this.Employee || []);
+  this.editFilteredEmployees = [];
   this.editCurrentPage = 1;
-
   this.applyEditEmployeeFilter();
 
   this.isEditModalOpen = true;
@@ -1217,58 +1190,28 @@ openEditModal(asset: any): void {
 
 
 applyEditEmployeeFilter(): void {
-
-  const selectedEmpIds = this.editFilteredEmployees
-    .filter(x => x.selected)
-    .map(x => x.id);
-
-  this.editFilteredEmployees =
-    this.Employee.filter(emp => {
-
-      const branchMatch =
-        this.editSelectedBranches.length === 0 ||
-        this.editSelectedBranches.some(id =>
-          emp.emp_branch_id ===
-          this.getBranchName(id)
-        );
-
-      const deptMatch =
-        this.editSelectedDepartments.length === 0 ||
-        this.editSelectedDepartments.some(id =>
-          emp.emp_dept_id ===
-          this.getDepartmentName(id)
-        );
-
-      const categoryMatch =
-        this.editSelectedCategories.length === 0 ||
-        this.editSelectedCategories.some(id =>
-          emp.emp_ctgry_id ===
-          this.getCategoryName(id)
-        );
-
-      const designationMatch =
-        this.editSelectedDesignations.length === 0 ||
-        this.editSelectedDesignations.some(id =>
-          emp.emp_desgntn_id ===
-          this.getDesignationName(id)
-        );
-
-      return (
-        branchMatch &&
-        deptMatch &&
-        categoryMatch &&
-        designationMatch
-      );
-
-    }).map(emp => ({
-      ...emp,
-      selected: selectedEmpIds.includes(emp.id)
-    }));
-
+  // v1.62.1 (items 193/194): the ticks are kept in editSel (employee ids) – filters and search only change what is shown
+  const q = (this.editSearchEmployee || '').toLowerCase().trim();
+  this.editFilteredEmployees = (this.Employee || [])
+    .filter((emp: any) => empMatches(emp, this.editPickFilters()) && searchHit(emp, q) && (!this.editOnlySel || this.editSel.has(emp.id)))
+    .map((emp: any) => ({ ...emp, selected: this.editSel.has(emp.id) }));
+  this.editAllEmployeesSelected = this.editFilteredEmployees.length > 0 && this.editFilteredEmployees.every(e => e.selected);
   this.editCurrentPage = 1;
-
   this.updateEditPagination();
 }
+
+editSel = new Set<number>();
+editOnlySel = false;
+editPickFilters(): PickFilters {
+  return { b: this.editSelectedBranches.map(id => this.getBranchName(id)), d: this.editSelectedDepartments.map(id => this.getDepartmentName(id)),
+           c: this.editSelectedCategories.map(id => this.getCategoryName(id)), g: this.editSelectedDesignations.map(id => this.getDesignationName(id)) };
+}
+editPick(emp: any, on: boolean): void {
+  if (on) { this.editSel.add(emp.id); } else { this.editSel.delete(emp.id); }
+  emp.selected = on;
+  this.editAllEmployeesSelected = this.editFilteredEmployees.length > 0 && this.editFilteredEmployees.every(e => this.editSel.has(e.id));
+}
+toggleEditOnlySel(): void { this.editOnlySel = !this.editOnlySel; this.applyEditEmployeeFilter(); }
 
 updateEditPagination(): void {
 
@@ -1289,12 +1232,18 @@ updateEditPagination(): void {
 
 updateAssetType(): void {
 
-  const selectedEmployees =
-    this.editFilteredEmployees
-      .filter(emp => emp.selected)
-      .map(emp => emp.id);
+  // v1.62.1 (items 193/194): every ticked employee (also those hidden by a filter or the search); "related to" from
+  // what was picked – one filter with all its employees ticked stays a branch / department / … assignment
+  const matching = (this.Employee || []).filter((emp: any) => empMatches(emp, this.editPickFilters())).map((emp: any) => emp.id);
+  const rel = relatedTo({ branch: this.editSelectedBranches, department: this.editSelectedDepartments, category: this.editSelectedCategories,
+                          designation: this.editSelectedDesignations }, this.editSel, matching);
+  if (!this.editSel.size) { alert('Tick at least one employee.'); return; }
+  const selectedEmployees = rel === 'employee' ? Array.from(this.editSel) : [];
 
   const payload = {
+
+    related_to: rel,
+
 
     holiday_model: this.editAsset.holiday_model,
 
@@ -1424,15 +1373,12 @@ get editPageNumbers(): number[] {
 // }
 
 toggleSelectAllEditEmployees(): void {
-
+  // v1.62.1: ticks / unticks every employee the filters show (all pages), kept in editSel
   this.editFilteredEmployees.forEach(emp => {
-
     emp.selected = this.editAllEmployeesSelected;
-
+    if (this.editAllEmployeesSelected) { this.editSel.add(emp.id); } else { this.editSel.delete(emp.id); }
   });
-
   this.updateEditPagination();
-
 }
 
 
@@ -1691,7 +1637,7 @@ isSomeEditDesignationsSelected(): boolean {
   }
 
 
-  deleteSelectedAssetType() {
+  async deleteSelectedAssetType() {
     const selectedEmployeeIds = this.AssignHolCalendar
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1701,7 +1647,7 @@ isSomeEditDesignationsSelected(): boolean {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected assign holiday calendar?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected assign holiday calendar?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1793,5 +1739,10 @@ filterBranches(): any[] {
   );
 }
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

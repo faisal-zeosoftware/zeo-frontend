@@ -1,3 +1,6 @@
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -11,13 +14,27 @@ import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-payroll-appoval-level',
   templateUrl: './payroll-appoval-level.component.html',
-  styleUrl: './payroll-appoval-level.component.css'
+  styleUrls: ['./payroll-appoval-level.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class PayrollAppovalLevelComponent {
+  // v1.62.0 talent-ops: the workflows in words; Edit / Delete on each workflow
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  lnGo(url: string): void { this.lnRouter.navigateByUrl(url); }
+  lnRows: any[] | null = null;
+  async lnLoad(): Promise<void> {   // approver names from /payroll-plus/api/loan-desk/levels/?kind=payroll
+    try { this.lnRows = (await this.ln.get('levels', { kind: 'payroll' })).rows || []; } catch { this.lnRows = []; }
+  }
+  lnEdit(id: number): void { const row = (this.approvalLevels || []).find((x: any) => x.id === id); if (row) { this.openEditModal(row); } }
+  async lnDelete(w: any): Promise<void> {
+    const what = this.ln.t('the payroll approval workflow of {0}', [(w.branches || []).join(', ') || this.ln.t('All branches')]);
+    if (await this.ln.remove('payslip-approval-levels', w.id, what)) { this.approvalLevels = (this.approvalLevels || []).filter((x: any) => x.id !== w.id); await this.lnLoad(); }
+  }
 
 
   private dataSubscription?: Subscription;
@@ -150,6 +167,8 @@ private employeeService: EmployeeService,
   ) {}
 
   ngOnInit(): void {
+
+    this.lnLoad();   // v1.62.0 talent-ops
 
      // combineLatest waits for both Schema and Branches to have a value
      this.dataSubscription = combineLatest([
@@ -648,7 +667,7 @@ removeEditLevel(index: number) {
   }
 
 
-  deleteSelectedPayrollAprlvl() {
+  async deleteSelectedPayrollAprlvl() {
     const selectedEmployeeIds = this.approvalLevels
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -658,7 +677,7 @@ removeEditLevel(index: number) {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected  Approval Level Setting ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected  Approval Level Setting ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

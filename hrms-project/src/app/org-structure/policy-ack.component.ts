@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { OrgSettingsService } from './org-settings.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.12.0 – Policy acknowledgements (HR): every company policy with how many of the employees it applies to have
@@ -114,12 +115,12 @@ export class PolicyAckComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
 
-  newVersion(): void {
-    if (confirm('Start a new version? Everyone the policy applies to must acknowledge it again.')) { this.saveDet({ new_version: true }); }
+  async newVersion(): Promise<void> {
+    if ((await zConfirm('Start a new version? Everyone the policy applies to must acknowledge it again.'))) { this.saveDet({ new_version: true }); }
   }
 
   async remind(r: any): Promise<void> {
-    if (!confirm(`Send a reminder to the ${r.pending} employee(s) who have not acknowledged “${r.title}”?`)) { return; }
+    if (!(await zConfirm(`Send a reminder to the ${r.pending} employee(s) who have not acknowledged “${r.title}”?`))) { return; }
     this.busy = true;
     try { const d = await firstValueFrom(this.http.post<any>(this.url(`policies/${r.id}/remind/`), {})); this.say(`Reminder sent to ${d.notified} employee(s).`); await this.load(); }
     catch (e: any) { this.say(e?.error?.detail || 'The reminder could not be sent.', true); }

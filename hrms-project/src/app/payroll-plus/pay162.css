@@ -179,3 +179,8 @@ table.py-t { width: 100%; border-collapse: separate; border-spacing: 0; font-siz
 .py-next{border:1px dashed #d6d9e4;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#4b5064;background:#fafafd}
 .py-next b{display:block;color:#1d2033;font-weight:600;margin-bottom:2px}
 .py-minor{display:flex;gap:14px;flex-wrap:wrap;padding-top:8px;border-top:1px solid #eef0f5;margin-top:2px;font-size:12.5px}
+/* v1.62.0 payroll – polish: words inside a tile note keep the note style; headers left-aligned on older screens */
+.py-tile small span { display: inline; text-transform: none; font-size: inherit; font-weight: inherit; letter-spacing: 0; color: inherit; }
+.py-head, .py-head .lp-desc { text-align: start; }
+.py-t td.act { white-space: nowrap; text-align: end; width: 1%; padding-inline: 6px; }
+.py-chip.sm { font-size: 11.5px; padding: 0 7px; }

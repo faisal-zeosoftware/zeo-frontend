@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -8,7 +9,7 @@ import { EmployeeProfileService } from './employee-profile.service';
 @Component({
   selector: 'z-emp-skills',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep" *ngIf="s">
@@ -59,7 +60,7 @@ export class ZEmpSkillsComponent implements OnChanges {
 @Component({
   selector: 'z-emp-history',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep">
@@ -69,8 +70,8 @@ export class ZEmpSkillsComponent implements OnChanges {
       <button type="button" class="ep-chip" *ngFor="let t of types" [class.on]="picked.has(t.key)" (click)="toggle(t.key)">{{ t.label }}</button>
     </div>
     <span class="grow"></span>
-    <label class="ep-f" style="flex-direction:row;align-items:center;gap:6px"><span>From</span><input type="date" [(ngModel)]="from" (change)="load()" style="width:150px"></label>
-    <label class="ep-f" style="flex-direction:row;align-items:center;gap:6px"><span>To</span><input type="date" [(ngModel)]="to" (change)="load()" style="width:150px"></label>
+    <label class="ep-f" style="flex-direction:row;align-items:center;gap:6px"><span>From</span><z-date-field [(value)]="from" (valueChange)="load()"></z-date-field></label>
+    <label class="ep-f" style="flex-direction:row;align-items:center;gap:6px"><span>To</span><z-date-field [(value)]="to" (valueChange)="load()"></z-date-field></label>
   </div>
   <div class="ep-empty" *ngIf="loading">Loading…</div>
   <div class="ep-empty" *ngIf="error">{{ error }}</div>
@@ -123,7 +124,7 @@ export class ZEmpHistoryComponent implements OnChanges {
 @Component({
   selector: 'z-emp-completeness',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ZDateFieldComponent],
   styleUrls: ['./employee-profile.css'],
   template: `
 <div class="ep ep-sec" *ngIf="c">

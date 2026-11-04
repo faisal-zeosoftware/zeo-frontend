@@ -7,6 +7,7 @@ import { PunchImportComponent } from './punch-import.component';
 import { AttendanceKioskComponent } from './kiosk.component';
 import { ApPhotosComponent, ApSetup149Component } from './ap-v149.component';   // v1.49.0
 import { ApKioskPinsComponent } from './ap-v151.component';   // v1.51.0
+import { T62RamadanComponent } from '../time62/ramadan.component';   // v1.67.0 (item 25a)
 import { CORRECTION_PAGE, DAY_PAGE, DEVICE_PAGE, IP_PAGE, KIOSK_PAGE, MISSING_PAGE, PUNCH_PAGE, RULE_PAGE } from './attendance-plus.config';
 
 /** Attendance Plus (v1.12.0) sub-menu: ESS pages first, then HR screens. */
@@ -25,6 +26,7 @@ export const ATTENDANCE_PLUS_MENU: ModuleMenuItem[] = [
   { path: 'networks', label: 'Office networks (IP)', icon: 'lan', model: 'attendance' },
   { path: 'photos', label: 'Punch photos', icon: 'photo_camera', model: 'attendance' },   // v1.49.0
   { path: 'overtime-law', label: 'Overtime law and reasons', icon: 'gavel', model: 'attendance' },
+  { path: 'ramadan', label: 'Ramadan hours', icon: 'nights_stay', model: 'attendance' },   // v1.67.0 (item 25a)
 ];
 
 const page = (path: string, config: any) => ({ path, component: CrudPageComponent, data: { config } });
@@ -41,6 +43,7 @@ export const ATTENDANCE_PLUS_ROUTES: Routes = [
       { path: 'photos', component: ApPhotosComponent },               // v1.49.0
       { path: 'kiosk-pins', component: ApKioskPinsComponent },        // v1.51.0
       { path: 'overtime-law', component: ApSetup149Component },
+      { path: 'ramadan', component: T62RamadanComponent },   // v1.67.0 (item 25a)
       page('corrections', CORRECTION_PAGE),
       { path: 'board', component: AttendanceBoardComponent },
       page('days', DAY_PAGE),

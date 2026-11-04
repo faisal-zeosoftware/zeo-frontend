@@ -118,7 +118,7 @@ export const EMPLOYEE_SKILL_PAGE: PageConfig = {
   columns: [
     { key: 'employee_display', label: 'Employee' }, { key: 'skill_display', label: 'Skill' }, { key: 'level', label: 'Level', value: r => levelDots(r.level) },
     { key: 'source', label: 'Source', type: 'tag', tagColors: { course: 'green', online: 'cyan', manual: 'grey', appraisal: 'blue' } },
-    { key: 'source_ref', label: 'Reference' }, { key: 'verified_by', label: 'Verified', value: r => (r.verified_by ? 'Yes' : 'Self') }, { key: 'date', label: 'Date', type: 'date' },
+    { key: 'source_ref', label: 'Reference' }, { key: 'verified_by', label: 'Verified', value: r => (r.verified_by ? 'By HR / manager' : r.source === 'course' || r.source === 'online' ? 'Course result' : r.source === 'appraisal' ? 'Appraisal' : 'Self-assessed') }, { key: 'date', label: 'Date', type: 'date' },
   ],
   filters: [{ key: 'skill', label: 'Skill', lookup: SKILLS }, { key: 'source', label: 'Source', options: opt([['course', 'Course'], ['online', 'Online'], ['manual', 'Manual'], ['appraisal', 'Appraisal']]) }],
   fields: [

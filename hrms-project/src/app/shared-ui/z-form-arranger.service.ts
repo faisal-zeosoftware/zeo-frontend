@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { i18nT } from './i18n-core';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 export interface LayoutBlock { key: string; width: string; hidden: boolean; }
 export interface FormLayout { blocks: LayoutBlock[]; sections: { before: string; title: string }[]; }
@@ -311,7 +312,7 @@ export class ZFormArrangerService {
       if (mode === 'reset' || (mode === 'cancel' && !L!.layout)) { for (const b of this.blocksOf(main)) { this.width(b, ''); this.target(b).classList.remove('zfa-hidden'); } this.restore(main); }
       if (L!.layout) { this.applyNow(L!); }
     };
-    bar.querySelector('.zfa-reset')!.addEventListener('click', () => { if (confirm(i18nT('Put the form back as built?'))) { finish('reset'); } });
+    bar.querySelector('.zfa-reset')!.addEventListener('click', async () => { if ((await zConfirm(i18nT('Put the form back as built?')))) { finish('reset'); } });
     bar.querySelectorAll('.zfa-btn')[1].addEventListener('click', () => finish('cancel'));
     bar.querySelector('.zfa-btn.primary')!.addEventListener('click', () => finish('save'));
     decorate(); sections();

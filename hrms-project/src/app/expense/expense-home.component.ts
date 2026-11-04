@@ -29,6 +29,16 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from '.
       <p class="ex-msg err" *ngIf="msg">{{ msg }}</p>
       <p class="ex-muted" *ngIf="loading">Loading…</p>
       <ng-container *ngIf="d">
+        <!-- v1.62.0 ui: HR / finance see the company first (what to reimburse, what is in approval), then their own expenses -->
+        <div class="ex-tiles" *ngIf="d.company" data-ex-company>
+          <button type="button" class="ex-tile t3" (click)="go('reports', { tab: 'approved', scope: 'all' })">
+            <div class="lbl">Company – ready to reimburse</div><div class="num">{{ d.company.to_reimburse.count }}</div><div class="amt">{{ m(d.company.to_reimburse.amount) }}</div></button>
+          <button type="button" class="ex-tile t2" (click)="go('reports', { tab: 'submitted', scope: 'all' })">
+            <div class="lbl">Company – in approval</div><div class="num">{{ d.company.in_approval.count }}</div><div class="amt">{{ m(d.company.in_approval.amount) }}</div></button>
+          <button type="button" class="ex-tile t4" (click)="go('reports', { tab: 'submitted' })">
+            <div class="lbl">Waiting for me</div><div class="num">{{ d.approvals.length }}</div><div class="amt">{{ d.approvals.length ? 'Open the list' : 'Nothing waits for you' }}</div></button>
+        </div>
+        <div class="ex-h" *ngIf="d.company" style="margin:14px 0 6px">My expenses</div>
         <div class="ex-tiles">
           <button type="button" class="ex-tile" (click)="go('expenses', { tab: 'unreported' })">
             <div class="lbl">Unreported expenses</div><div class="num">{{ d.unreported.count }}</div><div class="amt">{{ m(d.unreported.amount) }}</div></button>
@@ -86,15 +96,6 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from '.
                 <div class="track"><div class="fill" [style.width.%]="pct(c.amount)"></div></div>
               </div>
               <p class="ex-muted" *ngIf="!d.spend_by_category.length">No spend this month.</p>
-            </div>
-            <div class="ex-panel" *ngIf="d.company">
-              <div class="ex-h">Company (your branches)</div>
-              <div class="ex-row click" (click)="go('reports', { tab: 'approved', scope: 'all' })">
-                <div class="main"><div class="t">Ready to reimburse</div><div class="s">{{ d.company.to_reimburse.count }} report(s)</div></div>
-                <div class="r money">{{ m(d.company.to_reimburse.amount) }}</div></div>
-              <div class="ex-row click" (click)="go('reports', { tab: 'submitted', scope: 'all' })">
-                <div class="main"><div class="t">In approval</div><div class="s">{{ d.company.in_approval.count }} report(s)</div></div>
-                <div class="r money">{{ m(d.company.in_approval.amount) }}</div></div>
             </div>
           </div>
         </div>

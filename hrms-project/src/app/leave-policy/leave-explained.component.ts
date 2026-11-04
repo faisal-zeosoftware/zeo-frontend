@@ -16,8 +16,8 @@ import { ZRecordService } from '../shared-ui/z-record.service';
   <div class="lx-h">How my balances work <small *ngIf="d.policy">· {{ d.policy }}</small></div>
   <div class="lx-grid">
     <div class="lx-card" *ngFor="let t of d.types" [attr.data-type]="t.leave_type_id">
-      <div class="lx-top"><b>{{ t.leave_type }}</b><span class="lx-bal">{{ t.balance }} <small>days now</small></span></div>
-      <p class="lx-rule">{{ t.accrual }} · {{ t.days_per_year }} days a year<ng-container *ngIf="t.carry_forward_max !== null"> · carry forward up to {{ t.carry_forward_max }} days</ng-container>
+      <div class="lx-top"><b>{{ t.leave_type }}</b><span class="lx-bal"><!-- v1.62.4 (item 81): short leave in hours -->{{ t.balance }} <small>{{ t.unit === 'hours' ? 'hours now' : 'days now' }}</small></span></div>
+      <p class="lx-rule">{{ t.accrual }} · {{ t.days_per_year }} {{ t.unit === 'hours' ? 'hours a year' : 'days a year' }}<ng-container *ngIf="t.carry_forward_max !== null"> · carry forward up to {{ t.carry_forward_max }} days</ng-container>
         <ng-container *ngIf="t.carry_forward_expiry_months"> (use within {{ t.carry_forward_expiry_months }} months)</ng-container>
         <ng-container *ngIf="t.encashable"> · encashable{{ t.encash_max_per_year !== null ? ' up to ' + t.encash_max_per_year + ' days a year' : '' }}</ng-container></p>
       <table>

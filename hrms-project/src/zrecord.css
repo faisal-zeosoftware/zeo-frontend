@@ -435,3 +435,11 @@ button.zdo-kpi:disabled { cursor: default; opacity: 1; }
 .zau-a { padding: 1px 8px; border-radius: 10px; font-size: 11.5px; font-weight: 600; }
 .zau-a.created { background: #dcf3e6; color: #1e7a4c; } .zau-a.updated { background: #dde9fb; color: #1f5fb4; } .zau-a.deleted { background: #fde4e7; color: #b42336; }
 .zau-c { line-height: 1.35; }
+
+/* v1.62.1: e-mail status of each recipient of a message */
+.zr-rc { white-space: nowrap; }
+.zr-rc mat-icon { font-size: 15px; width: 15px; height: 15px; vertical-align: -3px; margin-inline-start: 2px; }
+.zr-rc-ok { color: #1f8a4c; }
+.zr-rc-wait { color: #8a8f98; }
+.zr-rc-bad { color: #b42318; font-weight: 500; white-space: normal; }
+.zr-rc-bad mat-icon { color: #b42318; }

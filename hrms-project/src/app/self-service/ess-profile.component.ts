@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +9,7 @@ import { CountryPackService, cpServerFields } from '../shared-ui/country-pack.se
 import { I18N_UI } from '../shared-ui/i18n.service';   // v1.15.0
 import { EssCustomFieldsComponent } from './ess-custom-fields.component';   // v1.16.0
 import { ZFieldHelpToggleComponent } from '../field-help/field-help-settings.component';   // v1.16.0
+import { ZNoEmployeeComponent } from '../people62/z-no-employee.component';   // v1.62.0 people
 
 interface FormField { key: string; label: string; type: string; policy: string; value: any; options?: any[]; source?: string; readonly?: boolean; }
 interface FormState { title: string; intro: string; group: string; action: 'create' | 'update' | 'delete'; recordId: number | null;
@@ -17,7 +19,7 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
 @Component({
   selector: 'app-ess-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ...I18N_UI, EssCustomFieldsComponent, ZFieldHelpToggleComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, ...I18N_UI, EssCustomFieldsComponent, ZFieldHelpToggleComponent, ZNoEmployeeComponent, ZDateFieldComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -34,7 +36,8 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
         </div>
       </div>
     </div>
-    <div class="com_list mt-4">
+    <z-no-employee *ngIf="noEmp" what="This page shows your own employee file: personal details, documents, family and bank."></z-no-employee>
+    <div class="com_list mt-4" *ngIf="!noEmp">
       <div class="es-legend">
         <span><mat-icon style="color:#0f766e">edit</mat-icon> You can change it</span>
         <span><mat-icon style="color:#3730a3">outbox</mat-icon> Change needs HR approval</span>
@@ -134,7 +137,7 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
 <!-- shared input -->
 <ng-template #input let-f="f" let-vals="vals">
   <ng-container [ngSwitch]="kind(f)">
-    <input *ngSwitchCase="'date'" type="date" class="es-input" [(ngModel)]="vals[f.key]" [disabled]="f.readonly">
+    <z-date-field *ngSwitchCase="'date'" [(value)]="vals[f.key]" [disabled]="f.readonly"></z-date-field>
     <input *ngSwitchCase="'number'" type="number" class="es-input" [(ngModel)]="vals[f.key]" [disabled]="f.readonly">
     <label *ngSwitchCase="'bool'" style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" [(ngModel)]="vals[f.key]" [disabled]="f.readonly"> Yes</label>
     <select *ngSwitchCase="'select'" class="es-input" [(ngModel)]="vals[f.key]" [disabled]="f.readonly">
@@ -193,6 +196,7 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
 </div>`,
 })
 export class EssProfileComponent implements OnInit {
+  noEmp = false;   // v1.62.0 people
   p: any = null; loading = false; msg = ''; ok = ''; busy = false;
   editing = ''; inline: Record<string, any> = {};
   form: FormState | null = null; viewing: any = null;
@@ -210,7 +214,9 @@ export class EssProfileComponent implements OnInit {
   async load(): Promise<void> {
     this.loading = true;
     try { this.raw = await this.api.get('profile/'); this.p = cpServerFields(this.raw, this.cp); this.msg = ''; }   // v1.14.0: no Emirates ID / MOHRE / emirate for other countries
-    catch (e: any) { this.msg = EssApiService.error(e, 'Could not load your profile.'); }
+    catch (e: any) {
+      if (e?.status === 403 || e?.status === 404) { this.noEmp = true; this.msg = ''; } else { this.msg = EssApiService.error(e, 'Could not load your profile.'); }   // v1.62.0 people
+    }
     this.loading = false; this.cd.detectChanges();
     const g = this.route.snapshot.queryParamMap.get('group');
     if (g) setTimeout(() => document.getElementById('g-' + g)?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -225,6 +231,9 @@ export class EssProfileComponent implements OnInit {
     if (this.isEmpty(f.display)) return '—';
     if (f.type === 'bool') return f.display ? 'Yes' : 'No';
     if (f.type === 'file') return String(f.display).split('/').pop() || '';
+    // v1.62.0 people: dates dd/mm/yyyy (date of birth showed 1988-10-10)
+    const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(String(f.display));
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`;
     return String(f.display);
   }
   kind(f: FormField): string {

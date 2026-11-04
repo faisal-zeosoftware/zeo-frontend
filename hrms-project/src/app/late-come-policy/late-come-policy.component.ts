@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { LATE_COMING_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -12,6 +14,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { MatOption } from '@angular/material/core';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import { CountryService } from '../country.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
   
 
 @Component({
@@ -756,6 +759,7 @@ fetchEmployees(schema: string, branchIds: number[]): void {
   
   
     openPopus(): void {
+    zFormThenReload(LATE_COMING_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
       this.iscreateLoanApp = true;
   
       // reset branch
@@ -1219,6 +1223,7 @@ fetchEmployees(schema: string, branchIds: number[]): void {
     editAsset: any = {}; // holds the asset being edited
   
 openEditModal(policy: any): void {
+    zFormThenReload(LATE_COMING_FORM, { id: policy?.id }); return;   // v1.62.10 (item 175) new-design form
 
   this.editAsset = { ...policy };
 
@@ -1303,7 +1308,7 @@ updateLateComingPolicy() {
 }
   
   
-  deleteSelectedLateComeingPolicy() {
+  async deleteSelectedLateComeingPolicy() {
     const selectedEmployeeIds = this.LoanTypes
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1313,7 +1318,7 @@ updateLateComingPolicy() {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Late Coming Policy?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Late Coming Policy?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1473,4 +1478,10 @@ filterBranches(): any[] {
 }
   
 
+  // v1.62.10 (item 175): Delete on the row – the old "delete selected" with only this row ticked
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedLateComeingPolicy();
+  }
 }

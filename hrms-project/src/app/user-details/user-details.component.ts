@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserEditComponent } from '../user-edit/user-edit.component';
 import { DesignationService } from '../designation-master/designation.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-user-details',
@@ -258,7 +259,7 @@ openEditEmpPopuss(employeeId: number, ):void{
 }
 
 
- deleteSelectedEmployees() {
+ async deleteSelectedEmployees() {
     const selectedEmployeeIds = this.Users.filter(employee => employee.selected).map(employee => employee.id);
   
     if (selectedEmployeeIds.length === 0) {
@@ -266,7 +267,7 @@ openEditEmpPopuss(employeeId: number, ):void{
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected user?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected user?'))) {
       selectedEmployeeIds.forEach(userId => {
         this.UserMasterService.markUserAsDeleted(userId).subscribe(
           () => {
@@ -315,8 +316,8 @@ showEmployeeDetails(employeeId: number, companysec: any): void {
 }
 
 
-onDeleteEmployee(DeptId: number): void {
-if (confirm('Are you sure you want to delete this employee?')) {
+async onDeleteEmployee(DeptId: number): Promise<void> {
+if ((await zConfirm('Are you sure you want to delete this employee?'))) {
     this.UserMasterService.deleteUser(DeptId).subscribe(
         () => {
             console.log('User deleted successfully');

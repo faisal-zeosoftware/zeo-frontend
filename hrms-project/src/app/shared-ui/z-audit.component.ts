@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
+import { presentText } from './z-present';   // v1.62.1 ui
 
 /** v1.46.0 Settings › Audit log: every change of every record in the company – who, when, what, from where. */
 @Component({
@@ -57,7 +58,7 @@ export class ZAuditComponent implements OnInit {
     this.loading = false; this.cd.detectChanges();
   }
   more(): void { this.load(true); }
-  show(v: any): string { return v === null || v === undefined || v === '' ? '–' : typeof v === 'object' ? JSON.stringify(v) : String(v); }
+  show(v: any): string { return v === null || v === undefined || v === '' ? '–' : typeof v === 'object' ? JSON.stringify(v) : (presentText(String(v)) ?? String(v)); }   // v1.62.1 ui: Yes / No, dd/mm/yyyy
   async csv(): Promise<void> {
     const q = new URLSearchParams(this.params({ export: 'csv', limit: 5000 })).toString();
     const res = await fetch(`${this.rec.api}/chatter/api/audit/?${q}`, { headers: { Authorization: 'Bearer ' + (localStorage.getItem('auth_token') || '') } });

@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { ROUND_OFF_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -10,6 +12,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import {combineLatest, Subscription } from 'rxjs';
 import { CountryService } from '../country.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-attendance-policy',
@@ -823,6 +826,7 @@ if (this.branches.length === 1) {
   iscreateLoanApp: boolean = false;
   
     openPopus(): void {
+    zFormThenReload(ROUND_OFF_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
     this.iscreateLoanApp = true;
 
 
@@ -864,7 +868,7 @@ toggleSelectAllEmployees(): void {
 
 }
 
-deleteSelectedAttendanceRoundoff(): void {
+async deleteSelectedAttendanceRoundoff(): Promise<void> {
 
   const selectedPolicyIds = this.policies
     .filter((policy: any) => policy.selected)
@@ -875,7 +879,7 @@ deleteSelectedAttendanceRoundoff(): void {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Attendance Round Off policy?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Attendance Round Off policy?'))) {
 
     let total = selectedPolicyIds.length;
     let completed = 0;
@@ -918,6 +922,7 @@ isEditModalOpen = false;
 editAsset: any = {};
 
 openEditModal(policy: any): void {
+    zFormThenReload(ROUND_OFF_FORM, { id: policy?.id }); return;   // v1.62.10 (item 175) new-design form
   this.editAsset = { ...policy };
   this.isEditModalOpen = true;
 }
@@ -963,5 +968,10 @@ updateAttendanceroundoff(): void {
   );
 }
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAttendanceRoundoff();
+  }
 }

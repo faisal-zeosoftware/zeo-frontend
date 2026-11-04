@@ -14,6 +14,7 @@ import { SessionService } from '../login/session.service';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { LeaveService } from '../leave-master/leave.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-salary-structure',
@@ -346,8 +347,8 @@ loadBranches(callback?: Function): void {
 
 
 
-  deleteAssignedWeekend(id: number): void {
-    if (confirm('Are you sure you want to delete this record?')) {
+  async deleteAssignedWeekend(id: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this record?'))) {
       const selectedSchema = this.authService.getSelectedSchema();
 
       if (selectedSchema) {
@@ -583,7 +584,7 @@ onCheckboxChange(employee:number) {
 
 
 
-deleteSelectedAssetType() { 
+async deleteSelectedAssetType() { 
 const selectedEmployeeIds = this.AssignWeekCalendar
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -593,7 +594,7 @@ alert('No assign week off selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected assign week off?')) {
+if ((await zConfirm('Are you sure you want to delete the selected assign week off?'))) {
 
  let total = selectedEmployeeIds.length;
 let completed = 0;
@@ -698,7 +699,13 @@ isSomeBranchesSelected(): boolean {
 
 
 currentPage: number = 1;
-itemsPerPage: number = 50;   // v1.40.1: one API page of the popup's employee list
+itemsPerPage: number = 10;   // v1.40.1: one API page of the popup's employee list; v1.62.1 (item 202): 10 a page (was 50)
+empRangeText(): string {
+  if (!this.empTotal) { return ''; }
+  const a = (this.currentPage - 1) * this.itemsPerPage + 1, b = Math.min(this.currentPage * this.itemsPerPage, this.empTotal);
+  return `${a}–${b} / ${this.empTotal}`;
+}
+setEmpPageSize(n: number): void { this.itemsPerPage = Number(n) || 10; this.currentPage = 1; this.updatePagination(); }
 pagedEmployees: any[] = [];
 
 
@@ -1302,8 +1309,8 @@ editSalaryStructure(doc: any): void {
 
 
 // ---------- DELETE ----------
-deleteSalaryStructure(doc: any): void {
-  const confirmDelete = confirm(`Are you sure you want to delete "${doc.name}"?`);
+async deleteSalaryStructure(doc: any): Promise<void> {
+  const confirmDelete = (await zConfirm(`Are you sure you want to delete "${doc.name}"?`));
   if (!confirmDelete) {
     return;
   }

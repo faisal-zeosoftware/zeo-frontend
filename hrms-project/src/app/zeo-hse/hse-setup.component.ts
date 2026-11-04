@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HseApiService, day, stClass } from './hse-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 interface Col { k: string; l: string; t?: string; opts?: any[]; }
 
@@ -326,8 +327,8 @@ export class HseSetupComponent implements OnInit {
   }
 
   async install(code: string, primary = false): Promise<void> {
-    if (!confirm(primary ? 'Change the HSE industry to this pack? Its content is added (to review); nothing you already have is removed. The company master does not change.'
-                         : 'Add this pack? It only adds what is missing; everything added is marked "to review".')) return;
+    if (!(await zConfirm(primary ? 'Change the HSE industry to this pack? Its content is added (to review); nothing you already have is removed. The company master does not change.'
+                         : 'Add this pack? It only adds what is missing; everything added is marked "to review".'))) return;
     try { const r = await this.api.post('pack/', { industry: code, primary }); this.ok = 'Added: ' + Object.entries(r.added).filter(([, n]) => n).map(([k, n]) => `${n} ${k.replace(/_/g, ' ')}`).join(', '); await this.setTab('pack'); }
     catch (e) { this.msg = HseApiService.error(e); }
   }

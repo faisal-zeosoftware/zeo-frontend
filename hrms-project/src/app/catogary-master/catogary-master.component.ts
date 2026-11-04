@@ -1,4 +1,5 @@
 import { Component,OnInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { zFormThenReload, CATEGORY_FORM } from '../shared-ui/z-forms';   // v1.62.1
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -17,6 +18,7 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import { combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 interface Permission {
@@ -318,13 +320,11 @@ if (this.userId !== null) {
   
 
     openPopuss(){
-      this.dialog.open(CatogaryCrationComponent,{
-        width:'80%',
-        height:'700px',
-      })
+      zFormThenReload(CATEGORY_FORM);   // v1.62.1 new-design form (was CatogaryCrationComponent)
     }
 
     openEditPopuss(categoryId: number):void{
+    zFormThenReload(CATEGORY_FORM, { id: categoryId }); return;   // v1.62.1 new-design form
       const dialogRef = this.dialog.open(CatogaryEditComponent, {
         width:'80%',
         height:'500px',
@@ -362,7 +362,7 @@ if (this.userId !== null) {
     // You can add any additional logic if needed.
   }
 
-deleteSelectedEmployees() { 
+async deleteSelectedEmployees() { 
   const selectedEmployeeIds = this.Catogaries
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -372,7 +372,7 @@ deleteSelectedEmployees() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Category?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Category?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -534,10 +534,10 @@ closeUploadForm(): void {
       });
     }
 
-
-  
-
-  
-    }
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEmployees();
+  }
+}

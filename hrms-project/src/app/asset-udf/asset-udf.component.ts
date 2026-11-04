@@ -9,6 +9,7 @@ import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 import { DesignerAdapter } from '../shared-ui/field-types';
 import { assetFieldAdapter } from '../shared-ui/asset-field-adapter';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-asset-udf',
@@ -194,8 +195,8 @@ if (this.userId !== null) {
       }
     }
 
-        deleteCustomFieldFam(fieldId: number): void {
-      if (confirm('Are you sure you want to delete this custom field?')) {
+        async deleteCustomFieldFam(fieldId: number): Promise<void> {
+      if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
         this.EmployeeService.deleteAssetCustomfiled(fieldId).subscribe(
           (response) => {
             console.log('Field deleted successfully', response);

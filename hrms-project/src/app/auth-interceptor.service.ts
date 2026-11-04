@@ -99,6 +99,18 @@ export class AuthInterceptor implements HttpInterceptor {
   private withToken(request: HttpRequest<any>, token: string | null): HttpRequest<any> {
     const h: any = { 'X-Zeo-Idle': String(idleSeconds()) };
     if (token) { h.Authorization = `Bearer ${token}`; }
+    // v1.62.0 ui: the branches ticked in the top bar – only when the user narrowed the choice and only for reads of the
+    // company they belong to; the server applies them within the user's own branches (it can only narrow)
+    try {
+      const nb = JSON.parse(localStorage.getItem('zeoBranchNarrow') || 'null');
+      if (token && request.method === 'GET' && nb && Array.isArray(nb.ids) && nb.ids.length && nb.schema === localStorage.getItem('selectedSchema')
+          && request.url.startsWith(environment.apiBaseUrl)) { h['X-Branch-Ids'] = nb.ids.join(','); }
+    } catch { /* storage off */ }
+    // v1.62.1: a master's own register (and the organisation screens) lists its inactive records too; every other screen
+    // gets only active ones for new choices
+    if (token && request.method === 'GET' && /\/(department-master|designation-master|catogary-master|branch-master|org-structure|company-master|location-master)\b/.test(location.pathname)) {
+      h['X-Include-Inactive'] = '1';
+    }
     return request.clone({ setHeaders: h });
   }
 

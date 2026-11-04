@@ -1,5 +1,6 @@
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +15,7 @@ import { CountryPackService } from '../shared-ui/country-pack.service';   // v1.
 @Component({
   selector: 'app-ess-letters',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -100,8 +101,8 @@ import { CountryPackService } from '../shared-ui/country-pack.service';   // v1.
       <div class="wide"><label>Purpose</label><input [(ngModel)]="f.purpose" placeholder="e.g. car loan, visa application, opening a bank account"></div>
       <div *ngIf="needs('bank_name')"><label>Bank</label><input [(ngModel)]="f.bank_name" [placeholder]="bankPh"></div>
       <div *ngIf="needs('destination')"><label>Destination</label><input [(ngModel)]="f.destination" placeholder="Country of travel"></div>
-      <div *ngIf="needs('travel_from')"><label>Travel from</label><input type="date" [(ngModel)]="f.travel_from"></div>
-      <div *ngIf="needs('travel_to')"><label>Return on</label><input type="date" [(ngModel)]="f.travel_to"></div>
+      <div *ngIf="needs('travel_from')"><label>Travel from</label><z-date-field [(value)]="f.travel_from"></z-date-field></div>
+      <div *ngIf="needs('travel_to')"><label>Return on</label><z-date-field [(value)]="f.travel_to"></z-date-field></div>
     </div>
     <div class="foot">
       <button type="button" class="es-btn" (click)="f = null">Cancel</button>

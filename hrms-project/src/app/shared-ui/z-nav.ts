@@ -3,7 +3,8 @@ export const MS = '/main-sidebar/';
 
 export function recordUrl(model: string, id: number | string): string {
   if (model === 'EmpManagement.emp_master') { return `${MS}sub-sidebar/employee-details/${id}/details`; }
-  if (model === 'PayrollManagement.PayrollRun') { return `${MS}salary-options/payroll-details/${id}`; }
+  // v1.62.1 (tester 30-10 item 191): a run opens the run page – payroll-details/<id> is a payslip page
+  if (model === 'PayrollManagement.PayrollRun') { return `${MS}salary-options/payroll-run/${id}`; }
   return `${MS}report-options/rec/${model}/${id}`;
 }
 

@@ -16,6 +16,8 @@ export const NEEDS_PAGE: PageConfig = {
   endpoint: API + 'needs/',
   model: 'trainingneed',
   intro: 'Needs come from appraisals (development needs), PIPs, new joiners, expiring certificates and manager / self requests.',
+  // v1.62.0 talent-ops: the open needs first (the first page showed only completed ones)
+  sortRows: (a: any, b: any) => (['completed', 'closed', 'cancelled'].includes(a.status) ? 1 : 0) - (['completed', 'closed', 'cancelled'].includes(b.status) ? 1 : 0),
   columns: [
     { key: 'employee', label: 'Employee' },
     { key: 'department', label: 'Dept' },
@@ -55,8 +57,8 @@ export const COURSE_PAGE: PageConfig = {
     { key: 'mode', label: 'Mode' },
     { key: 'duration_hours', label: 'Hours' },
     { key: 'course_type', label: 'Type', type: 'tag', tagColors: { mandatory: 'red', mandatory_role: 'orange', optional: 'grey' } },
-    { key: 'cost_per_head', label: 'Cost / head (AED)', type: 'money' },
-    { key: 'certificate_validity_months', label: 'Validity (months)' },
+    { key: 'cost_per_head', label: 'Cost / head', value: (r: any) => +r.cost_per_head ? 'AED ' + Number(r.cost_per_head).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'Free' },   // v1.62.0 talent-ops
+    { key: 'certificate_validity_months', label: 'Certificate validity', value: (r: any) => +r.certificate_validity_months ? `${r.certificate_validity_months} months` : 'No expiry' },   // v1.62.0 talent-ops
   ],
   filters: [{ key: 'course_type', label: 'Type', options: opt([['mandatory', 'Mandatory'], ['mandatory_role', 'Mandatory (role)'], ['optional', 'Optional']]) }],
   fields: [
@@ -194,7 +196,11 @@ export const RESULT_PAGE: PageConfig = {
   endpoint: API + 'results/',
   model: 'participantresult',
   intro: 'Record attendance, pre / post test and feedback per confirmed participant. Pass = attendance ≥ 80% and post-test ≥ course pass mark.',
-  columns: RESULT_COLUMNS.concat([{ key: 'attendance_percent', label: 'Attendance %' } as any, { key: 'trainer_rating', label: 'Trainer rating', type: 'stars' } as any]),
+  // v1.62.0 talent-ops: the session and course of each result (rows of two sessions looked like duplicates); % on the attendance
+  columns: [
+    { key: 'nomination_display', label: 'Session · course', value: (r: any) => String(r.nomination_display || '').replace(/^\S+\s+@\s+/, '').replace(' - ', ' · ') } as any,
+  ].concat(RESULT_COLUMNS as any[], [{ key: 'attendance_percent', label: 'Attendance', value: (r: any) => r.attendance_percent === null || r.attendance_percent === undefined ? '–' : `${r.attendance_percent}%` } as any,
+    { key: 'trainer_rating', label: 'Trainer rating', type: 'stars' } as any]),
   filters: [{ key: 'session', label: 'Session', lookup: { endpoint: API + 'sessions/', label: (r: any) => `${r.code} - ${r.course_title}` } }],
   fields: [
     { key: 'nomination', label: 'Participant', type: 'select', required: true, createOnly: true, width: 12,

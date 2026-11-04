@@ -18,6 +18,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-employee-salary',
@@ -551,7 +552,7 @@ updateEmployeeSalary(): void {
 
 
     
-  deleteSelectedEmpsalary() { 
+  async deleteSelectedEmpsalary() { 
     const selectedEmployeeIds = this.EmployeeSalarycomponent
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -561,7 +562,7 @@ updateEmployeeSalary(): void {
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected employee salary ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected employee salary ?'))) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1148,10 +1149,10 @@ exportEmployeeSalaryExcel(): void {
 
 }
 
-
-
-
-
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEmpsalary();
+  }
 }

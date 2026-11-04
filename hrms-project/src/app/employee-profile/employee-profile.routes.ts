@@ -15,7 +15,7 @@ export const EMPLOYEE_PROFILE_ROUTES: Routes = [
   {
     path: 'employee-master-tools',
     component: ModuleOptionsComponent,
-    data: { title: 'Employee master', base: '/main-sidebar/employee-master-tools', menu: EMPLOYEE_PROFILE_MENU },
+    data: { title: 'Employee master', base: '/main-sidebar/employee-master-tools', menu: EMPLOYEE_PROFILE_MENU, appMenu: true },   // v1.62.0 people: keep the Employees menu
     children: [
       { path: '', redirectTo: 'probation', pathMatch: 'full' },
       { path: 'probation', component: ProbationDueComponent },

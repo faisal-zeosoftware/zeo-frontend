@@ -10,6 +10,8 @@ import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 import { APP_VERSION } from '../shared-ui/version';
 import { ZConsoleEnterpriseComponent } from './console-enterprise.component';   // v1.28.0
 import { ZCloudDatabasesComponent } from './databases.component';
+import { ZJobProgressComponent } from '../shared-ui/z-job-progress.component';   // v1.62.1 progress of the moves
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 const API = () => `${environment.apiBaseUrl}/cloud/api/console`;
@@ -24,7 +26,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 @Component({
   selector: 'app-cloud-console',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ZCloudDatabasesComponent, ZConsoleEnterpriseComponent, ...I18N_UI],
+  imports: [CommonModule, FormsModule, RouterModule, ZCloudDatabasesComponent, ZConsoleEnterpriseComponent, ZJobProgressComponent, ...I18N_UI],
   styleUrls: ['../leave-policy/leave-policy.css', './cloud.css', './console.css'],
   template: `
 <div class="cc-page" data-no-help>
@@ -148,10 +150,16 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
               <td>{{ x.where | t }}<small *ngIf="x.db_alias" data-no-translate>{{ x.db_label || x.db_alias }}</small>
                 <button type="button" class="cc-link" *ngIf="!x.db_alias && c.plan.hosting === 'own' && !moving(x)" (click)="move(x, 'own')" [disabled]="busy">{{ 'Move to own database' | t }}</button>
                 <button type="button" class="cc-link" *ngIf="x.db_alias && !moving(x)" (click)="move(x, 'shared')" [disabled]="busy">{{ 'Move to shared cloud' | t }}</button>
-                <small class="cc-moving" *ngIf="moving(x) as m">{{ 'Moving' | t }}: {{ m.step | t }}</small></td>
+                <small class="cc-moving" *ngIf="moving(x) as m">{{ 'Moving' | t }}: {{ m.percent || 0 }}%</small></td>
               <td><span class="zk-st trial" *ngIf="x.extra">{{ 'extra' | t }}</span><span class="zk-st none" *ngIf="x.archived">{{ 'archived' | t }}</span></td>
               <td><button type="button" class="lp-btn" (click)="archive(x)" [disabled]="busy">{{ (x.archived ? 'Restore' : 'Archive') | t }}</button></td></tr>
           </table></div></div>
+          <!-- v1.62.1 one progress card per moving company: %, steps with seconds, time taken / left -->
+          <div class="zk-card cc-moveprog" *ngIf="moveCards().length"><h2>{{ 'Moving now' | t }}</h2>
+            <z-job-progress *ngFor="let m of moveCards(); trackBy: byId" [compact]="true" [job]="m" [title]="moveTitle(m)"
+              [doneText]="'The company is open in the new place.'" [note]="'The company is closed while it moves.'">
+              <button type="button" class="lp-btn" (click)="watched.delete(m.id)">{{ 'Close' | t }}</button>
+            </z-job-progress></div>
           <div class="zk-card" *ngIf="moves.length"><h2>{{ 'Moves' | t }}</h2><div class="zk-scroll"><table class="zk-table">
             <tr><th>{{ 'When' | t }}</th><th>{{ 'Company' | t }}</th><th>{{ 'From' | t }}</th><th>{{ 'To' | t }}</th><th>{{ 'Checked' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
             <ng-container *ngFor="let m of moves">
@@ -339,12 +347,17 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
       r.forEach(m => m.open = open.has(m.id));
       const was = this.moves.some(m => m.state === 'running' || m.state === 'waiting');
       this.moves = r;
+      r.forEach(m => { if (m.state === 'running' || m.state === 'waiting') { this.watched.add(m.id); } });
       const now = r.some(m => m.state === 'running' || m.state === 'waiting');
-      if (now && !this.mpoll) { this.mpoll = setInterval(() => this.loadMoves(), 3000); }
+      if (now && !this.mpoll) { this.mpoll = setInterval(() => this.loadMoves(), 2000); }
       if (!now && this.mpoll) { clearInterval(this.mpoll); this.mpoll = null; }
       if (was && !now) { this.show(await firstValueFrom(this.http.get(`${API()}/customers/${this.c.id}/`))); }
     } catch { /* keep the list */ }
   }
+  watched = new Set<number>();   // v1.62.1 moves with a progress card (running, or finished after being seen running – until Close)
+  moveCards(): any[] { return this.moves.filter(m => this.watched.has(m.id)); }
+  moveTitle(m: any): string { return T('Moving {0} to {1}', m.company, m.target ? (m.to_label || m.target) : T('Shared cloud')); }
+  byId(_i: number, m: any): any { return m.id; }
   moving(x: any): any { return this.moves.find(m => m.company_id === x.id && (m.state === 'running' || m.state === 'waiting')) || null; }
   moveClass(s: string): string { return ({ done: 'active', running: 'trial', waiting: 'trial', failed: 'suspended', rolled_back: 'none' } as any)[s] || ''; }
   moveState(m: any): string { return T(({ done: 'Done', running: 'Running', waiting: 'Waiting', failed: 'Failed – nothing changed', rolled_back: 'Moved back' } as any)[m.state] || m.state); }
@@ -352,16 +365,16 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   async move(x: any, to: string): Promise<void> {
     const q = to === 'own' ? T('Move {0} to the own database? The company is closed for a minute or two while it moves.', x.name)
                            : T('Move {0} to the shared cloud? The company is closed for a minute or two while it moves.', x.name);
-    if (!confirm(q)) { return; }
+    if (!(await zConfirm(q))) { return; }
     this.busy = true;
-    try { await firstValueFrom(this.http.post(`${API()}/customers/${this.c.id}/moves/`, { company: x.id, to })); this.say(T('Move started – {0}.', x.name), false); await this.loadMoves(); }
+    try { const r: any = await firstValueFrom(this.http.post(`${API()}/customers/${this.c.id}/moves/`, { company: x.id, to })); if (r?.id) { this.watched.add(r.id); } this.msg = ''; await this.loadMoves(); }
     catch (e) { this.say(err(e, T('The move could not start.')), true); }
     this.busy = false;
   }
   async back(m: any): Promise<void> {
-    if (!confirm(T('Move {0} back to {1}, with its current data?', m.company, T(m.from) + (m.source ? ' ' + m.source : '')))) { return; }
+    if (!(await zConfirm(T('Move {0} back to {1}, with its current data?', m.company, T(m.from) + (m.source ? ' ' + m.source : ''))))) { return; }
     this.busy = true;
-    try { await firstValueFrom(this.http.post(`${API()}/moves/${m.id}/`, { back: true })); this.say(T('Moving back – {0}.', m.company), false); await this.loadMoves(); }
+    try { const r: any = await firstValueFrom(this.http.post(`${API()}/moves/${m.id}/`, { back: true })); if (r?.id) { this.watched.add(r.id); } this.msg = ''; await this.loadMoves(); }
     catch (e) { this.say(err(e, T('Not moved back.')), true); }
     this.busy = false;
   }
@@ -375,7 +388,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   }
   async changePlan(): Promise<void> {
     const p = this.plans.find(x => x.code === this.cp.plan);
-    if (!confirm(T('Change {0} to {1}? {2}', this.c.name, p?.name || '', this.cpNote()))) { return; }
+    if (!(await zConfirm(T('Change {0} to {1}? {2}', this.c.name, p?.name || '', this.cpNote())))) { return; }
     this.busy = true;
     try {
       const r: any = await firstValueFrom(this.http.post(`${API()}/customers/${this.c.id}/change-plan/`, { plan: this.cp.plan }));
@@ -441,7 +454,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   }
   async act(action: string): Promise<void> {
     const sure: Record<string, string> = { suspend: 'Suspend this account? Its companies become read-only.', cancel: 'Cancel this account? Sign-in to its companies is closed; the data is kept 90 days.' };
-    if (sure[action] && !confirm(T(sure[action]))) { return; }
+    if (sure[action] && !(await zConfirm(T(sure[action])))) { return; }
     this.busy = true;
     try { this.show(await firstValueFrom(this.http.post(`${API()}/customers/${this.c.id}/action/`, { action }))); this.say(T('Done.'), false); }
     catch (e) { this.say(err(e, T('Not done.')), true); }

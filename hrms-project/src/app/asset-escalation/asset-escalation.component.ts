@@ -1,4 +1,7 @@
 
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter, ActivatedRoute as LnRoute } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -10,14 +13,32 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-asset-escalation',
   templateUrl: './asset-escalation.component.html',
-  styleUrl: './asset-escalation.component.css'
+  styleUrls: ['./asset-escalation.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 
 export class AssetEscalationComponent {
+  // v1.62.0 talent-ops: the rules grouped per asset type; 'Auto Level' types (no approver) are listed on one line
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  private lnRoute = lnInject(LnRoute);
+  lnGo(p: string): void { this.lnRouter.navigate(['..', p], { relativeTo: this.lnRoute }); }
+  get lnAuto(): string[] {
+    return (this.GeneralReq || []).filter((l: any) => (l.role || '').toLowerCase() === 'auto level' && !l.approver).map((l: any) => l.asset_type_name || '–');
+  }
+  get lnTypes(): any[] {
+    const by: any = {};
+    for (const l of (this.GeneralReq || [])) {
+      if ((l.role || '').toLowerCase() === 'auto level' && !l.approver) { continue; }
+      const k = l.asset_type_name || this.ln.t('All asset types');
+      (by[k] = by[k] || { type: k, branches: '', levels: [] }).levels.push(l);
+    }
+    return Object.values(by).map((g: any) => ({ ...g, levels: g.levels.sort((a: any, b: any) => a.level - b.level) }));
+  }
 
   
   private dataSubscription?: Subscription;
@@ -376,7 +397,7 @@ nextPage(): void {
       }
       
       
-      deleteSelectedGeneralReq() { 
+      async deleteSelectedGeneralReq() { 
         const selectedEmployeeIds = this.GeneralReq
           .filter(employee => employee.selected)
           .map(employee => employee.id);
@@ -386,7 +407,7 @@ nextPage(): void {
           return;
         }
       
-        if (confirm('Are you sure you want to delete the selected General Request?')) {
+        if ((await zConfirm('Are you sure you want to delete the selected General Request?'))) {
       
           let total = selectedEmployeeIds.length;
           let completed = 0;
@@ -416,7 +437,7 @@ nextPage(): void {
         }
       }
       
-      resetSelectedGeneralReq() {
+      async resetSelectedGeneralReq() {
         const selectedIds = this.GeneralReq
           .filter(item => item.selected)
           .map(item => item.id);
@@ -426,7 +447,7 @@ nextPage(): void {
           return;
         }
       
-        if (confirm('Are you sure you want to reset the selected General Request(s)?')) {
+        if ((await zConfirm('Are you sure you want to reset the selected General Request(s)?'))) {
       
           let total = selectedIds.length;
           let completed = 0;
@@ -451,8 +472,8 @@ nextPage(): void {
         }
       }
       
-      resetSingleReq(id: number) {
-        if (confirm("Are you sure you want to reset this rule?")) {
+      async resetSingleReq(id: number) {
+        if ((await zConfirm("Are you sure you want to reset this rule?"))) {
           this.employeeService.resetAssetEsc(id).subscribe(
             () => {
               alert("Reset successful!");

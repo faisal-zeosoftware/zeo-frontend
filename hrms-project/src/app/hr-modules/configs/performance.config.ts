@@ -143,18 +143,19 @@ export const OUTCOME_PAGE: PageConfig = {
   itemName: 'Appraisal outcome',
   endpoint: API + 'outcomes/',
   model: 'appraisaloutcome',
-  intro: 'Generated from calibrated ratings. Approve, then push to payroll: the Basic salary is updated and the change is kept in salary revision history.',
+  // v1.62.0 talent-ops: the order of the process in the intro; an outcome is approvable only on locked ratings that did not change since
+  intro: 'Made from the locked (calibrated) ratings with Generate outcomes on the Calibration page. Approve each outcome, then push it to payroll: the Basic salary is updated and the change is kept in the salary revision history. An outcome whose rating changed after it was made must be generated again.',
   columns: [
-    { key: 'employee_name', label: 'Employee' },
-    { key: 'employee_code', label: 'Code' },
-    { key: 'department', label: 'Dept' },
+    { key: 'employee_name', label: 'Employee', value: (r: any) => `${r.employee_name || ''} (${r.employee_code || ''})` },
     { key: 'final_rating', label: 'Rating' },
     { key: 'current_basic', label: 'Current basic', type: 'money' },
     { key: 'increment_percent', label: 'Increment', type: 'percent' },
     { key: 'new_basic', label: 'New basic', type: 'money' },
     { key: 'bonus_amount', label: 'Bonus', type: 'money' },
     { key: 'effective_date', label: 'Effective', type: 'date' },
-    { key: 'status', label: 'Status', type: 'tag', tagColors: OUTCOME_STATUS },
+    { key: 'status', label: 'Status', type: 'tag', tagColors: OUTCOME_STATUS,
+      value: (r: any) => r.status === 'pending' && r.ready === 'stale' ? 'Rating changed – generate again' : r.status === 'pending' && r.ready === 'not_locked' ? 'Ratings not locked yet' : (r.status_label || r.status),
+      colorKey: 'status' },
   ],
   filters: [
     { key: 'cycle', label: 'Cycle', lookup: { endpoint: API + 'cycles/', label: 'name' } },
@@ -169,13 +170,13 @@ export const OUTCOME_PAGE: PageConfig = {
   ],
   canEdit: r => r.status !== 'pushed',
   rowActions: [
-    { label: 'Approve', action: 'approve', color: 'green', showIf: r => r.status === 'pending' || r.status === 'rejected' },
+    { label: 'Approve', action: 'approve', color: 'green', showIf: r => (r.status === 'pending' || r.status === 'rejected') && (r.ready === undefined || r.ready === 'ready') },
     { label: 'Reject', action: 'reject', color: 'red', showIf: r => r.status === 'pending', prompt: [{ key: 'remarks', label: 'Reason', type: 'textarea', required: true }] },
     { label: 'Push to payroll', action: 'push_to_payroll', color: 'blue', showIf: r => r.status === 'approved', confirm: 'Update the Basic salary in payroll?' },
   ],
   toolbarActions: [
-    { label: 'Approve all', icon: 'done_all', action: 'approve_all', color: 'green', body: (_r, f) => ({ cycle: f['cycle'] }), confirm: 'Approve all pending outcomes for the selected cycle?' },
-    { label: 'Push all to payroll', icon: 'sync', action: 'push_all', color: 'blue', body: (_r, f) => ({ cycle: f['cycle'] }), confirm: 'Push all approved outcomes of the selected cycle to payroll?' },
+    { label: 'Approve all', icon: 'done_all', action: 'approve_all', color: 'green', body: (_r, f) => ({ cycle: f['cycle'] }), confirm: 'Approve every pending outcome of the selected cycle? Outcomes whose rating changed since they were made are left out.' },
+    { label: 'Push all to payroll', icon: 'sync', action: 'push_all', color: 'blue', body: (_r, f) => ({ cycle: f['cycle'] }), confirm: 'Push every approved outcome of the selected cycle to payroll? The Basic salary of each employee is updated from the effective date.' },
   ],
 };
 

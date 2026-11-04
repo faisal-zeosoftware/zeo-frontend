@@ -13,6 +13,7 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-airticket-escalation',
@@ -394,7 +395,7 @@ nextPage(): void {
     }
     
     
-    deleteSelectedGeneralReq() { 
+    async deleteSelectedGeneralReq() { 
       const selectedEmployeeIds = this.GeneralReq
         .filter(employee => employee.selected)
         .map(employee => employee.id);
@@ -404,7 +405,7 @@ nextPage(): void {
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected General Request?')) {
+      if ((await zConfirm('Are you sure you want to delete the selected General Request?'))) {
     
         let total = selectedEmployeeIds.length;
         let completed = 0;
@@ -434,7 +435,7 @@ nextPage(): void {
       }
     }
     
-    resetSelectedGeneralReq() {
+    async resetSelectedGeneralReq() {
       const selectedIds = this.GeneralReq
         .filter(item => item.selected)
         .map(item => item.id);
@@ -444,7 +445,7 @@ nextPage(): void {
         return;
       }
     
-      if (confirm('Are you sure you want to reset the selected General Request(s)?')) {
+      if ((await zConfirm('Are you sure you want to reset the selected General Request(s)?'))) {
     
         let total = selectedIds.length;
         let completed = 0;
@@ -469,8 +470,8 @@ nextPage(): void {
       }
     }
     
-    resetSingleReq(id: number) {
-      if (confirm("Are you sure you want to reset this rule?")) {
+    async resetSingleReq(id: number) {
+      if ((await zConfirm("Are you sure you want to reset this rule?"))) {
         this.employeeService.resetAirticketEsc(id).subscribe(
           () => {
             alert("Reset successful!");

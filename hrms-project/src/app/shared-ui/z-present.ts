@@ -104,7 +104,7 @@ export function presentText(t: string, opt: { cell?: boolean } = {}): string | n
   if (/^[a-z0-9][a-z0-9._-]*_[a-z0-9._-]+$/i.test(s) && USERS.has(lower)) { return USERS.get(lower)!.name; }
   const pre = SCHEMA_PREFIX || schemaPrefix();
   if (pre && USERS.size && lower.includes(pre) && /^[a-z0-9]+_$/.test(pre)) {   // "Manager: gdis_samuel" → "Manager: Samuel …"
-    const r = s.replace(new RegExp('(?<![\\w.-])' + pre + '[a-z0-9._-]+', 'gi'), x => USERS.get(x.toLowerCase())?.name || x);
+    const r = s.replace(new RegExp('(?<![\\w.-])' + pre + '[a-z0-9._-]+(?![a-z0-9._-]*@)', 'gi')   /* v1.62.10: never inside an e-mail address */, x => USERS.get(x.toLowerCase())?.name || x);
     if (r !== s) { return r; }
   }
   if (pre && lower.startsWith(pre)) { return null; }   // a sign-in name not (yet) known stays as it is – never "Gdis rajesh"
@@ -191,7 +191,7 @@ export function paintColumns(heads: HTMLElement[], cols: PCol[], trs: HTMLTableR
     const money = forced === 'money' || !forced && !c.skip && texts.length > 0 && (strong || weak) && !NOT_MONEY_HEAD.test(label) && numeric / texts.length >= 0.8
       && texts.some(x => /\d/.test(x));
     const num = !money && (forced === 'number' || !forced && c.kind === 'number' && !CODE_HEAD.test(label));
-    const kind = money ? 'money' : num ? 'num' : (c.kind === 'date' || forced === 'date') ? 'date' : forced === 'code' ? 'short' : forced === 'text' ? '' : c.idx === empIdx && max <= 34 ? 'person' : (!c.skip && max > 0 && max <= 16) ? 'short' : (!c.skip && avg > 48) ? 'long' : '';
+    const kind = money ? 'money' : num ? 'num' : (c.kind === 'date' || forced === 'date') ? 'date' : forced === 'code' ? 'short' : forced === 'text' ? '' : (c.idx === empIdx || /(employee|approver|manager|requested by|owner|assignee|name)/i.test(label)) && max <= 34 ? 'person' : (!c.skip && max > 0 && max <= 16) ? 'short' : (!c.skip && avg > 48) ? 'long' : '';
     setKind(th, kind);
     if (money) {
       let tag = th.querySelector(':scope > .zl-cur') as HTMLElement | null;
@@ -251,4 +251,58 @@ export function personCell(td: HTMLElement, name: string, code: string): void {
   }
   if (span.textContent !== name) { span.textContent = name; }
   td.classList.add('zl-hascode');
+}
+
+// ------------------------------------------------------------------ v1.62.0 ui: sign-in names anywhere on the page
+// Drop-downs (approver pickers of the old approval-level forms), cards and record pages that print a sign-in name
+// (gdis_rajesh) show the person's name. Only exact sign-in names of the company are replaced; inputs keep their values.
+let peopleObs: MutationObserver | null = null;
+const ISO_IN_TEXT = /(?<![\w\/.:-])(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::\d{2}(?:\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?)?(?![\w\/:-])/g;
+function fixNode(n: Node): void {
+  const pre = SCHEMA_PREFIX || schemaPrefix();
+  const visit = (t: Text) => {
+    const d = t.data;
+    if (!d || d.length > 600) { return; }
+    const hasUser = !!pre && USERS.size > 0 && d.toLowerCase().includes(pre);
+    const hasIso = /\d{4}-\d{2}-\d{2}/.test(d);
+    if (!hasUser && !hasIso) { return; }
+    const el = t.parentElement;
+    if (!el || el.closest('textarea, input, select, [contenteditable], code, pre, script, style, [data-raw], .fc, z-date-field')) { return; }
+    let r = d;
+    if (hasUser) { r = r.replace(new RegExp('(?<![\\w.@-])' + pre + '[a-z0-9._-]+(?![a-z0-9._-]*@)', 'gi')   /* v1.62.10: never inside an e-mail address */, x => USERS.get(x.toLowerCase())?.name || x); }
+    // v1.62.0 ui: an ISO date written into a sentence ("… on 2025-06-01.") reads dd/mm/yyyy
+    if (hasIso) {
+      r = r.replace(ISO_IN_TEXT, (x, y, mo, dd, hh, mi, tz) => {
+        if (+mo < 1 || +mo > 12 || +dd < 1 || +dd > 31) { return x; }
+        if (hh !== undefined && tz) { const dt = new Date(x.replace(' ', 'T')); if (!isNaN(dt.getTime())) { return dmy(dt, true); } }
+        return `${dd}/${mo}/${y}` + (hh !== undefined ? ` ${hh}:${mi}` : '');
+      });
+    }
+    if (r !== d) { ORIG.set(t, [d, r]); t.data = r; }
+  };
+  if (n.nodeType === 3) { visit(n as Text); return; }
+  if (n.nodeType !== 1) { return; }
+  const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+  let x: Node | null;
+  const list: Text[] = [];
+  while ((x = w.nextNode())) { list.push(x as Text); }
+  list.forEach(visit);
+}
+/** Start once the user list is known (main-sidebar); again = re-scan the page. */
+export function startPeoplePass(): void {
+  if (typeof document === 'undefined') { return; }
+  // outside Angular's zone: the observer's own work must not start change detection (in the zone each pass started a
+  // tick, the tick changed the page again and the browser tab stopped answering – asset escalation, calendar)
+  const root = (window as any).Zone?.root;
+  if (root && (window as any).Zone?.current !== root) { root.run(() => startPeoplePass()); return; }
+  fixNode(document.body);
+  if (peopleObs) { return; }
+  let q: Node[] = []; let raf = 0;
+  peopleObs = new MutationObserver(recs => {
+    for (const r of recs) {
+      if (r.type === 'characterData') { q.push(r.target); } else { r.addedNodes.forEach(a => q.push(a)); }
+    }
+    if (!raf) { raf = requestAnimationFrame(() => { raf = 0; const l = q; q = []; l.forEach(n => { if (n.isConnected) { fixNode(n); } }); }); }
+  });
+  peopleObs.observe(document.body, { childList: true, subtree: true, characterData: true });
 }

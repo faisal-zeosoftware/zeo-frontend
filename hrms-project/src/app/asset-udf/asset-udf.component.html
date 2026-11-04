@@ -2,37 +2,26 @@
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
 
+        <!-- v1.62.0 talent-ops: a titled card with what the page is for, one primary action and an empty state (was an empty white box) -->
         <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1> Asset </h1>
+            <div class="udf-head">
+                <div>
+                    <h1 class="page-title">Asset form – extra fields</h1>
+                    <p class="udf-desc">Fields of your own on every asset record, next to the standard ones – for example IMEI, licence key or insurance policy. The form designer arranges them with help text, examples and rules.</p>
                 </div>
-
-                <div class="col-md-3">
-                    
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" class="btn-Create btn btn-success "  (click)="openFamFieldModal()" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
-                        <!-- v1.16.0: the asset form's one designer (every field type, help text, example, rules) -->
-                        <button type="button" class="btn btn-primary ms-2" (click)="designing = true" *ngIf="hasAddPermission || hasEditPermission">Open form designer</button>
-
-            
-                    </div>
+                <div class="udf-actions">
+                    <button type="button" class="udf-btn" (click)="openFamFieldModal()" *ngIf="hasAddPermission" data-udf-add>+ Quick add a field</button>
+                    <button type="button" class="udf-btn primary" (click)="designing = true" *ngIf="hasAddPermission || hasEditPermission" data-udf-designer>Open form designer</button>
                 </div>
             </div>
-           
-           
-
         </div>
 
-        
-
         <div class="com_list mt-4" >
+            <div class="udf-empty" *ngIf="!custom_fields_fam?.length" data-udf-empty>
+                <b>No extra field yet</b>
+                The asset form has its standard fields only. Add a field to record e.g. the IMEI of a phone or the licence key of software – with Quick add a field, or in the form designer.
+            </div>
+            <div class="udf-cols" *ngIf="custom_fields_fam?.length"><span>Field</span><span>Type</span></div>
 
             
 <div class="calendar_view_sec mt-3" *ngFor="let field of custom_fields_fam">
@@ -122,7 +111,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Add new fields for employee family</h2>
+          <h2>Add new fields for the asset form</h2>   <!-- v1.62.1 (as item 200): copied heading of the employee family form -->
           <hr>
         </div>
 

@@ -14,16 +14,17 @@ import { I18N_UI } from './i18n.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
   <span class="zdf" [class.bad]="bad">
-    <input type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" [value]="text" [attr.aria-label]="label | t"
+    <input type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" [value]="text" [attr.aria-label]="label | t" [disabled]="disabled"
            (input)="typed($any($event.target).value)" (blur)="blur()" (keydown.enter)="enter.emit()" data-zdf>
-    <button type="button" class="zdf-cal" (click)="openPicker()" [attr.aria-label]="'Pick from the calendar' | t" [title]="'Pick from the calendar' | t" tabindex="-1">
+    <button type="button" class="zdf-cal" [disabled]="disabled" (click)="openPicker()" [attr.aria-label]="'Pick from the calendar' | t" [title]="'Pick from the calendar' | t" tabindex="-1">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
     </button>
-    <input #native type="date" class="zdf-native" tabindex="-1" aria-hidden="true" [value]="value || ''" (change)="picked($any($event.target).value)">
+    <input #native type="date" class="zdf-native" tabindex="-1" aria-hidden="true" data-native-date [attr.min]="min || null" [attr.max]="max || null" [value]="value || ''" (change)="picked($any($event.target).value)">
   </span>`,
   styles: [`
   .zdf { position: relative; display: inline-flex; align-items: center; height: 32px; border: 1px solid #dfe1ea; border-radius: 7px; background: #fff; }
   .zdf.bad { border-color: #d92d20; }
+  .zdf input[disabled] { color: #8a8fa3; background: #f6f7fb; }
   .zdf:focus-within { border-color: #5b4ff5; box-shadow: 0 0 0 3px rgba(91,79,245,.12); }
   .zdf input[type=text] { width: 96px; height: 30px; border: 0 !important; box-shadow: none !important; border-radius: 7px; margin: 0; background: transparent; padding: 0 4px 0 9px; font-size: 12.5px; color: #1d2033;
     font-variant-numeric: tabular-nums; outline: none; direction: ltr; text-align: start; }
@@ -34,6 +35,9 @@ import { I18N_UI } from './i18n.service';
 export class ZDateFieldComponent implements OnChanges {
   @Input() value: string | null = '';
   @Input() label = 'Date';
+  @Input() disabled = false;          // v1.62.0 people: read-only fields and the calendar's limits
+  @Input() min: string | null = null;
+  @Input() max: string | null = null;
   @Output() valueChange = new EventEmitter<string>();
   @Output() enter = new EventEmitter<void>();
   @ViewChild('native') native?: ElementRef<HTMLInputElement>;

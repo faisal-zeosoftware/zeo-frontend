@@ -146,7 +146,7 @@
           </li>
 
           <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
-            <li *ngFor="let noti of AllNotifications; let i = index">
+            <li *ngFor="let noti of AllNotifications | slice:0:notiLimit; let i = index; trackBy: notiTrack">   <!-- v1.62.0 payroll: the newest 100, rows kept between reloads (1,500+ rows were rebuilt 11 times per load and hung Arabic pages) -->
               <a
                 class="dropdown-item notification-item"
                 href="javascript:void(0)"
@@ -229,6 +229,8 @@
               </a>
               <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-0" />
             </li>
+          <li *ngIf="AllNotifications.length > notiLimit" class="noti-more">   <!-- v1.62.0 payroll: the older ones on request -->
+              <button type="button" class="dropdown-item" style="text-align:center;font-weight:600;color:#4338ca" (click)="$event.stopPropagation(); notiLimit = AllNotifications.length" data-noti-all>{{ 'Show all {0} notifications' | t:AllNotifications.length }}</button></li>
           </ng-container>
 
           <li class="notification-footer" *ngIf="AllNotifications.length > 0">
@@ -261,7 +263,7 @@
         <div
           class="Company_pro company_bor"
           #dropdownContainer
-          (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen"
+          (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen; isCompanyDropdownOpen && companyMenuOpened()"
         >
           <div class="cmp_drop">
             <mat-icon class="cmp-icon">business</mat-icon>
@@ -283,61 +285,7 @@
               <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
             </div>
 
-            <div class="menu-header">
-              <mat-icon style="color:blue">checklist</mat-icon>
-              <span>{{ 'Select Branches' | t }}</span>
-            </div>
-
-            <div class="scrollable-content">
-              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
-                <div class="schema-row" (click)="toggleSchema(i, $event)">
-                  <div class="schema-info d-flex align-items-center gap-2">
-                    <div class="avatar">{{ data.name | slice : 0 : 1 }}</div>
-                    <span class="company-name">{{ data.name }}</span>
-                  </div>
-                  <mat-icon style="color: #475569">
-                    {{ expandedSchemaIndex === i ? "expand_less" : "expand_more" }}
-                  </mat-icon>
-                </div>
-
-                <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-                  <div
-                    class="branch-option multi-select"
-                    *ngFor="let branch of data.branches"
-                    (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)"
-                  >
-                    <div class="branch-left d-flex align-items-center gap-2">
-                      <mat-icon style="color:blue" class="check-box">
-                        {{
-                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
-                            ? "check_box"
-                            : "check_box_outline_blank"
-                        }}
-                      </mat-icon>
-                      <span
-                        class="branch-name"
-                        [class.selected-text]="
-                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
-                        "
-                      >
-                        {{ branch.branch_name }}
-                      </span>
-                    </div>
-
-                    <div
-                      class="notification-wrapper"
-                      *ngIf="branch.notification_count > 0"
-                      (click)="openBranchNotificationModal(branch, $event)"
-                    >
-                      <mat-icon class="notification-bell">notifications</mat-icon>
-                      <span class="notification-count">
-                        {{ branch.notification_count > 99 ? "99+" : branch.notification_count }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ng-container *ngTemplateOutlet="companyMenu"></ng-container><!-- v1.62.0 ui: company and branches -->
             <!-- v1.30.0 location level: the locations of the selected branches -->
             <ng-container *ngTemplateOutlet="locPicker"></ng-container>
 
@@ -347,14 +295,14 @@
 
       <!-- Admin Profile Display -->
       <li class="nav-item">
-        <div class="user_logged_outer" *ngIf="userDetails">
+        <a href="#" class="user_logged_outer zm-me" *ngIf="userDetails" (click)="openMyProfile($event)" [title]="'My profile' | t" data-my-profile-link><!-- v1.62.1 opens my employee profile -->
           <div class="user_logged_in">
             <mat-icon>person</mat-icon>
           </div>
           <div class="user_logged_out">
-            <h1><a routerLink="/main-sidebar/settings/my-account" style="color:inherit;text-decoration:none" [title]="'Sign-in and out of office' | t" data-my-account-link>{{ displayName || userDetails.username }}</a></h1><!-- v1.62.0 ui: name, not sign-in name -->
+            <h1>{{ displayName || userDetails.username }}</h1><!-- v1.62.0 ui: name, not sign-in name -->
           </div>
-        </div>
+        </a>
       </li>
 
       <!-- v1.15.0: language picker next to the user menu -->
@@ -455,7 +403,7 @@
             </li>
 
             <ng-container *ngIf="AllNotifications.length > 0; else noNotificationsMobile">
-              <li *ngFor="let noti of AllNotifications; let i = index">
+              <li *ngFor="let noti of AllNotifications | slice:0:notiLimit; let i = index; trackBy: notiTrack">   <!-- v1.62.0 payroll: the newest 100, rows kept between reloads (1,500+ rows were rebuilt 11 times per load and hung Arabic pages) -->
                 <a
                   class="dropdown-item notification-item"
                   href="javascript:void(0)"
@@ -535,7 +483,9 @@
                 </a>
                 <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-0" />
               </li>
-            </ng-container>
+            <li *ngIf="AllNotifications.length > notiLimit" class="noti-more">   <!-- v1.62.0 payroll: the older ones on request -->
+              <button type="button" class="dropdown-item" style="text-align:center;font-weight:600;color:#4338ca" (click)="$event.stopPropagation(); notiLimit = AllNotifications.length" data-noti-all>{{ 'Show all {0} notifications' | t:AllNotifications.length }}</button></li>
+          </ng-container>
 
             <li class="notification-footer" *ngIf="AllNotifications.length > 0">
               <a href="javascript:void(0)" class="view-all-link" (click)="isMobileNotificationOpen = false">
@@ -565,7 +515,7 @@
         <!-- Mobile Company Dropdown (FIXED) -->
         <div
           class="Company_pro company_bor position-relative"
-          (click)="isMobileCompanyDropdownOpen = !isMobileCompanyDropdownOpen"
+          (click)="isMobileCompanyDropdownOpen = !isMobileCompanyDropdownOpen; isMobileCompanyDropdownOpen && companyMenuOpened()"
         >
           <div class="cmp_drop">
             <mat-icon class="cmp-icon">business</mat-icon>
@@ -585,60 +535,7 @@
               <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
             </div>
 
-            <div class="menu-header">
-              <mat-icon style="color:blue">checklist</mat-icon>
-              <span>{{ 'Select Branches' | t }}</span>
-            </div>
-
-            <div class="scrollable-content">
-              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
-                <div class="schema-row" (click)="toggleSchema(i, $event)">
-                  <div class="schema-info d-flex align-items-center gap-2">
-                    <div class="avatar">{{ data.name | slice : 0 : 1 }}</div>
-                    <span class="company-name">{{ data.name }}</span>
-                  </div>
-                  <mat-icon style="color: #475569">
-                    {{ expandedSchemaIndex === i ? "expand_less" : "expand_more" }}
-                  </mat-icon>
-                </div>
-                <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-                  <div
-                    class="branch-option multi-select"
-                    *ngFor="let branch of data.branches"
-                    (click)="toggleBranchSelection(data, branch, $event)"
-                  >
-                    <div class="branch-left d-flex align-items-center gap-2">
-                      <mat-icon style="color:blue" class="check-box">
-                        {{
-                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
-                            ? "check_box"
-                            : "check_box_outline_blank"
-                        }}
-                      </mat-icon>
-                      <span
-                        class="branch-name"
-                        [class.selected-text]="
-                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
-                        "
-                      >
-                        {{ branch.branch_name }}
-                      </span>
-                    </div>
-
-                    <div
-                      class="notification-wrapper"
-                      *ngIf="branch.notification_count > 0"
-                      (click)="openBranchNotificationModal(branch, $event)"
-                    >
-                      <mat-icon class="notification-bell">notifications</mat-icon>
-                      <span class="notification-count">
-                        {{ branch.notification_count > 99 ? "99+" : branch.notification_count }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ng-container *ngTemplateOutlet="companyMenu"></ng-container><!-- v1.62.0 ui: company and branches -->
             <!-- v1.30.0 location level: the locations of the selected branches -->
             <ng-container *ngTemplateOutlet="locPicker"></ng-container>
 
@@ -740,3 +637,50 @@
 <z-palette></z-palette>
 <z-whats-new></z-whats-new>
 <z-tour></z-tour>
+
+<!-- v1.62.0 ui: "Company and branches" – search; the current company first, then the recent ones, then A–Z; each row name,
+     country and apps (one click opens it); the current company's branches as chips with "All branches" and a count -->
+<ng-template #companyMenu>
+  <div class="menu-header zcm-head">
+    <mat-icon>domain</mat-icon><span>{{ 'Company and branches' | t }}</span>
+  </div>
+  <div class="zcm-search" *ngIf="(userDetailss?.length || 0) > 1">
+    <mat-icon>search</mat-icon>
+    <input type="search" [value]="companyQuery" (input)="companyQuery = $any($event.target).value" [placeholder]="'Find a company' | t" [attr.aria-label]="'Find a company' | t" data-company-search>
+  </div>
+  <div class="scrollable-content">
+    <ng-container *ngFor="let g of companyGroups()">
+      <div class="zcm-group" *ngIf="g.title">{{ g.title | t }}</div>
+      <div class="schema-item" *ngFor="let data of g.items" [class.zcm-current]="data.schema_name === selectedSchema">
+        <div class="schema-row" (click)="toggleSchema(userDetailss.indexOf(data), $event)" [attr.data-schema]="data.schema_name">
+          <div class="schema-info d-flex align-items-center gap-2">
+            <div class="avatar">{{ data.name | slice : 0 : 1 }}</div>
+            <div class="zcm-text">
+              <span class="company-name">{{ data.name }}</span>
+              <small class="zcm-sub">{{ companySub(data) }}</small>
+            </div>
+          </div>
+          <mat-icon class="zcm-arrow" *ngIf="data.branches?.length > 1">{{ expandedSchemaIndex === userDetailss.indexOf(data) ? "expand_less" : "expand_more" }}</mat-icon>
+        </div>
+        <div class="branch-wrapper zcm-branches" *ngIf="expandedSchemaIndex === userDetailss.indexOf(data) && data.branches?.length">
+          <div class="zcm-count">
+            <span>{{ '{0} of {1} branches' | t: branchesOn(data) : data.branches.length }}</span>
+            <button type="button" class="zcm-all" *ngIf="data.schema_name === selectedSchema && branchesOn(data) < data.branches.length" (click)="allBranches(data, $event)">{{ 'All branches' | t }}</button>
+          </div>
+          <div class="branch-option multi-select" *ngFor="let branch of data.branches" [class.on]="isBranchOn(data, branch)"
+               (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)">
+            <div class="branch-left d-flex align-items-center gap-2">
+              <mat-icon class="check-box">{{ isBranchOn(data, branch) ? "check_box" : "check_box_outline_blank" }}</mat-icon>
+              <span class="branch-name" [class.selected-text]="isBranchOn(data, branch)">{{ branch.branch_name }}</span>
+            </div>
+            <div class="notification-wrapper" *ngIf="branch.notification_count > 0" (click)="openBranchNotificationModal(branch, $event)">
+              <mat-icon class="notification-bell">notifications</mat-icon>
+              <span class="notification-count">{{ branch.notification_count > 99 ? "99+" : branch.notification_count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="zcm-none" *ngIf="!companyGroups().length">{{ 'No company matches.' | t }}</div>
+  </div>
+</ng-template>

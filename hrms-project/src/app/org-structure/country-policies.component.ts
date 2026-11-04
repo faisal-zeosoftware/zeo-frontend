@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { OrgSettingsService } from './org-settings.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -283,7 +284,7 @@ export class CountryPoliciesComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async delVersion(x: any): Promise<void> {
-    if (!confirm(`Delete the law change from ${x.effective_from}?`)) { return; }
+    if (!(await zConfirm(`Delete the law change from ${x.effective_from}?`))) { return; }
     try {
       await firstValueFrom(this.http.delete(this.url(`country-policies/${this.sel.id}/versions/`) + `&version=${x.id}`));
       this.say('Law change deleted.'); await this.load(this.sel.id);
@@ -331,7 +332,7 @@ export class CountryPoliciesComponent implements OnInit {
   }
 
   async remove(): Promise<void> {
-    if (!confirm(`Delete “${this.form.name}”?`)) { return; }
+    if (!(await zConfirm(`Delete “${this.form.name}”?`))) { return; }
     try { await firstValueFrom(this.http.delete(this.url(`country-policies/${this.form.id}/`))); this.form = null; this.sel = null; this.say('Deleted.'); await this.load(); }
     catch (e: any) { this.say(this.errText(e, 'It could not be deleted.'), true); }
   }

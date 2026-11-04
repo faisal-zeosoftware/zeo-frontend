@@ -13,6 +13,7 @@ import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-airticket-rule',
@@ -607,7 +608,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAirTicketRule() { 
+async deleteSelectedAirTicketRule() { 
   const selectedEmployeeIds = this.Allocations
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -617,7 +618,7 @@ deleteSelectedAirTicketRule() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected AirTicket Rule ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected AirTicket Rule ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

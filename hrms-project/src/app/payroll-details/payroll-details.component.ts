@@ -8,13 +8,29 @@ import { ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { Location } from '@angular/common';
+import { inject as psdInject } from '@angular/core';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.10 (item 165)
+import { zToast } from '../shared-ui/z-toast';
+import { packLang } from '../shared-ui/i18n-core';
 
 @Component({
   selector: 'app-payroll-details',
   templateUrl: './payroll-details.component.html',
-  styleUrls: ['./payroll-details.component.css']
+  styleUrls: ['./payroll-details.component.css', '../air-ticket-ui/at.css', '../loan-ui/ln.css']   // v1.62.10 (item 165) new design
 })
 export class PayrollDetailsComponent {
+  // v1.62.10 (item 165): the new-design page (header, tiles, options beside the document, one save window); same data and calls
+  ln = psdInject(LnUiService);
+  private loc = psdInject(Location);
+  psdError = '';
+  psdSaveError = '';
+  psdBusy = false;
+  statusWord(s: string): string { return ({ pending: 'Waiting for approval', approved: 'Approved', processed: 'Processed', rejected: 'Rejected' } as any)[s] || s || '–'; }
+  statusClass(s: string): string { return ({ pending: 'warn', approved: 'ok', processed: 'info', rejected: 'bad' } as any)[s] || 'muted'; }
+  back(): void { this.loc.back(); }
+  /** the run's Arabic name when the user works in Arabic */
+  get runName(): string { const r = this.payslipDetails?.payroll_run || {}; return (packLang().startsWith('ar') && r.arabic_name) || r.name || ''; }
   /** v1.15.1: branch / department / category of the run are lists of {id, name} – show the names, not [object Object] */
   names(v: any): string {
     const a = Array.isArray(v) ? v : (v === null || v === undefined || v === '' ? [] : [v]);
@@ -91,6 +107,7 @@ export class PayrollDetailsComponent {
         },
         error => {
           console.error('Failed to fetch payslip details', error);
+          this.psdError = this.ln.err(error, this.ln.t('The payslip could not be loaded.'));   // v1.62.10 (item 165)
         }
       );
     }
@@ -203,6 +220,8 @@ export class PayrollDetailsComponent {
   }
 
   approvePayslip(): void {
+    if (this.psdBusy) { return; }
+    this.psdBusy = true; this.psdSaveError = '';   // v1.62.10 (item 165)
     const element = this.payslipContent.nativeElement;
     html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
@@ -218,15 +237,17 @@ export class PayrollDetailsComponent {
       const payslipId = this.payslipDetails.id;
       this.employeeService.uploadPayslipPdf(payslipId, file, this.send_email).subscribe({
         next: () => {
-          alert('Payslip uploaded successfully.');
+          this.psdBusy = false;   // v1.62.10 (item 165): a short message instead of the pop-up
+          zToast(this.ln.t(this.send_email ? 'The PDF is saved on the payslip and will be e-mailed to the employee.' : 'The PDF is saved on the payslip.'), 'ok');
           this.closeapplicationModal();
         },
         error: (error) => {
-          alert('Failed to upload payslip.');
+          this.psdBusy = false;
+          this.psdSaveError = this.ln.err(error, this.ln.t('The PDF could not be saved.'));
           console.error(error);
         }
       });
-    });
+    }).catch(() => { this.psdBusy = false; this.psdSaveError = this.ln.t('The PDF could not be made.'); });   // v1.62.10 (item 165)
   }
 
 // Remove department and category from preferences, add designation
@@ -239,6 +260,7 @@ payslipPreferences = {
   iscreateLoanApp: boolean = false;
 
   openPopus(): void {
+    this.psdSaveError = '';
     this.iscreateLoanApp = true;
   }
 

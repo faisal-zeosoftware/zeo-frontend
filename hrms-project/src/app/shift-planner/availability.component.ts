@@ -5,6 +5,7 @@
  * API: availability/?employee, availability/<id>/, team-schedule/ (employees the user may plan), shift-master/?active=1
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list (Branch filter …)
@@ -13,7 +14,7 @@ import { SpApiService, niceDate, WEEKDAYS } from './sp-api.service';
 @Component({
   selector: 'app-sp-availability',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -43,8 +44,8 @@ import { SpApiService, niceDate, WEEKDAYS } from './sp-api.service';
         <label>Employee<select [(ngModel)]="f.employee"><option [ngValue]="null">Choose…</option><option *ngFor="let e of emps" [ngValue]="e.employee_id">{{ e.name }}</option></select></label>
         <label>Availability<select [(ngModel)]="f.kind"><option value="unavailable">Not available</option><option value="preferred">Preferred</option><option value="available">Available</option></select></label>
         <label>Repeats on<select [(ngModel)]="f.weekday"><option [ngValue]="null">Dates below</option><option *ngFor="let w of weekdays; let i = index" [ngValue]="i">Every {{ w }}</option></select><span class="sp-err" *ngIf="err['weekday']">{{ err['weekday'] }}</span></label>
-        <label *ngIf="f.weekday === null">From<input type="date" [(ngModel)]="f.date_from"></label>
-        <label *ngIf="f.weekday === null">To<input type="date" [(ngModel)]="f.date_to"><span class="sp-err" *ngIf="err['date_to']">{{ err['date_to'] }}</span></label>
+        <label *ngIf="f.weekday === null">From<z-date-field [(value)]="f.date_from"></z-date-field></label>
+        <label *ngIf="f.weekday === null">To<z-date-field [(value)]="f.date_to"></z-date-field><span class="sp-err" *ngIf="err['date_to']">{{ err['date_to'] }}</span></label>
         <label>Shift (optional)<select [(ngModel)]="f.shift"><option [ngValue]="null">Any shift</option><option *ngFor="let s of shifts" [ngValue]="s.id">{{ s.name }}</option></select></label>
         <label>Note<input [(ngModel)]="f.note" maxlength="255"></label>
       </div>

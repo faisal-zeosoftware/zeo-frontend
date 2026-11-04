@@ -9,6 +9,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';
 import { readSheet } from '../shared-ui/z-export';
 import { EmployeeProfileService } from './employee-profile.service';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.13.0 – Employee code numbering: one rule per branch (prefix, next number, digits) plus a company default. */
 @Component({
@@ -114,7 +115,7 @@ export class EmpCodeSettingsComponent implements OnInit {
   }
 
   async remove(r: any): Promise<void> {
-    if (!confirm(`Delete the numbering rule for ${r.branch_name}? Codes will have to be typed by hand there.`)) { return; }
+    if (!(await zConfirm(`Delete the numbering rule for ${r.branch_name}? Codes will have to be typed by hand there.`))) { return; }
     try { await this.svc.del(`code-settings/${r.id}/`); await this.load(); } catch (e: any) { this.error = this.svc.errors(e).text; this.cd.markForCheck(); }
   }
 }
@@ -144,8 +145,8 @@ export class EmpCodeSettingsComponent implements OnInit {
       <thead><tr><th>Employee code</th><th>Employee</th><th>Branch</th><th>Department</th><th>Joining date</th><th>Probation ends</th><th>Days left</th><th>Probation</th><th>Manager</th></tr></thead>
       <tbody>
         <tr *ngFor="let r of rows" (click)="open(r)" style="cursor:pointer">
-          <td>{{ r.employee_code }}</td><td>{{ r.employee }}</td><td>{{ r.branch }}</td><td>{{ r.department }}</td><td>{{ r.joined_date }}</td>
-          <td>{{ r.probation_end_date }}</td><td><span class="ep-tag" [ngClass]="r.overdue ? 'bad' : r.days_left <= 7 ? 'warn' : 'blue'">{{ r.overdue ? 'Overdue ' + (-r.days_left) : r.days_left }}</span></td>
+          <td>{{ r.employee_code }}</td><td>{{ r.employee }}</td><td>{{ r.branch }}</td><td>{{ r.department }}</td><td>{{ r.joined_date | date:'dd/MM/yyyy' }}</td>
+          <td>{{ r.probation_end_date | date:'dd/MM/yyyy' }}</td><!-- v1.62.0 people --><td><span class="ep-tag" [ngClass]="r.overdue ? 'bad' : r.days_left <= 7 ? 'warn' : 'blue'">{{ r.overdue ? 'Overdue ' + (-r.days_left) : r.days_left }}</span></td>
           <td>{{ r.probation_status }}</td><td>{{ r.manager || '–' }}</td>
         </tr>
       </tbody>

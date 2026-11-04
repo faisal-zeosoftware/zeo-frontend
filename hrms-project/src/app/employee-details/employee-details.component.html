@@ -534,6 +534,8 @@
     </div>
     <!-- v1.13.0: WPS agent / payment mode and the IBAN check -->
     <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="bank" [employeeId]="employee?.id" [refresh]="emp_bank_details?.length || 0"></z-emp-extras></div>
+    <!-- v1.63.0 (item 27): salary split – main account plus a second bank account / cash / cheque / own method -->
+    <div class="mt-4" *ngIf="!isEditMode"><z-emp-pay-split [employeeId]="employee?.id"></z-emp-pay-split></div>
 </mat-tab>
 
 

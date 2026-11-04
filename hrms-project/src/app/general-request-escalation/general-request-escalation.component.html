@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui legacy rows: "+ New escalation rule" top right; Edit / Delete on each row -->
 <!-- v1.62.0 ui: wording (Escalate to / Escalate after (minutes)) -->
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
@@ -29,21 +30,12 @@
                 </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
+                        <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New escalation rule</button>
                       <span *ngIf="!hasAddPermission"></span>
 
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
+                        
                         <span *ngIf="hasEditPermission"></span>
-                    <button type="button" class="btn-Delete btn btn-warning" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                    <span class="header-btn-icon">
-                    <mat-icon>settings_backup_restore</mat-icon>
-                     </span>
-                   {{ Delete ? 'Cancel' : 'Reset' }}
-                   </button>
+                    
 
                            <span *ngIf="!hasDeletePermission"></span>
                     </div>
@@ -369,7 +361,7 @@
             mat-fab
             color="primary"
             aria-label="Edit"
-            *ngIf="showEditBtn"
+            *ngIf="hasEditPermission"
             (click)="openEditModal(docs)"
             style="transform: scale(0.7); margin-right: 6px;"
           >
@@ -387,7 +379,7 @@
     <mat-icon>settings_backup_restore</mat-icon>
 </button>
 
-<mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+<button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(docs); $event.stopPropagation()" title="Reset" aria-label="Reset" data-z-row-delete><mat-icon>restart_alt</mat-icon></button>
 
         </td>
       </tr>

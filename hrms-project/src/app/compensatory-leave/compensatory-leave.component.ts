@@ -7,7 +7,13 @@ import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { EmployeeService } from '../employee-master/employee.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 170)
+import { COMP_LEAVE_FORM, compAllocateForm } from '../shared-ui/z-forms-records';
+import { zToast } from '../shared-ui/z-toast';
+import { i18nT } from '../shared-ui/i18n-core';
+import { environment } from '../../environments/environment';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-compensatory-leave',
@@ -73,8 +79,6 @@ selectedCompLeaveId: any = ''
       if (selectedSchema) {
 
 
-      this.LoadEmployee(selectedSchema);
-      this.LoadComattendance(selectedSchema);
 
       
       }
@@ -209,335 +213,44 @@ if (this.userId !== null) {
     }
 
 
-    // checkViewPermission(permissions: any[]): boolean {
-    //   const requiredPermission = 'add_compensatoryleavetransaction' ||'change_compensatoryleavetransaction' 
-    //   ||'delete_compensatoryleavetransaction' ||'view_compensatoryleavetransaction';
-      
-      
-    //   // Check user permissions
-    //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-    //     return true;
-    //   }
-      
-    //   // Check group permissions (if applicable)
-    //   // Replace `// TODO: Implement group permission check`
-    //   // with your logic to retrieve and check group permissions
-    //   // (consider using a separate service or approach)
-    //   return false; // Replace with actual group permission check
-    //   }
-      
-      
-      
-      
-      checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-      return groupPermissions.some(permission => permission.codename === codeName);
-      }
-      
-
-    LoadEmployee(selectedSchema: string) {
-      this.leaveService.getemployeesMaster(selectedSchema).subscribe(
-        (data: any) => {
-          this.Employees = data;
-        
-          console.log('employee:', this.Employees);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
-
-    LoadComattendance(selectedSchema: string) {
-      this.leaveService.getCompAttendance(selectedSchema).subscribe(
-        (data: any) => {
-          this.compAttendance = data;
-        
-          console.log('employee:', this.Employees);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
-
-
-
-              isLoading: boolean = false;
-
-
-              fetchEmployeesLeaveApprovalLevel(
-                schema: string,
-                branchIds: number[]
-              ): void {
-              
-                this.isLoading = true;
-              
-                this.leaveService
-                  .getCompanLeave(schema, branchIds)
-                  .subscribe({
-              
-                    next: (data: any) => {
-              
-                      this.compTransactions = data;
-              
-                      console.log('Comp Leave:', data);
-              
-                      this.isLoading = false;
-              
-                    },
-              
-                    error: (err) => {
-              
-                      console.error('Fetch error:', err);
-              
-                      this.isLoading = false;
-              
-                    }
-              
-                  });
-              
-              }
-    
-
-              requestCompansatoryLeave(): void {
-
-                const selectedSchema =
-                  this.authService.getSelectedSchema();
-              
-                if (!selectedSchema) {
-              
-                  alert('Schema not found');
-              
-                  return;
-              
-                }
-              
-                const formData = new FormData();
-              
-                formData.append('employee', this.employee);
-              
-                formData.append(
-                  'credited_days',
-                  this.credited_days
-                );
-              
-                formData.append(
-                  'reason',
-                  this.reason
-                );
-              
-              
-              
-                // Attendance IDs
-                this.attendances.forEach((id: any) => {
-              
-                  formData.append('attendances', id);
-              
-                });
-              
-              
-              
-                this.leaveService
-                  .allocateCompLeave(
-                    this.selectedCompLeaveId,
-                    selectedSchema,
-                    formData
-                  )
-                  .subscribe(
-              
-                    (response: any) => {
-              
-                      console.log(response);
-              
-                      alert(
-                        'Compensatory Leave Allocated Successfully'
-                      );
-              
-                      this.closeapplicationModal();
-              
-                      // Reload list
-                      const savedIds = JSON.parse(
-                        localStorage.getItem('selectedBranchIds') || '[]'
-                      );
-              
-                      this.fetchEmployeesLeaveApprovalLevel(
-                        selectedSchema,
-                        savedIds
-                      );
-              
-                    },
-              
-                    (error) => {
-              
-                      console.error(error);
-              
-                      alert('Allocation Failed');
-              
-                    }
-              
-                  );
-              
-              }
-
-      iscreateLoanApp: boolean = false;
-
-        openPopus():void{
-          this.iscreateLoanApp = true;
-        }
-      
-        closeapplicationModal():void{
-          this.iscreateLoanApp = false;
-        }
-
-        
-  showEditBtn: boolean = false;
-    
-  EditShowButtons() {
-    this.showEditBtn = !this.showEditBtn;
-  }
-  
-  
-  Delete: boolean = false;
-  allSelecteds: boolean = false;
-  
-  toggleCheckboxes() {
-  this.Delete = !this.Delete;
-  }
-  
-  toggleSelectAllEmployees() {
-    this.allSelectedBrach = !this.allSelectedBrach;
-  this.compTransactions.forEach(employee => employee.selected = this.allSelectedBrach);
-  
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-    isEditModalOpen: boolean = false;
-  editAsset: any = {}; // holds the asset being edited
-  
-  openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
-  }
-  
-  closeEditModal(): void {
-  this.isEditModalOpen = false;
-  this.editAsset = {};
+  isLoading: boolean = false;
+
+  fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveService.getCompanLeave(schema, branchIds).subscribe({
+      next: (data: any) => { this.compTransactions = (data || []).slice().sort((a: any, b: any) => Number(!!a.is_allocated) - Number(!!b.is_allocated) || (b.id - a.id)); this.isLoading = false; },
+      error: (err) => { console.error('Fetch error:', err); this.isLoading = false; }
+    });
   }
 
-
-    
-  deleteSelectedCombLeave() { 
-    const selectedEmployeeIds = this.compTransactions
-      .filter(employee => employee.selected)
-      .map(employee => employee.id);
-  
-    if (selectedEmployeeIds.length === 0) {
-      alert('No Compensatory Leave selected for deletion.');
-      return;
-    }
-  
-    if (confirm('Are you sure you want to delete the selected Compensatory Leave ?')) {
-  
-      let total = selectedEmployeeIds.length;
-      let completed = 0;
-  
-      selectedEmployeeIds.forEach(categoryId => {
-        this.leaveService.deleteCompLeave(categoryId).subscribe(
-          () => {
-            console.log('Compensatory Leave deleted successfully:', categoryId);
-            // Remove the deleted employee from the local list
-            this.compTransactions = this.compTransactions.filter(employee => employee.id !== categoryId);
-  
-             completed++;
-            if (completed === total) { 
-            alert(' Compensatory Leave deleted successfully');
-            window.location.reload();
-            }
-  
-          },
-          (error) => {
-            console.error('Error deleting Compensatory Leave :', error);
-             alert('Error deleting Compensatory Leave : ' + error.statusText);
-          }
-        );
-      });
-    }
+  private reload(): void {
+    const schema = this.authService.getSelectedSchema();
+    if (schema) { this.fetchEmployeesLeaveApprovalLevel(schema, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
   }
-  
-  
-  updateCombLeave(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
-  
-    this.leaveService.updateCompLeave(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert('Compensatory Leave updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-  (error) => {
-    console.error('Error updating Compensatory Leave:', error);
-  
-    let errorMsg = 'Update failed';
-  
-    const backendError = error?.error;
-  
-    if (backendError && typeof backendError === 'object') {
-      // Convert the object into a readable string
-      errorMsg = Object.keys(backendError)
-        .map(key => `${key}: ${backendError[key].join(', ')}`)
-        .join('\n');
-    }
-  
-    alert(errorMsg);
+
+  /** the first attendance day of the entry (the day worked) */
+  workDay(r: any): string | null { return r?.attendances?.length ? r.attendances[0].date : null; }
+
+  /** v1.62.10 (item 170): "+ New compensatory leave" – a pending entry in the shared form (it was a disabled button) */
+  async openPopus(): Promise<void> { if (await openZForm(COMP_LEAVE_FORM)) { this.reload(); } }
+
+  /** v1.62.10 (item 170): Edit on a pending row (days and reason); an allocated entry is booked and stays as it is */
+  async openEditModal(row: any): Promise<void> { if (await openZForm(COMP_LEAVE_FORM, row)) { this.reload(); } }
+
+  /** v1.62.10 (item 170): Allocate – the shared form with the days; the server writes the ledger line and moves the balance */
+  async openAllocateModal(row: any): Promise<void> { if (await openZForm(compAllocateForm(row))) { this.reload(); } }
+
+  /** v1.62.10 (item 170): Delete on a pending row – one confirmation, a short message */
+  async zDeleteRow(row: any): Promise<void> {
+    if (!(await zConfirm(i18nT('Delete the compensatory leave entry of {0}?', [row.employee_name || row.employee])))) { return; }
+    const sch = this.authService.getSelectedSchema();   // the allocation itself (deleteCompLeave() points at the request API)
+    this.http.delete(`${environment.apiBaseUrl}/calendars/api/compensatory-leave-allocation/${row.id}/?schema=${sch}`).subscribe({
+      next: () => { zToast(i18nT('Compensatory leave deleted.'), 'ok'); this.reload(); },
+      error: (e: any) => { zToast(String(e?.error?.detail || e?.error?.error || i18nT('It could not be deleted.')), 'err'); },
+    });
   }
-    );
-  }
-  
-
-
-  allSelectedBrach=false;
-
-
-  toggleAllSelectionBrach(): void {
-    if (!this.selectBrach) return;
-  
-    this.allSelectedBrach
-      ? this.selectBrach.options.forEach(o => o.select())
-      : this.selectBrach.options.forEach(o => o.deselect());
-  }
-  
-
-
-  openAllocateModal(data: any): void {
-
-  console.log('Selected Row:', data);
-
-  this.iscreateLoanApp = true;
-
-  // Store allocation ID
-  this.selectedCompLeaveId = data.id;
-
-  // Set form values
-  this.employee = data.employee;
-
-  this.credited_days = data.credited_days;
-
-  this.reason = data.reason;
-
-  // // Attendance IDs
-  // this.attendances =
-  //   data.attendances.map((x: any) => x.id);
-
-  // // Attendance list for dropdown
-  // this.compAttendance = data.attendances;
-
-}
-
-
-
-  
-  
 }

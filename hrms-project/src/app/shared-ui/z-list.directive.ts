@@ -10,6 +10,7 @@ import { showValue } from './field-types';
 import { VCol, VIEW_LABEL, ViewKind, ViewState, availableViews, calendarHtml, defaults, graphHtml, kanbanHtml, pivotData, pivotHtml } from './z-views';
 import { i18nOriginal, i18nT as T } from './i18n-core';   // v1.15.0: list texts in the user's language
 import { paintColumns, personCell, presentEl, rawText, setUserNames } from './z-present';   // v1.62.0 ui
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * Same list experience on every screen (attaches itself to every data table):
@@ -172,7 +173,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.waitObs?.disconnect();
     clearTimeout(this.timer);
     this.subs.forEach(s => s.unsubscribe());
-    this.bar?.remove(); this.foot?.remove(); this.menu?.remove(); this.viewEl?.remove();
+    this.bar?.remove(); this.foot?.remove(); this.selbar?.remove(); clearTimeout(this.usageTimer); this.menu?.remove(); this.viewEl?.remove();
     this.anchor?.classList.remove('zl-hidden');
     clearTimeout(this.saveTimer);
     this.hidden.forEach(h => h.classList.remove('zl-hidden'));
@@ -401,6 +402,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     });
     this.rows.forEach(r => { r.cells = cellsOf(r.el).map(c => this.cellText(c)); });
     this.endpoint = null;
+    this.scheduleUsage();   // v1.62.1
     this.paintHead();
     this.loadExtras();
   }
@@ -465,6 +467,10 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
 
   // ------------------------------------------------------------------ filtering, grouping, sorting
   private passes(r: Row): boolean {
+    if (this.activeField && this.activeField !== '-' && this.activeMode !== 'all') {   // v1.62.1 Active / Inactive (default: active)
+      const id = r.el.dataset['zlId']; const a = id !== undefined ? this.activeOf.get(id) : undefined;
+      if (a !== undefined && a !== (this.activeMode === 'active')) { return false; }
+    }
     for (const ch of this.chips) {
       if (ch.type === 'search') {
         const t = (ch.text || '').toLowerCase();
@@ -1288,7 +1294,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (!this.endpoint) { this.endpoint = this.z.endpointFor(this.rows.map(r => r.raw)); }   // v1.62.0 ui raw
     const own = this.ownImportButton();
     const parts: string[] = [];
-    if (this.endpoint) {
+    // v1.62.10 (item 170): <table data-zl-own-import> – only the screen's own upload (e.g. leave balances must go through the leave ledger)
+    if (this.endpoint && !this.table.hasAttribute('data-zl-own-import')) {
       parts.push(`<div class="zl-sec-h">${T('Import into this list')}</div>
         <button type="button" class="zl-item" data-i="tpl-xlsx"><b>${T('Download template (Excel)')}</b><span>${T('Columns of this screen, with a "How to fill" sheet')}</span></button>
         <button type="button" class="zl-item" data-i="tpl-csv"><b>${T('Download template (CSV)')}</b><span>${T('Same columns as plain CSV')}</span></button>
@@ -1322,11 +1329,11 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
 
   private loadStandard(kind: string): void {
     this.z.standardList(kind).subscribe({
-      next: (r: any) => {
+      next: async (r: any) => {
         const missing = (r.items || []).filter((i: any) => !i.exists);
         if (!missing.length) { this.toast(`Every standard ${kind} is already in the list.`); return; }
         const names = missing.map((i: any) => '• ' + i.name).join('\n');
-        if (!confirm(`Add these ${missing.length} ${kind}s to the list?\n\n${names}\n\nThey are linked to your branches. Existing ${kind}s are not changed.`)) { return; }
+        if (!(await zConfirm(`Add these ${missing.length} ${kind}s to the list?\n\n${names}\n\nThey are linked to your branches. Existing ${kind}s are not changed.`))) { return; }
         this.z.loadStandardList(kind).subscribe({
           next: (res: any) => {
             this.toast(`${res.created?.length || 0} ${kind}s added.`);
@@ -1430,7 +1437,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       if (t.closest('[data-tpl]')) { this.downloadTemplate(false); return; }
       const ub = t.closest('[data-undo-import]') as HTMLButtonElement | null;
       if (ub) {
-        if (!confirm(T('Undo this import? The records it created are deleted.'))) { return; }
+        if (!(await zConfirm(T('Undo this import? The records it created are deleted.')))) { return; }
         ub.disabled = true;
         this.z.undoImport(Number(ub.dataset['undoImport'])).subscribe({
           next: (u: any) => { ub.replaceWith(Object.assign(document.createElement('div'), { className: 'zl-sum warn', textContent: T('Undone: {0} records deleted.', [u.deleted]) + (u.kept?.length ? ' ' + T('{0} kept – they are used by other records.', [u.kept.length]) : '') })); },
@@ -1503,6 +1510,29 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       <button type="button" class="zl-pg" data-pg="1" aria-label="${T('Next page')}">${ICON['next']}</button>`;
     this.quiet(() => this.anchor.parentElement!.insertBefore(f, this.anchor.nextSibling));
     this.foot = f;
+    // v1.62.1: selection bar above the list – "N selected · Delete selected · Export selected · Clear"
+    const sb = document.createElement('div');
+    sb.className = 'zl-selbar zl-hidden'; sb.dataset['zl'] = 'selbar';
+    this.quiet(() => this.anchor.parentElement!.insertBefore(sb, this.anchor));
+    this.selbar = sb;
+    sb.addEventListener('click', async (e) => {
+      const b = (e.target as HTMLElement).closest('[data-act]') as HTMLElement | null;
+      if (!b) { return; }
+      const a = b.dataset['act'];
+      if (a === 'unselect') { this.rows.forEach(r => this.setSel(r.el, false)); this.render(); }
+      if (a === 'exportsel') { this.openMenu('export', this.bar!.querySelector('[data-menu=export]') as HTMLElement); }
+      if (a === 'bulkdel') { this.bulkDelete(); }
+      if (a === 'bulkactive') {   // v1.62.1 bulk inactive / active
+        const on = b.dataset['on'] === '1';
+        const ids = this.selectedIds().ids.filter(i => on ? this.activeOf.get(i) === false : this.activeOf.get(i) !== false);
+        if (ids.length && (await zConfirm(T(on ? 'Make {0} selected records active?' : 'Make {0} selected records inactive?', [ids.length])))) {
+          this.setActive(ids, on, '').then(() => { this.rows.forEach(r => this.setSel(r.el, false)); this.activeOf.clear(); this.render(); });
+        }
+      }
+      if (a === 'inactivate') { this.setActive(JSON.parse(b.dataset['ids'] || '[]'), false, b.dataset['ep'] || ''); }
+      if (a === 'closeres') { this.result = ''; try { sessionStorage.removeItem('zl-result:' + location.pathname); } catch { /* */ } this.paintSelBar(); }
+    });
+    try { this.result = sessionStorage.getItem('zl-result:' + location.pathname) || ''; } catch { this.result = ''; }
     (f.querySelector('[data-size]') as HTMLSelectElement).value = String(this.size);
     f.addEventListener('change', (e) => {
       const t = e.target as HTMLElement;
@@ -1553,7 +1583,182 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
 
   private selCount(): number { return this.rows.filter(r => this.isSel(r.el)).length; }
 
+  // ------------------------------------------------------------------ v1.62.1 bulk delete, used records made inactive
+  private selbar?: HTMLElement;
+  private result = '';
+  private usageCache = new Map<string, any>();
+  private usageTimer: any;
+  private activeMode: 'active' | 'inactive' | 'all' = 'active';
+  private activeOf = new Map<string, boolean>();   // record id → active flag (lists with an active / inactive field)
+  private activeField = '';
+  private static DEL_SEL = '[data-z-row-delete], .hr-icon-btn.danger, button[title="Delete"], button[aria-label="Delete"], button[mattooltip="Delete"]';
+
+  /** the user may delete here: a row Delete control is shown (the screens show it only with the delete right) */
+  private canDelete(): boolean {
+    return this.table.hasAttribute('data-zl-can-delete') || this.rows.some(r => !!r.el.querySelector(ZListDirective.DEL_SEL));
+  }
+
+  private paintSelBar(): void {
+    const sb = this.selbar;
+    if (!sb) { return; }
+    const n = this.selCount();
+    const del = n && this.canDelete();
+    const parts: string[] = [];
+    if (n) {
+      parts.push(`<b>${T('{0} selected', [n])}</b>`);
+      // v1.62.1: bulk Make inactive / Make active on lists that have an active flag
+      if (del && this.activeField && this.activeField !== '-') {
+        const ids = this.selectedIds().ids;
+        const act = ids.filter(i => this.activeOf.get(i) !== false).length, ina = ids.filter(i => this.activeOf.get(i) === false).length;
+        if (act) { parts.push(`<button type="button" class="zl-btn" data-act="bulkactive" data-on="0" data-zl-bulkinactive>${T('Make inactive ({0})', [act])}</button>`); }
+        if (ina) { parts.push(`<button type="button" class="zl-btn" data-act="bulkactive" data-on="1" data-zl-bulkactive>${T('Make active ({0})', [ina])}</button>`); }
+      }
+      if (del) { parts.push(`<button type="button" class="zl-btn danger" data-act="bulkdel" data-zl-bulkdel>${T('Delete selected')}</button>`); }
+      parts.push(`<button type="button" class="zl-link" data-act="exportsel">${T('Export selected')}</button>`);
+      parts.push(`<button type="button" class="zl-link" data-act="unselect">${T('Clear')}</button>`);
+    }
+    const res = this.result ? `<div class="zl-selres" data-zl-result>${this.result}<button type="button" class="zl-link" data-act="closeres" aria-label="${T('Close')}">✕</button></div>` : '';
+    this.quiet(() => {
+      sb.innerHTML = (parts.length ? `<div class="zl-selrow">${parts.join('<span class="zl-dot">·</span>')}</div>` : '') + res;
+      sb.classList.toggle('zl-hidden', !parts.length && !res);
+    });
+  }
+
+  private listEndpoint(): string | null {
+    const ep = this.endpoint || this.z.endpointFor(this.rows.slice(0, 40).map(r => r.raw));
+    return ep ? (ep.endsWith('/') ? ep : ep + '/') : null;
+  }
+
+  private async req(method: string, path: string, body?: any): Promise<{ ok: boolean; status: number; data: any }> {
+    const sch = localStorage.getItem('selectedSchema') || '';
+    const h: any = { Authorization: 'Bearer ' + (localStorage.getItem('auth_token') || ''), 'Content-Type': 'application/json' };
+    try { const l = localStorage.getItem('zeoLang'); if (l) { h['X-Language'] = l; } } catch { /* */ }
+    const res = await fetch(`${this.z.api}${path}${path.includes('?') ? '&' : '?'}schema=${encodeURIComponent(sch)}`, { method, headers: h, body: body === undefined ? undefined : JSON.stringify(body) });
+    const txt = await res.text(); let data: any = null;
+    try { data = txt ? JSON.parse(txt) : null; } catch { data = txt; }
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  /** v1.62.1: one confirmation naming the count; used records are skipped (listed, with "Make these inactive"), never a silent partial delete */
+  private async bulkDelete(): Promise<void> {
+    const ep = this.listEndpoint();
+    const { ids, missing } = this.selectedIds();
+    if (!ep || !ids.length) { this.toast('These rows cannot be deleted from the list – use Delete on each row.', true); return; }
+    if (!(await zConfirm(T('Delete {0} selected records?', [ids.length])))) { return; }
+    let deleted = 0; const used: string[] = []; const other: Record<string, number> = {}; let field = '';
+    for (const id of ids) {
+      const r = await this.req('DELETE', `${ep}${id}/`);
+      if (r.ok) { deleted++; continue; }
+      if (r.status === 409 && r.data?.code === 'used') { used.push(id); field = field || r.data.active_field || ''; continue; }
+      const why = String((r.data && (r.data.detail || r.data.error)) || `Error ${r.status}`).slice(0, 140);
+      other[why] = (other[why] || 0) + 1;
+    }
+    const bits = [T('{0} deleted', [deleted])];
+    if (used.length) { bits.push(T('{0} skipped: used in transactions', [used.length])); }
+    for (const [why, n] of Object.entries(other)) { bits.push(T('{0} skipped', [n]) + ': ' + esc(why)); }
+    if (missing) { bits.push(T('{0} skipped', [missing]) + ': ' + T('use Delete on the row')); }
+    let html = esc(bits.join(', ')).replace(/&lt;|&gt;/g, '') + '.';
+    if (used.length && field) { html += ` <button type="button" class="zl-btn" data-act="inactivate" data-ep="${esc(ep)}" data-ids='${JSON.stringify(used)}' data-zl-inactivate>${T('Make these inactive')}</button>`; }
+    this.finish(html);
+  }
+
+  private async setActive(ids: string[], active: boolean, ep: string): Promise<void> {
+    const r = await this.req('POST', '/tools/api/active/', { endpoint: ep || this.listEndpoint(), ids, active });
+    if (!r.ok) { this.toast(String(r.data?.detail || 'Not saved.'), true); return; }
+    const done = (r.data?.done || []).length, failed = r.data?.failed || [];
+    let msg = T(active ? '{0} made active' : '{0} made inactive', [done]);
+    if (failed.length) { msg += ', ' + T('{0} skipped', [failed.length]) + ': ' + esc(String(failed[0].reason || '')); }
+    this.finish(esc(msg) + '.');
+  }
+
+  /** show the result and open the page again (its own list reloads); the message stays until closed */
+  private finish(html: string): void {
+    this.result = html;
+    try { sessionStorage.setItem('zl-result:' + location.pathname, html); } catch { /* */ }
+    this.usageCache.clear();
+    this.paintSelBar();
+    window.dispatchEvent(new CustomEvent('zeo-reopen-page'));
+  }
+
+  /** v1.62.1: rows already used in transactions show "Make inactive" / "Make active" (or "In use") instead of Delete */
+  private scheduleUsage(): void {
+    clearTimeout(this.usageTimer);
+    this.usageTimer = setTimeout(() => { this.applyUsage().catch(() => { /* v1.62.1 ui: page left while the check ran */ }); }, 400);
+  }
+
+  private async applyUsage(): Promise<void> {
+    const ep = this.listEndpoint();
+    if (!ep) { return; }
+    const want: { id: string; tr: HTMLTableRowElement; del: HTMLElement | null }[] = [];
+    for (const r of this.rows) {
+      const hit = this.rec.rowRecord(r.el);
+      if (hit?.id) { want.push({ id: String(hit.id), tr: r.el, del: r.el.querySelector(ZListDirective.DEL_SEL) as HTMLElement | null }); }
+    }
+    if (!want.length) { return; }
+    // 1) the active flags of every row (Active / Inactive filter) – one fast call; rows drawn again keep their id mark
+    let changed = false;
+    this.quiet(() => want.forEach(w => { if (this.activeOf.has(w.id) && w.tr.dataset['zlId'] !== w.id) { w.tr.dataset['zlId'] = w.id; changed = true; } }));
+    if (changed) { this.render(); changed = false; }
+    const flags = want.filter(w => !this.activeOf.has(w.id)).map(w => w.id).slice(0, 1000);
+    if (flags.length && this.activeField !== '-') {
+      const r = await this.req('GET', `/tools/api/usage/?active_only=1&endpoint=${encodeURIComponent(ep)}&ids=${flags.join(',')}`);
+      const got = r.ok && r.data ? Object.entries(r.data) : [];
+      if (!got.length && !this.activeField) { this.activeField = '-'; }   // no active / inactive field on this list
+      this.quiet(() => {
+        for (const [id, u] of got as [string, any][]) {
+          this.activeField = u.active_field; this.activeOf.set(id, !!u.active); changed = true;
+          const w = want.find(x => x.id === id); if (w) { w.tr.dataset['zlId'] = id; }
+        }
+      });
+      if (changed) { this.paintActiveFilter(); this.render(); changed = false; }
+    }
+    // 2) the use of the rows that show a Delete (the rows shown first)
+    const ask = want.filter(w => w.del && !this.usageCache.has(ep + w.id)).map(w => w.id).slice(0, 60);
+    if (ask.length) {
+      const r = await this.req('GET', `/tools/api/usage/?endpoint=${encodeURIComponent(ep)}&ids=${ask.join(',')}`);
+      if (r.ok && r.data) { for (const [id, u] of Object.entries(r.data)) { this.usageCache.set(ep + id, u); } }
+    }
+    this.quiet(() => {
+      for (const w of want) {
+        const u = this.usageCache.get(ep + w.id);
+        if (!u) { continue; }
+        if (!w.del || w.tr.querySelector('[data-zl="inact"]')) { continue; }
+        if (u.used > 0) {
+          w.del.classList.add('zl-hidden');
+          const b = document.createElement(u.active_field ? 'button' : 'span');
+          b.dataset['zl'] = 'inact';
+          b.className = u.active_field ? 'z-row-btn zl-inact' : 'zl-inuse';
+          b.title = u.message || T('Used in transactions – make it inactive instead of deleting it.');
+          b.textContent = u.active_field ? T(u.active ? 'Make inactive' : 'Make active') : T('In use');
+          if (u.active_field) {
+            (b as HTMLButtonElement).type = 'button';
+            // v1.62.1 (user 2 Nov): one click no longer changes the record – the row button asks first, like Delete and the selection bar
+            b.addEventListener('click', async (ev) => {
+              ev.stopPropagation();
+              const nm = (Array.from(w.tr.querySelectorAll('td')).map(td => (td.textContent || '').trim()).find(t => t && !/^\d+$/.test(t)) || '').slice(0, 60);
+              const q = u.active ? (nm ? T('Make "{0}" inactive?', [nm]) : T('Make this record inactive?')) : (nm ? T('Make "{0}" active again?', [nm]) : T('Make this record active again?'));
+              if ((await zConfirm(q))) { this.setActive([w.id], !u.active, ep); }
+            });
+          }
+          w.del.parentElement?.insertBefore(b, w.del);
+        }
+      }
+    });
+
+  }
+
+  private paintActiveFilter(): void {
+    if (!this.bar || this.bar.querySelector('[data-zl-active]')) { return; }
+    const s = document.createElement('select');
+    s.className = 'zl-actsel'; s.dataset['zlActive'] = '1'; s.setAttribute('aria-label', T('Show'));
+    s.innerHTML = `<option value="active">${T('Active only')}</option><option value="inactive">${T('Inactive only')}</option><option value="all">${T('Active and inactive')}</option>`;
+    s.value = this.activeMode;
+    s.addEventListener('change', () => { this.activeMode = s.value as any; this.page = 1; this.render(); });
+    this.quiet(() => this.bar!.appendChild(s));
+  }
+
   private paintFootSel(): void {
+    this.paintSelBar();   // v1.62.1
     if (!this.foot) { return; }
     const n = this.selCount();
     const info = this.foot.querySelector('.zl-selinfo') as HTMLElement;
@@ -1968,7 +2173,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       if (t.hasAttribute('data-vwname')) { (m.querySelector('[data-va=save]') as HTMLElement).click(); }
       if (t.hasAttribute('data-rename')) { (m.querySelector('[data-va=rename-save]') as HTMLElement).click(); }
     });
-    m.addEventListener('click', (e) => {
+    m.addEventListener('click', async (e) => {
       const t = e.target as HTMLElement;
       const vw = t.closest('[data-vw]') as HTMLElement | null;
       if (vw) {
@@ -2005,7 +2210,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       } else if (act === 'share' && cur) {
         this.sv.update(cur.id, { shared: !cur.shared }).subscribe({ next: v => { this.replaceView(v); reopen(); }, error: x => err(x, 'The view could not be shared. Try again.') });
       } else if (act === 'delete' && cur) {
-        if (!confirm(T('Delete the view "{0}"? Everyone it is shared with loses it too.', [cur.name]))) { return; }
+        if (!(await zConfirm(T('Delete the view "{0}"? Everyone it is shared with loses it too.', [cur.name])))) { return; }
         this.sv.remove(cur.id).subscribe({ next: () => { this.views = this.views.filter(v => v.id !== cur.id); if (this.defaultId === cur.id) { this.defaultId = null; } this.viewId = null; this.paintViewsBtn(); reopen(); }, error: x => err(x, 'The view could not be deleted. Try again.') });
       } else if (act === 'reset') {
         this.viewId = null; this.closeMenu();
@@ -2266,7 +2471,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       const v = what.value;
       const go = t.closest('[data-go]') as HTMLButtonElement;
       if (v === 'export') { modal.remove(); this.openMenu('export', this.bar!.querySelector('[data-menu=export]') as HTMLElement); return; }
-      if (v === 'delete' && !confirm(T('Delete {0} records?', [sel.ids.length]))) { return; }
+      if (v === 'delete' && !(await zConfirm(T('Delete {0} records?', [sel.ids.length])))) { return; }
       go.disabled = true; res.innerHTML = `<p class="zl-muted">${T('Working…')}</p>`;
       try {
         let okN = 0; const bad: { id: string; error: string }[] = [];

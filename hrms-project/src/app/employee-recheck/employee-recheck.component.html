@@ -37,7 +37,7 @@
         *ngFor="let employee of filterEmployees()"
         [value]="employee.id"
       >
-        {{ employee.emp_code }}
+        {{ employee.emp_code }}<ng-container *ngIf="employee.emp_name || employee.emp_first_name"> – {{ employee.emp_name || ((employee.emp_first_name || '') + ' ' + (employee.emp_last_name || '')) }}</ng-container>
       </mat-option>
 
     </mat-select>

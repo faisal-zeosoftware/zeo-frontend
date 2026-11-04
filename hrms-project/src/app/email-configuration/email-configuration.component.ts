@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { EMAIL_CONFIG_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -7,6 +9,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-email-configuration',
@@ -304,6 +307,7 @@ loadUsers(): void {
 
 
     openPopus():void{
+    zFormThenReload(EMAIL_CONFIG_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
       this.iscreateLoanApp = true;
 
     }
@@ -393,6 +397,7 @@ loadUsers(): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(EMAIL_CONFIG_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 }
@@ -447,7 +452,7 @@ closeEditModal(): void {
     }
     
     
-    deleteSelectedEmailConfig() { 
+    async deleteSelectedEmailConfig() { 
       const selectedEmployeeIds = this.EmailConfg
         .filter(employee => employee.selected)
         .map(employee => employee.id);
@@ -457,7 +462,7 @@ closeEditModal(): void {
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected Email Configuration?')) {
+      if ((await zConfirm('Are you sure you want to delete the selected Email Configuration?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -483,9 +488,11 @@ closeEditModal(): void {
         });
       }
     }
-    
-    
-  
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEmailConfig();
+  }
 }

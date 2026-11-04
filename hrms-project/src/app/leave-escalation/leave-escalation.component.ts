@@ -10,6 +10,7 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -399,7 +400,7 @@ getPageNumbers(): number[] {
         }
         
         
-        deleteSelectedGeneralReq() { 
+        async deleteSelectedGeneralReq() { 
           const selectedEmployeeIds = this.GeneralReq
             .filter(employee => employee.selected)
             .map(employee => employee.id);
@@ -409,7 +410,7 @@ getPageNumbers(): number[] {
             return;
           }
         
-          if (confirm('Are you sure you want to delete the selected General Request?')) {
+          if ((await zConfirm('Are you sure you want to delete the selected General Request?'))) {
         
             let total = selectedEmployeeIds.length;
             let completed = 0;
@@ -439,7 +440,7 @@ getPageNumbers(): number[] {
           }
         }
         
-        resetSelectedGeneralReq() {
+        async resetSelectedGeneralReq() {
           const selectedIds = this.GeneralReq
             .filter(item => item.selected)
             .map(item => item.id);
@@ -449,7 +450,7 @@ getPageNumbers(): number[] {
             return;
           }
         
-          if (confirm('Are you sure you want to reset the selected General Request(s)?')) {
+          if ((await zConfirm('Are you sure you want to reset the selected General Request(s)?'))) {
         
             let total = selectedIds.length;
             let completed = 0;
@@ -474,8 +475,8 @@ getPageNumbers(): number[] {
           }
         }
         
-        resetSingleReq(id: number) {
-          if (confirm("Are you sure you want to reset this rule?")) {
+        async resetSingleReq(id: number) {
+          if ((await zConfirm("Are you sure you want to reset this rule?"))) {
             this.employeeService.resetLeaveEsc(id).subscribe(
               () => {
                 alert("Reset successful!");
@@ -807,6 +808,11 @@ getPageNumbers(): number[] {
                         this.request_document = file;
                       }
                     }
-                  
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).resetSelectedGeneralReq();
+  }
 }

@@ -1,5 +1,6 @@
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ESS_BASE, EssApiService } from './ess-api.service';
@@ -9,7 +10,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 @Component({
   selector: 'app-ess-documents',
   standalone: true,
-  imports: [...COUNTRY_PACK_UI, CommonModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, ZDateFieldComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -62,8 +63,8 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
     <p class="es-msg err" *ngIf="uerr">{{ uerr }}</p>
     <div class="es-form">
       <div><label>New number (if changed)</label><input class="es-input" [value]="upload.number" (input)="upload.newNumber = $any($event.target).value"></div>
-      <div><label>Issue date</label><input type="date" class="es-input" (input)="upload.issued = $any($event.target).value"></div>
-      <div><label>Expiry date</label><input type="date" class="es-input" (input)="upload.expiry = $any($event.target).value"></div>
+      <div><label>Issue date</label><z-date-field (valueChange)="upload.issued = $event"></z-date-field></div>
+      <div><label>Expiry date</label><z-date-field (valueChange)="upload.expiry = $event"></z-date-field></div>
       <div class="wide"><label>File</label><input type="file" class="es-input" (change)="upload.file = $any($event.target).files?.[0] || null"></div>
       <div class="wide"><label>Note for HR (optional)</label><input class="es-input" (input)="upload.reason = $any($event.target).value" placeholder="e.g. Passport renewed in Dubai"></div>
     </div>

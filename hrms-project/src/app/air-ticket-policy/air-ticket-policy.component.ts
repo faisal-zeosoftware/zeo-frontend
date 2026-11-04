@@ -16,6 +16,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CatogaryService } from '../catogary-master/catogary.service';
 import { MatOption } from '@angular/material/core';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -1059,7 +1060,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAirTicketPolicy() { 
+async deleteSelectedAirTicketPolicy() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -1069,7 +1070,7 @@ deleteSelectedAirTicketPolicy() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected AirTicket Policy ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected AirTicket Policy ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

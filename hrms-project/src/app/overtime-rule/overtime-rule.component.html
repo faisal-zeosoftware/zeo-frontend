@@ -1,9 +1,10 @@
+<!-- v1.62.0 ui legacy rows: "+ New overtime rule" top right; Edit / Delete on each row -->
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
     <div class="header_section">
       <div class="row">
         <div class="col-md-4">
-          <h1>OverTime rule</h1>
+          <h1>Overtime rules</h1><!-- v1.62.0 people -->
         </div>
         <div class="col-md-3">
           <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
@@ -13,38 +14,18 @@
             <button
               type="button"
               (click)="openPopus()"
-              class="btn-Create btn btn-success"
+              class="z-new-btn" data-z-new
               *ngIf="hasAddPermission"
             >
               <span class="header-btn-icon"
                 ><mat-icon>add_circle </mat-icon></span
-              >
-              Create
-            </button>
+              >+ New overtime rule</button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button
-              type="button"
-              class="btn-Edit btn-info btn"
-              (click)="EditShowButtons()"
-              *ngIf="hasEditPermission"
-            >
-              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
-              Edit
-            </button>
+            
             <span *ngIf="hasEditPermission"></span>
 
-            <button
-              type="button"
-              class="btn-Delete btn btn-danger"
-              (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission"
-            >
-              <span class="header-btn-icon">
-                <mat-icon> delete </mat-icon></span
-              >
-              {{ Delete ? "Cancel" : "Delete" }}
-            </button>
+            
 
             <span *ngIf="!hasDeletePermission"></span>
           </div>
@@ -80,7 +61,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Create OverTime rule</h2>
+            <h2>Create overtime rule</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -244,7 +225,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit OverTime rule</h2>
+            <h2>Edit overtime rule</h2>
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -418,12 +399,12 @@
         </thead>
         <tbody>
           <tr *ngFor="let pol of overtimepol; let i = index">
-            <td data-label="Rule Type">{{ pol.rule_type }}</td>
-            <td data-label="Base Type">{{ pol.base_type }}</td>
-            <td data-label="Threshold Hours">{{ pol.threshold_hours }}</td>
-            <td data-label="Is Extended">{{ pol.is_extended }}</td>
+            <td data-label="Rule Type">{{ $any({DAILY: 'Daily', WEEKLY: 'Weekly', MONTHLY: 'Monthly'})[pol.rule_type] || pol.rule_type }}</td><!-- v1.62.0 people: words, not codes -->
+            <td data-label="Base Type">{{ $any({SHIFT: 'After the shift', FIXED: 'Fixed hours', HOURS: 'Fixed hours'})[pol.base_type] || pol.base_type }}</td>
+            <td data-label="Threshold Hours">{{ (pol.threshold_hours || '').toString().length === 8 ? (pol.threshold_hours | slice:0:5) + ' h' : pol.threshold_hours }}</td>
+            <td data-label="Is Extended">{{ pol.is_extended ? 'Yes' : 'No' }}</td>
             <td data-label="Order">{{ pol.order }}</td>
-            <td data-label="Is Active">{{ pol.is_active }}</td>
+            <td data-label="Is Active">{{ pol.is_active ? 'Yes' : 'No' }}</td>
             <td data-label="Policy">{{ pol.policy }}</td>
 
             <td data-label="Action">
@@ -431,16 +412,13 @@
                 mat-fab
                 color="primary"
                 aria-label="Edit icon"
-                *ngIf="showEditBtn"
+                *ngIf="hasEditPermission"
                 (click)="openEditModal(pol)"
               >
                 <mat-icon style="color: white">draw</mat-icon>
               </button>
 
-              <mat-checkbox
-                *ngIf="Delete"
-                [(ngModel)]="pol.selected"
-              ></mat-checkbox>
+              <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(pol); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
             </td>
           </tr>
         </tbody>

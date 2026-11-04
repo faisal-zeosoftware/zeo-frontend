@@ -5,6 +5,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRM
 import { ActivatedRoute, Router } from '@angular/router';
 import { exportExcel, exportPdf } from '../shared-ui/z-export';
 import { HEALTH_LABEL, PRIORITY_CLASS, STAGE_CLASS, ZP_BASE, ZpApiService, day, money, num, slaText, today, when } from './zp-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** New project (v1.14.0): a ZEO project with customer, type, billing, budget and team. */
 @Component({
@@ -590,7 +591,7 @@ export class ZpProjectComponent implements OnInit {
     if (await this.run(() => this.api.post(`projects/${this.p.id}/save-template/`, { name: this.saveT.name }))) { this.saveT = null; this.msg = ''; await this.api.lookups(true); }
   }
   async delTask(t: any): Promise<void> {
-    if (!confirm(`Delete the task "${t.title}"?`)) return;
+    if (!(await zConfirm(`Delete the task "${t.title}"?`))) return;
     await this.run(() => this.api.delete(`tasks/${t.id}/delete/`));
   }
   private range(): [number, number] {
@@ -649,7 +650,7 @@ export class ZpProjectComponent implements OnInit {
     this.ft.busy = false;
   }
   async removeFile(x: any): Promise<void> {
-    if (!confirm(`Remove ${x.name}?`)) return;
+    if (!(await zConfirm(`Remove ${x.name}?`))) return;
     try { await this.api.delete(`task-files/${x.id}/`); this.ft.files = this.ft.files.filter((y: any) => y.id !== x.id); await this.load(); }
     catch (e) { this.ft.err = ZpApiService.error(e); }
   }
@@ -702,7 +703,7 @@ export class ZpProjectComponent implements OnInit {
   }
   async saveRisk(): Promise<void> { if (await this.run(() => this.rk.id ? this.api.patch(`risks/${this.rk.id}/`, this.rk) : this.api.post(`projects/${this.p.id}/risks/`, this.rk))) this.rk = null; }
   async addExp(): Promise<void> { if (await this.run(() => this.api.post(`projects/${this.p.id}/expenses/`, { ...this.ex, date: today() }))) this.ex = { description: '', amount: null, category: 'third_party', vendor: '' }; }
-  delExp(x: any): void { if (confirm('Remove this cost?')) this.run(() => this.api.delete(`expenses/${x.id}/`)); }
+  async delExp(x: any): Promise<void> { if ((await zConfirm('Remove this cost?'))) this.run(() => this.api.delete(`expenses/${x.id}/`)); }
 
   done(): number { return this.p.tasks.filter((t: any) => t.status === 'completed').length; }
   late(): number { return this.p.tasks.filter((t: any) => t.overdue).length; }

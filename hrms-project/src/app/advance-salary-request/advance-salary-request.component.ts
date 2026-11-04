@@ -1,3 +1,6 @@
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../login/authentication.service';
@@ -11,12 +14,51 @@ import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 166)
+import { advanceRequestForm, pauseForm, resumeForm } from '../shared-ui/z-request-forms';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-advance-salary-request',
   templateUrl: './advance-salary-request.component.html',
-  styleUrl: './advance-salary-request.component.css'
+  styleUrls: ['./advance-salary-request.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class AdvanceSalaryRequestComponent {
+  // v1.62.0 talent-ops: the register reads /payroll-plus/api/loan-desk/requests/?kind=advance; the forms stay as they were
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  lnRows: any[] = [];
+  lnSum: any = {};
+  lnLoading = true;
+  lnMsg = '';
+  lnTab = 'all';
+  lnBranches: number[] = [];
+  lnTabs = [{ k: 'all', label: 'All' }, { k: 'in_approval', label: 'In approval' }, { k: 'running', label: 'Approved' },
+            { k: 'closed', label: 'Deducted' }, { k: 'rejected', label: 'Rejected' }];
+  private lnIn(r: any, k: string): boolean {
+    if (k === 'all') { return true; }
+    if (k === 'running') { return ['approved', 'paused'].includes(r.stage); }
+    if (k === 'closed') { return r.stage === 'deducted'; }
+    if (k === 'rejected') { return r.stage === 'rejected' || r.stage === 'cancelled'; }
+    return r.stage === k;
+  }
+  get lnShown(): any[] {
+    const q = (this.searchQuery || '').toLowerCase().trim();
+    return this.lnRows.filter(r => this.lnIn(r, this.lnTab) && (!q || [r.number, r.employee, r.code, r.note, r.branch].join(' ').toLowerCase().includes(q)));
+  }
+  lnCount(k: string): number { return this.lnRows.filter(r => this.lnIn(r, k)).length; }
+  async lnLoad(): Promise<void> {
+    try { const r: any = await this.ln.get('requests', { kind: 'advance', branch_id: this.lnBranches }); this.lnRows = r.rows || []; this.lnSum = r.summary || {}; this.lnMsg = ''; }
+    catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The advance salary requests could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnGo(url: string): void { this.lnRouter.navigate([url]); }
+  lnAct(what: string, r: any): void {
+    const row = (this.DocRequest || []).find((x: any) => x.id === r.id) || { id: r.id };
+    if (what === 'pause') { this.openPauseModal(row); } else if (what === 'resume') { this.openResumeModal(row); } else { this.openEditModal(row); }
+  }
+  async lnDelete(r: any): Promise<void> {
+    if (await this.ln.remove('advance-salary-request', r.id, this.ln.t('advance salary request {0} of {1}', [r.number, r.employee]))) { await this.lnLoad(); }
+  }
 
   
 
@@ -486,6 +528,7 @@ loadEmp(callback?: Function): void {
     isLoading: boolean = false;
 
     fetchEmployees(schema: string, branchIds: number[]): void {
+      this.lnBranches = branchIds || []; this.lnLoad();   // v1.62.0 talent-ops
       this.isLoading = true;
       this.leaveService.getAdvSalaryRequestNew(schema, branchIds).subscribe({
 
@@ -579,7 +622,18 @@ loadEmp(callback?: Function): void {
 
 
 
+  // v1.62.10 (item 166): New / Edit / Pause / Resume open the shared form (same endpoints and fields as the old pop-ups); the list reloads after a save
+  async zOpen(cfg: any, record?: any): Promise<void> {
+    if (await openZForm(cfg, record)) {
+      await this.lnLoad();
+      const sch = this.authService.getSelectedSchema();
+      if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+    }
+  }
+  private zNo(row: any): string { return row?.document_number || (this.lnRows || []).find((x: any) => x.id === row?.id)?.number || ''; }
+
     openPopus():void{
+      this.zOpen(advanceRequestForm()); return;   // v1.62.10 (item 166)
       this.iscreateLoanApp = true;
       this.document_number = null;
       this.automaticNumbering = false;
@@ -609,6 +663,7 @@ selectedLoanId: number | null = null;
 
 
 openPauseModal(loan: any): void {
+  this.zOpen(pauseForm('advance', loan.id, this.zNo(loan))); return;   // v1.62.10 (item 166)
 this.selectedLoanId = loan.id;
 this.pause_start_date = '';
 this.pause_reason = '';
@@ -621,6 +676,7 @@ this.isPauseModalOpen = false;
 
 
 openResumeModal(loan: any): void {
+  this.zOpen(resumeForm('advance', loan.id, this.zNo(loan))); return;   // v1.62.10 (item 166)
 this.selectedLoanId = loan.id;
 this.resume_date = '';
 this.isResumeModalOpen = true;
@@ -747,6 +803,7 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  this.zOpen(advanceRequestForm(), { id: asset.id }); return;   // v1.62.10 (item 166)
 
   this.editAsset = { ...asset };
 
@@ -763,7 +820,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() {
+async deleteSelectedAssetType() {
 const selectedEmployeeIds = this.DocRequest
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -773,7 +830,7 @@ alert('No States selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected  Advance Salary Request ?')) {
+if ((await zConfirm('Are you sure you want to delete the selected  Advance Salary Request ?'))) {
       let total = selectedEmployeeIds.length;
     let completed = 0;
 selectedEmployeeIds.forEach(categoryId => {

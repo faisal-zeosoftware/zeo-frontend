@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HSE_BASE, HseApiService, csv, day, num, today } from './hse-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.17.0 pages that use the other ZEO apps: muster list (attendance), handovers (transfers and resignations)
  *  and HSE costs (cost centres and projects). Each page explains itself when its app is not linked. */
@@ -156,7 +157,7 @@ export class HseLinksComponent implements OnInit, OnDestroy {
   }
 
   async nothing(h: any): Promise<void> {
-    if (!confirm(`Close the handover of ${h.employee.name} without reassigning? The records keep their current owner.`)) return;
+    if (!(await zConfirm(`Close the handover of ${h.employee.name} without reassigning? The records keep their current owner.`))) return;
     try { await this.api.post(`links/handovers/${h.id}/`, { nothing: true, note: this.note[h.id] || '' }); this.ok = 'Closed.'; await this.load(); }
     catch (e) { this.msg = HseApiService.error(e); }
   }

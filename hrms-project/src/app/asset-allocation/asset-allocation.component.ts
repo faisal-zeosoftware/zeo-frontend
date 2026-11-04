@@ -7,6 +7,7 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs'
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-asset-allocation',
@@ -556,7 +557,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetAllocation() { 
+async deleteSelectedAssetAllocation() { 
   const selectedEmployeeIds = this.AssetAllocations
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -566,7 +567,7 @@ deleteSelectedAssetAllocation() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset Allocation ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Asset Allocation ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -730,5 +731,10 @@ updateretruened(): void {
     );
   }
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetAllocation();
+  }
 }

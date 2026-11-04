@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 import { LANG_LABEL, PrintTemplatesApi, PtMeta, PtPlaceholder, PtPreview, PtSettings, PtTemplate, PtVersion } from './print-templates.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-print-template-editor',
@@ -217,8 +218,8 @@ export class PrintTemplateEditorComponent implements OnInit, OnDestroy {
     this.t.mode = 'html'; this.changed();
   }
 
-  toBlocks(): void {
-    if (!this.t || !confirm(i18nT('Go back to the block editor? Your HTML / CSS changes are kept in the versions but no longer used.'))) { return; }
+  async toBlocks(): Promise<void> {
+    if (!this.t || !(await zConfirm(i18nT('Go back to the block editor? Your HTML / CSS changes are kept in the versions but no longer used.')))) { return; }
     this.t.mode = 'blocks'; this.pane = 'blocks'; this.changed();
   }
 

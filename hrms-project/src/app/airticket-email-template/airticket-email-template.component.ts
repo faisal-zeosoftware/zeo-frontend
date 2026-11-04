@@ -1,4 +1,5 @@
 import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+import { emailTemplateForm, zFormThenReload } from '../shared-ui/z-forms';   // v1.62.1
 
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
@@ -17,6 +18,7 @@ import { AirticketEmailTemplateEditComponent } from '../airticket-email-template
 
 import { combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-airticket-email-template',
   templateUrl: './airticket-email-template.component.html',
@@ -642,6 +644,7 @@ toggleAllDesignations(): void {
 
 
   openEditPopuss(selectedTemplate: any): void {
+    zFormThenReload(emailTemplateForm('/payroll/api/airticket-email-template/', 'air ticket e-mail template', 'template_type'), selectedTemplate); return;   // v1.62.1 one shared template editor
     this.dialog.open(AirticketEmailTemplateEditComponent, {
       width: '80%',
       height: '700px',
@@ -660,6 +663,7 @@ toggleAllDesignations(): void {
 
 
 openPopus(): void {
+  zFormThenReload(emailTemplateForm('/payroll/api/airticket-email-template/', 'air ticket e-mail template', 'template_type')); return;   // v1.62.1 one shared template editor
 
   this.iscreateLoanApp = true;
 
@@ -803,7 +807,7 @@ getDesignationNames(ids: number[]): string {
 
 
 
-  deleteSelectedAssetType() {
+  async deleteSelectedAssetType() {
     const selectedEmployeeIds = this.tempEmails
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -813,7 +817,7 @@ getDesignationNames(ids: number[]): string {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Email Template?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Email Template?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -917,4 +921,10 @@ filterBranches(): any[] {
   );
 }
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

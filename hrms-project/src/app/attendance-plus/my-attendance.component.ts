@@ -8,12 +8,14 @@ import { ApApi, STATUS_COLOR, currentPosition, fileToDataUrl, isMobile } from '.
 
 /** ESS / mobile (v1.12.0): punch in / out, breaks and lunch, scan a site QR, my month (status, late, early, OT, break),
  *  request a correction, my corrections, my QR badge and kiosk PIN. */
+import { ZNoEmployeeComponent } from '../people62/z-no-employee.component';   // v1.62.0 people
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 list tools on "My month"
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-my-attendance',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZNoEmployeeComponent],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
@@ -22,6 +24,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
       <p class="ap-desc">Clock in and out, take breaks, see your month and ask for a correction when a punch is missing or wrong.</p></div>
   </div>
   <p class="ap-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
+  <z-no-employee *ngIf="noEmp" what="This page shows your own punches, days and corrections."></z-no-employee>
 
   <div class="ap-card" *ngIf="st">
     <div class="ap-punch">
@@ -63,7 +66,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
     </div>
   </div>
 
-  <div class="ap-card">
+  <div class="ap-card" *ngIf="!noEmp">
     <div class="ap-head" style="margin-bottom:8px">
       <h2 style="margin:0">My month</h2>
       <div class="ap-tools">
@@ -161,6 +164,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
 </div>`,
 })
 export class MyAttendanceComponent implements OnInit, OnDestroy {
+  noEmp = false;   // v1.62.0 people
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
   @ViewChild('qrBox') qrBox?: ElementRef<HTMLDivElement>;
   api: ApApi;
@@ -200,13 +204,16 @@ export class MyAttendanceComponent implements OnInit, OnDestroy {
   monthLabel(): string { return new Date(this.y, this.m - 1, 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }); }
 
   async loadStatus(): Promise<void> {
-    try { this.st = await this.api.get('punches/my_status/'); } catch (e) { this.say(ApApi.err(e, 'Your attendance could not be loaded.'), true); }
+    try { this.st = await this.api.get('punches/my_status/'); } catch (e: any) {
+      if (e?.status === 403 || e?.status === 404) { this.noEmp = true; this.cdr.markForCheck(); return; }   // v1.62.0 people: no employee record linked
+      this.say(ApApi.err(e, 'Your attendance could not be loaded.'), true);
+    }
     this.cdr.markForCheck();
   }
 
   async loadMonth(): Promise<void> {
     this.loadingMonth = true;
-    try { this.month = await this.api.get('days/my_month/', { year: this.y, month: this.m }); } catch (e) { this.say(ApApi.err(e), true); }
+    try { this.month = await this.api.get('days/my_month/', { year: this.y, month: this.m }); } catch (e: any) { if (!(e?.status === 403 || e?.status === 404)) { this.say(ApApi.err(e), true); } }
     this.loadingMonth = false; this.cdr.markForCheck();
   }
 
@@ -317,7 +324,7 @@ export class MyAttendanceComponent implements OnInit, OnDestroy {
   }
 
   async cancel(c: any): Promise<void> {
-    if (!confirm('Cancel this correction request?')) return;
+    if (!(await zConfirm('Cancel this correction request?'))) return;
     try { await this.api.post(`corrections/${c.id}/cancel/`); this.loadCorrections(); } catch (e) { this.say(ApApi.err(e), true); }
   }
 

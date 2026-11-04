@@ -31,7 +31,7 @@ const CSS = FLOW_CSS + `
 .ai-form label.chk{flex-direction:row;align-items:center;gap:8px}.ai-form label.chk input{height:auto}
 .ai-wide{overflow:auto}
 .ai-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-.ai-sev{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+.ai-sev{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:700;letter-spacing:.02em}
 .ai-sev.critical{background:#fde8e8;color:#b42318}.ai-sev.warning{background:#fff4de;color:#b45309}.ai-sev.info{background:#e8eefb;color:#2b4fb5}
 .ai-why{color:#4a4f63;font-size:12.5px;margin-top:3px;line-height:1.45}
 .ai-done td{opacity:.6}
@@ -96,8 +96,8 @@ const EXAMPLES = ['Which departments have high turnover or absence?', 'Salary bu
         <div class="ai-wide"><table class="fw-table">
           <tr><th>{{ 'Run' | t }}</th><th>{{ 'Status' | t }}</th><th class="ai-num">{{ 'Payslips' | t }}</th><th>{{ 'Audit' | t }}</th><th></th></tr>
           <tr *ngFor="let r of runs" [style.background]="r.id === run?.id ? '#f6f5ff' : ''">
-            <td><a class="fw-link" (click)="openRun(r)">{{ r.name || (r.month + '/' + r.year) }}</a><div class="fw-muted" style="font-size:11.5px">{{ r.month }}/{{ r.year }}</div></td>
-            <td><span class="fw-chip" [ngClass]="r.status">{{ r.status | t }}</span></td>
+            <td><a class="fw-link" (click)="openRun(r)">{{ r.name || monthName(r) }}</a><div class="fw-muted" style="font-size:11.5px" *ngIf="r.name">{{ monthName(r) }}</div></td>
+            <td><span class="fw-chip" [ngClass]="r.status">{{ runStatus(r.status) | t }}</span></td>
             <td class="ai-num">{{ r.payslips }}</td>
             <td>
               <ng-container *ngIf="r.audit; else noaudit">
@@ -319,8 +319,29 @@ const EXAMPLES = ['Which departments have high turnover or absence?', 'Salary bu
 
   <!-- ================= performance & development ================= -->
   <ng-container *ngIf="tab === 'performance'">
+    <!-- v1.62.0 talent-ops: opens on the employees who need attention, each with why (was a bare employee select on a blank page) -->
+    <div class="fw-card" *ngIf="!pf.employee" data-ai-attention>
+      <h2>{{ 'Who needs attention' | t }}</h2>
+      <p class="ai-note" style="margin-top:0">{{ 'A final rating of 2 or below, an open improvement plan, skill gaps against the role, certificates expiring within 90 days or expired, overdue training needs. Open an employee for the review summary, skill gaps, training and a development plan.' | t }}</p>
+      <div class="fw-kpis" *ngIf="att">
+        <div class="fw-kpi"><span>{{ 'Employees flagged' | t }}</span><b>{{ att.counts.flagged }} <small class="fw-muted">/ {{ att.employees }}</small></b></div>
+        <div class="fw-kpi" [class.bad]="att.counts.rating"><span>{{ 'Low rating' | t }}</span><b>{{ att.counts.rating }}</b></div>
+        <div class="fw-kpi" [class.warn]="att.counts.pip"><span>{{ 'Open improvement plans' | t }}</span><b>{{ att.counts.pip }}</b></div>
+        <div class="fw-kpi" [class.warn]="att.counts.skills"><span>{{ 'With skill gaps' | t }}</span><b>{{ att.counts.skills }}</b></div>
+        <div class="fw-kpi" [class.warn]="att.counts.certificate"><span>{{ 'Certificates to renew' | t }}</span><b>{{ att.counts.certificate }}</b></div>
+      </div>
+      <div class="fw-empty" *ngIf="!att">{{ 'Loading…' | t }}</div>
+      <div class="ai-wide" *ngIf="att?.rows?.length"><table class="fw-table" data-ai-attention-list>
+        <tr><th>{{ 'Employee' | t }}</th><th>{{ 'Why' | t }}</th><th></th></tr>
+        <tr *ngFor="let r of att.rows" [attr.data-emp]="r.id">
+          <td style="white-space:nowrap"><b>{{ r.name }}</b><div class="fw-muted" style="font-size:11.5px">{{ r.code }} · {{ r.designation }}</div></td>
+          <td><div *ngFor="let f of r.flags" style="font-size:12.5px;margin:2px 0"><span class="ai-sev" [ngClass]="f.level">{{ (f.level === 'critical' ? 'Act now' : f.level === 'warning' ? 'Watch' : 'Note') | t }}</span> {{ f.text }}</div></td>
+          <td style="text-align:end;white-space:nowrap"><button class="fw-btn sm primary" type="button" (click)="pf.employee = '' + r.id; loadEmp()">{{ 'Open' | t }}</button></td>
+        </tr></table></div>
+      <div class="fw-empty" *ngIf="att && !att.rows.length">{{ 'Nobody needs attention: no low rating, open plan, skill gap or expiring certificate.' | t }}</div>
+    </div>
     <div class="ai-form">
-      <label>{{ 'Employee' | t }}<select [(ngModel)]="pf.employee" (change)="loadEmp()"><option value="">–</option><option *ngFor="let e of lk.employees" [value]="e.id">{{ e.name }} ({{ e.code }}) – {{ e.designation }}</option></select></label>
+      <label>{{ 'Employee' | t }}<select [(ngModel)]="pf.employee" (change)="loadEmp()"><option value="">{{ 'Everyone who needs attention' | t }}</option><option *ngFor="let e of lk.employees" [value]="e.id">{{ e.name }} ({{ e.code }}) – {{ e.designation }}</option></select></label>
       <label><span>&nbsp;</span><div class="fw-row"><button class="fw-btn" type="button" (click)="tmpl()">{{ 'Appraisal template' | t }}</button><button class="fw-btn" type="button" (click)="loadTraining()">{{ 'Training & certificates' | t }}</button></div></label>
     </div>
     <div class="ai-two" *ngIf="pf.employee && ps">
@@ -467,7 +488,7 @@ const EXAMPLES = ['Which departments have high turnover or absence?', 'Salary bu
     <div class="fw-card" *ngIf="log">
       <h2>{{ 'What the assistants did' | t }}</h2>
       <table class="fw-table"><tr><th>{{ 'When' | t }}</th><th>{{ 'Kind' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Summary' | t }}</th></tr>
-        <tr *ngFor="let l of log"><td style="white-space:nowrap">{{ l.at | date:'d MMM HH:mm' }}</td><td><span class="fw-chip">{{ l.kind }}</span></td><td>{{ l.by }}</td><td style="font-size:12.5px">{{ l.summary }}</td></tr>
+        <tr *ngFor="let l of log"><td style="white-space:nowrap">{{ l.at | date:'d MMM HH:mm' }}</td><td><span class="fw-chip">{{ kindWord(l.kind) | t }}</span></td><td>{{ l.by }}</td><td style="font-size:12.5px">{{ l.summary }}</td></tr>
         <tr *ngIf="!log.length"><td colspan="4" class="fw-empty">{{ 'Nothing yet.' | t }}</td></tr></table>
     </div>
   </ng-container>
@@ -486,7 +507,7 @@ export class ZeoAiComponent implements OnInit, OnDestroy {
   // recruitment
   rm: any = null; rc = { job: '' }; short: any = null; cand: any = null; jd: any = null; qs: any = null; slots: any = null; dr: any = null; drKind = 'invite'; drApp = 0;
   // performance
-  pf = { employee: '' }; ps: any = null; pg: any = null; pc: any = null; po: any = null; pp: any = null; tp: any = null; tr: any = null; ce: any = null;
+  pf = { employee: '' }; att: any = null; ps: any = null; pg: any = null; pc: any = null; po: any = null; pp: any = null; tp: any = null; tr: any = null; ce: any = null;
   // workforce
   q = ''; ans: SafeHtml | null = null; wf = { branch: '', department: '', months: 6, growth: 0, increment: 0, increment_month: '' };
   hc: any = null; bg: any = null; hs: any = null; rn: any = null; cmp: any = null; cmpBy = 'branch';
@@ -514,12 +535,22 @@ export class ZeoAiComponent implements OnInit, OnDestroy {
   md(s: string): SafeHtml { return this.san.bypassSecurityTrustHtml(renderAnswer(s || '')); }
   copy(s: string): void { navigator.clipboard?.writeText(s).then(() => this.ok('Copied.')); this.cd.markForCheck(); }
 
+  // v1.62.0 talent-ops: words instead of raw values
+  monthName(r: any): string { const m = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][(+r.month || 1) - 1]; return `${m} ${r.year}`; }
+  kindWord(k: string): string {
+    return ({ payroll_audit: 'Payroll audit', attendance: 'Attendance', recruitment: 'Recruitment', performance: 'Performance', workforce: 'Workforce', settings: 'Settings', plan_saved: 'Development plan saved' } as any)[k] || (k ? k.charAt(0).toUpperCase() + k.slice(1).replace(/_/g, ' ') : '–');
+  }
+  runStatus(s: string): string {
+    return ({ draft: 'Draft', processed: 'Processed', approved: 'Approved', paid: 'Paid', pending: 'Pending', confirmed: 'Confirmed', locked: 'Locked', closed: 'Closed', in_progress: 'In progress' } as any)[s] || (s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/_/g, ' ') : '–');
+  }
+
   load(): void {
     this.msg = '';
     if (this.tab === 'payroll') { this.loadRuns(); }
     if (this.tab === 'attendance') { this.loadAtt(); }
     if (this.tab === 'recruitment') { this.get('recruitment/metrics/').then(d => { this.rm = d; this.cd.markForCheck(); }).catch(e => this.fail(e)); }
     if (this.tab === 'workforce') { this.loadWf(); this.loadCmp(); }
+    if (this.tab === 'performance' && !this.att) { this.get('performance/attention/').then(d => { this.att = d; this.cd.markForCheck(); }).catch(e => this.fail(e)); }   // v1.62.0 talent-ops
     if (this.tab === 'settings') {
       this.get('settings/').then(d => { this.st = d; this.cd.markForCheck(); }).catch(e => this.fail(e));
       this.get('log/').then(d => { this.log = d; this.cd.markForCheck(); }).catch(() => { this.log = []; });

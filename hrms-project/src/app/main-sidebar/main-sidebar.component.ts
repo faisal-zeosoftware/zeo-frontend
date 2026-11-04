@@ -1,4 +1,7 @@
 import { FlowService } from '../zeo-flow/flow.service';   // v1.29.0
+import { setUserNames, startPeoplePass } from '../shared-ui/z-present';   // v1.62.0 ui
+import { startLegacyHeads } from '../shared-ui/z-legacy-head';   // v1.62.1
+import { filter as rxFilter, take as rxTake } from 'rxjs/operators';   // v1.62.0 ui
 import { ZLocation, ZLocationService, ZLocationState } from '../shared-ui/z-location.service';   // v1.30.0
 import { ZeoCloudService } from '../shared-ui/zeo-cloud.service';
 import { style } from '@angular/animations';
@@ -20,6 +23,7 @@ import { APP_VERSION } from '../shared-ui/version';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ElementRef, ViewChild } from '@angular/core';
 import { HostListener } from '@angular/core';
+import { EssApiService } from '../self-service/ess-api.service';
 
 @Component({
   selector: 'app-main-sidebar',
@@ -83,6 +87,7 @@ export class MainSidebarComponent implements OnDestroy {
     private cloud: ZeoCloudService,
     private flow: FlowService,   // v1.29.0
     private zloc: ZLocationService,   // v1.30.0 location level
+    private ess: EssApiService,   // v1.62.1 my profile from the name in the top bar
   ) {
     this.zloc.state$.subscribe(st => { this.locState = st; this.locGroups = this.zloc.groups(); });
     this.zloc.selected$.subscribe(ids => (this.locSelected = ids));
@@ -91,17 +96,30 @@ export class MainSidebarComponent implements OnDestroy {
     this.suites.suite$.subscribe(s => { this.suite = s; this.buildMenu(); });
     // v1.21.0: only the apps active in the company (Settings → Apps); an app switched off moves the user to an active one
     this.suites.active$.subscribe(a => { if (a) { this.buildMenu(); this.keepActiveSuite(); } });
+    window.addEventListener('zeo-reopen-page', this.reopenListener);   // v1.62.1
+    startLegacyHeads();   // v1.62.1 card header with a description on the old registers
     // v1.23.0 ZEO Cloud: Subscription / Security for the account owner
     this.cloud.status$.subscribe(() => this.buildMenu());
     this.cloud.load();
   }
 
+  private keeping = false;
   private keepActiveSuite(): void {
-    if (this.suites.isActive(this.suite)) { return; }
-    const next = SUITES.find(x => x.key !== 'settings' && this.suites.isActive(x.key))?.key || 'settings';
+    if (this.keeping) { return; }
+    this.keeping = true;
+    try { this.keepActiveSuite0(); } finally { this.keeping = false; }
+  }
+  private keepActiveSuite0(): void {
+    // v1.62.0: also when the open PAGE belongs to an app the company does not have (after switching company the
+    // remembered app could already be an active one while the page was still an HR page of the previous company)
+    const urlSuite = suiteForUrl(this.router.url) as AppSuite | null;
+    const pageOff = !!urlSuite && urlSuite !== 'settings' && !this.suites.isActive(urlSuite);
+    if (this.suites.isActive(this.suite) && !pageOff) { return; }
+    const next = this.suites.isActive(this.suite) && this.suite !== 'settings' ? this.suite
+      : (SUITES.find(x => x.key !== 'settings' && this.suites.isActive(x.key))?.key || 'settings');
     this.suites.set(next);
     const g = visibleGroups(this.menuAccess, false, next)[0];
-    const link = next === 'settings' ? '/main-sidebar/settings/home' : g?.apps[0]?.link;
+    const link = next === 'settings' ? '/main-sidebar/settings/home' : (g?.apps[0]?.link || '/main-sidebar/home');
     if (link && suiteForUrl(this.router.url) !== next) { this.router.navigateByUrl(link); }
   }
   suite: AppSuite = 'hrms';
@@ -134,7 +152,7 @@ export class MainSidebarComponent implements OnDestroy {
     this.currentAppKey = appForUrl(this.router.url)?.key || (this.router.url.includes('dashboard-contents') ? 'home' : this.router.url.includes('manager-dashboard') ? 'mgr' : '');
     // v1.20.0: a page of another app switches the menu to that app; shared pages (Calendar, My To-do) keep it
     const s = suiteForUrl(this.router.url);
-    if (s && this.suites && s !== this.suites.suite) { this.suites.set(s); }
+    if (s && this.suites && s !== this.suites.suite && this.suites.isActive(s)) { this.suites.set(s); }   // v1.62.0: never an app the company does not have (it ping-ponged with keepActiveSuite: stack overflow)
     if (this.suites && this.currentAppKey) { this.suites.touch(this.currentAppKey); }
     preferApp(this.currentAppKey);   // v1.40.1
     if (this.suites) { this.suites.loadActive(); if (this.suites.active$.value) { this.keepActiveSuite(); } }
@@ -321,6 +339,7 @@ export class MainSidebarComponent implements OnDestroy {
   // LIFECYCLE
   // ============================================================
   ngOnDestroy(): void {
+    window.removeEventListener('zeo-reopen-page', this.reopenListener);   // v1.62.1
     this.unlockBodyScroll();
   }
 
@@ -381,7 +400,7 @@ export class MainSidebarComponent implements OnDestroy {
           this.userDetails = userData;
           this.username = this.userDetails.username;
           // v1.62.0 ui: the top bar shows the person's name, not the sign-in name (gdis_admin)
-          this.zlist.userNames().subscribe(l => { const me = (l || []).find(u => u.username === userData?.username); this.displayName = me?.name || ''; });
+          this.zlist.userNames().subscribe(l => { const me = (l || []).find(u => u.username === userData?.username); this.displayName = me?.name || ''; setUserNames(l, this.zlist.schema); startPeoplePass(); });
         },
         (error) => {
           console.error('Failed to fetch user details:', error);
@@ -391,6 +410,7 @@ export class MainSidebarComponent implements OnDestroy {
       this.authService.getUserSchema(this.userId).subscribe(
         (userData: any) => {
           this.userDetailss = userData;
+          this.storeNarrow();   // v1.62.0 ui
           this.schemas = userData.map(
             (schema: any) => schema.schema_name
           );
@@ -412,6 +432,16 @@ export class MainSidebarComponent implements OnDestroy {
 
   loadAllNotifications(selectedSchema: string): void {
     this.EmployeeService.selectedBranches$.subscribe(ids => {
+      // v1.62.0 ui: the HR request notifications only in a company that has HR (they failed with an error elsewhere)
+      this.loadFlowNotifications();
+      const act = this.suites.active$.value;
+      if (!act) { this.suites.active$.pipe(rxFilter(x => !!x), rxTake(1)).subscribe(x => { if ((x || []).includes('hrms')) { this.loadHrNotifications(); } }); return; }
+      if (act.includes('hrms')) { this.loadHrNotifications(); }
+    });
+  }
+
+  private loadHrNotifications(): void {
+    {
       this.loadExpiredDocuments();
       this.loadLeaveNotifications();
       this.loadAssetNotifications();
@@ -422,8 +452,7 @@ export class MainSidebarComponent implements OnDestroy {
       this.loadLoanReqNotifications();
       this.loadAdvancesalaryReqNotifications();
       this.loadLateinEarlyOutNotifications();
-      this.loadFlowNotifications();
-    });
+    }
   }
 
   /** v1.29.0: notifications written by the automation rules and the approval engine (any app). */
@@ -700,6 +729,10 @@ export class MainSidebarComponent implements OnDestroy {
     });
   }
 
+  /** v1.62.0 payroll: the dropdown keeps its rows when the lists reload (no rebuild of every row by each of the 11 loaders) */
+  notiLimit = 100;
+  notiTrack(_i: number, n: any): string { return `${n?.type}-${n?.id}`; }
+
   combineNotifications(): void {
     const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
     const allItems = [
@@ -822,7 +855,70 @@ export class MainSidebarComponent implements OnDestroy {
   }
 
   isCompanyDropdownOpen = false;
+  private reopenListener = (): void => this.reopenPage();   // v1.62.1 a list asks for its page again after a bulk delete / make inactive
   expandedSchemaIndex: number = -1;
+
+  // ---------------------------------------------------------------- v1.62.0 ui: "Company and branches" menu
+  companyQuery = '';
+  private groupsKey = '';
+  private groupsVal: { title: string; items: any[] }[] = [];
+  private static APP_LABEL: Record<string, string> = { hrms: 'HR', payroll: 'Payroll', projects: 'Projects', crm: 'CRM', property: 'Property',
+    maintenance: 'Maintenance', assets: 'Assets', people: 'People', hse: 'HSE' };
+  private recentCompanies(): string[] { try { return JSON.parse(localStorage.getItem('zeoRecentCompanies') || '[]'); } catch { return []; } }
+  /** the menu opened: the current company unfolded, the search empty */
+  companyMenuOpened(): void {
+    this.companyQuery = '';
+    const i = (this.userDetailss || []).findIndex((c: any) => c.schema_name === this.selectedSchema);
+    if (i >= 0) { this.expandedSchemaIndex = i; }
+  }
+  /** current company, then recent, then all A–Z (search: name, country or app) */
+  companyGroups(): { title: string; items: any[] }[] {
+    const list: any[] = this.userDetailss || [];
+    const q = (this.companyQuery || '').trim().toLowerCase();
+    const recent = this.recentCompanies();
+    const key = [list.length, q, this.selectedSchema, recent.join(',')].join('|');
+    if (key === this.groupsKey) { return this.groupsVal; }
+    const hit = (c: any) => !q || (c.name || '').toLowerCase().includes(q) || this.companySub(c).toLowerCase().includes(q);
+    const cur = list.filter(c => c.schema_name === this.selectedSchema && hit(c));
+    const rec = recent.map(r => list.find(c => c.schema_name === r)).filter(c => c && c.schema_name !== this.selectedSchema && hit(c)).slice(0, 5);
+    const rest = list.filter(c => !cur.includes(c) && !rec.includes(c) && hit(c)).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const out: { title: string; items: any[] }[] = [];
+    if (cur.length) { out.push({ title: 'Current company', items: cur }); }
+    if (rec.length) { out.push({ title: 'Recent', items: rec }); }
+    if (rest.length) { out.push({ title: cur.length || rec.length ? 'All companies' : '', items: rest }); }
+    this.groupsKey = key; this.groupsVal = out;
+    return out;
+  }
+  companySub(c: any): string {
+    const apps = (c?.apps || []).filter((a: string) => a !== 'people').map((a: string) => MainSidebarComponent.APP_LABEL[a] || a);
+    return [c?.country || '', apps.join(', ')].filter(Boolean).join(' · ');
+  }
+  branchesOn(c: any): number {
+    const all = (c?.branches || []).length;
+    if (c?.schema_name !== this.selectedSchema) { return all; }
+    return this.selectedBranchIds.length ? (c.branches || []).filter((b: any) => this.selectedBranchIds.includes(b.id)).length : all;
+  }
+  allBranches(c: any, ev: Event): void {
+    ev.stopPropagation();
+    this.selectedBranchIds = (c.branches || []).map((b: any) => b.id);
+    localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
+    this.applySelection();
+  }
+  /** v1.62.0 ui: the branch selection the API calls carry (X-Branch-Ids) – stored only while it leaves branches out */
+  private storeNarrow(): void {
+    try {
+      const co = (this.userDetailss || []).find((c: any) => c.schema_name === this.selectedSchema);
+      const all = (co?.branches || []).map((b: any) => b.id);
+      const ids = (this.selectedBranchIds || []).filter(i => all.includes(i));
+      if (co && ids.length && ids.length < all.length) { localStorage.setItem('zeoBranchNarrow', JSON.stringify({ schema: this.selectedSchema, ids })); }
+      else { localStorage.removeItem('zeoBranchNarrow'); }
+    } catch { /* storage off */ }
+  }
+  private rememberCompany(schema: string | null): void {
+    if (!schema) { return; }
+    const r = [schema, ...this.recentCompanies().filter(x => x !== schema)].slice(0, 8);
+    try { localStorage.setItem('zeoRecentCompanies', JSON.stringify(r)); } catch { /* storage off */ }
+  }
 
   toggleSchema(index: number, event: Event): void {
     event.stopPropagation();
@@ -843,6 +939,10 @@ export class MainSidebarComponent implements OnDestroy {
   }
 
   selectedBranchIds: number[] = [];
+  /** v1.62.0: the company's branch is in use – no stored choice means every branch (the boxes showed none ticked) */
+  isBranchOn(data: any, branch: any): boolean {
+    return this.selectedSchema === data?.schema_name && (!this.selectedBranchIds.length || this.selectedBranchIds.includes(branch?.id));
+  }
 
   selectBranch(schemaName: string, branch: any, event: Event): void {
     event.stopPropagation();
@@ -871,6 +971,10 @@ export class MainSidebarComponent implements OnDestroy {
       this.selectedBranchIds = [];
       this.selectedSchema = newSchema;
       localStorage.setItem('selectedSchema', this.selectedSchema ?? '');
+    } else if (!this.selectedBranchIds.length) {
+      // v1.62.0: nothing stored yet means every branch – start from all of them, so a click takes one branch OUT
+      // (before, the first click narrowed the company to that one branch while every box showed empty)
+      this.selectedBranchIds = (data.branches || []).map((b: any) => b.id);
     }
     const index = this.selectedBranchIds.indexOf(branch.id);
     if (index > -1) {
@@ -888,14 +992,27 @@ export class MainSidebarComponent implements OnDestroy {
 
   applySelection(): void {
     if (!this.selectedSchema) return;
+    this.storeNarrow();   // v1.62.0 ui
     this.EmployeeService.updateSchemaAndBranches(
       this.selectedSchema,
       this.selectedBranchIds
     );
     this.isCompanyDropdownOpen = false;
     this.isMobileCompanyDropdownOpen = false;
+    // v1.62.0: another COMPANY – load the app again for it: its apps, the user's rights there, the inbox / approval counts,
+    // its language and country settings (re-creating only the page kept the previous company's menu and counts, and
+    // left the user on a page of an app the new company does not have). A branch change only re-creates the page.
+    if (this.appliedSchema && this.appliedSchema !== this.selectedSchema) {
+      this.rememberCompany(this.appliedSchema); this.rememberCompany(this.selectedSchema);   // v1.62.0 ui recent companies
+      this.appliedSchema = this.selectedSchema;
+      const url = this.router.url && !this.router.url.startsWith('/login') ? this.router.url : '/main-sidebar/home';
+      setTimeout(() => window.location.assign(url), 50);
+      return;
+    }
+    this.appliedSchema = this.selectedSchema;
     this.reopenPage();
   }
+  private appliedSchema: string | null = localStorage.getItem('selectedSchema');
 
   /** v1.28.1: after a company / branch change the open page is re-created (same URL, no full reload) so lists, forms
    *  and dropdowns show the new selection at once – before, most pages read the selection only when they opened. */
@@ -969,6 +1086,25 @@ export class MainSidebarComponent implements OnDestroy {
     this.selectedBranchNotification = branch;
     this.notificationList = branch.notifications || [];
     this.isNotificationModalOpen = true;
+  }
+
+  /** v1.62.1: the name in the top bar opens the user's own employee profile (like other HR software).
+   *  HR (employee view right or company administrator) gets the full employee page with every tab; other users get
+   *  Self service › My profile; a login with no employee record goes to My account (sign-in settings). */
+  private myEmpId: number | null | undefined = undefined;
+  async openMyProfile(ev?: Event): Promise<void> {
+    ev?.preventDefault();
+    if (this.myEmpId === undefined) {
+      try { const r: any = await this.ess.get('profile/'); this.myEmpId = Number(r?.employee_id) || null; }
+      catch (e: any) { this.myEmpId = (e?.status === 403 || e?.status === 404) ? null : undefined; }
+    }
+    if (!this.myEmpId) {
+      this.router.navigateByUrl(this.myEmpId === null ? '/main-sidebar/settings/my-account' : '/main-sidebar/self-service/profile');
+      return;
+    }
+    const a = this.menuAccess;
+    const hr = !!a && (a.admin || a.codes.has('view_emp_master'));
+    this.router.navigateByUrl(hr ? `/main-sidebar/sub-sidebar/employee-details/${this.myEmpId}/details` : '/main-sidebar/self-service/profile');
   }
 
   logout(): void {

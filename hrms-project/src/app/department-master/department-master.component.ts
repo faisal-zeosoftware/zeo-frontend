@@ -1,4 +1,5 @@
 import { Component,OnInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { zFormThenReload, DEPARTMENT_FORM } from '../shared-ui/z-forms';   // v1.62.1
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -14,6 +15,7 @@ import { withModule } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { EmployeeService } from '../employee-master/employee.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-department-master',
@@ -334,10 +336,7 @@ if (this.userId !== null) {
 
 
     openPopus(){
-      this.dialog.open(DepartmentCreationComponent,{
-        width:'80%',
-        height:'700px',
-      })
+      zFormThenReload(DEPARTMENT_FORM);   // v1.62.1 new-design form (was DepartmentCreationComponent)
     }
 
 
@@ -362,7 +361,7 @@ if (this.userId !== null) {
     // You can add any additional logic if needed.
   }
 
-  deleteSelectedEmployees() { 
+  async deleteSelectedEmployees() { 
     const selectedEmployeeIds = this.Departments
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -372,7 +371,7 @@ if (this.userId !== null) {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Department?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Department?'))) {
       selectedEmployeeIds.forEach(DeptId => {
         this.DepartmentServiceService.deleteDept(DeptId).subscribe(
           () => {
@@ -511,6 +510,7 @@ closeUploadForm(): void {
 
 
   openEditPopuss(departmentId: number):void{
+    zFormThenReload(DEPARTMENT_FORM, { id: departmentId }); return;   // v1.62.1 new-design form
     const dialogRef = this.dialog.open(DepartmentEditComponent, {
       width:'80%',
       height:'500px',
@@ -553,8 +553,11 @@ closeUploadForm(): void {
         window.URL.revokeObjectURL(url);
       });
     }
-    
 
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEmployees();
+  }
 }

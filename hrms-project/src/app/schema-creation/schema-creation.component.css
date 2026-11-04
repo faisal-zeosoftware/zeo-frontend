@@ -93,3 +93,19 @@
 .sc-app b { display: block; font-size: 13.5px; font-weight: 600; color: #1b1640; }
 .sc-app small { display: block; font-size: 12px; color: #6b7185; }
 .sc-apps-err { color: #b42318; font-size: 12.5px; margin: 8px 0 0; }
+
+/* v1.62.1 company creation progress – covers the form while the job runs */
+.sc-job { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 16px; background: rgba(20, 22, 40, .45); }
+.sc-job-card { width: min(560px, 100%); max-height: 92vh; overflow: auto; border-radius: 14px; box-shadow: 0 18px 50px rgba(20, 22, 40, .25); }
+.sc-job-note { flex: 1; font-size: 12.5px; color: #8A5A00; align-self: center; }
+
+/* v1.62.1 (user request 2 Nov) "Starting setup" */
+.sc-start-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.sc-copy { margin-top: 12px; row-gap: 4px; }
+.sc-copy label { font-size: 13px; }
+.sc-code { text-transform: uppercase; }
+.sc-copy-hint { margin: 6px 0 0; }
+.sc-job-copied { flex: 1 1 100%; box-sizing: border-box; text-align: start; display: flex; gap: 6px; align-items: flex-start; margin: 0; padding: 8px 10px; border-radius: 8px;
+  background: #eeedfd; color: #2d2580; font-size: 12.5px; line-height: 1.45; }
+.sc-job-copied mat-icon { font-size: 16px; width: 16px; height: 16px; flex: none; margin-top: 1px; color: #5b4ff5; }
+.sc-job-copied.bad { background: #fff4e5; color: #8a5a00; }

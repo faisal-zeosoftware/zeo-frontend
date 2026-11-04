@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ZaActionComponent } from './za-register.component';
 import { ZaApiService, ZaClient, base, day, stClass, when } from './za-api.service';
 import { blobError, openPdf } from './za-asset-side.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.33.0 – Asset Management screens that are more than a register: scan, labels, counting, floor plans,
  *  and the asset panels shown on the record page (label, HR history, depreciation, journal, count progress). */
@@ -315,7 +316,7 @@ export class ZaAuditCountComponent implements OnInit {
   }
   mark(l: any, result: string): void { this.post({ line: l.id, result, location: result === 'found' ? this.where : null }); }
   async finish(): Promise<void> {
-    if (!confirm('Finish counting? Assets not counted yet will be marked missing.')) return;
+    if (!(await zConfirm('Finish counting? Assets not counted yet will be marked missing.'))) return;
     try { await this.api.post(`r/audit/${this.id}/do/submit/`, {}); this.back(); } catch (e) { this.msg = ZaApiService.error(e); this.msgCls = 'err'; }
   }
   back(): void { this.router.navigate([base(APP), 'r', 'audit', this.id]); }

@@ -24,44 +24,8 @@
 </div>
                 </div>
         <div class="col-md-5">
-          <div class="button-group pull-right">
-            <button
-              type="button"
-              (click)="openPopus()"
-              class="btn-Create btn btn-success"
-              *ngIf="hasAddPermission"
-            >
-              <span class="header-btn-icon"
-                ><mat-icon>add_circle </mat-icon></span
-              >
-              Create
-            </button>
-            <span *ngIf="!hasAddPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Edit btn-info btn"
-              (click)="EditShowButtons()"
-              *ngIf="hasEditPermission"
-            >
-              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
-              Edit
-            </button>
-            <span *ngIf="hasEditPermission"></span>
-
-            <button
-              type="button"
-              class="btn-Delete btn btn-danger"
-              (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission"
-            >
-              <span class="header-btn-icon">
-                <mat-icon> delete </mat-icon></span
-              >
-              {{ Delete ? "Cancel" : "Delete" }}
-            </button>
-
-            <span *ngIf="!hasDeletePermission"></span>
+          <div class="button-group pull-right"><!-- v1.62.10 (item 175): one "+ New" (was Create / Edit / Delete toggles) -->
+            <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New late coming policy</button>
           </div>
         </div>
       </div>
@@ -576,7 +540,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit asset type</h2>
+            <h2>Edit late coming policy</h2>   <!-- v1.62.1 (tester 30-10 item 200): read "Edit asset type" -->
           </div>
           <div class="col-md-2 text-right">
             <!-- Styled Square Close Button -->
@@ -1084,13 +1048,13 @@
 
               <td data-label="Late Occurrence Limit">{{ docs.late_occurrence_limit }}</td>
 
-              <td data-label="Penalty Type">{{ docs.penalty_type }}</td>
+              <td data-label="Penalty Type">{{ $any({half_day: 'Half day', full_day: 'Full day', leave_deduction: 'Leave deduction'})[docs.penalty_type] || docs.penalty_type || '–' }}</td><!-- v1.62.0 people: words, not codes -->
 
-              <td data-label="Attendance Policy">{{ docs.attendance_policy }}</td>
+              <td data-label="Attendance Policy">{{ docs.attendance_policy || '–' }}</td>
 
-              <td data-label="Enabled">{{ docs.enabled }}</td>
+              <td data-label="Enabled">{{ docs.enabled ? 'Yes' : 'No' }}</td>
 
-              <td data-label="Reset Monthly">{{ docs.reset_monthly }}</td>
+              <td data-label="Reset Monthly">{{ docs.reset_monthly ? 'Yes' : 'No' }}</td>
 
               <td data-label="Branch">
                 {{ docs.branch?.length ? docs.branch.join(", ") : "Null" }}
@@ -1119,17 +1083,9 @@
               </td>
 
                <td class="sticky-right" data-label="Actions">
-                <button
-                  mat-fab
-                  color="primary"
-                  *ngIf="showEditBtn"
-                  (click)="openEditModal(docs)"
-                >
-                  <mat-icon>draw</mat-icon>
-                </button>
-
-                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected">
-                </mat-checkbox>
+                <!-- v1.62.10 (item 175): Edit / Delete on each row -->
+                <button type="button" class="z-row-btn" *ngIf="hasEditPermission" (click)="openEditModal(docs); $event.stopPropagation()" title="Edit" aria-label="Edit"><mat-icon>edit</mat-icon></button>
+                <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(docs); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
               </td>
             </tr>
           </tbody>

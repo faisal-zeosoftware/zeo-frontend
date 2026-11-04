@@ -8,6 +8,7 @@ import { ASSET_BASE, AssetApiService, CONDITIONS, EVENT_ICON, STATUS_CLASS, STAT
 import { AssetFormComponent } from './asset-form.component';
 import { Bar, code39 } from './barcode';
 import { ZaApiService } from '../zeo-apps/za-api.service';   // v1.33.0 link to Asset Management
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | 'schedule' | 'damage' | 'loss' | 'dispose' | 'label' | 'upload' | 'verify';
 
@@ -472,18 +473,18 @@ export class AssetDetailComponent implements OnInit {
   }
 
   async removePlan(s: any): Promise<void> {
-    if (!confirm(`Remove the plan "${s.title}"?`)) return;
+    if (!(await zConfirm(`Remove the plan "${s.title}"?`))) return;
     try { await this.api.delete(`schedules/${s.id}/`); this.done('Plan removed.'); } catch (e: any) { this.fail(e); }
   }
 
   /** v1.15.1: delete an asset entered by mistake (the server refuses when it has any history – then dispose of it). */
   async removeAsset(): Promise<void> {
-    if (!confirm('Delete this asset? Only an asset without allocations, requests or maintenance can be deleted.')) return;
+    if (!(await zConfirm('Delete this asset? Only an asset without allocations, requests or maintenance can be deleted.'))) return;
     try { await this.api.delete(`assets/${this.id}/`); this.back(); } catch (e: any) { this.fail(e); }
   }
 
   async removeFile(f: any): Promise<void> {
-    if (!confirm(`Remove ${f.name}?`)) return;
+    if (!(await zConfirm(`Remove ${f.name}?`))) return;
     try { await this.api.delete(`assets/${this.id}/files/${f.id}/`); this.done('File removed.'); } catch (e: any) { this.fail(e); }
   }
 

@@ -2,8 +2,9 @@
   <div class="comapny_section">
     <div class="com_list" *ngIf="hasViewPermission">
       <div class="cpm-sec">
-        <h2>Forms</h2>
-        <hr />
+        <!-- v1.62.0 people: a card header with a description (was a bare "Forms" title) -->
+        <div class="zp-cardhead"><h1>Form designer</h1>
+          <p>Choose which fields the employee, asset and other forms show, their order, the mandatory ones and your own extra fields. Changes apply to the forms of the whole company.</p></div>
         <mat-horizontal-stepper [linear]="isLinear" #stepper>
           <mat-step [stepControl]="firstFormGroup">
             <ng-template matStepLabel>Employee Form</ng-template>

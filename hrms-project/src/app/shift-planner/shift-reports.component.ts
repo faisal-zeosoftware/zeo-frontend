@@ -5,6 +5,7 @@
  * API: reports/roster/?from&to&branch&department&status[&export=csv], reports/requests/?from&to&status[&export=csv]
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpApiService, SpMeta, addDays, isoDate, niceDate } from './sp-api.service';
@@ -14,7 +15,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
 @Component({
   selector: 'app-sp-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -28,7 +29,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
     <div class="com_list mt-4">
       <div class="lp-msg err" *ngIf="msg" role="status">{{ msg }}</div>
       <div class="sp-bar">
-        <label>From <input type="date" [(ngModel)]="from"></label><label>To <input type="date" [(ngModel)]="to"></label>
+        <label>From <z-date-field [(value)]="from"></z-date-field></label><label>To <z-date-field [(value)]="to"></z-date-field></label>
         <select *ngIf="kind === 'roster'" [(ngModel)]="branch" aria-label="Branch"><option [ngValue]="null">All my branches</option><option *ngFor="let b of meta?.branches" [ngValue]="b.id">{{ b.branch_name }}</option></select>
         <select *ngIf="kind === 'roster'" [(ngModel)]="status" aria-label="Roster status"><option value="published">Published rosters</option><option value="">All rosters (drafts too)</option></select>
         <button type="button" class="lp-btn primary" (click)="load()">Show</button>

@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TPipe } from '../shared-ui/i18n.service';
 import { FLOW_CSS } from '../zeo-flow/flow.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.59.0 – Payroll → Setup → Legal rates: the legal figures ZEO uses in its own calculations (UAE GPSSA rates and the
@@ -62,14 +63,16 @@ function err(e: any): string {
 
   <div class="fw-card lr-wide" *ngIf="d">
     <table class="fw-table" zPlain>
-      <thead><tr><th>{{ 'Figure' | t }}</th><th>{{ 'In force on' | t }} {{ d.date }}</th><th>{{ 'Built-in' | t }}</th><th>{{ 'History' | t }}</th><th></th></tr></thead>
+      <!-- v1.62.0 talent-ops: labels and percentages / AED instead of field keys and fractions; dates dd/mm/yyyy (the key stays in a tooltip) -->
+      <thead><tr><th>{{ 'Figure' | t }}</th><th>{{ 'In force on' | t }} {{ dmy(d.date) }}</th><th>{{ 'Built-in' | t }}</th><th>{{ 'History' | t }}</th><th></th></tr></thead>
       <tbody>
         <tr *ngFor="let r of d.rows" [attr.data-rate]="r.key">
-          <td><b>{{ r.label }}</b><br><small class="lp-muted">{{ r.key }} · {{ r.country }}</small></td>
-          <td><span class="lr-val">{{ r.value }}</span><br><small class="lp-muted">{{ r.source === 'rate' ? (('from' | t) + ' ' + r.from) : ('built-in value' | t) }}</small>
+          <td [title]="r.key"><b>{{ name(r.label) }}</b><br><small class="lp-muted">{{ country(r.country) }} · {{ unit(r) | t }}</small>
+            <span class="fw-chip warn" *ngIf="r.to_be_confirmed" data-tbc>{{ 'To be confirmed' | t }}</span></td>
+          <td><span class="lr-val">{{ show(r, r.value) }}</span><br><small class="lp-muted">{{ r.source === 'rate' ? (('from' | t) + ' ' + dmy(r.from)) : ('built-in value' | t) }}</small>
             <br *ngIf="r.law_reference"><small class="lp-muted" *ngIf="r.law_reference">{{ r.law_reference }}</small></td>
-          <td>{{ r.built_in ?? '–' }}</td>
-          <td><ul class="lr-hist"><li *ngFor="let h of r.history">{{ h.effective_from }}: <b>{{ h.value }}</b> <span class="fw-chip ok" *ngIf="h.in_force">{{ 'in force' | t }}</span>
+          <td>{{ r.built_in === null || r.built_in === undefined ? '–' : show(r, r.built_in) }}</td>
+          <td><ul class="lr-hist"><li *ngFor="let h of r.history">{{ dmy(h.effective_from) }}: <b>{{ show(r, h.value) }}</b> <span class="fw-chip ok" *ngIf="h.in_force">{{ 'in force' | t }}</span>
               <a class="fw-link" *ngIf="d.can_change" (click)="del(h)">{{ 'Delete' | t }}</a></li>
             <li *ngIf="!r.history.length">–</li></ul></td>
           <td><button type="button" class="lp-btn" *ngIf="d.can_change" (click)="start(r)">{{ 'New value from a date' | t }}</button></td>
@@ -81,7 +84,7 @@ function err(e: any): string {
   <div class="fw-card" *ngIf="f" data-rate-form>
     <h2>{{ 'New value from a date' | t }} – {{ f.label }}</h2>
     <div class="lr-form">
-      <label>{{ 'Value' | t }}<input type="number" step="0.0001" [(ngModel)]="f.value"></label>
+      <label>{{ (f.pct ? 'Value (%)' : 'Value (AED)') | t }}<input type="number" step="0.01" [(ngModel)]="f.value"></label>
       <label>{{ 'Starts on' | t }}<input type="date" [(ngModel)]="f.effective_from"></label>
       <label class="wide">{{ 'Law reference' | t }}<input [(ngModel)]="f.law_reference" maxlength="400"></label>
       <label class="wide">{{ 'Notes' | t }}<textarea [(ngModel)]="f.notes"></textarea></label>
@@ -104,20 +107,43 @@ export class LegalRatesComponent implements OnInit {
     catch (e) { this.msg = err(e); this.bad = true; }
     this.cd.detectChanges();
   }
+  // v1.62.0 talent-ops: words and units
+  isPct(r: any): boolean { return !/salary_(min|max)|_amount$|_ceiling$|_years$|_days_|_divisor$|_to_employee$/.test(r.key || ''); }   // v1.62.11 (item 229): counts, not rates
+  plainNo(r: any): boolean { return /_years$|_days_|_divisor$|_to_employee$/.test(r.key || ''); }   // v1.62.11 (item 229)
+  unit(r: any): string {   // v1.62.11 (item 229)
+    const k = r.key || '';
+    if (/_years$/.test(k)) { return 'years'; }
+    if (/_days_|_divisor$/.test(k)) { return 'days'; }
+    if (/_to_employee$/.test(k)) { return '1 = yes, 0 = no'; }
+    return this.isPct(r) ? 'percentage of the contribution salary' : 'AED a month';
+  }
+  show(r: any, v: any): string {
+    if (v === null || v === undefined || v === '') { return '–'; }
+    const n = +v;
+    if (this.plainNo(r)) { return n.toLocaleString('en-US', { maximumFractionDigits: 4 }); }   // v1.62.11 (item 229)
+    if (this.isPct(r)) { return `${+(n * 100).toFixed(3)} %`; }
+    return 'AED ' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+  name(l: string): string { return String(l || '').replace(/\s*\((fraction[^)]*|AED[^)]*)\)\s*$/i, ''); }
+  country(c: string): string { return ({ AE: 'United Arab Emirates', SA: 'Saudi Arabia', QA: 'Qatar', OM: 'Oman', KW: 'Kuwait', BH: 'Bahrain' } as any)[c] || c || ''; }
+  dmy(v: any): string { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : (v || ''); }
   start(r: any): void {
-    this.f = { key: r.key, label: r.label, value: r.value === null ? null : +r.value, effective_from: '', law_reference: '', notes: '' };
+    const pct = this.isPct(r);
+    this.f = { key: r.key, label: this.name(r.label), pct, value: r.value === null ? null : (pct ? +(+r.value * 100).toFixed(4) : +r.value), effective_from: '', law_reference: '', notes: '' };
     setTimeout(() => document.querySelector('[data-rate-form]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   }
   async save(): Promise<void> {
     this.busy = true; this.msg = ''; this.bad = false;
     try {
-      const r = await firstValueFrom(this.http.post<any>(API, this.f, { params: { schema: schema() } }));
+      const body = { ...this.f, value: this.f.pct ? +(+this.f.value / 100).toFixed(6) : this.f.value };   // v1.62.0 talent-ops: typed in %
+      delete body.pct;
+      const r = await firstValueFrom(this.http.post<any>(API, body, { params: { schema: schema() } }));
       this.f = null; this.msg = 'Saved.' + (r.note ? ' ' + r.note : ''); await this.load();
     } catch (e) { this.msg = err(e); this.bad = true; }
     this.busy = false; this.cd.detectChanges();
   }
   async del(h: any): Promise<void> {
-    if (!confirm(`Delete the value from ${h.effective_from}?`)) { return; }
+    if (!(await zConfirm(`Delete the value from ${this.dmy(h.effective_from)}?`))) { return; }
     try { await firstValueFrom(this.http.delete<any>(API, { params: { schema: schema(), id: h.id } })); await this.load(); }
     catch (e) { this.msg = err(e); this.bad = true; this.cd.detectChanges(); }
   }

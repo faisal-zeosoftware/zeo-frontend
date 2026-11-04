@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { moved } from '../not-found/moved';   // v1.15.1
 import { ModuleOptionsComponent, ModuleMenuItem } from './module-options/module-options.component';
+import { HubLandingComponent } from './hub-landing.component';   // v1.62.0 talent-ops
 import { CrudPageComponent } from './crud-page/crud-page.component';
 import { GoalWorkspaceComponent } from './goal-workspace/goal-workspace.component';
 import { CalibrationComponent } from './calibration/calibration.component';
@@ -155,7 +156,7 @@ export const HR_MODULE_ROUTES: Routes = [
     component: ModuleOptionsComponent,
     data: { title: 'Learning options', base: '/main-sidebar/learning-options', menu: LEARNING_MENU },
     children: [
-      { path: '', redirectTo: 'my-learning', pathMatch: 'full' },
+      { path: '', component: HubLandingComponent, pathMatch: 'full', data: { model: 'trainingsession', base: '/main-sidebar/learning-options', hr: 'reports', self: 'my-learning' } },   // v1.62.0 talent-ops: HR lands on the reports
       page('needs', NEEDS_PAGE),
       page('courses', COURSE_PAGE),
       page('calendar', SESSION_PAGE),

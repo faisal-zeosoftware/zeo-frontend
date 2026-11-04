@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
 import { CompanyEditComponent } from '../company-edit/company-edit.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-company-details',
@@ -84,8 +85,8 @@ export class CompanyDetailsComponent {
   }
 
 
-  onDeleteEmployee(employeeId: number): void {
-    if (confirm('Are you sure you want to delete this Company?')) {
+  async onDeleteEmployee(employeeId: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this Company?'))) {
         this.companyRegistrationService.deleteEmployee(employeeId).subscribe(
             () => {
                 console.log('Company deleted successfully');

@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 import { CompanyEditComponent } from '../company-edit/company-edit.component';
 import { Router } from '@angular/router';
 import { SessionService } from '../login/session.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -24,8 +25,7 @@ import { SessionService } from '../login/session.service';
               </div>
               <div class="col-md-5">
                   <div class="button-group pull-right">
-                      <button type="button" (click)="openPopus()"  class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                      </mat-icon></span> Create</button>
+                      <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New company</button><!-- v1.62.1 -->
                       <span *ngIf="!hasAddPermission"></span>
                       <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
                       <span class="header-btn-icon">
@@ -294,7 +294,7 @@ onCheckboxChange(employee:number) {
   // You can add any additional logic if needed.
 }
 
-deleteSelectedEmployees() { 
+async deleteSelectedEmployees() { 
   const selectedEmployeeIds = this.Companies
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -304,7 +304,7 @@ deleteSelectedEmployees() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected employees?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected employees?'))) {
     selectedEmployeeIds.forEach(categoryId => {
       this.companyRegistrationService.deleteCompany(categoryId).subscribe(
         () => {

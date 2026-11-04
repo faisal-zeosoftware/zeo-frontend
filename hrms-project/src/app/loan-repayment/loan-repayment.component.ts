@@ -1,3 +1,6 @@
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -8,14 +11,32 @@ import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
   selector: 'app-loan-repayment',
   templateUrl: './loan-repayment.component.html',
-  styleUrl: './loan-repayment.component.css'
+  styleUrls: ['./loan-repayment.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class LoanRepaymentComponent {
+  // v1.62.0 talent-ops: read-only list from /payroll-plus/api/loan-desk/repayments/
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  lnRows: any[] = [];
+  lnSum: any = {};
+  lnLoading = true;
+  lnMsg = '';
+  lnMonth = '';
+  lnBranches: number[] = [];
+  get lnMonths(): string[] { return Array.from(new Set(this.lnRows.map(r => String(r.month)))).slice(0, 8); }
+  get lnShown(): any[] { return this.lnRows.filter(r => !this.lnMonth || String(r.month) === this.lnMonth); }
+  async lnLoad(): Promise<void> {
+    try { const r: any = await this.ln.get('repayments', { branch_id: this.lnBranches }); this.lnRows = r.rows || []; this.lnSum = r.summary || {}; this.lnMsg = ''; }
+    catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The repayments could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnGo(url: string, q?: any): void { this.lnRouter.navigate([url], q ? { queryParams: q } : {}); }
 
   
   
@@ -72,6 +93,7 @@ private employeeService: EmployeeService,
     ]).subscribe(([schema, branchIds]) => {
       if (schema) {
         this.fetchEmployees(schema, branchIds);
+        this.lnBranches = branchIds || []; this.lnLoad();   // v1.62.0 talent-ops
 
       }
     });
@@ -387,7 +409,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedLoanRepay() { 
+async deleteSelectedLoanRepay() { 
   const selectedEmployeeIds = this.LoanRepayements
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -397,7 +419,7 @@ deleteSelectedLoanRepay() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Loan Repayment ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Loan Repayment ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

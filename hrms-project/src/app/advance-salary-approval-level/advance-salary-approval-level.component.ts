@@ -1,3 +1,6 @@
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter, ActivatedRoute as LnRoute } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -11,15 +14,37 @@ import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
   selector: 'app-advance-salary-approval-level',
   templateUrl: './advance-salary-approval-level.component.html',
-  styleUrl: './advance-salary-approval-level.component.css'
+  styleUrls: ['./advance-salary-approval-level.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 
 export class AdvanceSalaryApprovalLevelComponent {
+  // v1.62.0 talent-ops: the workflows in words from /payroll-plus/api/loan-desk/levels/; the actions open this screen's own forms
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  private lnRoute = lnInject(LnRoute);
+  lnRows: any[] = [];
+  lnLoading = true;
+  lnMsg = '';
+  async lnLoad(): Promise<void> {
+    try { this.lnRows = (await this.ln.get('levels', { kind: 'advance' })).rows || []; this.lnMsg = ''; }
+    catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The approval levels could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnGo(p: string): void { this.lnRouter.navigate(['..', p], { relativeTo: this.lnRoute }); }
+  lnEdit(id: number): void {
+    const row = ((this as any).approvalLevels || []).find((x: any) => x.id === id);
+    if (row) { (this as any).openEditModal(row); }
+  }
+  async lnDelete(w: any): Promise<void> {
+    const what = this.ln.t('the approval workflow of {0}', [w.loan_type || w.branches.join(', ') || this.ln.t('No branch')]);
+    if (await this.ln.remove('advance-salary-approval-levels', w.id, what)) { await this.lnLoad(); }
+  }
 
   private dataSubscription?: Subscription;
    @ViewChild('select') select: MatSelect | undefined;
@@ -148,6 +173,8 @@ private employeeService: EmployeeService,
   ) {}
 
   ngOnInit(): void {
+
+    this.lnLoad();   // v1.62.0 talent-ops
 
 
      // combineLatest waits for both Schema and Branches to have a value
@@ -625,7 +652,7 @@ removeEditLevel(index: number) {
   }
 
 
-  deleteSelectedAdvanceSalaryAprlvl() {
+  async deleteSelectedAdvanceSalaryAprlvl() {
     const selectedEmployeeIds = this.approvalLevels
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -635,7 +662,7 @@ removeEditLevel(index: number) {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected  Approval Level ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected  Approval Level ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

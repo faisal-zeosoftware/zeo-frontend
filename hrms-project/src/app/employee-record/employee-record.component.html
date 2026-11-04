@@ -46,7 +46,6 @@
               <button type="button" (click)="action('probation')" *ngIf="r.employment?.can_decide">Extend or confirm probation</button>
               <button type="button" (click)="action('exit')">Start exit</button>
               <button type="button" (click)="action('print')">Print profile</button>
-              <button type="button" (click)="action('classic')">Classic view</button>
               <button type="button" class="danger" *ngIf="r.can_edit" (click)="action('deactivate')">{{ r.header.is_active ? 'Deactivate' : 'Activate' }}</button>
             </div>
           </div>
@@ -309,6 +308,8 @@
             <b>WPS readiness</b><span *ngFor="let w of r.pay.wps" [class.ok]="w.ok">{{ w.label }} {{ w.ok ? '✓' : '✗' }}</span>
             <span class="z-chip" [ngClass]="r.pay.wps_ready ? 'ok' : 'warn'">{{ r.pay.wps_ready ? 'Ready for WPS' : 'Not ready for WPS' }}</span>
           </section>
+          <!-- v1.63.0 (item 27): salary split – the main account plus a second bank account / cash / cheque / own method, dated -->
+          <div id="card-pay-split"><z-emp-pay-split [employeeId]="id"></z-emp-pay-split></div>
           <section class="er-card er-sec">
             <div class="er-sec-h"><h2>Payslips <span class="er-count">{{ r.pay.payslips.length }}</span></h2></div>
             <div class="er-table-wrap" *ngIf="r.pay.payslips.length"><table class="er-table"><thead><tr><th>Month</th><th>Run</th><th class="num">Gross</th><th class="num">Net</th><th>Status</th><th class="act"></th></tr></thead>
@@ -357,17 +358,25 @@
         <!-- ============================================================ Time & assets -->
         <ng-container *ngIf="group === 'time'">
           <section class="er-card er-sec">
-            <div class="er-sec-h"><h2>Leave balances</h2></div>
+            <!-- v1.62.10 (item 169): leave openings / adjustments here (were only on the classic view) – through the leave ledger -->
+            <div class="er-sec-h"><h2>Leave balances</h2><button type="button" class="er-link" *ngIf="r.can_edit" (click)="adjustLeave(null)" data-er-leave-adjust>{{ t('Opening or adjustment') }}</button></div>
             <div class="er-leaves" *ngIf="r.time.leaves.length">
-              <div *ngFor="let l of r.time.leaves" class="er-leave"><div class="er-leave-h"><b>{{ l.type }}</b><span>{{ t('{0} days left', [l.balance]) }}</span></div>
+              <div *ngFor="let l of r.time.leaves" class="er-leave"><div class="er-leave-h"><b>{{ l.type }}</b><span>{{ t('{0} days left', [l.balance]) }}</span>
+                <button type="button" class="er-icon pen" *ngIf="r.can_edit" (click)="adjustLeave(l)" [attr.aria-label]="t('Adjust balance')" [title]="t('Adjust balance')" data-er-leave-edit>✎</button></div>
                 <span class="er-bar wide"><i [style.width.%]="leaveBar(l)"></i></span>
                 <small class="er-muted">{{ t('{0} taken', [l.taken]) }}<ng-container *ngIf="l.pending"> · {{ t('{0} pending', [l.pending]) }}</ng-container><ng-container *ngIf="l.entitlement"> · {{ t('{0} a year', [l.entitlement]) }}</ng-container></small></div>
             </div>
             <p class="z-empty" *ngIf="!r.time.leaves.length">No leave balances yet</p>
           </section>
+          <!-- v1.62.6 (item 22): what decides the working days (roster > shift override > shift pattern > weekend calendar) -->
+          <section class="er-card er-sec" id="card-workdays">
+            <div class="er-sec-h"><h2>What decides the working days</h2></div>
+            <z-working-days [employeeId]="id"></z-working-days>
+          </section>
           <section class="er-card er-sec">
             <div class="er-sec-h"><h2>{{ t('Attendance') }} · {{ monthLabel() }}</h2>
-              <span class="er-seg"><button type="button" (click)="monthShift(-1)" aria-label="Previous month">‹</button><button type="button" (click)="monthShift(1)" aria-label="Next month">›</button></span></div>
+              <span class="er-seg"><button type="button" (click)="monthShift(-1)" aria-label="Previous month">‹</button><button type="button" (click)="monthShift(1)" aria-label="Next month">›</button></span>
+              <button type="button" class="er-link" *ngIf="att?.days?.length" (click)="exportAtt()" data-er-att-export>{{ t('Export') }}</button></div><!-- v1.62.10 (item 169): the month as Excel (was the classic view's attendance sheet) -->
             <div *ngIf="!att"><span class="z-skel"></span></div>
             <ng-container *ngIf="att">
               <div class="er-cal">

@@ -429,18 +429,7 @@ table thead th {
 
 
 /* Force hide Angular Material internal scrollbars globally */
-.mat-drawer-inner-container,
-.mat-sidenav-content {
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
-}
-
-.mat-drawer-inner-container::-webkit-scrollbar,
-.mat-sidenav-content::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
+/* v1.62.1: Material scrollbars are no longer hidden (thin scrollbars, end of file). */
 
 
 
@@ -465,15 +454,6 @@ table thead th {
   height: 100% !important; /* Constrains height to viewport */
   max-height: 100vh !important;
   overflow: hidden !important; 
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
-}
-
-.mat-drawer-inner-container::-webkit-scrollbar,
-.mat-drawer-content::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
 }
 
 /* 3. Base Sub-Sidebar Shell (Shared across all sub-modules) */
@@ -564,15 +544,9 @@ mat-sidenav-container {
 
 /* Native Scrollbar Hiding Rules for Clean UI */
 .nav-menu-list {
-  -ms-overflow-style: none !important; /* IE / Edge */
-  scrollbar-width: none !important; /* Firefox */
 }
 
-.nav-menu-list::-webkit-scrollbar {
-  display: none !important; /* Chrome / Safari / Opera */
-  width: 0 !important;
-  height: 0 !important;
-}
+/* v1.62.1: nav list scrollbar shown (thin) */
 
 .nav-menu-list li {
   width: 100%;
@@ -845,5 +819,45 @@ mat-sidenav-container {
 /* ---------------------------------------------------------------- v1.40.1 (bugs 28–29): no visible scrollbars anywhere, scrolling kept.
    Every scrollable element keeps overflow: auto / scroll; only the bar is hidden (Chrome / Edge / Safari via ::-webkit-scrollbar, Firefox via
    scrollbar-width). Mouse wheel, touch, keyboard and drag-scrolling work as before. */
-html, body, * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
-*::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+/* v1.62.1 user request 2 Nov: scrollbars shown again (thin) – see the block at the end of this file. */
+
+/* v1.62.0 people: page header card (title + one-line description) for the pages that are not on the shared list layout */
+.zp-cardhead { background: #fff; border: 1px solid #e9eaf2; border-bottom: 3px solid #5b4ff5; border-radius: 12px; padding: 18px 24px; margin: 0 0 14px; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }
+.zp-cardhead h1, .zp-cardhead h2 { font-size: 20px; font-weight: 600; margin: 0 0 4px; color: #1d2033; }
+.zp-cardhead p { margin: 0; color: #6b7185; font-size: 13px; line-height: 1.45; max-width: 860px; }
+
+/* v1.62.1 (tester 30-10 items 192 / 204) – the module sub-sidebars.
+   204: the scroll rules above target nav.sidebar; the Employees sub-sidebar (app-sub-sidebar) uses div.sidebar, so its
+        long menu could not scroll. Every sub-sidebar list scrolls now.
+   192: closing a sub-sidebar shrank only the list to 56 px – the drawer stayed 210 px wide (an empty dark band) and the
+        page kept its 210 px margin. Now the drawer and the page follow, like the main sidebar. */
+.sub-sidenav .sidebar {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important;
+}
+@media (min-width: 992px) {
+  .sub-sidenav:has(.sidebar.menu-close) { width: 56px !important; }
+  .sub-sidenav:has(.sidebar.menu-close) .sidebar-top { padding: 0 8px; justify-content: center; }
+  .sub-sidenav-container:has(> .sub-sidenav .sidebar.menu-close) > .mat-drawer-content { margin-left: 56px !important; }
+  html[dir=rtl] .sub-sidenav-container:has(> .sub-sidenav .sidebar.menu-close) > .mat-drawer-content { margin-left: 0 !important; margin-right: 56px !important; }
+  .sub-sidenav-container > .mat-drawer-content { transition: margin .2s ease; }
+}
+
+
+/* ---------------------------------------------------------------- v1.62.1 (user request 2 Nov): thin visible scrollbars everywhere.
+   1.40.1 hid every scrollbar (bugs 28–29); users could not see that a page, list or menu had more below. Now a thin bar shows on every
+   scrollable area – grey on light pages, lighter on the dark menus; it darkens under the mouse. Short chip / tab strips stay without a bar. */
+html, body, * { scrollbar-width: thin !important; scrollbar-color: rgba(110, 116, 140, .45) transparent !important; -ms-overflow-style: auto !important; }
+html body *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: block !important; width: 8px !important; height: 8px !important; background: transparent !important; }
+html body *::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background: transparent !important; }
+html body *::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb { background: rgba(110, 116, 140, .45) !important; border-radius: 8px !important; border: 2px solid transparent !important; background-clip: padding-box !important; }
+html body *::-webkit-scrollbar-thumb:hover { background: rgba(80, 86, 110, .7) !important; background-clip: padding-box !important; }
+html body *::-webkit-scrollbar-corner { background: transparent !important; }
+/* dark menus */
+.sidebar, .sub-sidenav, .nav-menu-list, .main-sidebar, .mat-drawer-inner-container { scrollbar-color: rgba(255, 255, 255, .28) transparent !important; }
+html body .sidebar::-webkit-scrollbar-thumb, html body .sub-sidenav::-webkit-scrollbar-thumb, html body .nav-menu-list::-webkit-scrollbar-thumb, html body .mat-drawer-inner-container::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .28) !important; background-clip: padding-box !important; }
+/* short chip / tab strips keep no bar */
+html body .zh-tabs, html body .er-filters, html body .er-toolbar .er-seg { scrollbar-width: none !important; }
+html body .zh-tabs::-webkit-scrollbar, html body .er-filters::-webkit-scrollbar, html body .er-toolbar .er-seg::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }

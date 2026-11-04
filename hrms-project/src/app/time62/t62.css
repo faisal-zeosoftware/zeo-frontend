@@ -1,0 +1,66 @@
+/* v1.62.10 (items 171, 174, 176) – the converted Attendance / Calendar screens: the card header and list of the new screens
+   (hr-shared.css), Edit / Delete row buttons (z-row-btn, zlist.css) and a dialog in the look of the shared form (z-form). */
+.t62-cell-sub { display: block; color: #6b7185; font-size: 12px; }
+.t62-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.t62-chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11.5px; background: #eef0ff; color: #4b3fbf; white-space: nowrap; }
+.t62-chip.off { background: #fde2e4; color: #b3263a; }
+.t62-chip.half { background: #fff0d9; color: #a0610a; }
+.t62-chip.grey { background: #eceef3; color: #555d70; }
+.t62-actions { white-space: nowrap; text-align: end; }
+.t62-actions .z-row-btn + .z-row-btn, .t62-actions .z-row-btn + .t62-link, .t62-actions .t62-link + .z-row-btn { margin-inline-start: 6px; }
+.t62-link { border: 1px solid #dfe1ea; background: #fff; color: #4b3fbf; border-radius: 7px; height: 30px; padding: 0 10px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; vertical-align: middle; }
+.t62-link:hover { background: #f3f2ff; }
+.t62-msg { margin: 0 24px 10px; padding: 8px 12px; border-radius: 8px; background: #fde2e4; color: #b3263a; font-size: 13px; }
+.t62-note { margin: 0 24px 12px; color: #6b7185; font-size: 12.5px; }
+.t62-body { padding: 0 24px 24px; }
+.t62-panel { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 14px 16px; align-self: start; }
+.t62-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid #eceef5; padding-bottom: 8px; margin-bottom: 10px; }
+.t62-panel-head h3 { font-size: 16px; margin: 0; font-weight: 600; }
+.t62-grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr); gap: 14px; }
+@media (max-width: 1000px) { .t62-grid2 { grid-template-columns: 1fr; } }
+
+/* dialog – same look as the shared form (z-form.component.ts) */
+.t62-dlg { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; }
+.t62-veil { position: absolute; inset: 0; background: rgba(27,22,64,.38); }
+.t62-box { position: relative; width: min(820px, calc(100vw - 32px)); max-height: calc(100vh - 48px); display: flex; flex-direction: column; background: #fff;
+  border-radius: 14px; box-shadow: 0 24px 60px rgba(27,22,64,.28); font-size: 13.5px; color: #1d2033; }
+.t62-box.narrow { width: min(560px, calc(100vw - 32px)); }
+.t62-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 22px 12px; border-bottom: 1px solid #eceef5; }
+.t62-title { margin: 0; font-size: 18px; font-weight: 600; color: #1b1640; }
+.t62-sub { margin: 4px 0 0; color: #6b7185; font-size: 13px; }
+.t62-x { border: 0; background: transparent; font-size: 22px; line-height: 1; color: #6b7185; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.t62-x:hover { background: #f3f4f8; }
+.t62-dbody { padding: 8px 22px 16px; overflow: auto; }
+.t62-sec h3 { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #6b7185; margin: 14px 0 8px; }
+:host-context([dir=rtl]) .t62-sec h3 { letter-spacing: 0; }
+.t62-fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.t62-fgrid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.t62-f { display: flex; flex-direction: column; gap: 5px; margin: 0; min-width: 0; }
+.t62-f.full { grid-column: 1 / -1; }
+.t62-l { font-size: 12.5px; font-weight: 600; color: #3b3f55; }
+.t62-req { color: #b3263a; }
+.t62-f input:not([type=checkbox]):not([type=radio]), .t62-f select, .t62-f textarea, .t62-in { width: 100%; height: 36px; border: 1px solid #dfe1ea; border-radius: 8px; padding: 0 10px; font: inherit; background: #fff; }
+.t62-f input:focus, .t62-f select:focus, .t62-in:focus { outline: none; border-color: #5b4fe0; box-shadow: 0 0 0 3px rgba(91,79,224,.12); }
+.t62-f .bad, .t62-in.bad { border-color: #d92d20 !important; }
+.t62-err { color: #b3263a; font-size: 12px; }
+.t62-top { background: #fde2e4; border-radius: 8px; padding: 8px 10px; margin: 10px 0 0; color: #b3263a; font-size: 12.5px; }
+.t62-hint { color: #6b7185; font-size: 12px; }
+.t62-foot { display: flex; align-items: center; gap: 8px; padding: 12px 22px; border-top: 1px solid #eceef5; }
+.t62-grow { flex: 1; }
+.t62-btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid #dfe1ea; background: #fff; font: inherit; font-weight: 600; cursor: pointer; color: #1d2033; display: inline-flex; align-items: center; gap: 6px; }
+.t62-btn.primary { background: #5b4fe0; border-color: #5b4fe0; color: #fff; }
+.t62-btn.small { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.t62-btn[disabled] { opacity: .6; cursor: default; }
+.t62-btn mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.t62-seg { display: inline-flex; border: 1px solid #dfe1ea; border-radius: 8px; overflow: hidden; }
+.t62-seg button { border: 0; background: #fff; padding: 7px 14px; font: inherit; font-weight: 600; cursor: pointer; color: #3b3f55; }
+.t62-seg button + button { border-inline-start: 1px solid #dfe1ea; }
+.t62-seg button.on { background: #eef0ff; color: #4b3fbf; }
+.t62-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.t62-tbl th, .t62-tbl td { padding: 6px 6px; border-bottom: 1px solid #eef0f2; text-align: start; vertical-align: middle; }
+.t62-tbl th { background: #f7f8fa; font-weight: 600; font-size: 12px; color: #3b3f55; }
+.t62-tbl select, .t62-tbl input { height: 32px; border: 1px solid #dfe1ea; border-radius: 7px; padding: 0 6px; font: inherit; background: #fff; width: 100%; min-width: 90px; }
+.t62-tbl select.bad, .t62-tbl input.bad { border-color: #d92d20; }
+.t62-card { border: 1px solid #eceef5; border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
+.t62-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: 600; }
+@media (max-width: 640px) { .t62-fgrid, .t62-fgrid.three { grid-template-columns: 1fr; } }

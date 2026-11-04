@@ -15,6 +15,11 @@ import { NotFoundComponent } from './not-found/not-found.component';   // v1.15.
 import { NoAccessComponent } from './not-found/no-access.component';   // v1.62.0 page refused by the menu rights
 import { menuRightsGuard } from './shared-ui/menu-rights.guard';      // v1.62.0 release checklist §37 menu by rights
 import { moved } from './not-found/moved';   // v1.15.1 moved pages keep their query string
+// v1.62.0 people: registers with stage / waiting for me (resignations, leave, overtime, late in / early out) and the leave balance grid
+import { CrudPageComponent } from './hr-modules/crud-page/crud-page.component';
+import { LeaveBalanceGridComponent } from './people62/leave-balance-grid.component';
+import { LATE_EARLY_APPROVALS_PAGE, LATE_EARLY_PAGE, LEAVE_APPROVALS62_PAGE, LEAVE_CANCEL_PAGE, LEAVE_REQUEST_PAGE, OVERTIME_PAGE,
+  RESIGNATION_APPROVALS_PAGE, RESIGNATION_PAGE, GENERAL_REQUEST_PAGE, DOCUMENT_REQUEST_PAGE, GENERAL_APPROVALS62_PAGE, DOCUMENT_APPROVALS62_PAGE, SHIFT_OVERRIDE_PAGE, COMPANY_POLICY_PAGE, ANNOUNCEMENT_PAGE, GEOFENCE_PAGE } from './people62/people62.config';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
@@ -149,6 +154,7 @@ import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtempl
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
+import { AtRulesComponent } from './air-ticket-ui/at-rules.component';   // v1.66.0 (items 118–123)
 
 import { ShiftOptionsComponent } from './shift-options/shift-options.component';
 import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
@@ -177,6 +183,15 @@ import { ZRecordViewComponent } from './z-report/z-record-view.component';
 import { LeavePoliciesComponent } from './leave-policy/leave-policies.component';
 import { LeavePlannerComponent } from './leave-policy/leave-planner.component';
 import { LeaveConflictsComponent } from './leave-policy/leave-conflicts.component';   // v1.51.0
+import { LeaveRulesComponent } from './leave-policy/leave-rules.component';   // v1.65.0 (items 82–97)
+import { WeekendChangeComponent } from './leave-policy/weekend-change.component';   // v1.62.6 (item 22)
+import { T62WeekendCalendarsComponent } from './time62/weekend-calendars.component';   // v1.62.10 (item 176)
+import { T62HolidayCalendarsComponent } from './time62/holiday-calendars.component';   // v1.62.10 (item 176)
+import { T62AssignCalendarComponent } from './time62/assign-calendar.component';   // v1.62.10 (item 176)
+import { T62RecheckComponent } from './time62/recheck.component';   // v1.62.10 (item 171)
+import { T62FaceRegisterComponent } from './time62/face-register.component';   // v1.62.10 (item 171)
+import { Ap62LevelsComponent } from './approvals62/ap62-levels.component';   // v1.62.10 (item 174)
+import { Ap62EscalationComponent } from './approvals62/ap62-escalation.component';   // v1.62.10 (item 174)
 import { EncashmentApprovalsComponent } from './leave-policy/encashment-approvals.component';
 import { ReportGenerateComponent } from './report-generate/report-generate.component';
 import { DocumentReportComponent } from './document-report/document-report.component';
@@ -210,7 +225,7 @@ import { EmployeeSalaryComponent } from './employee-salary/employee-salary.compo
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
-import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
+// v1.62.1: LeavePolicyComponent (old templates gallery) is no longer routed – leave-policy redirects to leave-policies
 import { AttendanceValidationPolicyComponent } from './attendance-validation-policy/attendance-validation-policy.component';
 import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
 import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
@@ -285,10 +300,10 @@ const routes: Routes = [
           { path: 'category-master', component: CatogaryMasterComponent },   // v1.15.1 (was catogary-master)
           { path: 'catogary-master', redirectTo: 'category-master', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           { path: 'employee-master', component: EmployeeListComponent },              // v1.19.0 new list
-          { path: 'employee-master-classic', component: EmployeeMasterComponent },    // v1.19.0 old list (import, bulk upload)
+          moved('employee-master-classic', '/main-sidebar/sub-sidebar/employee-master'),   // v1.62.10 (item 179) old classic list → the employee list (was EmployeeMasterComponent)
           { path: 'employee-transfer', component: EmployeeTransferComponent },   // v1.11.0
           { path: 'employee-details/:id/details', component: EmployeeRecordComponent },   // v1.19.0 new employee page
-          { path: 'employee-details/:id/classic', component: EmployeeDetailsComponent },  // v1.19.0 old tabs
+          { path: 'employee-details/:id/classic', redirectTo: 'employee-details/:id/details', pathMatch: 'full' },  // v1.62.10 (item 169) old tabs (EmployeeDetailsComponent) → the employee page
 
 
           // v1.15.1: attendance marking lives in Time & Attendance (one registration, correct spelling)
@@ -306,21 +321,16 @@ const routes: Routes = [
 
           {
             path: 'resignation-approval-level',
-            component: ResignationApprovalLevelComponent
+            component: Ap62LevelsComponent, data: { kind: 'resignation' }   // v1.62.10 (item 174) new design (was ResignationApprovalLevelComponent)
           },
 
-          {
-            path: 'resignation-request',
-            component: ResignationRequestComponent
-          },
-
-          {
-            path: 'resignation-approvals',
-            component: ResignationApprovalsComponent
-          },
+          // v1.62.0 people: one Resignations register (stage, waiting for me, names, link to Leavers); approvals = filtered "Waiting for me"
+          { path: 'resignation-request', component: CrudPageComponent, data: { config: RESIGNATION_PAGE } },
+          { path: 'resignation-approvals', component: CrudPageComponent, data: { config: RESIGNATION_APPROVALS_PAGE } },
           // v1.62.0 EOS: one Leavers workspace replaces Approved resignations, End of service and Final settlement (old addresses open it)
           { path: 'leavers', component: LeaversComponent },
           { path: 'leavers/:id', component: LeaverCaseComponent },
+          { path: 'bulk-final-settlement', loadComponent: () => import('./leavers/bulk-settlement.component').then(m => m.BulkSettlementComponent) },   // v1.62.11 (item 230)
           { path: 'resignation-approved-list', redirectTo: 'leavers', pathMatch: 'full' },
           { path: 'end-of-service', redirectTo: 'leavers', pathMatch: 'full' },
           { path: 'final-settlement', redirectTo: 'leavers', pathMatch: 'full' },
@@ -347,10 +357,7 @@ const routes: Routes = [
           ...COUNTRY_PACK_ROUTES,   // v1.20.1: Settings → Country settings (was /main-sidebar/country-settings)
           ...LANGUAGE_PACK_ROUTES,   // v1.20.1: Settings → Languages (was /main-sidebar/languages)
           { path: 'field-help', loadChildren: () => import('./field-help/field-help-settings.component').then(m => m.FIELD_HELP_ROUTES) },   // v1.16.0
-          {
-            path: 'company-master',
-            component: CompanyMasterComponent
-          },
+          moved('company-master', '/main-sidebar/settings/location-master'),   // v1.62.10 (item 179) old company master → Company (was CompanyMasterComponent)
           {
             path: 'branch-master',
             component: BranchMasterComponent
@@ -359,17 +366,14 @@ const routes: Routes = [
             path: 'user-master',
             component: UserMasterComponent
           },
-          {
-            path: 'company-details/:id/details',
-            component: CompanyDetailsComponent
-          },
+          { path: 'company-details/:id/details', redirectTo: '/main-sidebar/settings/location-master' },   // v1.62.10 (item 179) old company page → Company (was CompanyDetailsComponent)
           {
             path: 'user-grouping-master',
             component: UserGroupingMasterComponent
           },
           {
-            path: 'branch-permissions',
-            component: BranchPermissionsComponent
+            path: 'branch-permissions',   // v1.62.10 (item 178) new design (was BranchPermissionsComponent)
+            loadComponent: () => import('./settings-rights/z-rights-pages.component').then(m => m.ZBranchPermissionsComponent)
           },
           {
             path: 'state-master',
@@ -382,12 +386,12 @@ const routes: Routes = [
 
 
           {
-            path: 'user-details/:id/details',
-            component: UserDetailsComponent
+            path: 'user-details/:id/details',   // v1.62.10 (item 178) new design (was UserDetailsComponent)
+            loadComponent: () => import('./settings-rights/z-rights-pages.component').then(m => m.ZUserDetailsComponent)
           },
           {
-            path: 'permission-assigned',
-            component: PermissionAssignedComponent
+            path: 'permission-assigned',   // v1.62.10 (item 178) new design (was PermissionAssignedComponent)
+            loadComponent: () => import('./settings-rights/z-rights-pages.component').then(m => m.ZAssignPermissionsComponent)
           },
 
           {
@@ -399,11 +403,13 @@ const routes: Routes = [
             component: DocumentNumberingComponent
           },
 
-          { path: 'weekcalendar', component: WeelcalendarComponent },   // v1.15.1 (was weelcalendar)
+          { path: 'weekcalendar', component: T62WeekendCalendarsComponent },   // v1.62.10 (item 176) new design (was WeelcalendarComponent; v1.15.1 was weelcalendar)
+          { path: 'weekcalendar-classic', component: WeelcalendarComponent },   // v1.62.10 (item 176): the old screen, by address only
+          { path: 'weekend-change', component: WeekendChangeComponent },   // v1.62.6 (item 22)
           { path: 'weelcalendar', redirectTo: 'weekcalendar', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           {
             path: 'assign-weekcalendar',
-            component: AssignWeekcalendarComponent
+            component: T62AssignCalendarComponent, data: { kind: 'weekend' }   // v1.62.10 (item 176) new design (was AssignWeekcalendarComponent)
           },
           {
             path: 'assignweek-calendar-days',
@@ -411,11 +417,11 @@ const routes: Routes = [
           },
           {
             path: 'holiday-calendar',
-            component: HolidayCalendarComponent
+            component: T62HolidayCalendarsComponent   // v1.62.10 (item 176) new design (was HolidayCalendarComponent)
           },
           {
             path: 'assign-holiday-calendar',
-            component: AssignHolidayCalendarComponent
+            component: T62AssignCalendarComponent, data: { kind: 'holiday' }   // v1.62.10 (item 176) new design (was AssignHolidayCalendarComponent)
           },
 
           // v1.15.1: shifts are kept in Shift Planner → Shift master (same calendars.Shift table, plus the shift rules)
@@ -461,11 +467,11 @@ const routes: Routes = [
           //   path:'asset-transaction-report',
           //   component:AssetTransactionReportComponent
           // },
-          { path: 'form-designer', component: FromDesignerComponent },   // v1.15.1 (was from-designer)
+          { path: 'form-designer', loadComponent: () => import('./settings-rights/z-form-designer-page.component').then(m => m.ZFormDesignerPageComponent), data: { mode: 'employee' } },   // v1.62.10 (item 177) new design (was FromDesignerComponent)
           { path: 'from-designer', redirectTo: 'form-designer', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           {
-            path: 'asset-udf',
-            component: AssetUdfComponent
+            path: 'asset-udf',   // v1.62.10 (item 177) new design (was AssetUdfComponent)
+            loadComponent: () => import('./settings-rights/z-form-designer-page.component').then(m => m.ZFormDesignerPageComponent), data: { mode: 'asset' }
           },
           {
             path: 'email-template',
@@ -478,6 +484,7 @@ const routes: Routes = [
           { path: 'messages-and-tags', component: ZCollabSettingsComponent },   // v1.45.0 reply mailbox, tags
           { path: 'whatsapp-sms-push', component: ZMessagingSettingsComponent },   // v1.51.0
           { path: 'my-account', component: ZMyAccountComponent },   // v1.52.0 authenticator app, sign-ins, out of office
+          { path: 'out-of-office', loadComponent: () => import('./shared-ui/z-ooo-settings.component').then(m => m.ZOooSettingsComponent) },   // v1.62.11 (item 95)
           { path: 'sign-in-security', component: ZSignInSecurityComponent },   // v1.52.0
           { path: 'single-sign-on', loadComponent: () => import('./shared-ui/z-sso-settings.component').then(m => m.ZSsoSettingsComponent) },   // v1.54.0
           { path: 'api-keys-webhooks', component: ZIntegrationsComponent },
@@ -539,9 +546,9 @@ const routes: Routes = [
             component: DocExpEmailtemplateComponent
           },
           {
-            path: 'company-policy',
-            component: CompanyPolicyComponent
+            path: 'company-policy', component: CrudPageComponent, data: { config: COMPANY_POLICY_PAGE }   // v1.62.0 people register
           },
+          moved('company-policy-edit', '/main-sidebar/settings/company-policy'),   // v1.62.10 (item 172) old edit page (CompanyPolicyComponent) → the register; Edit / new version opens the shared form there
 
         ],
       },
@@ -552,39 +559,27 @@ const routes: Routes = [
           { path: 'leave-policies', component: LeavePoliciesComponent },          // v1.10.0
           { path: 'leave-planner', component: LeavePlannerComponent },            // v1.10.0
           { path: 'leave-conflicts', component: LeaveConflictsComponent },        // v1.51.0
+          { path: 'leave-rules', component: LeaveRulesComponent },                // v1.65.0 (items 82–97)
           { path: 'encashment-approvals', component: EncashmentApprovalsComponent }, // v1.10.0
           { path: 'rejoining', component: RejoiningComponent },                  // v1.11.0
-          {
-            path: 'leave-type',
-            component: LeaveTypeComponent,
-          },
+          moved('leave-type', '/main-sidebar/leave-options/leave-master'),   // v1.62.10 (item 179) old leave type page → Leave types (was LeaveTypeComponent)
 
           {
             path: 'leave-master',
             component: LeaveMasterComponent,
           },
-         {
-            path: 'leave-encashment',
-            component: LeaveEncashmentComponent,
-          },
-          {
-            path: 'leave-request',
-            component: LeaveRequestComponent,
-          },
+          // v1.62.0 people: one encashment register (all statuses, New encashment) – Encashment approvals is the same, filtered
+          { path: 'leave-encashment', component: EncashmentApprovalsComponent, data: { title: 'Leave encashment', status: '' } },
+          { path: 'leave-request', component: CrudPageComponent, data: { config: LEAVE_REQUEST_PAGE } },   // v1.62.0 people register
           {
             path: 'leave-approval-level',
-            component: LeaveApprovalLevelComponent,
+            component: Ap62LevelsComponent, data: { kind: 'leave' },   // v1.62.10 (item 174) new design (was LeaveApprovalLevelComponent)
           },
-          {
-            path: 'leave-balance',
-            component: LeaveBalanceComponent,
-          },
+          { path: 'leave-balance', component: LeaveBalanceGridComponent },   // v1.62.0 people: employee × leave type grid with history
+          { path: 'leave-balance-list', component: LeaveBalanceComponent },  // v1.62.0 people: the balance list (adjust / import balances)
 
 
-          {
-            path: 'leave-approvals',
-            component: LeaveApprovalsComponent,
-          },
+          { path: 'leave-approvals', component: CrudPageComponent, data: { config: LEAVE_APPROVALS62_PAGE } },   // v1.62.0 people
           {
             path: 'compensatory-leave',
             component: CompensatoryLeaveComponent,
@@ -595,25 +590,18 @@ const routes: Routes = [
             component: CompensatoryTransactionComponent,
           },
 
-          {
-            path: 'immediate-rejection',
-            component: ImmediateRejectionComponent,
-          },
-          { path: 'leave-accrual', component: LeaveAccruvalComponent },   // v1.15.1 (was leave-accruval)
+          { path: 'immediate-rejection', component: CrudPageComponent, data: { config: LEAVE_CANCEL_PAGE } },   // v1.62.0 people: approved leave + Cancel leave
+          moved('leave-accrual', '/main-sidebar/leave-options/leave-policies'),   // v1.62.10 (item 179) old accrual page → Leave policies (accrual and leave year end; was LeaveAccruvalComponent)
           { path: 'leave-accruval', redirectTo: 'leave-accrual', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
-          {
-            path: 'employee-leave-rejoin',
-            component: EmployeeLeaveRejoinComponent
-          },
+          moved('employee-leave-rejoin', '/main-sidebar/leave-options/rejoining'),   // v1.62.10 (item 179) old rejoin page → Return from leave (was EmployeeLeaveRejoinComponent)
           {
             path: 'leave-escalation',
-            component: LeaveEscalationComponent
+            component: Ap62EscalationComponent, data: { kind: 'leave' }   // v1.62.10 (item 174) new design (was LeaveEscalationComponent)
           },
 
-          {
-            path: 'leave-policy',
-            component: LeavePolicyComponent
-          },
+          // v1.62.1: the old "Leave policy templates gallery" (per-leave-type entitlement rules) opens Leave policies; the per-type
+          // rules for a type no policy covers are edited on the leave type (Leave types › Entitlement) – Leave policies links there
+          moved('leave-policy', '/main-sidebar/leave-options/leave-policies'),
         ]
 
       },
@@ -635,10 +623,7 @@ const routes: Routes = [
           // v1.62.0 payroll: the run-centred workspace; the previous screen stays as "Classic pay sheets"
           { path: 'pay-roll', loadComponent: () => import('./payroll-plus/payroll-runs.component').then(m => m.PayrollRunsComponent) },
           { path: 'payroll-run/:id', loadComponent: () => import('./payroll-plus/payroll-run.component').then(m => m.PayrollRunComponent) },
-          {
-            path: 'pay-roll-classic',
-            component: PayRollComponent,
-          },
+          moved('pay-roll-classic', '/main-sidebar/salary-options/pay-roll'),   // v1.62.10 (item 173) Classic pay sheets (PayRollComponent) → Payroll runs
 
           {
             path: 'pay-structure',
@@ -653,15 +638,12 @@ const routes: Routes = [
             component: PayrollDetailsComponent
           },
 
-          { path: 'payroll-approval-level', component: PayrollAppovalLevelComponent },   // v1.15.1 (was payroll-appoval-level)
+          { path: 'payroll-approval-level', component: Ap62LevelsComponent, data: { kind: 'payslip' } },   // v1.62.10 (item 174) new design (was PayrollAppovalLevelComponent)   // v1.15.1 (was payroll-appoval-level)
           { path: 'payroll-appoval-level', redirectTo: 'payroll-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
           // v1.62.0 payroll: approvals grouped by run; the previous list stays as "Show as one list"
           { path: 'payslip-approval', loadComponent: () => import('./payroll-plus/payslip-approvals.component').then(m => m.PayslipApprovalsComponent) },
-          {
-            path: 'payslip-approval-list',
-            component: PayslipApprovalComponent,
-          },
+          moved('payslip-approval-list', '/main-sidebar/salary-options/payslip-approval'),   // v1.62.10 (item 173) "Show as one list" (PayslipApprovalComponent) → Payslip approvals
           {
             path: 'wps',
             component: WpsComponent,
@@ -676,11 +658,22 @@ const routes: Routes = [
           { path: 'arrears', loadComponent: () => import('./payroll-plus/pp-v155.component').then(m => m.ArrearsComponent) },
           { path: 'statutory-schemes', component: StatutorySchemesComponent },   // v1.31.0
           { path: 'legal-rates', loadComponent: () => import('./payroll-plus/legal-rates.component').then(m => m.LegalRatesComponent) },   // v1.59.0
+          { path: 'branch-pension-schemes', loadComponent: () => import('./payroll-plus/branch-schemes.component').then(m => m.BranchSchemesComponent) },   // v1.62.11 (item 229)
+          { path: 'eos-settings', loadComponent: () => import('./leavers/eos-settings.component').then(m => m.EosSettingsComponent) },   // v1.62.11 (EOS settings)
+          { path: 'accrue-pay-later', loadComponent: () => import('./payroll-plus/accrue-pay-later.component').then(m => m.AccruePayLaterComponent) },   // v1.62.7 (item 18)
+          { path: 'monthly-inputs', loadComponent: () => import('./payroll-plus/monthly-inputs.component').then(m => m.MonthlyInputsComponent) },   // v1.62.11 (item 18b)
+          { path: 'bank-files', loadComponent: () => import('./payroll-plus/bank-files.component').then(m => m.BankFilesComponent) },   // v1.62.11 (item 227)
+          { path: 'run-payments', loadComponent: () => import('./payroll-plus/run-payments.component').then(m => m.RunPaymentsComponent) },   // v1.62.11 (item 227)
+          { path: 'payment-layouts', loadComponent: () => import('./payroll-plus/payment-layouts.component').then(m => m.PaymentLayoutsComponent) },   // v1.62.11 (item 227)
+          ...['holds', 'locks', 'revise', 'rehire', 'import', 'settings'].map(tab => ({ path: 'payctl-' + tab, data: { tab },   // v1.62.11 (items 228, 231)
+            loadComponent: () => import('./payctl62/payctl.component').then(m => m.PayctlComponent) })),
+          ...[['recoveries', 'recoveries'], ['recoveries-import', 'rec-import'], ['pay-splits', 'splits'], ['pay-splits-import', 'split-import']].map(([path, tab]) => ({ path, data: { tab },   // v1.63.0 (items 27, 28)
+            loadComponent: () => import('./pay163/pay163.component').then(m => m.Pay163Component) })),
           { path: 'accounting', component: AccountingComponent },   // v1.35.0 accounting integration
 
           {
             path: 'advance-salary-approval-level',
-            component: AdvanceSalaryApprovalLevelComponent,
+            component: Ap62LevelsComponent, data: { kind: 'advance' },   // v1.62.10 (item 174) new design (was AdvanceSalaryApprovalLevelComponent)
           },
           {
             path: 'advance-salary-request',   // v1.15.1: was registered twice
@@ -692,7 +685,7 @@ const routes: Routes = [
           },
           {
             path: 'advance-salary-escalation',
-            component: AdvanceSalaryEscalationComponent,
+            component: Ap62EscalationComponent, data: { kind: 'advance' },   // v1.62.10 (item 174) new design (was AdvanceSalaryEscalationComponent)
           },
 
         ]
@@ -716,7 +709,7 @@ const routes: Routes = [
             path: 'loan-repayment',
             component: LoanRepaymentComponent,
           },
-          { path: 'loan-approval-level', component: LoanApprovelLevelComponent },   // v1.15.1 (was loan-approvel-level)
+          { path: 'loan-approval-level', component: Ap62LevelsComponent, data: { kind: 'loan' } },   // v1.62.10 (item 174) new design (was LoanApprovelLevelComponent)   // v1.15.1 (was loan-approvel-level)
           { path: 'loan-approvel-level', redirectTo: 'loan-approval-level', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
 
           {
@@ -726,7 +719,7 @@ const routes: Routes = [
 
           {
             path: 'loan-escalation',
-            component: LoanEscalationComponent,
+            component: Ap62EscalationComponent, data: { kind: 'loan' },   // v1.62.10 (item 174) new design (was LoanEscalationComponent)
           },
 
 
@@ -755,14 +748,14 @@ const routes: Routes = [
             path: 'asset-request',
             component: AssetRequestComponent,
           },
-          { path: 'asset-approval-level', component: AssetApprovelLevelComponent },   // v1.15.1 (was asset-approvel-level)
+          { path: 'asset-approval-level', component: Ap62LevelsComponent, data: { kind: 'asset' } },   // v1.62.10 (item 174) new design (was AssetApprovelLevelComponent)   // v1.15.1 (was asset-approvel-level)
           {
             path: 'asset-approval',
             component: AssetApprovalComponent,
           },
           {
             path: 'asset-escalation',
-            component: AssetEscalationComponent,
+            component: Ap62EscalationComponent, data: { kind: 'asset' },   // v1.62.10 (item 174) new design (was AssetEscalationComponent)
           },
 
 
@@ -776,40 +769,29 @@ const routes: Routes = [
         children: [
           // v1.15.1: the attendance app is Attendance (attendance-plus); the screens below have no new equivalent yet and stay
           moved('', '/main-sidebar/attendance-plus'),
-          { path: 'attendance-marking', component: AttendaceMarkingComponent },   // v1.15.1 (was attendace-marking)
+          // v1.62.0 people: the old daily screens are retired – their addresses open the Attendance screens that do the same job
+          moved('attendance-marking', '/main-sidebar/attendance-plus/punches'),
           { path: 'attendace-marking', redirectTo: 'attendance-marking', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
           // v1.15.1: two older copies of other screens of this module
           { path: 'attendance-punching', redirectTo: 'employee-face-register', pathMatch: 'full' },        // same face / barcode registration
           { path: 'employee-punching-details', redirectTo: 'employee-punching-list', pathMatch: 'full' },  // same attendance rows, without filters
 
-          {
-            path: 'employee-early-going',
-            component: EmployeeEarlyGoingComponent,
-          },
+          moved('employee-early-going', '/main-sidebar/attendance-plus/days'),   // v1.62.0 people (Daily attendance › Early out filter)
           {
             path: 'employee-recheck',
-            component: EmployeeRecheckComponent,
+            component: T62RecheckComponent,   // v1.62.10 (item 171) new design (was EmployeeRecheckComponent)
           },
 
-          {
-            path: 'employee-punching-list',
-            component: EmployeePunchingListComponent,
-          },
+          moved('employee-punching-list', '/main-sidebar/attendance-plus/punches'),   // v1.62.0 people
 
-          {
-            path: 'geofence',
-            component: GeofenceComponent,
-          },
+          { path: 'geofence', component: CrudPageComponent, data: { config: GEOFENCE_PAGE } },   // v1.62.0 people: site list with radius
 
           {
             path: 'employee-face-register',
-            component: EmployeeFaceRegisterComponent,
+            component: T62FaceRegisterComponent,   // v1.62.10 (item 171) new design (was EmployeeFaceRegisterComponent)
           },
 
-          {
-            path: 'manual-entry',
-            component: ManualEntryComponent,
-          },
+          moved('manual-entry', '/main-sidebar/attendance-plus/punches'),   // v1.62.0 people (Punches › add punch, Corrections)
 
 
           {
@@ -817,30 +799,18 @@ const routes: Routes = [
             component: AttendancePolicyComponent,
           },
 
-          {
-            path: 'attendance-attendance-request',
-            component: AttendanceRequestComponent,
-          },
+          { path: 'attendance-attendance-request', component: CrudPageComponent, data: { config: LATE_EARLY_PAGE } },   // v1.62.0 people
 
           {
             path: 'latein-earlyout-approval-level',
-            component: LateinEarlyoutApprovalLevelComponent,
+            component: Ap62LevelsComponent, data: { kind: 'latein' },   // v1.62.10 (item 174) new design (was LateinEarlyoutApprovalLevelComponent)
           },
 
-          {
-            path: 'latein-earlyout-approvals',
-            component: LateinEarlyoutApprovalsComponent,
-          },
+          { path: 'latein-earlyout-approvals', component: CrudPageComponent, data: { config: LATE_EARLY_APPROVALS_PAGE } },   // v1.62.0 people
 
-          {
-            path: 'employee-full-attendance',
-            component: EmployeeFullAttendanceComponent,
-          },
+          moved('employee-full-attendance', '/main-sidebar/attendance-plus/days'),   // v1.62.0 people
 
-          {
-            path: 'attendance-validation-policy',
-            component: AttendanceValidationPolicyComponent
-          },
+          moved('attendance-validation-policy', '/main-sidebar/attendance-plus/rules'),   // v1.62.0 people: GPS / geofence / selfie / IP are in Attendance rules
 
           {
             path: 'late-come-policy',
@@ -864,13 +834,13 @@ const routes: Routes = [
         children: [
 
           {
-            path: 'announcement-master',
-            component: AnnouncementMasterComponent
+            path: 'announcement-master', component: CrudPageComponent, data: { config: ANNOUNCEMENT_PAGE }   // v1.62.0 people register
           },
+          moved('announcement-edit', '/main-sidebar/general-sidebar/announcement-master'),   // v1.62.10 (item 172) old edit page (AnnouncementMasterComponent) → the register; Edit opens the shared form there
 
           {
             path: 'document-request-level',
-            component: DocumentRequestLevelComponent
+            component: Ap62LevelsComponent, data: { kind: 'document' }   // v1.62.10 (item 174) new design (was DocumentRequestLevelComponent)
           },
 
           {
@@ -881,22 +851,19 @@ const routes: Routes = [
           },
 
           {
-            path: 'document-request',
-            component: DocumentRequestComponent
+            path: 'document-request', component: CrudPageComponent, data: { config: DOCUMENT_REQUEST_PAGE }   // v1.62.0 people register
           },
 
           {
-            path: 'document-request-approval',
-            component: DocumentRequestApprovalsComponent
+            path: 'document-request-approval', component: CrudPageComponent, data: { config: DOCUMENT_APPROVALS62_PAGE }   // v1.62.0 people
           },
 
           {
-            path: 'general-request',
-            component: GeneralRequestComponent,
+            path: 'general-request', component: CrudPageComponent, data: { config: GENERAL_REQUEST_PAGE },   // v1.62.0 people register
           },
           {
             path: 'general-request-escalation',
-            component: GeneralRequestEscalationComponent,
+            component: Ap62EscalationComponent, data: { kind: 'general' },   // v1.62.10 (item 174) new design (was GeneralRequestEscalationComponent)
           },
 
           {
@@ -905,11 +872,10 @@ const routes: Routes = [
           },
           {
             path: 'approval-level',
-            component: ApprovalLevelComponent,
+            component: Ap62LevelsComponent, data: { kind: 'general' },   // v1.62.10 (item 174) new design (was ApprovalLevelComponent)
           },
           {
-            path: 'approvals',
-            component: ApprovalsComponent,
+            path: 'approvals', component: CrudPageComponent, data: { config: GENERAL_APPROVALS62_PAGE },   // v1.62.0 people: one row per request
           },
 
 
@@ -945,10 +911,11 @@ const routes: Routes = [
             path: 'airticket-rule',
             component: AirticketRuleComponent,
           },
+          { path: 'air-ticket-rules', component: AtRulesComponent },   // v1.66.0 (items 118–123) air ticket rules
 
           {
             path: 'airticket-approval-level',
-            component: AirticketApprovalLevelComponent,
+            component: Ap62LevelsComponent, data: { kind: 'airticket' },   // v1.62.10 (item 174) new design (was AirticketApprovalLevelComponent)
           },
 
           {
@@ -958,7 +925,7 @@ const routes: Routes = [
 
           {
             path: 'airticket-escalation',
-            component: AirticketEscalationComponent,
+            component: Ap62EscalationComponent, data: { kind: 'airticket' },   // v1.62.10 (item 174) new design (was AirticketEscalationComponent)
           },
 
 
@@ -1007,25 +974,12 @@ const routes: Routes = [
           moved('', '/main-sidebar/shift-planner'),
           moved('shifts', '/main-sidebar/shift-planner/shifts'),
 
-          {
-            path: 'shift-pattern',
-            component: ShiftPatternComponent,
-          },
+          // v1.62.1 (tester 30-10 item 199): shift patterns, employee shifts and shift override are Shift planner pages now
+          moved('shift-pattern', '/main-sidebar/shift-planner/patterns'),
+          moved('shift-employee', '/main-sidebar/shift-planner/employee-shifts'),
+          moved('shift-override', '/main-sidebar/shift-planner/override'),
 
-          {
-            path: 'shift-employee',
-            component: ShiftEmployeeComponent,
-          },
-
-          {
-            path: 'shift-override',
-            component: ShiftOverrideComponent,
-          },
-
-          {
-            path: 'employee-overtime',
-            component: EmployeeOvertimeComponent,
-          },
+          { path: 'employee-overtime', component: CrudPageComponent, data: { config: OVERTIME_PAGE } },   // v1.62.0 people: overtime register with approval
 
           {
             path: 'overtime-policy',
@@ -1055,50 +1009,18 @@ const routes: Routes = [
           { path: 'dashboards', component: ZDashboardsComponent },
           { path: 'rec/:label/:id', component: ZRecordViewComponent },   // v1.8.1 drill-down to the record
 
-          {
-            path: 'report-generate',
-            component: ReportGenerateComponent,
-          },
-          {
-            path: 'document-report',
-            component: DocumentReportComponent,
-          },
-          {
-            path: 'general-request-report',
-            component: GeneralRequestReportComponent,
-          },
-          {
-            path: 'department-report',
-            component: DepartmentReportComponent,
-          },
-          {
-            path: 'designation-report',
-            component: DesignationReportComponent,
-          },
-          {
-            path: 'leave-report',
-            component: LeaveReportComponent
-          },
-          {
-            path: 'leave-approvals-report',
-            component: LeaveApprovalsReportComponent,
-          },
-          {
-            path: 'leave-balance-report',
-            component: LeaveBalanceReportComponent,
-          },
-          {
-            path: 'employee-attendance',
-            component: EmployeeAttendanceComponent,
-          },
-          {
-            path: 'asset-report',
-            component: AssetReportComponent,
-          },
-          {
-            path: 'asset-transaction-report',
-            component: AssetTransactionReportComponent,
-          },
+          // v1.62.10 (item 179): the 11 old report pages (URL only) open their report in the report centre
+          moved('report-generate', '/main-sidebar/report-options/builder'),   // was ReportGenerateComponent
+          moved('document-report', '/main-sidebar/report-options/r/documents'),   // was DocumentReportComponent
+          moved('general-request-report', '/main-sidebar/report-options/r/general-requests'),   // was GeneralRequestReportComponent
+          moved('department-report', '/main-sidebar/report-options/r/employees'),   // was DepartmentReportComponent (group by department there)
+          moved('designation-report', '/main-sidebar/report-options/r/employees'),   // was DesignationReportComponent (group by designation there)
+          moved('leave-report', '/main-sidebar/report-options/r/leave'),   // was LeaveReportComponent
+          moved('leave-approvals-report', '/main-sidebar/report-options/r/leave-approvals'),   // was LeaveApprovalsReportComponent
+          moved('leave-balance-report', '/main-sidebar/report-options/r/leave-balance'),   // was LeaveBalanceReportComponent
+          moved('employee-attendance', '/main-sidebar/report-options/r/attendance'),   // was EmployeeAttendanceComponent
+          moved('asset-report', '/main-sidebar/report-options/r/asset-register'),   // was AssetReportComponent
+          moved('asset-transaction-report', '/main-sidebar/report-options/r/asset-transactions'),   // was AssetTransactionReportComponent
 
 
 
@@ -1128,10 +1050,7 @@ const routes: Routes = [
       { path: 'attendace-marking', redirectTo: 'attendance-sidebar/attendance-marking', pathMatch: 'full' },   // v1.15.1 one registration
 
 
-      {
-        path: 'fiscal-year',
-        component: FiscalYearComponent,
-      },
+      moved('fiscal-year', '/main-sidebar/settings/home'),   // v1.62.10 (item 179) the old fiscal-year page was an empty heading → Settings home
 
       { path: 'automation', component: SettingsComponent, loadChildren: () => import('./zeo-flow/zeo-flow.routes').then(m => m.FLOW_ROUTES) },   // v1.29.0 workflow automation (Settings shell = sub-sidebar with the Automation menu)
       { path: '_reload', children: [] },   // v1.28.1: blank stop used to re-open the current page after a company / branch change
@@ -1149,28 +1068,15 @@ const routes: Routes = [
     path: 'employee-dashboard',
     component: EmployeeDashboardComponent, canActivate: [AuthGuard],   // v1.13.0: the portal needs a login
     children: [
-      { path: 'employee-section', component: EmployeeSctionComponent },   // v1.15.1 (was employee-sction)
+      // v1.62.10 (item 179): the old portal's sub-pages (URL only) open their Self service page; the portal itself
+      // (/employee-dashboard?tab=…) stays – Claims and My air ticket still open its advance / loan / air ticket requests
+      moved('employee-section', '/main-sidebar/self-service/home'),   // was EmployeeSctionComponent
       { path: 'employee-sction', redirectTo: 'employee-section', pathMatch: 'full' },   // v1.15.1 old spelling kept for bookmarks
-      {
-        path: 'employee-approvals',
-        component: EmployeeApprovalsComponent,
-      },
-      {
-        path: 'employee-leave',
-        component: EmployeeLeaveComponent,
-      },
-      {
-        path: 'emp-attendance',
-        component: EmpAttendanceComponent,
-      },
-      {
-        path: 'emp-asset-request',
-        component: EmpAssetRequestComponent,
-      },
-      {
-        path: 'emp-loan',
-        component: EmpLoanComponent,
-      },
+      moved('employee-approvals', '/main-sidebar/automation/approvals'),   // was EmployeeApprovalsComponent
+      moved('employee-leave', '/main-sidebar/self-service/leave'),   // was EmployeeLeaveComponent
+      moved('emp-attendance', '/main-sidebar/attendance-plus/my-attendance'),   // was EmpAttendanceComponent
+      moved('emp-asset-request', '/main-sidebar/asset-plus/my-assets'),   // was EmpAssetRequestComponent
+      moved('emp-loan', '/main-sidebar/my-loans'),   // was EmpLoanComponent
     ]
   },
 

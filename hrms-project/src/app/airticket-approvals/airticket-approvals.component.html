@@ -16,7 +16,7 @@
       </div>
       <p class="at-msg err" *ngIf="atMsg">{{ atMsg }}</p>
       <p class="at-muted" *ngIf="atLoading">Loading…</p>
-      <table class="table at-table" *ngIf="!atLoading && atRows.length">
+      <table class="table at-table zl-apr-table" *ngIf="!atLoading && atRows.length">
         <thead><tr><th>Request</th><th>Employee</th><th>Ticket or cash · route</th><th class="nw">Travel dates</th><th class="num">Amount</th><th class="nw">Level</th><th>Status</th><th class="at-acts">Actions</th></tr></thead>
         <tbody>
           <tr *ngFor="let r of atRows" [attr.data-approval]="r.approval_id">
@@ -26,16 +26,16 @@
             <td class="nw">{{ r.departure ? at.dmy(r.departure) : '–' }}<span class="at-sub" *ngIf="r.return" data-translate>{{ at.t('back {0}', [at.dmy(r.return)]) }}</span></td>
             <td class="num">{{ at.money(r.amount) }}</td>
             <td class="nw"><span data-translate>{{ at.t('Level {0} of {1}', [r.level, r.progress?.total || r.level]) }}</span><span class="at-sub" *ngIf="atBox === 'decided' && r.approver">{{ r.approver }}</span></td>
-            <td><span class="at-st" [ngClass]="at.stepClass(r.step_status)" data-translate>{{ atBox === 'decided' || r.step_status !== 'Pending' ? at.stepStatus(r.step_status) : at.t('Waiting for me') }}</span>
+            <td><span class="at-st" [ngClass]="at.stepClass(r.step_status)" data-translate>{{ at.stepStatus(r.step_status) }}</span>
               <span class="at-sub" *ngIf="r.reason" [title]="r.reason">{{ r.reason }}</span></td>
             <td class="at-acts">
-              <button type="button" class="at-btn sm" [class.primary]="r.step_status === 'Pending'" (click)="selectedaprovaldetalis(r.approval_id)">{{ at.t(r.step_status === 'Pending' ? 'Review' : 'View') }}</button>
+              <button type="button" class="at-btn sm" [class.primary]="r.step_status === 'Pending'" (click)="selectedaprovaldetalis(r.approval_id)">{{ at.t('View') }}</button>
               <button type="button" class="at-btn sm" *ngIf="r.delegated" (click)="atToggleDelegation(r.approval_id)">{{ at.t('Delegation') }}</button>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="at-empty" *ngIf="!atLoading && !atMsg && !atRows.length">
+      <div class="at-empty empty-state" *ngIf="!atLoading && !atMsg && !atRows.length">
         <b>{{ at.t(atBox === 'waiting' ? 'Nothing is waiting for your approval.' : 'No decided air ticket requests yet.') }}</b>
         {{ at.t(atBox === 'waiting' ? 'New air ticket requests for you will appear here.' : 'Requests you approve or reject will appear here.') }}
       </div>
@@ -162,268 +162,12 @@
 
     <!-- ================= APPROVAL DETAILS MODAL ================= -->
 
-    <div
-      *ngIf="isAddFieldsModalOpen"
-      class="modal"
-    >
-
-      <div class="modal-content">
-
-        <div class="text-right">
-
-          <span
-            class="close-btn"
-            (click)="closemarketModal()"
-          >
-            ×
-          </span>
-
-        </div>
-
-
-        <div *ngIf="selectedApproval">
-
-          <h6>
-            Airticket request approvals
-          </h6>
-
-          <hr />
-
-
-          <h6>
-            Airticket request -
-            {{ selectedApproval.request }}
-          </h6>
-
-          <h6>
-            Status -
-            {{ selectedApproval.status }}
-          </h6>
-
-          <h6>
-            Level -
-            {{ selectedApproval.level }}
-          </h6>
-
-
-          <textarea
-            class="form-control"
-            [(ngModel)]="note"
-            placeholder="Add a comment here..."
-            [ngModelOptions]="{ standalone: true }"
-          ></textarea>
-
-
-          <div class="row mt-2">
-
-            <!-- Delegate -->
-
-            <div class="col-md-3">
-
-              <button
-                type="button"
-                class="btn btn-primary btn-full"
-                (click)="openDelegationModalFromApproval(selectedApproval)"
-              >
-                Delegate
-              </button>
-
-            </div>
-
-
-            <div class="col-md-3"></div>
-
-
-            <!-- Reject -->
-
-            <div class="col-md-3">
-
-              <button
-                type="button"
-                class="btn btn-danger btn-full"
-                (click)="rejectApproval(selectedApproval.id)"
-              >
-                Reject
-              </button>
-
-            </div>
-
-
-            <!-- Approve -->
-
-            <div class="col-md-3">
-
-              <button
-                type="button"
-                class="btn btn-success btn-full"
-                (click)="approveApproval(selectedApproval.id)"
-              >
-                Approve
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <!-- Rejection Reason -->
-
-          <div *ngIf="showRejectionReason">
-
-            <textarea
-              class="form-control mt-2"
-              [(ngModel)]="rejection_reason"
-              placeholder="Add a Rejection Reason..."
-              [ngModelOptions]="{ standalone: true }"
-            ></textarea>
-
-          </div>
-
-
-          <div
-            class="mt-2"
-            *ngIf="showRejectionReason"
-          >
-
-            <button
-              type="button"
-              class="btn btn-danger btn-full"
-              (click)="confirmRejection(selectedApproval.id)"
-            >
-              Confirm rejection
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
+    <!-- v1.62.10 (item 167): the old review and delegation pop-ups are replaced by the shared review window (shared-ui/z-review.component.ts) -->
 
 
     <!-- ================= DELEGATION MODAL ================= -->
 
-    <div
-      *ngIf="isDelegationModalOpen"
-      class="modal"
-    >
-
-      <div class="modal-content">
-
-        <div class="text-right">
-
-          <span
-            class="close-btn"
-            (click)="closeDelegationModal()"
-          >
-            ×
-          </span>
-
-        </div>
-
-
-        <h5>
-          Send delegation
-        </h5>
-
-        <hr />
-
-
-        <div class="row">
-
-          <!-- Request -->
-
-          <div class="col-md-4">
-
-            <label>
-              Request
-            </label>
-
-            <select
-              class="form-control"
-              [(ngModel)]="delegationForm.request"
-              disabled
-            >
-
-              <option
-                *ngFor="let req of Airreq"
-                [value]="req.id"
-              >
-                {{ req.document_number }}
-                -
-                {{ req.request_type }}
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <!-- Delegator -->
-
-          <div class="col-md-4">
-
-            <label>
-              Delegator
-            </label>
-
-            <input
-              type="text"
-              class="form-control"
-              [value]="delegationForm.deligator"
-              readonly
-            />
-
-          </div>
-
-
-          <!-- Delegate To -->
-
-          <div class="col-md-4">
-
-            <label>
-              Delegate to
-            </label>
-
-            <select
-              class="form-control"
-              [(ngModel)]="delegationForm.deligate_to"
-            >
-              <!-- v1.40.1: a placeholder – without it the first user LOOKED selected while the model was still null, so Send posted no delegate -->
-              <option [ngValue]="null" disabled>Select a user…</option>
-
-              <option
-                *ngFor="let user of Users"
-                [ngValue]="user.id"
-              >
-                {{ user.username }}
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <!-- Send -->
-
-          <div class="col-md-12 mt-3 text-right">
-
-            <button
-              type="button"
-              class="btn btn-success"
-              (click)="createDelegation()"
-            >
-              Send
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
+    <!-- v1.62.10 (item 167): the old review and delegation pop-ups are replaced by the shared review window (shared-ui/z-review.component.ts) -->
 
   </div>
 

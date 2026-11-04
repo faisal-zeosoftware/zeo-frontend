@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui legacy rows: "+ New location" top right; Edit / Delete on each row -->
 <div class="container" >
     <div class="comapny_section">
 
@@ -16,19 +17,12 @@
             </div>
             <div class="col-md-5">
                 <div class="button-group pull-right">
-                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                    </mat-icon></span> Create</button>
+                    <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New location</button>
                   <span *ngIf="!hasAddPermission"></span>
 
-                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                        <span class="header-btn-icon">
-                         <mat-icon>draw
-                    </mat-icon></span> Edit</button>
+                    
                     <span *ngIf="hasEditPermission"></span>
-                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                        <span class="header-btn-icon">
-                            <mat-icon> delete
-                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                    
 
                        <span *ngIf="!hasDeletePermission"></span>
                 </div>
@@ -68,6 +62,7 @@
             <thead>
               <tr>
                  <th class="sticky-left">No</th>
+                <th class="lm-logo-h">{{ 'Logo' | t }}</th>
                 <th> Company</th>
                 <th>Country</th>
                 <!-- <th>State</th> -->
@@ -90,6 +85,8 @@
                 
               <tr *ngFor="let schema of Schemas;let i = index">
                  <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
+                <!-- v1.62.1 (tester 30-10 item 183): the company logo is shown (it was only a file name in the edit window) -->
+                <td data-label="Logo" class="lm-logo-c"><img *ngIf="schema.logo" [src]="schema.logo" alt="" class="lm-logo" (error)="schema.logo_broken = true" [hidden]="schema.logo_broken"><span *ngIf="!schema.logo || schema.logo_broken" class="lm-logo none">{{ (schema.name || '?').slice(0, 1) }}</span></td>
                 <td data-label="Company Name">{{ schema.name }}</td>
                 <td data-label="Country">{{ schema.country }}</td>
                 <!-- <td data-label="State">
@@ -115,14 +112,14 @@
                   <button
                     mat-fab
                     color="primary"
-                    *ngIf="showEditBtn"
+                    *ngIf="hasEditPermission"
                     (click)="openEditModal(schema)"
                     style="transform: scale(0.7); margin-right: 6px;"
                   >
                     <mat-icon style="color: white;">draw</mat-icon>
                   </button>
               
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="schema.selected"></mat-checkbox>
+                  <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(schema); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
                 </td>
               </tr>
           
@@ -373,14 +370,14 @@
 
   <div class="custom-file-box" (click)="triggerLogoInput()">
 
-    <!-- Existing logo -->
-    <span *ngIf="editAsset.logo && !selectedFile">
-      {{ getFileName(editAsset.logo) }}
+    <!-- Existing logo (v1.62.1: shown as a picture, not only its file name) -->
+    <span *ngIf="editAsset.logo && !selectedFile" class="lm-logo-pick">
+      <img [src]="editAsset.logo" alt="" class="lm-logo big"> {{ getFileName(editAsset.logo) }}
     </span>
 
     <!-- Newly selected logo -->
-    <span *ngIf="selectedFile">
-      {{ selectedFile.name }}
+    <span *ngIf="selectedFile" class="lm-logo-pick">
+      <img *ngIf="logoPreview" [src]="logoPreview" alt="" class="lm-logo big"> {{ selectedFile.name }}
     </span>
 
     <i class="fa fa-upload upload-icon"></i>

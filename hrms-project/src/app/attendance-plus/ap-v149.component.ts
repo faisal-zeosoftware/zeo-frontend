@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -10,11 +11,11 @@ import { ApApi } from './ap-api';
 @Component({
   selector: 'app-ap-setup149',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
-  <div class="ap-head"><div><h1>Overtime law and regularisation reasons</h1>
+  <div class="ap-head zp-cardhead"><div><h1>Overtime law and regularisation reasons</h1>
     <p class="ap-desc">The overtime rates of your country's labour law for the attendance rules, and the reasons employees pick when they ask to correct a day.</p></div></div>
   <p class="ap-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <div class="ap-card" *ngIf="law">
@@ -27,6 +28,19 @@ import { ApApi } from './ap-api';
       <tr><td>Rest day / weekend</td><td class="r">× {{ law.weekend }}</td></tr><tr><td>Public holiday</td><td class="r">× {{ law.holiday }}</td></tr></table>
     <div class="ap-tools" style="margin-top:8px"><button type="button" class="ap-btn primary" (click)="applyLaw()" [disabled]="busy" data-apply-law>Put these rates on every attendance rule</button></div>
     <p class="ap-muted">Rules without their own rates use the law of the company country. Employees see how their overtime was calculated next to their payslip.</p>
+  </div>
+  <!-- v1.62.6 (item 24): night rules of the company country -->
+  <div class="ap-card" *ngIf="night" data-night-rules>
+    <h2>Night overtime</h2>
+    <p class="ap-muted" style="max-width:820px" *ngIf="night.law">{{ night.law }}</p>
+    <p class="ap-muted" style="max-width:820px" *ngIf="!night.law">The night window of this country's law is not checked in ZEO – the night window of each attendance rule is used.</p>
+    <label class="ap-check" style="display:block;margin:6px 0"><input type="checkbox" [(ngModel)]="night.window_from_law" [disabled]="!night.law_window" data-window-from-law>
+      Count the law's night window ({{ night.law_window || '–' }}) on rules that still have the standard 22:00–06:00</label>
+    <label class="ap-check" style="display:block;margin:6px 0"><input type="checkbox" [(ngModel)]="night.non_shift_only" data-non-shift-only>
+      Night overtime rate only for workers not on shifts</label>
+    <p class="ap-muted">Workers on shifts: the planned shift of the day is a night shift or runs past midnight. Days already calculated change when they are recalculated.</p>
+    <div class="ap-muted" *ngIf="night.sources?.length"><span>Sources of the night rule</span><ul style="margin:4px 0"><li *ngFor="let s of night.sources">{{ s }}</li></ul></div>
+    <div class="ap-tools"><button type="button" class="ap-btn primary" (click)="saveNight()" [disabled]="busy" data-save-night>Save night rules</button></div>
   </div>
   <div class="ap-card">
     <h2>Regularisation reasons</h2>
@@ -45,11 +59,18 @@ import { ApApi } from './ap-api';
 </div>`,
 })
 export class ApSetup149Component implements OnInit {
-  api: ApApi; law: any = null; country = ''; reasons: any[] = []; msg = ''; err = false; busy = false;
+  api: ApApi; law: any = null; night: any = null; country = ''; reasons: any[] = []; msg = ''; err = false; busy = false;   // v1.62.6 (item 24): night
   readonly kinds = [['missing_punch', 'Missing punch'], ['wrong_time', 'Wrong time'], ['forgot', 'Forgot to punch'], ['on_duty', 'On duty / outside work'], ['wfh', 'Work from home']];
   constructor(http: HttpClient, rec: ZRecordService, private cd: ChangeDetectorRef) { this.api = new ApApi(http, rec); }
   async ngOnInit(): Promise<void> { await this.loadLaw(); this.reasons = await this.api.get('regularisation-reasons/', { all: 1 }).catch(() => []); this.cd.markForCheck(); }
-  async loadLaw(): Promise<void> { try { this.law = await this.api.get('ot-law/', { country: this.country }); this.country = this.law.country; } catch (e) { this.say(ApApi.err(e), true); } this.cd.markForCheck(); }
+  async loadLaw(): Promise<void> { try { this.law = await this.api.get('ot-law/', { country: this.country }); this.country = this.law.country; this.night = this.law.night_rules || null; } catch (e) { this.say(ApApi.err(e), true); } this.cd.markForCheck(); }
+  // v1.62.6 (item 24): save the night rules (company setting)
+  async saveNight(): Promise<void> {
+    this.busy = true;
+    try { const r: any = await this.api.post('ot-law/', { night_rules: { window_from_law: !!this.night.window_from_law, non_shift_only: !!this.night.non_shift_only } }); this.night = r.night_rules; this.say('Night rules saved.'); }
+    catch (e) { this.say(ApApi.err(e), true); }
+    this.busy = false; this.cd.markForCheck();
+  }
   async applyLaw(): Promise<void> {
     this.busy = true;
     try { const r: any = await this.api.post('ot-law/', { country: this.country }); this.say(`Overtime rates of ${r.country} put on ${r.updated} rule(s).`); }
@@ -69,21 +90,21 @@ export class ApSetup149Component implements OnInit {
 @Component({
   selector: 'app-ap-photos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
-  <div class="ap-head"><div><h1>Punch photos</h1><p class="ap-desc">Photos taken by the kiosks and the selfies of mobile punches, next to the employee's profile picture. Flag a doubtful one or remove the punch (the day is recalculated).</p></div></div>
+  <div class="ap-head zp-cardhead"><div><h1>Punch photos</h1><p class="ap-desc">Photos taken by the kiosks and the selfies of mobile punches, next to the employee's profile picture. Flag a doubtful one or remove the punch (the day is recalculated).</p></div></div>
   <p class="ap-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <div class="ap-tools">
-    <label>From <input class="ap-input" type="date" [(ngModel)]="from"></label><label>To <input class="ap-input" type="date" [(ngModel)]="to"></label>
+    <label>From <z-date-field [(value)]="from"></z-date-field></label><label>To <z-date-field [(value)]="to"></z-date-field></label>
     <select class="ap-input" [(ngModel)]="only" aria-label="Show"><option value="">All</option><option value="flagged">Flagged</option><option value="void">Removed</option></select>
     <button type="button" class="ap-btn" (click)="load()">Show</button></div>
   <p class="ap-muted" *ngIf="loaded && !rows.length">No punch photos in this period.</p>
   <div class="ap-photos">
     <div class="ap-ph" *ngFor="let p of rows" [class.flag]="p.flagged" [class.void]="p.void" [attr.data-punch]="p.id">
       <div class="ap-ph-imgs"><img *ngIf="p.profile" [src]="p.profile" alt="Profile picture" title="Profile picture"><img [src]="p.photo" alt="Punch photo" title="Punch photo"></div>
-      <b>{{ p.employee }}</b><small>{{ p.code }} · {{ p.kind }} · {{ p.ts | date:'d MMM, HH:mm' }} · {{ p.kiosk || p.source }}</small>
+      <b>{{ p.employee }}</b><small>{{ p.code }} · {{ $any(PK62)[p.kind] || p.kind }} · {{ p.ts | date:'dd/MM/yyyy HH:mm' }} · {{ p.kiosk || $any(PS62)[p.source] || p.source }}<!-- v1.62.0 people: words, not codes --></small>
       <small *ngIf="p.note" class="ap-note">{{ p.note }}</small>
       <div class="ap-tools" *ngIf="!p.void">
         <button type="button" class="ap-btn small" (click)="act(p, 'ok')">Fine</button>
@@ -100,6 +121,9 @@ export class ApSetup149Component implements OnInit {
     .ap-ph small { color: #6b7185; font-size: 12px; } .ap-note { color: #7a5200 !important; } .ap-removed { color: #a32626; font-size: 12px; font-weight: 600; }`],
 })
 export class ApPhotosComponent implements OnInit {
+  // v1.62.0 people: punch type and method in words on the photo cards
+  PK62: Record<string, string> = { in: 'Clock in', out: 'Clock out', break_out: 'Break start', break_in: 'Break end', lunch_out: 'Lunch start', lunch_in: 'Lunch end', auto: 'Punch' };
+  PS62: Record<string, string> = { web: 'Web', mobile: 'Mobile app', biometric: 'Face', kiosk: 'Kiosk', device: 'Device', qr: 'QR', manual: 'Entered by HR' };
   api: ApApi; rows: any[] = []; from = ''; to = ''; only = ''; msg = ''; err = false; loaded = false;
   constructor(http: HttpClient, rec: ZRecordService, private cd: ChangeDetectorRef) { this.api = new ApApi(http, rec); }
   ngOnInit(): void { this.load(); }
@@ -120,7 +144,7 @@ export class ApPhotosComponent implements OnInit {
 @Component({
   selector: 'app-ot-breakdown',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ZDateFieldComponent],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-card ap-ot" *ngIf="d">

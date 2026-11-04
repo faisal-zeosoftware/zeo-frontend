@@ -85,6 +85,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
         { title: 'Calendars', items: [
           { label: 'Weekend calendar', link: M + 'settings/weekcalendar', icon: 'weekend', perms: ['view_weekend_calendar'] },
           { label: 'Assign weekends', link: M + 'settings/assign-weekcalendar', icon: 'event_repeat', perms: ['view_assign_weekend'] },
+          { label: 'Weekend change from a date', link: M + 'settings/weekend-change', icon: 'date_range', perms: ['change_assign_weekend', 'add_assign_weekend'] },   // v1.62.6 (item 22)
           { label: 'Holiday calendar', link: M + 'settings/holiday-calendar', icon: 'celebration', perms: ['view_holiday_calendar'] },
           { label: 'Assign holidays', link: M + 'settings/assign-holiday-calendar', icon: 'event_available', perms: ['view_assign_holiday'] },
         ] },
@@ -157,10 +158,11 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Upload document files', hint: 'A zip of scans and PDFs for many employees – matched by folder and file name', link: M + 'employee-master-tools/document-files', icon: 'drive_folder_upload', perms: ['add_emp_documents'] },   // v1.53.2
           ] },
           { title: 'Exit', items: [
-            { label: 'Resignation requests', link: M + 'sub-sidebar/resignation-request', icon: 'logout', perms: ['view_employeeresignation'] },
+            { label: 'Resignations', link: M + 'sub-sidebar/resignation-request', icon: 'logout', perms: ['view_employeeresignation'] },
             { label: 'Resignation approvals', link: M + 'sub-sidebar/resignation-approvals', icon: 'fact_check', perms: ['view_resignationapproval', 'approver_resignationapproval'] },
             // v1.62.0 EOS: one Leavers workspace (was Approved resignations, End of service and Final settlement – their addresses open it)
             { label: 'Leavers', hint: 'Exit, end of service and final settlement – paid within 14 days', link: M + 'sub-sidebar/leavers', icon: 'how_to_reg', perms: ['view_exitsettlement', 'add_exitsettlement', 'change_exitsettlement', 'validate_exitsettlement', 'approve_exitsettlement', 'pay_exitsettlement', 'view_approved_resignations', 'view_endofservice'] },
+            { label: 'Bulk final settlement', hint: 'Calculate, review and pay the settlements of many leavers at once', link: M + 'sub-sidebar/bulk-final-settlement', icon: 'groups', perms: ['view_exitsettlement', 'add_exitsettlement', 'change_exitsettlement', 'validate_exitsettlement', 'approve_exitsettlement', 'pay_exitsettlement'] },   // v1.62.11 (item 230)
           ] },
           { title: 'Company', items: [
             { label: 'Announcements', link: M + 'general-sidebar/announcement-master', icon: 'campaign', perms: ['view_announcement'] },
@@ -222,35 +224,30 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Punches', link: M + 'attendance-plus/punches', icon: 'touch_app', perms: ['view_attendance'] },   // v1.12.0
             { label: 'Punch photos', hint: 'Kiosk photos and selfies – flag or remove a punch', link: M + 'attendance-plus/photos', icon: 'photo_camera', perms: ['view_attendance'] },   // v1.49.0
             { label: 'Import punches', link: M + 'attendance-plus/import', icon: 'upload_file', perms: ['add_attendance'] },   // v1.12.0
-            { label: 'Attendance marking', link: M + 'attendance-sidebar/attendance-marking', icon: 'edit_calendar', perms: ['view_attendance'] },
-            { label: 'Attendance list', link: M + 'attendance-sidebar/employee-full-attendance', icon: 'fact_check', perms: ['view_attendance'] },
-            { label: 'Punching details', link: M + 'attendance-sidebar/employee-punching-list', icon: 'fingerprint', perms: ['view_attendance_list'] },
-            { label: 'Manual entry', link: M + 'attendance-sidebar/manual-entry', icon: 'edit_note', perms: ['view_attendance_manual'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Attendance marking', link: M + 'attendance-sidebar/attendance-marking', icon: 'edit_calendar', perms: ['view_attendance'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Attendance list', link: M + 'attendance-sidebar/employee-full-attendance', icon: 'fact_check', perms: ['view_attendance'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Punching details', link: M + 'attendance-sidebar/employee-punching-list', icon: 'fingerprint', perms: ['view_attendance_list'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Manual entry', link: M + 'attendance-sidebar/manual-entry', icon: 'edit_note', perms: ['view_attendance_manual'] },
             { label: 'Late in / early out', link: M + 'attendance-sidebar/attendance-attendance-request', icon: 'more_time', perms: ['view_lateinearlyoutrequest'] },
-            { label: 'Early going', link: M + 'attendance-sidebar/employee-early-going', icon: 'directions_run', perms: ['view_early_going'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Early going', link: M + 'attendance-sidebar/employee-early-going', icon: 'directions_run', perms: ['view_early_going'] },
             { label: 'Recheck', link: M + 'attendance-sidebar/employee-recheck', icon: 'find_replace', perms: ['view_attendancerecheck'] },
             { label: 'Overtime', link: M + 'shift-options/employee-overtime', icon: 'more_time', perms: ['view_employeeovertime'] },
           ] },
           { title: 'Approvals', items: [
             { label: 'Late in / early out', link: M + 'attendance-sidebar/latein-earlyout-approvals', icon: 'fact_check', perms: ['view_lateinearlyoutapproval', 'approver_lateinearlyoutapproval'] },
           ] },
-          { title: 'Planning', items: [
-            { label: 'Shift rosters', link: M + 'shift-planner/rosters', icon: 'calendar_view_week', perms: ['view_rosterperiod'] },   // v1.12.0
-            { label: 'Shift master (rules)', link: M + 'shift-planner/shifts', icon: 'schedule', perms: ['view_shift'] },   // v1.12.0
-            { label: 'Shift requests', link: M + 'shift-planner/requests', icon: 'swap_horiz', perms: ['view_shiftrequest'] },   // v1.12.0
-            { label: 'Shift patterns', link: M + 'shift-options/shift-pattern', icon: 'date_range', perms: ['view_shiftpattern'] },
-            { label: 'Employee shifts', link: M + 'shift-options/shift-employee', icon: 'badge', perms: ['view_employeeshiftschedule'] },
-            { label: 'Shift override', link: M + 'shift-options/shift-override', icon: 'edit_calendar', perms: ['view_shiftoverride'] },
-          ] },
+          // v1.62.1 (tester 30-10 item 199): the shift pages (rosters, shift master, requests, patterns, employee shifts,
+          // override) are in the Shift planner menu only – the Attendance menu keeps the attendance pages
           { title: 'Setup', collapsed: true, items: [
             { label: 'Attendance rules', link: M + 'attendance-plus/rules', icon: 'rule', perms: ['change_attendance'] },   // v1.12.0
             { label: 'Devices', hint: 'ZKTeco / JSON attendance devices', link: M + 'attendance-plus/devices', icon: 'router', perms: ['change_attendance'] },   // v1.12.0
             { label: 'Kiosks', link: M + 'attendance-plus/kiosks', icon: 'tablet_mac', perms: ['change_attendance'] },   // v1.12.0
             { label: 'Kiosk PINs', hint: 'PINs for staff without a login; unlock after wrong tries', link: M + 'attendance-plus/kiosk-pins', icon: 'pin', perms: ['change_attendance'] },   // v1.51.0
             { label: 'Overtime law and reasons', hint: 'Overtime rates of the country, regularisation reasons with proof photo', link: M + 'attendance-plus/overtime-law', icon: 'gavel', perms: ['change_attendance'] },   // v1.49.0
+            { label: 'Ramadan hours', hint: 'Ramadan period of each year, shorter hours or Ramadan shift times', link: M + 'attendance-plus/ramadan', icon: 'nights_stay', perms: ['change_attendance'] },   // v1.67.0 (item 25a)
             { label: 'Office networks (IP)', link: M + 'attendance-plus/networks', icon: 'lan', perms: ['change_attendance'] },   // v1.12.0
             { label: 'Round-off policy', link: M + 'attendance-sidebar/attendance-policy', icon: 'rule', perms: ['view_attendancepolicy'] },
-            { label: 'Validation policy', link: M + 'attendance-sidebar/attendance-validation-policy', icon: 'rule', perms: ['view_attendancevalidationpolicy'] },
+            // v1.62.0 people: retired (old address redirects) – { label: 'Validation policy', link: M + 'attendance-sidebar/attendance-validation-policy', icon: 'rule', perms: ['view_attendancevalidationpolicy'] },
             { label: 'Late coming policy', link: M + 'attendance-sidebar/late-come-policy', icon: 'rule', perms: ['view_latecomingpolicy'] },
             { label: 'Early exit policy', link: M + 'attendance-sidebar/early-exit-policy', icon: 'rule', perms: ['view_earlyexitpolicy'] },
             { label: 'Overtime policy', link: M + 'shift-options/overtime-policy', icon: 'policy', perms: ['view_overtimepolicy'] },
@@ -261,7 +258,22 @@ export const MAIN_GROUPS: MenuGroup[] = [
           ] },
         ],
       },
-      { key: 'shiftplan', label: 'Shift planner', icon: 'calendar_view_week', link: M + 'shift-planner', parents: ['shift-planner'] },   // v1.12.0
+      // v1.62.1 (tester 30-10 item 199): every shift page belongs to the Shift planner (search, launcher and page titles too)
+      { key: 'shiftplan', label: 'Shift planner', icon: 'calendar_view_week', link: M + 'shift-planner', parents: ['shift-planner'], sections: [
+        { title: 'Shift planner', items: [
+            { label: 'My schedule', link: M + 'shift-planner/my-schedule', icon: 'event_available' },
+            { label: 'Shift requests', hint: 'Requests and open shifts', link: M + 'shift-planner/requests', icon: 'swap_horiz' },
+            { label: 'Shift rosters', link: M + 'shift-planner/rosters', icon: 'calendar_view_week', perms: ['view_rosterperiod'] },
+            { label: 'Roster grid', hint: 'Month by month: drag, pattern, copy, publish', link: M + 'shift-planner/roster-grid', icon: 'grid_on', perms: ['view_rosterperiod'] },   // v1.67.0 (item 21)
+            { label: 'Shift master (rules)', link: M + 'shift-planner/shifts', icon: 'schedule', perms: ['view_shift'] },
+            { label: 'Shift patterns', link: M + 'shift-planner/patterns', icon: 'date_range', perms: ['view_shiftpattern'] },
+            { label: 'Employee shifts', link: M + 'shift-planner/employee-shifts', icon: 'badge', perms: ['view_employeeshiftschedule'] },
+            { label: 'Shift override', link: M + 'shift-planner/override', icon: 'edit_calendar', perms: ['view_shiftoverride'] },
+            { label: 'Availability', link: M + 'shift-planner/availability', icon: 'event_busy', perms: ['view_availability'] },
+            { label: 'On-call duty', link: M + 'shift-planner/on-call', icon: 'phone_in_talk' },
+            { label: 'Shift reports', link: M + 'shift-planner/reports', icon: 'summarize', perms: ['view_rosterperiod'] },
+          ] },
+      ] },
       {
         key: 'leave', label: 'Leave', icon: 'event_busy', parents: ['leave-options'],
         sections: [
@@ -282,8 +294,9 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { title: 'Setup', collapsed: true, items: [
             { label: 'Leave policies (UAE)', hint: 'Employee-wise leave policies, accrual and leave year end', link: M + 'leave-options/leave-policies', icon: 'policy', perms: ['view_leave_type', 'view_leavepolicy'] },
             { label: 'Leave conflicts', hint: 'Same role away, department staffing, blackout periods', link: M + 'leave-options/leave-conflicts', icon: 'event_busy', perms: ['view_leave_type', 'view_leavepolicy'] },   // v1.51.0
+            { label: 'Leave rules', hint: 'Birth date, sandwich rule, projected balance, leave salary in advance, eligibility, nursing breaks, notice period', link: M + 'leave-options/leave-rules', icon: 'rule', perms: ['view_leave_type', 'view_leavepolicy'] },   // v1.65.0 (items 82–97)
             { label: 'Leave types', link: M + 'leave-options/leave-master', icon: 'category', perms: ['view_leave_type'] },
-            { label: 'Leave entitlements (old)', hint: 'Older per-leave-type rules, used only for leave types that no leave policy covers – use Leave policies (UAE)', link: M + 'leave-options/leave-policy', icon: 'rule', perms: ['view_leave_type'] },   // v1.15.1 (was "Leave policy")
+            // v1.62.0 people: removed from the menu (superseded by Leave policies; v1.62.1 the address redirects there) – { label: 'Leave entitlements (old)', hint: 'Older per-leave-type rules, used only for leave types that no leave policy covers – use Leave policies (UAE)', link: M + 'leave-options/leave-policy', icon: 'rule', perms: ['view_leave_type'] },   // v1.15.1 (was "Leave policy")
             { label: 'Approval levels', link: M + 'leave-options/leave-approval-level', icon: 'approval', perms: ['view_leaveapprovallevels'] },
             { label: 'Escalation', link: M + 'leave-options/leave-escalation', icon: 'trending_up', perms: ['view_leave_escalation'] },
             // v1.26.0: "Accrual test" (developer tool) removed from the menu – the address still opens for support
@@ -299,22 +312,35 @@ export const MAIN_GROUPS: MenuGroup[] = [
         sections: [
           { title: 'Daily work', items: [
             { label: 'Payroll runs', link: M + 'salary-options/pay-roll', icon: 'payments', perms: ['view_payrollrun'] },
+            { label: 'Monthly inputs', hint: 'Days or hours of the month per employee – on-call, shift, overtime', link: M + 'salary-options/monthly-inputs', icon: 'edit_calendar', perms: ['view_payrollrun', 'change_payrollrun', 'view_employeesalarystructure', 'change_employeesalarystructure'] },   // v1.62.11 (item 18b)
             { label: 'AI payroll auditor', hint: 'Audit a run before approval – every exception explained', link: M + 'zeo-ai/payroll-auditor', icon: 'fact_check', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.37.0
             { label: 'Payslip approvals', link: M + 'salary-options/payslip-approval', icon: 'receipt_long', perms: ['view_payslipapproval', 'approver_payslipapproval'] },
             { label: 'Pay calendars', hint: 'Weekly, bi-weekly or semi-monthly', link: M + 'salary-options/pay-calendars', icon: 'date_range', perms: ['view_payrollrun', 'add_payrollrun', 'change_payrollrun'], country: 'pay:cycles' },   // v1.55.0
             { label: 'Off-cycle runs', hint: 'Bonus, commission, correction, final settlement outside the monthly payroll', link: M + 'salary-options/off-cycle', icon: 'bolt', perms: ['view_payrollrun', 'add_payrollrun', 'change_payrollrun'] },   // v1.55.0
             { label: 'Arrears', hint: 'Back pay after a salary change with an earlier effective date', link: M + 'salary-options/arrears', icon: 'history', perms: ['view_payrollrun', 'add_payrollrun', 'change_payrollrun'] },   // v1.55.0
             { label: 'WPS file', link: M + 'salary-options/wps', icon: 'account_balance', perms: ['view_wps'], country: 'wps_sif' },   // v1.14.0
+            { label: 'Payments', hint: 'Net pay of a run by method: WPS, bank transfer, cheque, cash, own methods – files and paid marks', link: M + 'salary-options/run-payments', icon: 'paid', perms: ['view_wps', 'export_wps', 'view_payrollrun', 'change_payrollrun'] },   // v1.62.11 (item 227)
+            { label: 'Bank file layouts', hint: 'WPS SIF, the banks’ own layouts and the KSA Mudad file – preview and download', link: M + 'salary-options/bank-files', icon: 'account_balance_wallet', perms: ['view_wps', 'export_wps', 'view_payrollrun', 'change_payrollrun'] },   // v1.62.11 (item 227)
+            { label: 'File layouts', hint: 'Design the payment files: WPS, bank transfer, cheque list, cash sheet', link: M + 'salary-options/payment-layouts', icon: 'view_list', perms: ['view_wps', 'export_wps', 'view_payrollrun', 'change_payrollrun'] },   // v1.62.11 (item 227)
+            { label: 'Hold / release salary', hint: 'Hold a month’s salary in full or in part and pay it in a later run', link: M + 'salary-options/payctl-holds', icon: 'pause_circle', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.62.11 (item 228)
+            { label: 'Period locks', hint: 'Lock a closed payroll period – nothing can change it', link: M + 'salary-options/payctl-locks', icon: 'lock', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.62.11 (item 231)
           ] },
           { title: 'Accounting', items: [   // v1.35.0
             { label: 'Accounting journals', hint: 'Odoo, Zoho Books, Excel / CSV, ZEO API – department and employee posting', link: M + 'salary-options/accounting', icon: 'account_balance_wallet', perms: ['view_accounting', 'post_accounting', 'manage_accounting'] },
             { label: 'Provisions', hint: 'Gratuity, leave salary and air tickets per employee each month end', link: M + 'salary-options/provisions', icon: 'savings', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.49.0
+            { label: 'Accrue now – pay later', hint: 'On-call, shift and other allowances accrued monthly and paid in a payout month or at exit', link: M + 'salary-options/accrue-pay-later', icon: 'hourglass_bottom', perms: ['view_payrollrun', 'change_payrollrun', 'view_salarycomponent', 'change_salarycomponent'] },   // v1.62.7 (item 18)
             { label: 'Cost allocation', hint: 'Payroll cost split over projects and cost centres', link: M + 'salary-options/cost-allocation', icon: 'call_split', perms: ['view_payrollrun', 'change_payrollrun'] },   // v1.50.0
           ] },
           { title: 'Salaries', items: [
             { label: 'Employee salary', link: M + 'salary-options/employee-salary', icon: 'badge', perms: ['view_employeesalarystructure'] },
+            { label: 'Revise salary', hint: 'New amounts from an effective date, with approval; arrears for past dates', link: M + 'salary-options/payctl-revise', icon: 'trending_up', perms: ['view_employeesalarystructure', 'change_employeesalarystructure'] },   // v1.62.11 (item 228)
+            { label: 'Salary history import', hint: 'Earlier salary changes with their effective dates (CSV / Excel)', link: M + 'salary-options/payctl-import', icon: 'upload_file', perms: ['change_employeesalarystructure'] },   // v1.62.11 (item 231)
+            { label: 'Re-hire', hint: 'A leaver comes back – new service period', link: M + 'salary-options/payctl-rehire', icon: 'person_add', perms: ['change_emp_master', 'add_emp_master'] },   // v1.62.11 (item 228)
+            { label: 'Pay date and loan limit', hint: 'Pay-date shift off weekends and holidays; loans limited by gratuity', link: M + 'salary-options/payctl-settings', icon: 'tune', perms: ['change_payrollplussettings', 'view_payrollrun'] },   // v1.62.11 (item 231)
             { label: 'Payroll what-if', hint: 'Try an increment or a new allowance before you apply it', link: M + 'salary-options/what-if', icon: 'science', perms: ['add_payrollrun', 'change_payrollrun'] },   // v1.50.0
             { label: 'Loans – balances and schedule', hint: 'Top-up, new instalment, pause, early settlement', link: M + 'salary-options/loans', icon: 'credit_score', perms: ['view_loanapplication', 'change_loanapplication'] },   // v1.49.0
+            { label: 'Recoveries', hint: 'Accommodation, transport, uniforms, damage – any deduction recovered month by month', link: M + 'salary-options/recoveries', icon: 'savings', perms: ['view_payrollrun', 'change_payrollrun', 'view_employeesalarystructure', 'change_employeesalarystructure'] },   // v1.63.0 (item 28)
+            { label: 'Salary splits', hint: 'One salary through two accounts or part in cash – WPS for the UAE part', link: M + 'salary-options/pay-splits', icon: 'call_split', perms: ['view_payrollrun', 'change_payrollrun', 'change_emp_master', 'view_employeesalarystructure'] },   // v1.63.0 (item 27)
             { label: 'Pay structure', link: M + 'salary-options/pay-structure', icon: 'schema', perms: ['view_paystructure'] },
           ] },
           { title: 'Setup', collapsed: true, items: [
@@ -324,6 +350,8 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Payroll controls', hint: 'Segregation of duties, WPS and settlement deadlines', link: M + 'salary-options/payroll-controls', icon: 'admin_panel_settings', perms: ['change_payrollplussettings', 'view_payrollplussettings', 'change_payrollrun'] },   // v1.18.0
             { label: 'Statutory schemes', hint: 'Social security, PF, ESI, tax of the company country', link: M + 'salary-options/statutory-schemes', icon: 'account_balance', perms: ['view_salarycomponent', 'change_payrollplussettings'] },   // v1.31.0
             { label: 'Legal rates', hint: 'Legal figures by date – GPSSA rates and limits; law changes from a date', link: M + 'salary-options/legal-rates', icon: 'gavel', perms: ['view_salarycomponent', 'change_payrollplussettings'] },   // v1.59.0
+            { label: 'Branch pension schemes', hint: 'GPSSA or ADPF for UAE nationals; DIFC DEWS instead of gratuity – per branch', link: M + 'salary-options/branch-pension-schemes', icon: 'account_tree', perms: ['view_salarycomponent', 'change_payrollplussettings', 'view_payrollrun'] },   // v1.62.11 (item 229)
+            { label: 'End of service settings', hint: 'Gratuity daily wage, service days, leave salary, final salary month by month, air ticket', link: M + 'salary-options/eos-settings', icon: 'rule', perms: ['change_payrollplussettings', 'view_payrollplussettings', 'view_exitsettlement', 'change_exitsettlement'] },   // v1.62.11 (EOS settings)
           ] },
         ],
       },
@@ -359,6 +387,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { title: 'Air ticket setup', collapsed: true, items: [
             { label: 'Policy', link: M + 'air-ticket-options/air-ticket-policy', icon: 'policy', perms: ['view_airticketpolicy'] },
             { label: 'Rules', link: M + 'air-ticket-options/airticket-rule', icon: 'gavel', perms: ['view_airticketrule'] },
+            { label: 'Air ticket settings', hint: 'Provision, probation, family and fares, accrual and lapse, request checks, overlapping policies', link: M + 'air-ticket-options/air-ticket-rules', icon: 'tune', perms: ['view_airticketpolicy', 'change_airticketpolicy', 'view_airticketallocation'] },   // v1.66.0 (items 118–123)
             { label: 'Approval levels', link: M + 'air-ticket-options/airticket-approval-level', icon: 'approval', perms: ['view_airticketworkflow'] },
             { label: 'Escalation', link: M + 'air-ticket-options/airticket-escalation', icon: 'trending_up', perms: ['view_airticket_escalation'] },
           ] },
@@ -389,6 +418,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Disposals', link: M + 'asset-plus/disposals', icon: 'delete_sweep', perms: ['view_asset', 'view_assetdisposal'] },
             { label: 'Recoveries', link: M + 'asset-plus/recoveries', icon: 'payments', perms: ['view_asset', 'view_payrollrun'] },
             { label: 'Exit clearance', link: M + 'asset-plus/clearance', icon: 'how_to_reg', perms: ['view_assetallocation', 'view_endofservice'] },
+            { label: 'Signed hand-over forms', hint: 'Issue and return forms the employee signs (from HR operations)', link: HO + 'r/handover', icon: 'assignment_turned_in', perms: ['view_assetallocation', ...HO_ALL] },   // v1.62.0 talent-ops
           ] },
           { title: 'Approvals', items: [
             { label: 'Asset request approvals', link: M + 'asset-options/asset-approval', icon: 'fact_check', perms: ['view_assetapproval', 'approver_assetapproval'] },
@@ -485,7 +515,8 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { label: 'Document renewals', hint: 'Renewals in progress and done', link: HO + 'r/renewal', icon: 'autorenew', perms: HO_ALL },
         ] },
         { title: 'Assets', items: [
-          { label: 'Asset handovers', hint: 'Issue and return, signed by the employee', link: HO + 'r/handover', icon: 'assignment_turned_in', perms: HO_ALL },
+          // v1.62.0 talent-ops: asset issue and return run in Assets (the master); the signed forms stay reachable from there
+          { label: 'Asset issue and return', hint: 'In Assets: allocations, returns, exit clearance and the signed hand-over forms', link: M + 'asset-plus/allocations', icon: 'assignment_turned_in', perms: HO_ALL },
         ] },
         { title: 'Assignments and matrix', items: [   // v1.58.0
           { label: 'Assignments and matrix', hint: 'Who works where, share of time, FTE by department, ending soon', link: HO + 'assignments', icon: 'account_tree', perms: HO_ALL },
@@ -560,6 +591,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Department cost', link: M + 'report-options/r/department-cost', icon: 'pie_chart', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
             { label: 'Payroll variance', link: M + 'report-options/r/payroll-variance', icon: 'compare_arrows', perms: ['view_payslip', 'view_payrollrun'], country: 'app:payroll' },
             { label: 'WPS payment status', link: M + 'report-options/r/wps-status', icon: 'event_available', perms: ['view_payrollrun'], country: 'app:payroll' },   // v1.18.0
+            { label: 'Accrued components', link: M + 'report-options/r/accruals', icon: 'hourglass_bottom', perms: ['view_payrollrun', 'view_payslip'], country: 'app:payroll' },   // v1.62.7 (item 18)
           ] },
           { title: 'Requests, exits & assets', collapsed: true, items: [
             { label: 'General requests', link: M + 'report-options/r/general-requests', icon: 'assignment', perms: ['view_generalrequestreport', 'view_generalrequest'] },
@@ -1182,6 +1214,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Assign permissions', link: M + 'settings/permission-assigned', icon: 'admin_panel_settings', perms: ['view_permission'] },
             { label: 'Branch permissions', link: M + 'settings/branch-permissions', icon: 'account_tree', perms: ['view_userbranchaccess'] },
             { label: 'My sign-in and out of office', hint: 'Authenticator app, where you are signed in, who approves while you are away', link: M + 'settings/my-account', icon: 'phonelink_lock' },   // v1.52.0
+            { label: 'Out of office rules', hint: 'Out of office automatically when an approver\'s leave is approved; approvals back when they return', link: M + 'settings/out-of-office', icon: 'event_busy', perms: ['zeo_company_admin', 'change_leavepolicy'] },   // v1.62.11 (item 95)
             { label: 'Sign-in security', hint: 'Password rules, lock, authenticator app, unlock users, view as a user', link: M + 'settings/sign-in-security', icon: 'admin_panel_settings', perms: ['zeo_company_admin'] },   // v1.52.0
             { label: 'Single sign-on', hint: 'Sign in with Microsoft (Office 365), Google Workspace or SAML', link: M + 'settings/single-sign-on', icon: 'key', perms: ['zeo_company_admin'] },   // v1.54.0
             { label: 'Security dashboard', hint: 'Users without the authenticator, wrong passwords, sign-ins, API keys, exports, security events', link: M + 'settings/security-dashboard', icon: 'security', perms: ['zeo_company_admin'] },   // v1.62.0

@@ -14,6 +14,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-final-settlement',
@@ -179,7 +180,7 @@ export class FinalSettlementComponent implements OnInit {
     const body: any = { note: this.note };
     if (action === 'recalculate') { body.notice_waived = this.cur.notice_waived; }
     if (action === 'pay') { body.payment_ref = this.payRef; body.paid_on = this.paidOn; }
-    if (action === 'submit' && !confirm('Submit this settlement to Finance? It cannot be changed until it is sent back.')) { return; }
+    if (action === 'submit' && !(await zConfirm('Submit this settlement to Finance? It cannot be changed until it is sent back.'))) { return; }
     this.busy = true;
     try {
       this.cur = await firstValueFrom(this.http.post<any>(this.url(`settlements/${this.cur.id}/${action}/`), body));

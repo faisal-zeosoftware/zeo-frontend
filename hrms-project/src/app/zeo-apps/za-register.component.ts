@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0
 import { ZaApiService, ZaClient, appOf, base, day, money, stClass, today, when } from './za-api.service';
 import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** One input of a kit form or action: text, number, date, choice, record picker (own app or a linked app), several records, yes/no,
  *  JSON lists (lines or a small table), a checklist to tick, inspection results. v1.18.0 */
@@ -435,7 +436,7 @@ export class ZaActionComponent implements OnInit {
     this.err = '';
     const miss = this.act.fields.filter((f: any) => f.required && f.type !== 'bool' && (this.v[f.name] === '' || this.v[f.name] === null || this.v[f.name] === undefined));
     if (miss.length) { this.err = miss.map((f: any) => f.label).join(', ') + ' required.'; return; }
-    if (this.act.confirm && !confirm(this.act.confirm)) return;
+    if (this.act.confirm && !(await zConfirm(this.act.confirm))) return;
     this.busy = true;
     const body: any = {};
     Object.entries(this.v).forEach(([k, x]) => { if (x !== undefined) body[k] = x; });
@@ -499,7 +500,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
           <ng-container *ngFor="let k of [reg.kind]">
           <!-- v1.22.0: the HRMS list – search, filters (Branch…), group by, export, columns, views, saved views -->
           <table class="hs-table za-list">
-            <thead><tr><th *ngFor="let c of reg.cols" [class.r]="c.type === 'decimal'">{{ c.label }}</th></tr></thead>
+            <thead><tr><th *ngFor="let c of reg.cols" [class.r]="c.type === 'decimal'" [attr.data-ztype]="isMoney(c) ? 'money' : null">{{ c.label }}</th></tr></thead><!-- v1.62.0 ui: amounts right-aligned with AED -->
             <tbody>
             <tr class="click" *ngFor="let r of rows" (click)="rowClick($event, r.id)">
               <td *ngFor="let c of reg.cols; let i = index" [class.r]="c.type === 'decimal'">
@@ -769,6 +770,7 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
     } catch (e) { this.msg = ZaApiService.error(e); }
   }
 
+  isMoney(c: any): boolean { return c?.type === 'decimal' && !/(hour|day|qty|quantity|rate|%|percent|score|\bkm\b|point|weight|size|area|sq|level|age)/i.test(c?.label || ''); }   // v1.62.0 ui
   lowerWords(s: string): string { return (s || '').split(' ').map(w => /^[A-Z0-9]{2,}$/.test(w) ? w : w.toLowerCase()).join(' '); }   // v1.62.0 ui
   term(label: string): string {
     const t = this.info?.terms || {};

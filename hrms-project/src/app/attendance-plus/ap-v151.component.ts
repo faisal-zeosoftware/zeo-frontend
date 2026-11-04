@@ -14,7 +14,7 @@ import { ApApi } from './ap-api';
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
-  <div class="ap-head"><div><h1>Kiosk PINs</h1>
+  <div class="ap-head zp-cardhead"><div><h1>Kiosk PINs</h1>
     <p class="ap-desc">Employees punch at a kiosk and open their payslips and leave there with their employee code (or Emirates ID) and a PIN. Employees with a ZEO login set it in My attendance; give one here to staff without a login. A PIN is locked for 15 minutes after 5 wrong tries – unlock it here.</p></div></div>
   <p class="ap-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <div class="ap-card">

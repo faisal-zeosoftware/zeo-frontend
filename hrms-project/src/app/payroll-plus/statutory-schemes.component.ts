@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TPipe } from '../shared-ui/i18n.service';
 import { FLOW_CSS } from '../zeo-flow/flow.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.31.0 – Payroll → Setup → Statutory schemes: the statutory contributions / deductions of the company country
@@ -56,7 +57,7 @@ function err(e: any): string {
   <div class="ss-top">
     <div>
       <h1>{{ 'Statutory schemes' | t }}</h1>
-      <p>{{ 'Social security, provident fund, insurance and tax deductions of the company country. Each active scheme gives the payroll formulas stat_CODE_base, stat_CODE_emp and stat_CODE_er for every employee, and "Make salary components" adds a deduction (employee share) and a hidden employer contribution that use them.' | t }}</p>
+      <p>{{ 'Social security, provident fund, insurance and tax deductions of the company country. Each active scheme works out the contribution base, the employee share and the employer share of every employee; "Make salary components" adds a deduction (employee share) and a hidden employer contribution that use them.' | t }}</p>
     </div>
     <div class="ss-act" *ngIf="d?.can_change">
       <button type="button" class="lp-btn" (click)="seed()" [disabled]="busy">{{ 'Load the country’s schemes' | t }} ({{ d.pack }})</button>
@@ -119,12 +120,12 @@ function err(e: any): string {
       <thead><tr><th>{{ 'Scheme' | t }}</th><th>{{ 'Applies to' | t }}</th><th>{{ 'Base' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th><th>{{ 'Ceiling' | t }}</th><th>{{ 'Components' | t }}</th><th>{{ 'Active' | t }}</th><th></th></tr></thead>
       <tbody>
         <tr *ngFor="let r of d.rows">
-          <td><b>{{ r.name }}</b><br><small class="lp-muted">{{ r.authority }} · stat_{{ r.code }}_emp / _er · {{ r.country }}</small></td>
+          <td [title]="'Payroll formulas: stat_' + r.code + '_base, stat_' + r.code + '_emp, stat_' + r.code + '_er'"><b>{{ r.name }}</b><br><small class="lp-muted">{{ r.authority }}{{ r.authority && r.country ? ' · ' : '' }}{{ r.country }}</small></td>
           <td>{{ applies(r.applies_to) }}</td><td>{{ base(r.base) }}</td>
           <td>{{ share(r, 'employee') }}</td><td>{{ share(r, 'employer') }}</td>
-          <td>{{ r.max_base ? (r.max_base | number) : '–' }}{{ r.eligible_gross_max ? (' · gross ≤ ' + (r.eligible_gross_max | number)) : '' }}</td>
-          <td><code *ngIf="r.employee_component">{{ r.employee_component }}</code> <code *ngIf="r.employer_component">{{ r.employer_component }}</code><span *ngIf="!r.employee_component && !r.employer_component" class="lp-muted">–</span></td>
-          <td><span class="fw-chip" [class.ok]="r.active" [class.inactive]="!r.active">{{ r.active ? ('yes' | t) : ('no' | t) }}</span></td>
+          <td style="white-space:nowrap">{{ r.max_base ? ('AED ' + (r.max_base | number)) : '–' }}<small class="lp-muted" *ngIf="r.eligible_gross_max"><br>{{ 'only when gross ≤' | t }} AED {{ r.eligible_gross_max | number }}</small></td>
+          <td style="font-size:12px"><span *ngIf="r.employee_component" style="white-space:nowrap">{{ 'Deduction' | t }}: {{ r.employee_component }}</span><br *ngIf="r.employee_component && r.employer_component"><span *ngIf="r.employer_component" style="white-space:nowrap">{{ 'Employer' | t }}: {{ r.employer_component }}</span><span *ngIf="!r.employee_component && !r.employer_component" class="lp-muted">{{ 'Not made yet' | t }}</span></td>
+          <td><span class="fw-chip" [class.ok]="r.active" [class.inactive]="!r.active">{{ r.active ? ('Active' | t) : ('Inactive' | t) }}</span></td>
           <td style="white-space:nowrap"><a class="fw-link" (click)="openHist(r)" [attr.data-rates]="r.code">{{ 'Rates by date' | t }}</a><ng-container *ngIf="d.can_change"> · <a class="fw-link" (click)="pick(r)">{{ 'Change' | t }}</a> · <a class="fw-link" (click)="del(r)">{{ 'Delete' | t }}</a></ng-container></td>
         </tr>
         <tr *ngIf="!d.rows.length"><td colspan="9" class="lp-muted">{{ 'No schemes yet – load the country’s schemes, or add your own.' | t }}</td></tr>
@@ -142,7 +143,7 @@ function err(e: any): string {
       <thead><tr><th>{{ 'From' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th><th>{{ 'Minimum base' | t }}</th><th>{{ 'Ceiling' | t }}</th><th>{{ 'Law reference' | t }}</th><th></th><th></th></tr></thead>
       <tbody>
         <tr *ngFor="let v of hist.rows" [attr.data-version]="v.id || 'scheme'">
-          <td><b>{{ v.effective_from || ('from the start' | t) }}</b><br><small class="lp-muted">{{ v.source === 'scheme' ? ('rates on the scheme' | t) : ('new rates' | t) }}</small></td>
+          <td><b>{{ v.effective_from ? dmy(v.effective_from) : ('from the start' | t) }}</b><br><small class="lp-muted">{{ v.source === 'scheme' ? ('rates on the scheme' | t) : ('new rates' | t) }}</small></td>
           <td>{{ vshare(v, 'employee') }}</td><td>{{ vshare(v, 'employer') }}</td>
           <td>{{ v.min_base ? (+v.min_base | number) : '–' }}</td><td>{{ v.max_base ? (+v.max_base | number) : '–' }}</td>
           <td><small>{{ v.law_reference }}</small><br *ngIf="v.notes"><small class="lp-muted" *ngIf="v.notes">{{ v.notes }}</small></td>
@@ -194,14 +195,16 @@ function err(e: any): string {
   <div class="fw-card" *ngIf="d">
     <h2>{{ 'Check an employee' | t }}</h2>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <input class="ss-form" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 10px;font-size:13px;width:160px" [(ngModel)]="empId" [placeholder]="'Employee id' | t">
+      <!-- v1.62.0 talent-ops: pick the employee by name (was a free "Employee id" box) -->
+      <select style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 10px;font-size:13px;max-width:280px" [(ngModel)]="empId" (focus)="loadEmps()" aria-label="Employee" data-ss-emp>
+        <option value="">{{ 'Choose an employee' | t }}</option><option *ngFor="let e of emps" [value]="e.id">{{ e.label }}</option></select>
       <label class="lp-muted" style="display:flex;align-items:center;gap:6px">{{ 'Rates on' | t }}<input type="date" [(ngModel)]="pvDate" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px"></label>
       <button type="button" class="lp-btn" (click)="preview()" [disabled]="!empId">{{ 'Calculate' | t }}</button>
       <span class="lp-muted" *ngIf="pv">{{ pv.employee }} · {{ 'gross' | t }} {{ pv.gross | number }} · {{ pv.national ? ('national' | t) : ('expatriate' | t) }}</span>
     </div>
     <table class="fw-table" zPlain *ngIf="pv" style="margin-top:10px">
       <thead><tr><th>{{ 'Scheme' | t }}</th><th>{{ 'Base' | t }}</th><th>{{ 'Employee' | t }}</th><th>{{ 'Employer' | t }}</th><th>{{ 'Rates from' | t }}</th></tr></thead>
-      <tbody><tr *ngFor="let s of pv.schemes" [style.opacity]="s.applies ? 1 : .5" [attr.data-pv]="s.code"><td>{{ s.name }}</td><td>{{ s.base | number:'1.2-2' }}</td><td>{{ s.employee | number:'1.2-2' }}</td><td>{{ s.employer | number:'1.2-2' }}</td><td>{{ s.rates_from || '–' }}</td></tr></tbody>
+      <tbody><tr *ngFor="let s of pv.schemes" [style.opacity]="s.applies ? 1 : .5" [attr.data-pv]="s.code"><td>{{ s.name }}</td><td>{{ s.base | number:'1.2-2' }}</td><td>{{ s.employee | number:'1.2-2' }}</td><td>{{ s.employer | number:'1.2-2' }}</td><td>{{ s.rates_from ? dmy(s.rates_from) : '–' }}</td></tr></tbody>
     </table>
   </div>
 </div>`,
@@ -210,7 +213,18 @@ export class StatutorySchemesComponent implements OnInit {
   d: any = null; edit: any = null; busy = false; msg = ''; bad = false; empId = ''; pv: any = null;
   hist: any = null; nv: any = null; pvDate = ''; todayIso = new Date().toISOString().slice(0, 10);   // v1.59.0 rates by date
   constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void { this.load(); this.loadEmps(); }
+  // v1.62.0 talent-ops
+  emps: { id: number; label: string }[] = [];
+  async loadEmps(): Promise<void> {
+    if (this.emps.length) { return; }
+    try {
+      const r: any = await firstValueFrom(this.http.get<any>(`${environment.apiBaseUrl}/employee/api/emplist/`, { params: { schema: schema() } }));
+      this.emps = (Array.isArray(r) ? r : r?.results || []).map((e: any) => ({ id: e.id, label: `${e.emp_name || [e.emp_first_name, e.emp_last_name].filter(Boolean).join(' ')} (${e.emp_code})` }));
+      this.cd.detectChanges();
+    } catch { this.emps = []; }
+  }
+  dmy(v: any): string { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : (v || ''); }
   blank(): any { return { id: null, code: '', name: '', authority: '', kind: 'percent', applies_to: 'all', base: 'basic', min_base: null, max_base: null, eligible_gross_max: null,
                           employee_rate: 0, employer_rate: 0, employee_fixed: 0, employer_fixed: 0, slabs: [], standard_deduction: 0, rebate_income_limit: 0, cess_rate: 0,
                           active: true, effective_from: null, law_reference: '', notes: '' }; }
@@ -241,7 +255,7 @@ export class StatutorySchemesComponent implements OnInit {
     this.busy = false; this.cd.detectChanges();
   }
   async del(r: any): Promise<void> {
-    if (!confirm(`Delete ${r.name}? Salary components that use stat_${r.code}_… will show "Unknown name" until removed.`)) { return; }
+    if (!(await zConfirm(`Delete ${r.name}? Salary components that use stat_${r.code}_… will show "Unknown name" until removed.`))) { return; }
     try { await firstValueFrom(this.http.delete(API + `${r.id}/`, { params: { schema: schema() } })); await this.load(); }
     catch (e) { this.msg = err(e); this.bad = true; this.cd.detectChanges(); }
   }
@@ -293,7 +307,7 @@ export class StatutorySchemesComponent implements OnInit {
     this.busy = false; this.cd.detectChanges();
   }
   async delVersion(v: any): Promise<void> {
-    if (!confirm(`Delete the rates from ${v.effective_from}?`)) { return; }
+    if (!(await zConfirm(`Delete the rates from ${this.dmy(v.effective_from)}?`))) { return; }
     try { this.hist = await firstValueFrom(this.http.delete<any>(API + `${this.hist.scheme.id}/versions/`, { params: { schema: schema(), version: v.id } })); }
     catch (e) { this.msg = err(e); this.bad = true; }
     this.cd.detectChanges();

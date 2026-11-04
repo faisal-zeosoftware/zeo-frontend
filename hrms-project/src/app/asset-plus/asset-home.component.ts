@@ -30,15 +30,18 @@ import { ASSET_BASE, AssetApiService, EVENT_ICON, STATUS_LABEL, money } from './
       <p class="ex-msg err" *ngIf="msg">{{ msg }}</p>
       <p class="ex-muted" *ngIf="loading">Loading…</p>
       <ng-container *ngIf="d">
-        <div class="ex-tiles">
+        <div class="ex-tiles ap-tiles5">
           <button type="button" class="ex-tile" (click)="go('register')">
             <div class="lbl">Assets</div><div class="num">{{ d.total }}</div><div class="amt">Book value {{ m(d.book_value) }}</div></button>
           <button type="button" class="ex-tile t3" (click)="go('register', { status: 'assigned' })">
             <div class="lbl">With employees / locations</div><div class="num">{{ d.by_status.assigned || 0 }}</div><div class="amt">{{ d.by_status.available || 0 }} available in the store</div></button>
           <button type="button" class="ex-tile t2" (click)="go('maintenance')">
-            <div class="lbl">Maintenance</div><div class="num">{{ d.by_status.maintenance || 0 }}</div><div class="amt">{{ d.maintenance_due }} plan(s) due</div></button>
+            <div class="lbl">In maintenance</div><div class="num">{{ d.by_status.maintenance || 0 }}</div><div class="amt">{{ d.maintenance_due === 1 ? '1 plan due' : (d.maintenance_due || 0) + ' plans due' }}</div></button>
           <button type="button" class="ex-tile t4" (click)="go('register', { warranty: 30 })">
-            <div class="lbl">Warranty ends in 30 days</div><div class="num">{{ d.warranty_30 }}</div><div class="amt">{{ d.by_status.lost || 0 }} lost · {{ d.by_status.disposed || 0 }} disposed</div></button>
+            <div class="lbl">Warranty ends in 30 days</div><div class="num">{{ d.warranty_30 }}</div><div class="amt">{{ d.warranty_30 ? 'Check the cover before it ends' : 'No warranty ends soon' }}</div></button>
+          <!-- v1.62.0 talent-ops: lost and disposed on a tile of their own (they were the subtitle of the warranty tile) -->
+          <button type="button" class="ex-tile" (click)="go('disposals')">
+            <div class="lbl">Out of service</div><div class="num">{{ (d.by_status.lost || 0) + (d.by_status.disposed || 0) }}</div><div class="amt">{{ d.by_status.lost || 0 }} lost · {{ d.by_status.disposed || 0 }} disposed</div></button>
         </div>
         <div class="ex-grid2">
           <div class="ex-panel">

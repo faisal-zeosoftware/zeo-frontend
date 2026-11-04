@@ -714,6 +714,36 @@
               </div>
             </div>
 
+            <!-- v1.62.11 (item 18b): monthly input (company setting – a column of Payroll › Monthly inputs) -->
+            <div class="col-12" *ngIf="mi && mi.eligible" data-sc-monthly-input>
+              <div class="py-acc">
+                <label class="py-acc-on"><input type="checkbox" [(ngModel)]="mi.on" [ngModelOptions]="{ standalone: true }" data-sc-mi-on> <b>{{ 'Monthly input' | t }}</b></label>
+                <span class="py-muted">{{ 'Days or hours entered each month on Payroll › Monthly inputs (set back to 0 after the payslip).' | t }}{{ mi.auto ? ' ' + ('A formula uses this component, so it is a monthly input unless you untick it.' | t) : '' }}</span>
+                <a class="py-acc-link" routerLink="/main-sidebar/salary-options/monthly-inputs">{{ 'Monthly inputs' | t }} ›</a>
+              </div>
+            </div>
+
+            <!-- v1.62.7 (item 18): accrue now – pay later (saved with Update; the setting lives in Payroll › Accrue now – pay later) -->
+            <div class="col-12" *ngIf="acc && editAsset.component_type !== 'deduction'" data-sc-accrual>
+              <div class="py-acc">
+                <label class="py-acc-on"><input type="checkbox" [(ngModel)]="acc.enabled" [ngModelOptions]="{ standalone: true }" data-sc-acc-on> <b>{{ 'Accrue now – pay later' | t }}</b></label>
+                <span class="py-muted">{{ 'The monthly amount is accrued (type Others – not in the month’s net pay) and paid later.' | t }}</span>
+                <!-- v1.62.11 (item 18b): the payout choice in words – every year in a month's payroll and / or at the final settlement -->
+                <div class="py-acc-row" *ngIf="acc.enabled" data-sc-acc-payout>
+                  <b>{{ 'Pay out:' | t }}</b>
+                  <label class="py-acc-chk"><input type="checkbox" [(ngModel)]="acc.yearly" [ngModelOptions]="{ standalone: true }" data-sc-acc-yearly> {{ 'every year in the payroll of' | t }}
+                    <select class="form-control" style="width:auto;display:inline-block" [(ngModel)]="acc.month" [ngModelOptions]="{ standalone: true }" [disabled]="!acc.yearly" data-sc-acc-month>
+                      <option *ngFor="let m of accMonths; let i = index" [ngValue]="i + 1">{{ m | t }}</option>
+                    </select></label>
+                  <label class="py-acc-chk"><input type="checkbox" [(ngModel)]="acc.pay_at_exit" [ngModelOptions]="{ standalone: true }" data-sc-acc-exit> {{ 'at the final settlement' | t }}</label>
+                  <label>{{ 'Accrual account' | t }}<input class="form-control" [(ngModel)]="acc.accrual_account" [ngModelOptions]="{ standalone: true }" maxlength="40" data-sc-acc-account></label>
+                </div>
+                <span class="py-muted" *ngIf="acc.enabled">{{ 'Tick one or both: the balance is paid each year in that month’s payroll (a payout line), and what is left when the employee leaves is paid with the final settlement.' | t }}</span>
+                <span class="py-muted" style="color:#b42318" *ngIf="acc.enabled && !acc.yearly && !acc.pay_at_exit" data-sc-acc-err>{{ 'Choose at least one: every year in a month’s payroll, or at the final settlement.' | t }}</span>
+                <a class="py-acc-link" routerLink="/main-sidebar/salary-options/accrue-pay-later">{{ 'Opening balances and accrued balances' | t }} ›</a>
+              </div>
+            </div>
+
             <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
@@ -1021,23 +1051,24 @@
           <header><div><h3>{{ sec.title }}</h3><span class="py-muted">{{ sec.desc }}</span></div><span class="py-pill">{{ scShown(sec.key).length }}</span></header>
           <div class="py-scroll">
             <table class="py-t" zPlain>
-              <thead><tr><th>Component</th><th>Branches</th><th style="min-width:170px">Calculation</th><th class="ctr" title="Deduct for unpaid leave">Unpaid leave</th><th class="ctr" title="Show on payslip">Payslip</th>
+              <thead><tr><th>Component</th><th>Branches</th><th>Calculation</th><th class="ctr" title="Deduct for unpaid leave">Unpaid leave</th><th class="ctr" title="Show on payslip">Payslip</th>
                 <th class="ctr" title="In gross / WPS">Gross / WPS</th><th class="num">Employees</th><th class="num">Monthly (AED)</th><th></th></tr></thead>
               <tbody>
                 <ng-container *ngFor="let c of scShown(sec.key)">
                   <tr [attr.data-py-sc]="c.key">
-                    <td><span class="nm">{{ c.name }}</span><span class="sub"><span class="py-code" *ngIf="c.code">{{ c.code }}</span></span></td>
-                    <td><span class="py-chip" *ngFor="let it of c.items">{{ it.branch }}</span></td>
-                    <td style="max-width:280px"><span *ngIf="c.formula" [title]="c.formula" class="py-formula">{{ c.formula_readable }}</span>
+                    <td><span class="nm">{{ c.name }}</span><span class="sub"><span class="py-code" *ngIf="c.code">{{ c.code }}</span>
+                      <span class="py-pill info" *ngIf="c.accrual" data-sc-accrued [title]="'Accrue now – pay later' | t">{{ 'Accrued' | t }}{{ c.accrual.payout_month ? ' · ' + (accMonths[c.accrual.payout_month - 1] | t) : '' }}{{ c.accrual.pay_at_exit ? ' · ' + ('at exit' | t) : '' }}</span></span></td>
+                    <td><span class="py-chip sm" *ngFor="let it of c.items">{{ it.branch }}</span></td>
+                    <td style="max-width:240px"><span *ngIf="c.formula" [title]="c.formula" class="py-formula">{{ c.formula_readable }}</span>
                       <span *ngIf="!c.formula" class="py-muted">{{ c.value_type === 'fixed' ? 'Fixed amount per employee' : 'Entered or calculated each month' }}</span></td>
                     <td class="ctr"><span [class]="c.deduct_leave ? 'py-yes' : 'py-no'" [attr.aria-label]="c.deduct_leave ? 'Yes' : 'No'">{{ c.deduct_leave ? '✓' : '–' }}</span></td>
                     <td class="ctr"><span [class]="c.show_in_payslip ? 'py-yes' : 'py-no'" [attr.aria-label]="c.show_in_payslip ? 'Yes' : 'No'">{{ c.show_in_payslip ? '✓' : '–' }}</span></td>
                     <td class="ctr"><span *ngIf="c.wps" class="py-pill" [class.ok]="c.wps === 'fixed'" [class.info]="c.wps === 'variable'">{{ c.wps === 'fixed' ? 'Fixed pay' : 'Variable pay' }}</span><span *ngIf="!c.wps" class="py-no">–</span></td>
                     <td class="num">{{ c.employees || '–' }}</td>
                     <td class="num">{{ +c.monthly_total ? (c.monthly_total | number:'1.2-2') : '–' }}</td>
-                    <td style="white-space:nowrap;text-align:end">
+                    <td class="act">
                       <button type="button" class="py-btn sm" *ngIf="hasEditPermission && c.items.length === 1" (click)="scEdit(c.items[0])" data-py-sc-edit>Edit</button>
-                      <button type="button" class="py-btn sm" *ngIf="(hasEditPermission || hasDeletePermission) && c.items.length > 1" (click)="scOpen[c.key] = !scOpen[c.key]">{{ scOpen[c.key] ? 'Close' : 'Per branch' }}</button>
+                      <button type="button" class="py-btn sm" *ngIf="(hasEditPermission || hasDeletePermission) && c.items.length > 1" (click)="scOpen[c.key] = !scOpen[c.key]">{{ scOpen[c.key] ? 'Close' : 'Edit' }}</button>
                       <button type="button" class="py-btn sm danger" style="margin-inline-start:4px" *ngIf="hasDeletePermission && c.items.length === 1" (click)="scDelete(c.items[0])">Delete</button>
                     </td>
                   </tr>

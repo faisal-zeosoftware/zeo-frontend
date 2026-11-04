@@ -74,8 +74,7 @@ import { MONTHS, PayStepsComponent, apiUrl, errText, wsUrl } from './pay162';
         <b>No payroll runs for {{ year }}{{ branch ? ' – ' + branch : '' }}</b>
         <p>Start the month with “New payroll run”: ZEO calculates every payslip from the salaries, attendance, leave, loans and overtime.</p>
       </div>
-      <p class="py-muted" style="margin-top:14px">The previous screen with the trial and final pay sheets is still available:
-        <a class="py-link" routerLink="/main-sidebar/salary-options/pay-roll-classic">Classic pay sheets</a>.</p>
+      <!-- v1.62.10 (item 173): the "Classic pay sheets" link is retired – its address opens this page -->
     </div>
   </div>
 </div>

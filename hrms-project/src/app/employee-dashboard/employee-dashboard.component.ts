@@ -21,6 +21,7 @@ import { BrowserMultiFormatReader } from '@zxing/browser';
 
 import { Chart, registerables } from 'chart.js';
 import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 Chart.register(...registerables);
 
   
@@ -1612,10 +1613,10 @@ updateLeaveRequest(): void {
 }
 
 // Delete leave request
-deleteLeaveRequest(leaveId: number, event?: Event): void {
+async deleteLeaveRequest(leaveId: number, event?: Event): Promise<void> {
   if (event) event.stopPropagation();
   
-  if (!confirm('Are you sure you want to delete this leave request?')) {
+  if (!(await zConfirm('Are you sure you want to delete this leave request?'))) {
     return;
   }
 
@@ -2061,8 +2062,8 @@ updateGeneralReq(): void {
 }
 
 // Delete general request
-deleteGeneralRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this general request?')) {
+async deleteGeneralRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this general request?'))) {
     return;
   }
 
@@ -2291,8 +2292,8 @@ updateAssetReq(): void {
 }
 
 // Delete asset request
-deleteAssetRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Asset request?')) {
+async deleteAssetRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Asset request?'))) {
     return;
   }
 
@@ -2461,8 +2462,8 @@ deleteAssetRequest(requestId: number): void {
       }
 
       // Delete general request
-deleteAdvSalRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Advance Salary request?')) {
+async deleteAdvSalRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Advance Salary request?'))) {
     return;
   }
 
@@ -2598,8 +2599,8 @@ toggleLoanForm(): void {
 }
 
       // Delete general request
-deleteLoanRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Loan request?')) {
+async deleteLoanRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Loan request?'))) {
     return;
   }
 
@@ -2756,8 +2757,8 @@ toggleResignationForm(): void {
   }
 }
 
-deleteResignationRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Resignation request?')) {
+async deleteResignationRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Resignation request?'))) {
     return;
   }
 
@@ -2859,8 +2860,8 @@ toggleLinEoutForm(): void {
   }
 }
 
-deleteLinEoutRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Late In Ealry Out request?')) {
+async deleteLinEoutRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Late In Ealry Out request?'))) {
     return;
   }
 
@@ -3073,8 +3074,8 @@ toggleAirticketForm(): void {
   }
 }
 
-    deleteAirticketRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Airticket request?')) {
+    async deleteAirticketRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Airticket request?'))) {
     return;
   }
 
@@ -3224,8 +3225,8 @@ toggleAirticketForm(): void {
       );
     }
 
-    deleteDocumentRequest(requestId: number): void {
-  if (!confirm('Are you sure you want to delete this Document request?')) {
+    async deleteDocumentRequest(requestId: number): Promise<void> {
+  if (!(await zConfirm('Are you sure you want to delete this Document request?'))) {
     return;
   }
 

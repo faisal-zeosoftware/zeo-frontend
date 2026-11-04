@@ -10,6 +10,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -758,7 +759,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedLeaveAprlvl() { 
+async deleteSelectedLeaveAprlvl() { 
 const selectedEmployeeIds = this.LeaveapprovalLevels
   .filter(employee => employee.selected)
   .map(employee => employee.id);
@@ -768,7 +769,7 @@ if (selectedEmployeeIds.length === 0) {
   return;
 }
 
-if (confirm('Are you sure you want to delete the selected  Approval Level ?')) {
+if ((await zConfirm('Are you sure you want to delete the selected  Approval Level ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -920,7 +921,10 @@ removeLevel(index: number) {
   this.levels.splice(index, 1);
 }
 
-
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedLeaveAprlvl();
+  }
 }

@@ -13,6 +13,7 @@ import { EmployeeService } from './employee.service';
 import { DesignationCreationComponent } from '../designation-creation/designation-creation.component';
 import { Router } from '@angular/router';
 import { CreateEmployeeComponent } from '../create-employee/create-employee.component';
+import { EmployeeNewComponent } from '../employee-record/employee-new.component';   // v1.62.1
 import { ChangeDetectorRef } from '@angular/core';
 import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
 import { SessionService } from '../login/session.service';
@@ -22,6 +23,7 @@ import {combineLatest, Subscription } from 'rxjs';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { ZSavedViewsService } from '../shared-ui/z-saved-views';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-employee-master',
@@ -145,7 +147,7 @@ export class EmployeeMasterComponent {
     // You can add any additional logic if needed.
   }
 
-  deleteSelectedEmployees() { 
+  async deleteSelectedEmployees() { 
     const selectedEmployeeIds = this.filteredEmployees
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -155,7 +157,7 @@ export class EmployeeMasterComponent {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected employees?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected employees?'))) {
       selectedEmployeeIds.forEach(employeeId => {
         this.EmployeeService.deleteEmployee(employeeId).subscribe(
           () => {
@@ -549,8 +551,8 @@ toggleView() {
       );
     }
 
-    onDeleteEmployee(employeeId: number): void {
-      if (confirm('Are you sure you want to delete this employee?')) {
+    async onDeleteEmployee(employeeId: number): Promise<void> {
+      if ((await zConfirm('Are you sure you want to delete this employee?'))) {
           this.EmployeeService.deleteEmployee(employeeId).subscribe(
               () => {
                   console.log('Employee deleted successfully');
@@ -679,10 +681,9 @@ saveAsExcelFile(buffer: any, fileName: string): void {
 
     
     openPopus(){
-      this.dialog.open(CreateEmployeeComponent,{
-        width:'80%',
-        height:'500px',
-      }).afterClosed().subscribe(() => this.EmployeeService.refresh());   // v1.28.1
+      // v1.62.1: the new-design New employee form here too (was the classic Create Employee form)
+      this.dialog.open(EmployeeNewComponent, { width: 'min(980px, 96vw)', maxWidth: '96vw', maxHeight: '92vh', panelClass: 'er-create-dialog', autoFocus: false })
+        .afterClosed().subscribe(() => this.EmployeeService.refresh());   // v1.28.1
     }
 
     openEditEmpPopuss(employeeId: number):void{
@@ -1107,6 +1108,10 @@ closeUploadForm(): void {
     }
   }
 
-  
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedEmployees();
+  }
 }

@@ -1,0 +1,15 @@
+/* v1.62.10 (item 174) – approval levels and escalation screens (on top of time62/t62.css) */
+.ap62-lv { line-height: 1.45; font-size: 13px; }
+.ap62-lv + .ap62-lv { margin-top: 3px; }
+.ap62-lv b { color: #4b3fbf; font-weight: 700; margin-inline-end: 2px; }
+.ap62-box { display: flex; flex-wrap: wrap; gap: 6px 14px; border: 1px solid #dfe1ea; border-radius: 8px; padding: 8px 10px; max-height: 150px; overflow: auto; }
+.ap62-box.bad, .t62-seg.bad { border-color: #d92d20 !important; }
+.ap62-opt, .ap62-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; margin: 0; }
+.ap62-opt input, .ap62-check input { width: 15px; height: 15px; accent-color: #5b4fe0; }
+.ap62-card .t62-card-head .z-row-btn + .z-row-btn { margin-inline-start: 4px; }
+.ap62-esc { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(70px, .6fr)); gap: 10px 12px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e4e6ef; }
+.ap62-n input { text-align: end; }
+.ap62-n input[disabled] { background: #f5f6f9; color: #9aa0b2; }
+.ap62-muted { color: #9aa0b2; }
+@media (max-width: 640px) { .ap62-esc { grid-template-columns: 1fr 1fr 1fr; } .ap62-esc > .t62-f:first-child { grid-column: 1 / -1; } }
+a.hr-tbtn { text-decoration: none; }

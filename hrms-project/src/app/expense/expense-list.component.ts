@@ -9,6 +9,7 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
 
 /** My expenses: list (unreported / all), new / edit expense with receipt, mileage and per diem, live policy check, add to report. */
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-expense-list',
@@ -312,7 +313,7 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   }
 
   async remove(): Promise<void> {
-    if (!confirm('Delete this expense?')) return;
+    if (!(await zConfirm('Delete this expense?'))) return;
     this.busy = true;
     try { await this.api.delete(`expenses/${this.form.id}/`); this.close(); this.flash('Expense deleted.', false); await this.load(); }
     catch (e: any) { this.formErr = ExpenseApiService.error(e); }

@@ -16,11 +16,16 @@ import { Subscription } from 'rxjs';
 import { ErField, ErService, ER_LIST, avatarColour, badgeClass, dmy, erPage, maskFor, money, num } from './er.service';
 import { zToast } from '../shared-ui/z-toast';
 import { ZRecordPanelComponent } from '../shared-ui/z-record-panel.component';
+import { ZWorkingDaysComponent } from '../shared-ui/z-working-days.component';   // v1.62.6 (item 22)
 import { i18nT, packLang } from '../shared-ui/i18n-core';
 import { CountryPackService } from '../shared-ui/country-pack.service';
 import { eidProblem, ibanProblem } from '../employee-profile/employee-profile.service';
 import { MatDialog } from '@angular/material/dialog';
 import { openDocFill } from '../ai-settings/doc-fill-dialog.component';   // v1.53.2
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 169)
+import { leaveBalanceForm } from '../shared-ui/z-forms-records';
+import { exportExcel } from '../shared-ui/z-export';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type GroupKey = 'overview' | 'personal' | 'job' | 'documents' | 'pay' | 'time' | 'timeline';
 interface Table { key: string; group: string; title: string; noun: string; add: string; empty: string; edit: string; another: string; remove: string; added: string; saved: string; }
@@ -71,10 +76,11 @@ const MASK_NOTES: Record<string, string> = {
   person_id: 'MOHRE person code: digits only.',
 };
 
+import { ZEmpPaySplitComponent } from '../employee-profile/z-emp-pay-split.component';   // v1.63.0 (item 27)
 @Component({
   selector: 'app-employee-record',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZRecordPanelComponent],   // v1.38.0 record footer
+  imports: [CommonModule, FormsModule, ZRecordPanelComponent, ZWorkingDaysComponent, ZEmpPaySplitComponent],   // v1.63.0 (item 27) salary split   // v1.38.0 record footer; v1.62.6 (item 22) working days
   styleUrls: ['./er.css'],
   templateUrl: './employee-record.component.html',
 })
@@ -168,8 +174,8 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------- navigation
-  go(g: GroupKey, card?: string): void {
-    if (!this.leaveEdit()) { return; }
+  async go(g: GroupKey, card?: string): Promise<void> {   // v1.62.10 (item 180): the leave question is the new confirm window
+    if (!(await this.leaveEdit())) { return; }
     this.group = g;
     this.router.navigate([], { queryParams: { tab: g === 'overview' ? null : g }, queryParamsHandling: 'merge', replaceUrl: true });
     if (g === 'time' && !this.att) { this.loadAtt(); }
@@ -177,7 +183,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (g === 'timeline' && !this.journey) { this.loadJourney(); }
     if (card) { setTimeout(() => document.getElementById('card-' + card)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }
   }
-  step(id: number | null): void { if (id && this.leaveEdit()) { this.router.navigate([erPage(id)], { queryParams: { tab: this.group === 'overview' ? null : this.group } }); } }
+  async step(id: number | null): Promise<void> { if (id && (await this.leaveEdit())) { this.router.navigate([erPage(id)], { queryParams: { tab: this.group === 'overview' ? null : this.group } }); } }
   back(): void { this.router.navigate([ER_LIST]); }
   missingClick(m: string): void { const t = MISSING_TO[m]; this.showMissing = false; if (t) { this.go(t[0], t[1]); } }
   stepClick(s: any): void {
@@ -215,13 +221,13 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------- one card at a time
-  leaveEdit(): boolean {
-    if (this.dirty && !confirm('You have unsaved changes. Leave without saving?')) { return false; }
+  async leaveEdit(): Promise<boolean> {
+    if (this.dirty && !(await zConfirm('You have unsaved changes. Leave without saving?'))) { return false; }
     this.editing = ''; this.dirty = false; this.draft = {}; this.draftErr = {};
     return true;
   }
   async edit(card: string, fields?: ErField[]): Promise<void> {
-    if (this.editing && this.editing !== card && !this.leaveEdit()) { return; }
+    if (this.editing && this.editing !== card && !(await this.leaveEdit())) { return; }
     if (!this.look) {   // v1.28.1: the field lists come from record-lookups – wait for them (slow server) instead of opening an empty form
       try { this.look = await this.api.lookups(); } catch { zToast(i18nT('The form could not be loaded. Please try again.'), 'err'); return; }
     }
@@ -442,7 +448,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   rowLabel(tk: string, r: any): string { return r.ef_member_name || r.name || r.emp_jh_company_name || r.emp_qualification || r.bank_name || r.skill || r.type || r.emp_doc_number || ''; }
   async removeRow(tk: string, r: any): Promise<void> {
     const t = TABLES[tk];
-    if (!confirm(i18nT('Remove {0}?', [this.rowLabel(tk, r) || i18nT(t.noun)]))) { return; }
+    if (!(await zConfirm(i18nT('Remove {0}?', [this.rowLabel(tk, r) || i18nT(t.noun)])))) { return; }
     try { await this.api.post(`employee-profile/api/change/${this.id}/`, { group: t.group, record_id: r.id, action: 'delete' }); zToast(i18nT('{0} removed', [this.rowLabel(tk, r) || i18nT(t.noun)]), 'ok'); await this.load(); }
     catch (e) { zToast(ErService.error(e, 'It could not be removed.'), 'err'); }
   }
@@ -466,7 +472,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   }
 
   // ---------------------------------------------------------------- header actions
-  action(a: string): void {
+  async action(a: string): Promise<void> {
     this.menu = '';
     const h = this.d.header;
     const nav = (u: string, q?: any) => this.router.navigate([u], q ? { queryParams: q } : {});
@@ -476,9 +482,9 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (a === 'probation') { this.go('job', 'employment'); }
     if (a === 'exit') { nav('/main-sidebar/sub-sidebar/resignation-request', { employee: this.id }); }
     if (a === 'print') { setTimeout(() => window.print(), 50); }
-    if (a === 'classic') { nav(`/main-sidebar/sub-sidebar/employee-details/${this.id}/classic`); }
+    // v1.62.10 (item 169): "Classic view" removed – its route opens this page
     if (a === 'deactivate') {
-      if (!confirm(`${h.is_active ? 'Deactivate' : 'Activate'} ${h.name}?`)) { return; }
+      if (!(await zConfirm(`${h.is_active ? 'Deactivate' : 'Activate'} ${h.name}?`))) { return; }
       this.api.patch(`employee/api/Employee/${this.id}/`, { is_active: !h.is_active })
         .then(() => { zToast(`${h.name} ${h.is_active ? 'deactivated' : 'activated'}`, 'ok'); this.load(); })
         .catch(e => zToast(ErService.error(e), 'err'));
@@ -494,6 +500,19 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
   ringDash(p: number): string { return `${(p * 1.5708).toFixed(1)} 157.08`; }
 
   // ---------------------------------------------------------------- time
+  /** v1.62.10 (item 169): an opening or adjustment of a leave balance (shared form, leave ledger line first) */
+  async adjustLeave(l: any): Promise<void> {
+    const h = this.d?.header || {};
+    if (await openZForm(leaveBalanceForm({ employee: h.code, employee_name: h.name, leave_type: l?.type || null, balance: l ? l.balance : null }))) { await this.load(); }
+  }
+
+  /** v1.62.10 (item 169): the attendance month as an Excel file */
+  exportAtt(): void {
+    const days = this.att?.days || [];
+    exportExcel(`${this.d?.header?.code || ''} ${this.monthLabel()}`.trim(), [i18nT('Date'), i18nT('Status'), i18nT('Late'), i18nT('Hours worked')],
+      days.filter((x: any) => x.status !== 'future').map((x: any) => [dmy(x.date), i18nT(this.attLabel[x.status] || x.status || ''), x.late ? i18nT('Yes') : i18nT('No'), x.worked ? String(x.worked) : '']));
+  }
+
   async loadAtt(month?: string): Promise<void> {
     const m = month || this.attMonth || new Date().toISOString().slice(0, 7);
     this.attMonth = m;
@@ -537,7 +556,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
       const r: any = await this.api.get('organisation/api/masters/standard/', { kind });
       const missing = (r.items || []).filter((i: any) => !i.exists).map((i: any) => i.name);
       if (!missing.length) { zToast(i18nT('Every standard entry is already in the list.'), 'info'); this.stdBusy = ''; return; }
-      if (!confirm(`${i18nT('Add these {0} {1} to the list?', [missing.length, i18nT(noun[kind])])}\n\n${missing.map((n: string) => '• ' + n).join('\n')}\n\n${i18nT('Nothing is changed or removed.')}`)) { this.stdBusy = ''; return; }
+      if (!(await zConfirm(`${i18nT('Add these {0} {1} to the list?', [missing.length, i18nT(noun[kind])])}\n\n${missing.map((n: string) => '• ' + n).join('\n')}\n\n${i18nT('Nothing is changed or removed.')}`))) { this.stdBusy = ''; return; }
       const res: any = await this.api.post('organisation/api/masters/standard/', { kind });
       this.look = await this.api.lookups(true);
       zToast(i18nT('{0} {1} added', [res?.created?.length || 0, i18nT(noun[kind])]), 'ok');

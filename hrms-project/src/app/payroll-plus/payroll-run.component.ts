@@ -13,17 +13,22 @@
  * API (read): payroll-plus/api/workspace/runs/<id>/
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { TPipe } from '../shared-ui/i18n.service';   // v1.62.0 ui
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { PayStepsComponent, apiUrl, errText, wsUrl } from './pay162';
+import { exportExcel } from '../shared-ui/z-export';   // v1.62.10 (item 173)
+import { zToast } from '../shared-ui/z-toast';
+import { i18nT } from '../shared-ui/i18n-core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-payroll-run',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, PayStepsComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PayStepsComponent, TPipe],   // v1.62.0 ui t
   styleUrls: ['../leave-policy/leave-policy.css', './pay162.css'],
   template: `
 <div class="container">
@@ -53,7 +58,7 @@ import { PayStepsComponent, apiUrl, errText, wsUrl } from './pay162';
         <div class="py-tile"><span>Additions</span><b><i class="py-cur">AED</i>{{ r.tiles.additions | number:'1.2-2' }}</b><small>Overtime, arrears, accruals …</small></div>
         <div class="py-tile"><span>Deductions</span><b><i class="py-cur">AED</i>{{ r.tiles.deductions | number:'1.2-2' }}</b><small>Pension, loans, unpaid leave …</small></div>
         <div class="py-tile hi"><span>Net pay</span><b><i class="py-cur">AED</i>{{ r.tiles.net | number:'1.2-2' }}</b>
-          <small *ngIf="r.change_pct !== null && r.change_pct !== undefined"><span class="py-chg" [class.up]="r.change_pct > 0" [class.down]="r.change_pct < 0">{{ r.change_pct > 0 ? '▲' : r.change_pct < 0 ? '▼' : '' }} {{ r.change_pct | number:'1.1-1' }} %</span> vs {{ r.previous?.period }}</small></div>
+          <small *ngIf="r.change_pct !== null && r.change_pct !== undefined"><span class="py-chg" [class.up]="r.change_pct > 0" [class.down]="r.change_pct < 0">{{ r.change_pct > 0 ? '▲' : r.change_pct < 0 ? '▼' : '' }} {{ r.change_pct | number:'1.1-1' }} %</span> {{ 'vs {0}' | t: r.previous?.period }}</small><!-- v1.62.0 ui --></div>
         <div class="py-tile"><span>Employer cost</span><b><i class="py-cur">AED</i>{{ r.tiles.employer_cost | number:'1.2-2' }}</b><small><span>Gross + employer contributions</span> {{ r.tiles.employer | number:'1.0-0' }}</small></div>
       </div>
       <div *ngIf="r.reasons?.length" class="py-muted" data-py-reasons><span>Main changes vs</span> {{ r.previous?.period }}:
@@ -85,6 +90,8 @@ import { PayStepsComponent, apiUrl, errText, wsUrl } from './pay162';
               <select class="py-sel" [(ngModel)]="fs" aria-label="Status">
                 <option value="">All statuses</option><option value="draft">Draft</option><option value="waiting">Waiting for approval</option>
                 <option value="approved">Approved</option><option value="rejected">Rejected</option><option value="flag">With an exception</option></select>
+              <!-- v1.62.10 (item 173): the pay sheet as Excel here (was only on "Classic pay sheets") -->
+              <button type="button" class="py-btn" [disabled]="busy" (click)="detailedXls()" data-py-detailed>{{ 'Pay sheet (Excel)' | t }}</button>
             </div>
             <div class="py-scroll" style="max-height:620px">
               <table class="py-t" zPlain data-py-payslips>
@@ -142,6 +149,7 @@ import { PayStepsComponent, apiUrl, errText, wsUrl } from './pay162';
             <h3>WPS and accounting</h3>
             <div class="py-prog"><div class="who">WPS file</div><span class="py-pill" [ngClass]="r.wps.done ? 'ok' : ''" data-py-wps>{{ r.wps.label }}</span></div>
             <div class="py-prog" *ngIf="r.wps.at"><div class="who py-muted">{{ r.wps.at | date:'dd/MM/yyyy HH:mm' }} · {{ short(r.wps.by) }}</div></div>
+            <div class="py-prog"><div class="who">Payments</div><a class="py-link" [routerLink]="['/main-sidebar/salary-options/run-payments']" [queryParams]="{ run: runQ() }" data-py-payments>By method – files and paid marks</a></div>   <!-- v1.62.11 (item 227) -->
             <div class="py-prog"><div class="who">Journal</div><span class="py-pill" [ngClass]="r.journal?.done ? 'ok' : r.journal ? 'wait' : ''">{{ r.journal ? (r.journal.number || '#' + r.journal.id) + ' · ' + r.journal.status_label : 'Not made' }}</span></div>
             <div class="py-prog" *ngIf="r.control?.payment_ref"><div class="who">Payment reference</div><b>{{ r.control.payment_ref }}</b></div>
           </div>
@@ -179,6 +187,7 @@ export class PayrollRunComponent implements OnInit {
   q = ''; fs = '';
   payDlg = false; payRef = '';
   private id = 0;
+  runQ(): number { return this.id; }   // v1.62.11 (item 227): the Payments link
 
   constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
 
@@ -210,6 +219,23 @@ export class PayrollRunComponent implements OnInit {
       && (!this.fs || (this.fs === 'flag' ? p.flags.length > 0 : p.status === this.fs)));
   }
   sum(k: string): number { return this.filtered().reduce((a: number, p: any) => a + (Number(p[k]) || 0), 0); }
+  /** v1.62.10 (item 173): every payslip of the run with its components, as one Excel sheet (the classic "Detailed payslips") */
+  async detailedXls(): Promise<void> {
+    try {
+      const data: any[] = await firstValueFrom(this.http.get<any[]>(apiUrl(`payroll/api/PayrollRun/${this.id}/detailed-payslips/`)));
+      if (!data?.length) { zToast(i18nT('No payslips in this run yet.'), 'info'); return; }
+      const comps: string[] = [];
+      data.forEach(p => (p.components || []).forEach((c: any) => { if (c.component_name && !comps.includes(c.component_name)) { comps.push(c.component_name); } }));
+      const amt = (p: any, n: string) => (p.components || []).filter((c: any) => c.component_name === n).reduce((s: number, c: any) => s + Number(c.amount || 0), 0);
+      const head = ['Employee code', 'Employee', 'Gross salary', 'Additions', 'Deductions', 'Net salary', 'Pro rata adjustment', 'Working days', 'Days worked', 'Arrears', 'Status'].map(h => i18nT(h));
+      const rows = data.map(p => [p.employee_code, p.employee_name, Number(p.gross_salary || 0).toFixed(2), Number(p.total_additions || 0).toFixed(2), Number(p.total_deductions || 0).toFixed(2),
+        Number(p.net_salary || 0).toFixed(2), Number(p.pro_rata_adjustment || 0).toFixed(2), String(p.total_working_days ?? ''), String(p.days_worked ?? ''), Number(p.arrears || 0).toFixed(2), i18nT(String(p.status || '')),
+        ...comps.map(n => amt(p, n).toFixed(2))]);
+      exportExcel(`${i18nT('Pay sheet')} ${this.r?.run?.name || this.r?.run?.period || this.id}`, [...head, ...comps], rows);
+      zToast(i18nT('Pay sheet downloaded – {0} employees.', [data.length]), 'ok');
+    } catch (e: any) { zToast(errText(e), 'err'); }
+  }
+
   drill(id: number): void { if (id) { this.router.navigate(['/main-sidebar/salary-options/payroll-details', id]); } }
 
   /** v1.62.0 payroll: the actions of the current stage the user may do now (Recalculate / Undo / Delete as small links) and the
@@ -240,7 +266,7 @@ export class PayrollRunComponent implements OnInit {
         return 'The AI payroll audit is done – see the exceptions.';
       });
       case 'send': return this.run(async () => {
-        if (a.warn && a.ready && !confirm(a.warn + '\n\nSend the payslips for approval anyway?')) { return ''; }
+        if (a.warn && a.ready && !(await zConfirm(a.warn + '\n\nSend the payslips for approval anyway?'))) { return ''; }
         const res: any = await firstValueFrom(this.http.post(apiUrl('payroll/api/payslip/confirm-bulk/'), { ids: a.ids }));
         if (!res?.confirmed) { throw { error: { detail: 'No payslip was sent – you may not have the right to see these payslips.' } }; }
         return res?.message || 'The payslips were sent for approval.';
@@ -250,10 +276,10 @@ export class PayrollRunComponent implements OnInit {
         return res?.status || 'Approved.';
       });
       case 'approve_run':
-        if (!confirm('Approve this payroll run? The WPS file can then be made.')) { return; }
+        if (!(await zConfirm('Approve this payroll run? The WPS file can then be made.'))) { return; }
         return this.setStatus('approved');
       case 'undo_approval':
-        if (!confirm('Take back the approval? The run goes back to processed so payslips can be corrected.')) { return; }
+        if (!(await zConfirm('Take back the approval? The run goes back to processed so payslips can be corrected.'))) { return; }
         return this.setStatus('processed');
       case 'wps': this.router.navigate(['/main-sidebar/salary-options/wps'], { queryParams: { run: this.id } }); return;
       case 'pay': this.payRef = ''; this.payDlg = true; return;
@@ -264,7 +290,7 @@ export class PayrollRunComponent implements OnInit {
           return 'The accounting journal is made – post it from Payroll › Accounting journals.';
         });
       case 'delete':
-        if (!confirm('Delete this payroll run and its payslips?')) { return; }
+        if (!(await zConfirm('Delete this payroll run and its payslips?'))) { return; }
         this.busy = true;
         try {
           await firstValueFrom(this.http.delete(apiUrl(`payroll/api/PayrollRun/${this.id}/`)));
@@ -294,7 +320,7 @@ export class PayrollRunComponent implements OnInit {
 
   /** recalculate = delete the calculated run and run it again for the same month, branches and filters (before approval only) */
   async recalc(): Promise<void> {
-    if (!confirm('Recalculate this payroll? The payslips are calculated again from the current salaries, attendance, leave, loans and overtime.')) { return; }
+    if (!(await zConfirm('Recalculate this payroll? The payslips are calculated again from the current salaries, attendance, leave, loans and overtime.'))) { return; }
     const r = this.r; const f = r.filters || {};
     const body = { name: r.name, year: r.year, month: r.month, payment_date: r.payment_date || null, branch_ids: f.branch_ids || [],
       department: f.department || [], category: f.category || [], designation: f.designation || [], employees: [] };

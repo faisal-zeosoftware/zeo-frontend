@@ -8,7 +8,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';   // v1.62.11 (item 230) RouterModule for the bulk link
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
@@ -20,7 +20,7 @@ import { LV_STYLES } from './leavers.styles';
 @Component({
   selector: 'app-leavers',
   standalone: true,
-  imports: [CommonModule, FormsModule, TPipe, ZDatePipe, ZEmpPickComponent],
+  imports: [CommonModule, FormsModule, RouterModule, TPipe, ZDatePipe, ZEmpPickComponent],
   styles: [LV_STYLES + `
 .lv .kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:16px 0}
 @media (max-width:1100px){.lv .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -47,6 +47,10 @@ import { LV_STYLES } from './leavers.styles';
 .lv .exp .menu button{display:block;width:100%;text-align:start;border:0;background:none;padding:8px 12px;border-radius:7px;cursor:pointer;font-size:13px}
 .lv .exp .menu button:hover{background:#f4f5fa}
 .lv .foot{padding:10px 16px;color:var(--mut);font-size:12px}
+/* v1.62.11 (EOS settings): group by, totals of the shown rows */
+.lv table.lt tr.grp td{background:#f3f4fa;font-weight:700;color:var(--ink);cursor:default;font-size:12.5px;padding:8px 12px}
+.lv table.lt tr.grp td .num{font-weight:700}
+.lv table.lt tr.tot td{background:#fafbfd;font-weight:700;color:var(--ink);cursor:default;border-top:2px solid var(--line)}
 `],
   template: `
 <div class="lv">
@@ -57,6 +61,7 @@ import { LV_STYLES } from './leavers.styles';
     </div>
     <div style="display:flex;gap:10px;align-items:center">
     <span class="chip bad" *ngIf="overdue">{{ overdue === 1 ? ('1 payment overdue' | t) : ('{0} payments overdue' | t:overdue) }}</span>
+    <a class="lv-btn" routerLink="/main-sidebar/sub-sidebar/bulk-final-settlement" data-bulk-link><span class="material-icons">groups</span>{{ 'Bulk final settlement' | t }}</a>   <!-- v1.62.11 (item 230) -->
     <button type="button" class="lv-btn primary" *ngIf="canNew" (click)="openNew()"><span class="material-icons">person_remove</span>New leaver</button></div>
   </div>
 
@@ -79,6 +84,11 @@ import { LV_STYLES } from './leavers.styles';
       <select class="f" [(ngModel)]="branch" (ngModelChange)="load()" aria-label="Branch" *ngIf="branches.length > 1">
         <option value="">All branches</option><option *ngFor="let b of branches" [value]="b.id">{{ b.name }}</option>
       </select>
+      <select class="f" [(ngModel)]="groupBy" (ngModelChange)="regroup()" [attr.aria-label]="'Group by' | t" data-group-by>   <!-- v1.62.11 (EOS settings) -->
+        <option value="">{{ 'No grouping' | t }}</option><option value="stage">{{ 'Group by stage' | t }}</option><option value="branch">{{ 'Group by branch' | t }}</option>
+        <option value="reason">{{ 'Group by exit reason' | t }}</option><option value="month">{{ 'Group by month of last working day' | t }}</option>
+      </select>
+      <a class="lv-btn" routerLink="/main-sidebar/salary-options/eos-settings" [attr.title]="'End of service settings' | t"><span class="material-icons">rule</span>{{ 'Settings' | t }}</a>
       <div class="exp">
         <button type="button" class="lv-btn" (click)="expOpen = !expOpen" [disabled]="!shown.length"><span class="material-icons">download</span>Export</button>
         <div class="menu" *ngIf="expOpen"><button type="button" (click)="doExport('xlsx')">Excel</button><button type="button" (click)="doExport('csv')">CSV</button></div>
@@ -88,7 +98,10 @@ import { LV_STYLES } from './leavers.styles';
       <table class="lt" *ngIf="shown.length">
         <thead><tr><th>Employee</th><th>Branch</th><th>Exit type</th><th>Last working day</th><th>Payment deadline</th><th class="end">Net payable (AED)</th><th>Stage</th></tr></thead>
         <tbody>
-          <tr *ngFor="let r of shown" (click)="open(r)" tabindex="0" (keydown.enter)="open(r)">
+          <ng-container *ngFor="let g of groups">
+          <tr class="grp" *ngIf="groupBy"><td colspan="5">{{ g.label }} <span class="mut">· {{ g.rows.length === 1 ? ('1 leaver' | t) : ('{0} leavers' | t:g.rows.length) }}</span></td>
+            <td class="end"><span class="num">{{ g.net | number:'1.2-2' }}</span></td><td></td></tr>
+          <tr *ngFor="let r of g.rows" (click)="open(r)" tabindex="0" (keydown.enter)="open(r)">
             <td><div class="who"><div class="av"><img *ngIf="r.photo" [src]="media(r.photo)" alt=""><ng-container *ngIf="!r.photo">{{ r.initials }}</ng-container></div>
               <div><div class="nm">{{ r.employee }}</div><div class="sub">{{ r.employee_code }}<ng-container *ngIf="r.designation"> · {{ r.designation }}</ng-container></div></div></div></td>
             <td>{{ r.branch }}</td>
@@ -108,6 +121,9 @@ import { LV_STYLES } from './leavers.styles';
                 <b *ngIf="i > 0" [class.done]="i < r.steps_done"></b><i [class.done]="i < r.steps_done" [class.cur]="i === r.steps_done && r.stage !== 'paid'"></i></ng-container></div>
               <span>{{ r.stage_label }}</span></div></td>
           </tr>
+          </ng-container>
+          <tr class="tot" data-leavers-total><td colspan="5">{{ 'Total – {0} shown' | t:shown.length }}<span class="mut" *ngIf="notCalc"> · {{ '{0} not calculated' | t:notCalc }}</span></td>
+            <td class="end"><span class="num">{{ totalNet | number:'1.2-2' }}</span></td><td></td></tr>
         </tbody>
       </table>
       <div class="empty" *ngIf="!shown.length && !loading"><span class="material-icons">how_to_reg</span>
@@ -142,6 +158,7 @@ export class LeaversComponent implements OnInit {
   steps: string[] = []; kpis: any[] = [];
   stage = ''; branch = ''; q = ''; dueDays = 14; canNew = false; loading = false; busy = false; expOpen = false;
   msg = ''; msgErr = false; nw: any = null; errs: any = {}; dlgErr = ''; overdue = 0;
+  groupBy = ''; groups: { key: string; label: string; rows: any[]; net: number }[] = []; totalNet = 0; notCalc = 0;   // v1.62.11 (EOS settings)
   constructor(private http: HttpClient, private rec: ZRecordService, private router: Router, private cd: ChangeDetectorRef) {}
   private url(p: string, q = ''): string { return `${this.rec.api}/payroll-plus/api/${p}?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}${q}`; }
   media(p: string): string { return /^https?:/.test(p) ? p : this.rec.api + p; }
@@ -151,7 +168,10 @@ export class LeaversComponent implements OnInit {
     const t = httpErrorText(e);
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : i18nT('It could not be done.');
   }
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    try { this.groupBy = localStorage.getItem('zeo.leavers.groupBy') || ''; } catch { this.groupBy = ''; }   // v1.62.11 (EOS settings)
+    this.load();
+  }
   async load(): Promise<void> {
     this.loading = true; this.cd.detectChanges();
     try {
@@ -179,6 +199,33 @@ export class LeaversComponent implements OnInit {
   filter(): void {
     const q = (this.q || '').trim().toLowerCase();
     this.shown = !q ? this.rows : this.rows.filter(r => `${r.employee} ${r.employee_code} ${r.number} ${r.document_number} ${r.designation} ${r.branch}`.toLowerCase().includes(q));
+    this.regroup();
+  }
+  // v1.62.11 (EOS settings): group the shown rows (stage, branch, exit reason, month of the last working day) with count and net totals
+  regroup(): void {
+    try { localStorage.setItem('zeo.leavers.groupBy', this.groupBy); } catch { /* private window */ }
+    const key = (r: any): [string, string] => {
+      if (this.groupBy === 'stage') { return [r.stage, r.stage_label]; }
+      if (this.groupBy === 'branch') { return [String(r.branch_id || ''), r.branch || i18nT('No branch')]; }
+      if (this.groupBy === 'reason') { return [r.exit_type, r.exit_type_label]; }
+      if (this.groupBy === 'month') {
+        const d = String(r.last_working_date || '').slice(0, 7);
+        const lang = document.documentElement.lang || 'en';
+        return [d, d ? new Date(d + '-01T00:00:00').toLocaleDateString(lang.startsWith('ar') ? 'ar-AE' : 'en-GB', { month: 'long', year: 'numeric' }) : '–'];
+      }
+      return ['', ''];
+    };
+    const map = new Map<string, { key: string; label: string; rows: any[]; net: number }>();
+    for (const r of this.shown) {
+      const [k, l] = key(r);
+      if (!map.has(k)) { map.set(k, { key: k, label: l, rows: [], net: 0 }); }
+      const g = map.get(k)!; g.rows.push(r); g.net += r.net === null || r.net === undefined ? 0 : +r.net;
+    }
+    this.groups = [...map.values()];
+    if (this.groupBy === 'month') { this.groups.sort((a, b) => b.key.localeCompare(a.key)); }
+    else if (this.groupBy) { this.groups.sort((a, b) => a.label.localeCompare(b.label)); }
+    this.totalNet = this.shown.reduce((t, r) => t + (r.net === null || r.net === undefined ? 0 : +r.net), 0);
+    this.notCalc = this.shown.filter(r => r.net === null || r.net === undefined).length;
     this.cd.detectChanges();
   }
   open(r: any): void { this.router.navigate(['/main-sidebar/sub-sidebar/leavers', r.id]); }

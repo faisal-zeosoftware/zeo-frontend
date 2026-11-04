@@ -1,7 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';   // v1.62.0 people
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ApApi, STATUS_COLOR } from './ap-api';
 
@@ -14,7 +16,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
 @Component({
   selector: 'app-attendance-board',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['./attendance-plus.css'],
   template: `
 <div class="ap-wrap">
@@ -22,7 +24,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
     <div><h1>Daily attendance board</h1>
       <p class="ap-desc">Who is in, out, late, absent or missing a punch. Managers see their team; HR sees their branches. Click a tile to filter.</p></div>
     <div class="ap-tools">
-      <input class="ap-input" type="date" [(ngModel)]="day" (change)="load()" aria-label="Day">
+      <z-date-field [(value)]="day" (valueChange)="load()" label="Day"></z-date-field>
       <button type="button" class="ap-btn" (click)="load()" [disabled]="loading">Refresh</button>
     </div>
   </div>
@@ -52,7 +54,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0 lis
 })
 export class AttendanceBoardComponent implements OnInit {
   api: ApApi;
-  day = new Date().toISOString().slice(0, 10);
+  day = new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10);   // v1.62.0 people: the local day (was UTC)
   data: any = null;
   state = '';
   q = '';
@@ -60,7 +62,11 @@ export class AttendanceBoardComponent implements OnInit {
   loading = false;
   states = STATES;
 
-  constructor(http: HttpClient, rec: ZRecordService, private cdr: ChangeDetectorRef) { this.api = new ApApi(http, rec); }
+  constructor(http: HttpClient, rec: ZRecordService, private cdr: ChangeDetectorRef, private route: ActivatedRoute) {
+    this.api = new ApApi(http, rec);
+    const d = this.route.snapshot.queryParamMap.get('day');   // v1.62.0 people: ?day=YYYY-MM-DD opens the board of that day
+    if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) { this.day = d; }
+  }
 
   ngOnInit(): void { this.load(); }
 

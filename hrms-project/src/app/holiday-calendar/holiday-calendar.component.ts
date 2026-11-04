@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 
@@ -679,42 +680,21 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetType() { 
-  const selectedEmployeeIds = this.HolidaysCalendar
-    .filter(employee => employee.selected)
-    .map(employee => employee.id);
-
-  if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
-    return;
-  }
-
-  if (confirm('Are you sure you want to delete the selected Holidays Calendar?')) {
-
-     let total = selectedEmployeeIds.length;
-    let completed = 0;
-
-
-    selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteholidays(categoryId).subscribe(
-        () => {
-          console.log('HolidaysCalendar deleted successfully:', categoryId);
-          // Remove the deleted employee from the local list
-          this.HolidaysCalendar = this.HolidaysCalendar.filter(employee => employee.id !== categoryId);
-          completed++;
-     if (completed === total) {        
-          alert(' Holidays Calendar deleted successfully');
-          window.location.reload();
-     }
-
-        },
-        (error) => {
-          console.error('Error deleting Holidays Calendar:', error);
-          alert('Error deleting Holidays Calendar: ' + error.statusText);
-        }
-      );
-    });
-  }
+async deleteSelectedAssetType() {   // v1.62.1: one confirmation with the count; used calendars skipped and listed
+  const ids = this.HolidaysCalendar.filter(c => c.selected).map(c => c.id);
+  if (!ids.length) { alert('Tick the holiday calendars to delete first.'); return; }
+  if (!(await zConfirm(ids.length === 1 ? 'Delete this holiday calendar?' : `Delete ${ids.length} selected holiday calendars?`))) { return; }
+  let done = 0, deleted = 0;
+  const skipped: string[] = [];
+  const end = () => {
+    if (++done < ids.length) { return; }
+    alert(`${deleted} deleted` + (skipped.length ? `, ${skipped.length} skipped: ${skipped.join('; ')}` : '') + '.');
+    window.location.reload();
+  };
+  ids.forEach(id => this.employeeService.deleteholidays(id).subscribe({
+    next: () => { deleted++; end(); },
+    error: (e: any) => { skipped.push(String(e?.error?.detail || e?.statusText || 'not deleted').slice(0, 160)); end(); },
+  }));
 }
 
 
@@ -759,9 +739,9 @@ updateHoliday() {
 }
 
 
-deleteHoliday(id: number) {
+async deleteHoliday(id: number) {
 
-  if (!confirm('Are you sure to delete this holiday?')) return;
+  if (!(await zConfirm('Are you sure to delete this holiday?'))) return;
 
   this.countryService.deleteHoliday(id)
     .subscribe(() => {
@@ -771,5 +751,12 @@ deleteHoliday(id: number) {
     });
 }
 
-
+  /** v1.62.1: Delete on the row and the selection bar (the "Delete selected" button had no action) */
+  zDeleteRow(row: any): void {
+    (this.HolidaysCalendar || []).forEach((r: any) => { if (r !== row) { r.selected = false; } });
+    row.selected = true;
+    this.deleteSelectedAssetType();
+  }
+  selCount(): number { return (this.HolidaysCalendar || []).filter((r: any) => r.selected).length; }
+  clearSel(): void { (this.HolidaysCalendar || []).forEach((r: any) => r.selected = false); }
 }

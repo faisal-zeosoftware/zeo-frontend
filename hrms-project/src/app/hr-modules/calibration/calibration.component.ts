@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ModuleApiService } from '../module-api.service';
+import { zConfirm } from '../../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const CYCLES = '/performance/api/cycles/';
 
@@ -30,7 +31,9 @@ export class CalibrationComponent implements OnInit {
   ngOnInit(): void {
     this.api.list(CYCLES).subscribe(c => {
       this.cycles = c.filter(x => x.status !== 'draft');
-      if (this.cycles.length) { this.cycleId = this.cycles[0].id; this.load(); }
+      // v1.62.0 talent-ops: open the cycle that is being calibrated (was the first – the newest, active cycle with no rating yet)
+      const cal = this.cycles.find(x => x.status === 'calibration') || this.cycles[0];
+      if (cal) { this.cycleId = cal.id; this.load(); }
     });
   }
 
@@ -60,8 +63,8 @@ export class CalibrationComponent implements OnInit {
     });
   }
 
-  cycleAction(action: string, confirmText: string): void {
-    if (!confirm(confirmText)) return;
+  async cycleAction(action: string, confirmText: string): Promise<void> {
+    if (!(await zConfirm(confirmText))) return;
     this.api.action(CYCLES, this.cycleId, action).subscribe({
       next: (r: any) => { this.ok(r.detail); this.api.list(CYCLES).subscribe(c => (this.cycles = c.filter(x => x.status !== 'draft'))); this.load(); },
       error: e => this.err(e),

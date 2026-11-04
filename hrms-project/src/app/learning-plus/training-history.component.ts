@@ -16,17 +16,46 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
   template: `
 <div class="lp-wrap">
   <div class="lp-head">
-    <div><h1>Training history</h1><p class="lp-desc">Sessions, results, online courses, certificates, hours and cost.</p></div>
-    <div class="lp-tools" *ngIf="employees.length > 1">
-      <select [(ngModel)]="employee" (ngModelChange)="load()" aria-label="Employee" style="max-width:260px">
-        <option [ngValue]="null">Me</option>
-        <option *ngFor="let e of employees" [ngValue]="e.id">{{ e.label }}</option>
-      </select>
+    <div><h1>Training history</h1><p class="lp-desc">Sessions, results, online courses, certificates, hours and cost{{ people ? ' – of every employee. Open a person to see the timeline.' : '.' }}</p></div>
+    <div class="lp-tools">
+      <input *ngIf="people && !employee" class="lp-search" [(ngModel)]="q" placeholder="Search a name, code or department" aria-label="Search">
+      <button type="button" class="lp-btn" *ngIf="people && employee" (click)="employee = null; h = null; msg = ''" data-back>← All employees</button>
     </div>
   </div>
   <p class="lp-msg err" *ngIf="msg">{{ msg }}</p>
   <p class="lp-muted" *ngIf="loading">Loading…</p>
-  <ng-container *ngIf="h && !loading">
+  <!-- v1.62.0 talent-ops: HR opens on the people list (was "Me" + "Pick an employee.") -->
+  <ng-container *ngIf="people && !employee && !loading">
+    <div class="lp-tiles" data-hist-tiles>
+      <div class="lp-tile"><div class="k">Employees</div><div class="v">{{ ps.employees }}</div></div>
+      <div class="lp-tile"><div class="k">Trained</div><div class="v">{{ ps.trained }}</div></div>
+      <div class="lp-tile"><div class="k">No training yet</div><div class="v">{{ ps.never }}</div></div>
+      <div class="lp-tile"><div class="k">Training hours</div><div class="v">{{ ps.hours }}</div></div>
+      <div class="lp-tile"><div class="k">Certificates expiring (60 days)</div><div class="v">{{ ps.expiring }}</div></div>
+    </div>
+    <div class="lp-card lp-scroll">
+      <table class="lp-table" data-hist-people>
+        <thead><tr><th>Employee</th><th>Department</th><th class="c">Sessions</th><th class="c">Passed</th><th class="c">Hours</th><th>Certificates</th><th>Last training</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let r of shownPeople" [attr.data-emp]="r.id">
+            <td><b>{{ r.name }}</b><div class="lp-muted">{{ r.code }}</div></td>
+            <td>{{ r.department || '–' }}<div class="lp-muted">{{ r.designation }}</div></td>
+            <td class="c">{{ r.sessions }}<span class="lp-muted" *ngIf="r.upcoming"> +{{ r.upcoming }}</span></td>
+            <td class="c">{{ r.done ? r.passed + '/' + r.done : '–' }}</td>
+            <td class="c">{{ r.hours || '–' }}</td>
+            <td><span class="lp-tag green" *ngIf="r.certificates.valid">{{ r.certificates.valid }} valid</span>
+              <span class="lp-tag amber" *ngIf="r.certificates.expiring">{{ r.certificates.expiring }} expiring</span>
+              <span class="lp-tag red" *ngIf="r.certificates.expired">{{ r.certificates.expired }} expired</span>
+              <span class="lp-muted" *ngIf="!r.certificates.valid && !r.certificates.expiring && !r.certificates.expired">–</span></td>
+            <td class="nw">{{ r.last ? (r.last | date:'dd/MM/yyyy') : '–' }}<div class="lp-muted">{{ r.last_course }}</div></td>
+            <td style="text-align:end"><button type="button" class="lp-btn small" (click)="employee = r.id; load()">History</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="lp-muted" *ngIf="!shownPeople.length">Nobody matches.</p>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="h && !loading && (!people || employee)">
     <p style="margin:0 0 10px"><strong>{{ h.employee.name }}</strong> <span class="lp-muted">{{ h.employee.designation || '' }}{{ h.employee.department ? ' · ' + h.employee.department : '' }}</span></p>
     <div class="lp-tiles">
       <div class="lp-tile"><div class="k">Sessions</div><div class="v">{{ h.totals.sessions }}</div></div>
@@ -83,17 +112,25 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 })
 export class TrainingHistoryComponent implements OnInit {
   h: any = null; employees: { id: number; label: string }[] = []; employee: number | null = null;
+  people: any[] | null = null; ps: any = {}; q = '';   // v1.62.0 talent-ops: HR / L&D open on the people list
   loading = false; msg = ''; dots = dots;
   private api: LpApi;
 
   constructor(http: HttpClient, rec: ZRecordService, private cd: ChangeDetectorRef) { this.api = new LpApi(http, rec); }
 
   async ngOnInit(): Promise<void> {
-    try {   // HR / managers get a list; ESS gets only themselves (picker hidden)
-      const rows: any = await this.api.get('employee/api/emplist/');
-      this.employees = (Array.isArray(rows) ? rows : rows?.results || []).map((r: any) => ({ id: r.id, label: employeeLabel(r) }));
-    } catch { this.employees = []; }
+    this.loading = true;
+    try {   // v1.62.0 talent-ops: HR / L&D get the people list; an employee (no HR right) gets their own history
+      const r: any = await this.api.get('learning/plus/api/history/people/');
+      this.people = r.rows || []; this.ps = r.summary || {};
+      this.loading = false; this.cd.detectChanges();
+      return;
+    } catch { this.people = null; }
     await this.load();
+  }
+  get shownPeople(): any[] {
+    const q = this.q.toLowerCase().trim();
+    return (this.people || []).filter(r => !q || [r.name, r.code, r.department, r.designation].join(' ').toLowerCase().includes(q));
   }
 
   async load(): Promise<void> {

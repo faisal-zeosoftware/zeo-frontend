@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ASSET_BASE, AssetApiService, money } from './asset-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** Exit clearance (v1.12.0): employees who leave and what they still hold or owe. Blocks the final settlement until cleared or released. */
 @Component({
@@ -83,7 +84,7 @@ export class AssetClearanceComponent implements OnInit {
       const reason = prompt('Why can the final settlement go ahead with these items open?');
       if (!reason) return;
       body.reason = reason;
-    } else if (action === 'settle' && !confirm(`Move ${this.m(this.sel.recovery_due)} of open asset deductions to the final settlement?`)) {
+    } else if (action === 'settle' && !(await zConfirm(`Move ${this.m(this.sel.recovery_due)} of open asset deductions to the final settlement?`))) {
       return;
     }
     try {

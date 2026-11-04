@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectControlApiService, STATUS_LABEL, addDays, hrs, isoDate } from './project-control-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 interface Cell { date: string; hours: any; entries: any[]; status: string; locked: boolean; editable: boolean; rejection_reason: string; value: string; orig: string; }
 interface Row { project: number; project_title: string; task: number | null; task_title: string; billable: boolean; billableOrig: boolean; cells: Cell[]; total: any; isNew?: boolean; }
@@ -190,8 +191,8 @@ export class MyTimesheetComponent implements OnInit, OnDestroy {
     this.load();
   }
 
-  go(n: number): void {
-    if (this.dirty() && !confirm('You have unsaved hours. Leave this week without saving?')) return;
+  async go(n: number): Promise<void> {
+    if (this.dirty() && !(await zConfirm('You have unsaved hours. Leave this week without saving?'))) return;
     this.week = addDays(this.week, n);
     this.load();
   }
@@ -324,7 +325,7 @@ export class MyTimesheetComponent implements OnInit, OnDestroy {
 
   async submitWeek(): Promise<void> {
     if (!(await this.save())) return;
-    if (!confirm('Submit this week for approval? Submitted time is locked until it is approved or rejected.')) return;
+    if (!(await zConfirm('Submit this week for approval? Submitted time is locked until it is approved or rejected.'))) return;
     this.busy = true;
     try {
       const r = await this.api.post('submit/', { week: this.week });

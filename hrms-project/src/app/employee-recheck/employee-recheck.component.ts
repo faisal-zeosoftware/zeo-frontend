@@ -272,15 +272,16 @@ export class EmployeeRecheckComponent {
     this.isLoading = true;
 
     this.leaveService.postEmployeeRecheck(this.selectedEmployeeCode, selectedSchema).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.isLoading = false;
-        alert("Recheck email sent successfully!");
+        // v1.62.1 (tester 30-10 item 198): the server says what happened (asked in the app; e-mail sent or why not)
+        alert(response?.detail || response?.message || 'The employee was asked to confirm the location.');
         this.selectedEmployeeCode = null; // Optional: Reset selection
       },
       error: (error) => {
         this.isLoading = false;
         console.error('Error sending recheck:', error);
-        alert("Failed to send recheck email. Please try again.");
+        alert(error?.error?.detail || error?.error?.error || 'The recheck could not be sent. Please try again.');
       }
     });
   }

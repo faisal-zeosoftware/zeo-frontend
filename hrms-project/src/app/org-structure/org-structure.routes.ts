@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ZModuleMenuComponent } from '../shared-ui/z-module-menu.component';
+import { ZSetupGateNoticeComponent } from '../shared-ui/z-setup-gate';   // v1.62.1 the shared template shows the self-service notice
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +17,7 @@ import { OrgHierarchyComponent } from './org-hierarchy.component';
 import { PolicyAckComponent } from './policy-ack.component';
 import { MyPoliciesComponent } from './my-policies.component';
 import { CountryPoliciesComponent } from './country-policies.component';
+import { OrgOverviewComponent } from '../people62/org-overview.component';   // v1.62.0 people
 import { LocationAccessComponent, LocationControlComponent, LocationNumberingComponent } from './location-level.component';   // v1.30.0
 import { COST_CENTER_ORG_PAGE, DIVISION_PAGE, EMPLOYMENT_TYPE_PAGE, GRADE_PAGE, LOCATION_PAGE, POSITION_PAGE, SECTION_PAGE } from './org-structure.config';
 
@@ -23,6 +25,7 @@ import { COST_CENTER_ORG_PAGE, DIVISION_PAGE, EMPLOYMENT_TYPE_PAGE, GRADE_PAGE, 
 export interface OrgMenuItem extends ModuleMenuItem { org?: OrgKey; fixed?: boolean; }   // fixed: label not renamed by the org label
 
 export const ORG_STRUCTURE_MENU: OrgMenuItem[] = [
+  { path: 'overview', label: 'Overview', icon: 'corporate_fare', model: 'dept_master' },   // v1.62.0 people: structure overview first
   { path: 'settings', label: 'Settings', icon: 'tune', model: 'dept_master' },
   { path: 'employees', label: 'Employee organisation', icon: 'account_tree', model: 'emp_master' },
   { path: 'locations', label: 'Locations', icon: 'place', model: 'dept_master', org: 'locations' },
@@ -45,7 +48,7 @@ export const ORG_STRUCTURE_MENU: OrgMenuItem[] = [
 @Component({
   selector: 'app-org-structure-options',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule, ZModuleMenuComponent],   // v1.40.1: the shared template shows z-module-menu
+  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule, ZModuleMenuComponent, ZSetupGateNoticeComponent],   // v1.40.1: the shared template shows z-module-menu
   templateUrl: '../hr-modules/module-options/module-options.component.html',
   styleUrl: '../hr-modules/module-options/module-options.component.css',
 })
@@ -85,7 +88,8 @@ export const ORG_STRUCTURE_ROUTES: Routes = [
     component: OrgStructureOptionsComponent,
     data: { title: 'Organisation', base: '/main-sidebar/org-structure', menu: ORG_STRUCTURE_MENU.map(m => ({ ...m })) },
     children: [
-      { path: '', redirectTo: 'settings', pathMatch: 'full' },
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },   // v1.62.0 people (was settings)
+      { path: 'overview', component: OrgOverviewComponent },
       { path: 'settings', component: OrgSettingsComponent },
       { path: 'employees', component: OrgAssignComponent },
       page('locations', LOCATION_PAGE),

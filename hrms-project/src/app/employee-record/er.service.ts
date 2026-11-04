@@ -90,13 +90,13 @@ export function num(v: any): string {
   return v === null || v === undefined || v === '' || isNaN(n) ? '–' : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/** 12 May 1990 */
+/** 12/05/1990 – v1.62.0 ui: the one date format of the app (was "12 May 1990") */
 export function dmy(v: any): string {
   if (!v) { return '–'; }
   const s = String(v).slice(0, 10);
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
   if (!m) { return String(v); }
-  return `${+m[3]} ${MON[+m[2] - 1]} ${m[1]}`;
+  return `${m[3]}/${m[2]}/${m[1]}`;
 }
 export function badgeClass(b: any): string {
   if (!b) { return ''; }

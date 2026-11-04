@@ -3253,6 +3253,12 @@
                 <input type="search" class="form-control" style="max-width:320px;margin-inline-start:auto" placeholder="Find a permission or module…" [(ngModel)]="extraSearch" [ngModelOptions]="{ standalone: true }">
               </div>
               <p class="text-muted small px-3">Rights of the newer modules, grouped by module. Tick a row to give all four rights of that record type.</p>
+              <!-- v1.62.1 (items 187/196): pick a module; the search looks in all of them -->
+              <div class="px-3 pb-2 d-flex flex-wrap gap-1" role="tablist" aria-label="Modules" data-extra-modules *ngIf="!extraSearch.trim()">
+                <button type="button" *ngFor="let a of extraAppsAll()" class="btn btn-sm" role="tab" [attr.aria-selected]="extraApps()[0] === a"
+                        [ngClass]="extraApps()[0] === a ? 'btn-primary' : 'btn-outline-secondary'" (click)="extraApp = a">
+                  {{ a }} <small class="opacity-75">{{ extraAppSelected(a) ? extraAppSelected(a) + ' / ' : '' }}{{ extraAppCount(a) }}</small></button>
+              </div>
               <div class="child_per" *ngFor="let app of extraApps()">
                 <h6 class="px-3 pt-2 mb-1" style="font-weight:600">{{ app }}</h6>
                 <div class="row permission-row" *ngFor="let g of extraGroupsOf(app)">

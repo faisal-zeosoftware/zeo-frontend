@@ -1,4 +1,5 @@
 import { i18nT } from '../shared-ui/i18n-core';   // v1.20.1
+import { zFormThenReload, USER_FORM, LEAVE_TYPE_FORM, DOCUMENT_TYPE_FORM } from '../shared-ui/z-forms';   // v1.62.1
 import { Component,OnInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
@@ -14,6 +15,7 @@ import { UserEditComponent } from '../user-edit/user-edit.component';
 import { Router } from '@angular/router';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-user-master',
@@ -271,6 +273,7 @@ filterEmployees() {
 
 
     openPopus(){
+    zFormThenReload(USER_FORM); return;   // v1.62.1 new-design form
       const ref = this.dialog.open(UserCreationComponent,{
         width:'80%',
         height:'500px',
@@ -286,8 +289,8 @@ filterEmployees() {
       this.http.get<any[]>(`${environment.apiBaseUrl}/users/api/invites/?schema=${encodeURIComponent(sch)}`).subscribe({
         next: r => this.invites = Array.isArray(r) ? r : [], error: () => this.invites = [] });
     }
-    cancelInvite(i: any): void {
-      if (!confirm(i18nT('Cancel the invitation of {0}?', [i.email || i.username]))) { return; }
+    async cancelInvite(i: any): Promise<void> {
+      if (!(await zConfirm(i18nT('Cancel the invitation of {0}?', [i.email || i.username])))) { return; }
       this.http.post(`${environment.apiBaseUrl}/users/api/invites/${i.id}/`, { action: 'cancel' }).subscribe({
         next: () => this.invites = this.invites.filter(x => x !== i),
         error: (e) => alert(e?.error?.detail || i18nT('Not cancelled.')) });
@@ -320,7 +323,7 @@ filterEmployees() {
   }
 
   
-  deleteSelectedEmployees() {
+  async deleteSelectedEmployees() {
     const selectedEmployeeIds = this.Users.filter(employee => employee.selected).map(employee => employee.id);
   
     if (selectedEmployeeIds.length === 0) {
@@ -328,7 +331,7 @@ filterEmployees() {
       return;
     }
   
-    if (confirm('Delete this user? They can no longer sign in.')) {
+    if ((await zConfirm('Delete this user? They can no longer sign in.'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -388,6 +391,7 @@ onSearchTypeChange(): void {
 
 
   openEditEmpPopuss(employeeId: number, ):void{
+    zFormThenReload(USER_FORM, { id: employeeId }); return;   // v1.62.1 new-design form
     const dialogRef = this.dialog.open(UserEditComponent, {
       width:'80%',
       height:'500px',
@@ -427,8 +431,8 @@ onSearchTypeChange(): void {
 }
 
 
-onDeleteEmployee(employeeId: number): void {
-  if (confirm('Are you sure you want to delete this User?')) {
+async onDeleteEmployee(employeeId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this User?'))) {
       this.UserMasterService.deleteUser(employeeId).subscribe(
           () => {
               console.log('User deleted successfully');

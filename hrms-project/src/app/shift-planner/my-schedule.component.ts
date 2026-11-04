@@ -6,14 +6,17 @@
  *      claims/<id>/withdraw/, availability/, notices/
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
+import { ZWorkingDaysComponent } from '../shared-ui/z-working-days.component';   // v1.62.6 (item 22)
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.service';
+import { Router } from '@angular/router';   // v1.62.0 people
 
 @Component({
   selector: 'app-sp-my-schedule',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent, ZWorkingDaysComponent],   // v1.62.6 (item 22)
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -26,7 +29,7 @@ import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.ser
         </div>
         <div class="lp-actions">
           <button type="button" class="lp-btn" (click)="move(-14)" aria-label="Previous two weeks">‹ Earlier</button>
-          <input type="date" [(ngModel)]="from" (change)="load()" aria-label="Show from" style="height:34px;border:1px solid #dcdfea;border-radius:8px;padding:0 8px">
+          <z-date-field [(value)]="from" (valueChange)="load()" label="Show from"></z-date-field>
           <button type="button" class="lp-btn" (click)="move(14)" aria-label="Next two weeks">Later ›</button>
         </div>
       </div>
@@ -55,6 +58,10 @@ import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.ser
             </div>
           </div>
         </div>
+
+        <!-- v1.62.6 (item 22): what decides my working days -->
+        <div class="sp-h">What decides my working days</div>
+        <z-working-days data-my-workdays></z-working-days>
 
         <!-- v1.49.0 shifts offered by colleagues of the branch -->
         <div class="sp-h">Shifts offered by colleagues</div>
@@ -122,8 +129,8 @@ import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.ser
           <label>Availability<select [(ngModel)]="av.kind"><option value="unavailable">Not available</option><option value="preferred">Preferred</option><option value="available">Available</option></select></label>
           <label>Repeats on<select [(ngModel)]="av.weekday"><option [ngValue]="null">Dates below</option><option *ngFor="let w of weekdays; let i = index" [ngValue]="i">Every {{ w }}</option></select>
             <span class="sp-err" *ngIf="avErr['weekday']">{{ avErr['weekday'] }}</span></label>
-          <label *ngIf="av.weekday === null">From<input type="date" [(ngModel)]="av.date_from"></label>
-          <label *ngIf="av.weekday === null">To<input type="date" [(ngModel)]="av.date_to"><span class="sp-err" *ngIf="avErr['date_to']">{{ avErr['date_to'] }}</span></label>
+          <label *ngIf="av.weekday === null">From<z-date-field [(value)]="av.date_from"></z-date-field></label>
+          <label *ngIf="av.weekday === null">To<z-date-field [(value)]="av.date_to"></z-date-field><span class="sp-err" *ngIf="avErr['date_to']">{{ avErr['date_to'] }}</span></label>
           <label>Shift (optional)<select [(ngModel)]="av.shift"><option [ngValue]="null">Any shift</option><option *ngFor="let s of data.shifts" [ngValue]="s.id">{{ s.name }}</option></select></label>
           <label>Note<input [(ngModel)]="av.note" maxlength="255" placeholder="e.g. Evening classes"></label>
         </div>
@@ -147,7 +154,7 @@ import { SpApiService, addDays, isoDate, niceDate, WEEKDAYS } from './sp-api.ser
             <select [(ngModel)]="req.to_shift"><option [ngValue]="null">Choose…</option><option *ngFor="let s of data.shifts" [ngValue]="s.id">{{ s.name }}</option></select>
             <span class="sp-err" *ngIf="reqErr['to_shift']">{{ reqErr['to_shift'] }}</span></label>
           <ng-container *ngIf="req.kind === 'swap'">
-            <label>Colleague's day<input type="date" [(ngModel)]="req.swap_date" (change)="loadColleagues()"></label>
+            <label>Colleague's day<z-date-field [(value)]="req.swap_date" (valueChange)="loadColleagues()"></z-date-field></label>
             <label>Swap with
               <select [(ngModel)]="req.swap_employee"><option [ngValue]="null">Choose a colleague…</option>
                 <option *ngFor="let c of colleagues" [ngValue]="c.employee_id">{{ c.name }} – {{ c.shift }}</option></select>
@@ -177,7 +184,7 @@ export class SpMyScheduleComponent implements OnInit {
   colleagues: any[] = [];
   nice = niceDate;
 
-  constructor(private api: SpApiService, private cd: ChangeDetectorRef) {}
+  constructor(private api: SpApiService, private cd: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -193,7 +200,11 @@ export class SpMyScheduleComponent implements OnInit {
     try {
       this.api.get('requests/', { scope: 'offers' }).then((r: any) => { this.offers = r || []; this.cd.markForCheck(); }).catch(() => { this.offers = []; });
       this.data = await this.api.get('my-schedule/', { from: this.from, to: addDays(this.from, 13) });
-    } catch (e) { this.say(SpApiService.error(e, 'Your schedule could not be loaded.'), true); }
+    } catch (e: any) {
+      // v1.62.0 people: a login without an employee record (HR, admin) has no schedule – open the rosters instead of an empty page
+      if (e?.status === 403 || e?.status === 404) { this.router.navigate(['/main-sidebar/shift-planner/rosters'], { replaceUrl: true }); return; }
+      this.say(SpApiService.error(e, 'Your schedule could not be loaded.'), true);
+    }
     this.loading = false;
     this.cd.markForCheck();
   }

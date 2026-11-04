@@ -10,6 +10,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-document-request',
@@ -542,7 +543,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+async deleteSelectedAssetType() { 
 const selectedEmployeeIds = this.DocRequest
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -552,7 +553,7 @@ alert('No Document Request selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected Document Request  ?')) {
+if ((await zConfirm('Are you sure you want to delete the selected Document Request  ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;                  

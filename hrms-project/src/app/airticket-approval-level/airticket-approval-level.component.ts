@@ -14,6 +14,7 @@ import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-airticket-approval-level',
@@ -621,7 +622,7 @@ removeEditLevel(index: number) {
     }
     
     
-    deleteSelectedAirticketAprlvl() { 
+    async deleteSelectedAirticketAprlvl() { 
       const selectedEmployeeIds = this.approvalLevels
         .filter(employee => employee.selected)
         .map(employee => employee.id);
@@ -631,7 +632,7 @@ removeEditLevel(index: number) {
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected Airticket Approval Level ?')) {
+      if ((await zConfirm('Are you sure you want to delete the selected Airticket Approval Level ?'))) {
     
         let total = selectedEmployeeIds.length;
         let completed = 0;

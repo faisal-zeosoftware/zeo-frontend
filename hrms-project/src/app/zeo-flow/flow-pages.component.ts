@@ -8,6 +8,7 @@ import { FLOW_CSS, FlowMeta, FlowService } from './flow.service';
 import { zToast } from '../shared-ui/z-toast';
 import { TPipe } from '../shared-ui/i18n.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe, ZListDirective];   // v1.38.0: the HRMS list bar (search, views, columns, export) on the lists
 
@@ -103,7 +104,7 @@ export class FlowRulesComponent implements OnInit {
     catch (e) { zToast(this.api.err(e), 'err'); }
   }
   async samples() { try { const r = await this.api.post('workflows/load_samples/'); zToast(r.created.length ? `${r.created.length} sample rule(s) added as drafts: ${r.created.join(', ')}` : 'The sample rules already exist.', 'ok'); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
-  async del(w: any) { if (!confirm(`Delete the rule "${w.name}" and its history?`)) { return; } try { await this.api.delete(`workflows/${w.id}/`); zToast('Deleted.', 'ok'); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
+  async del(w: any) { if (!(await zConfirm(`Delete the rule "${w.name}" and its history?`))) { return; } try { await this.api.delete(`workflows/${w.id}/`); zToast('Deleted.', 'ok'); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
   async runNow() { this.busy = true; this.runRes = null; try { this.runRes = await this.api.post(`workflows/${this.runOn.id}/run/`, { id: this.runId, ignore_conditions: this.runIgnore, force: this.runOn.state !== 'active' }); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } this.busy = false; this.cd.markForCheck(); }
 }
 
@@ -180,7 +181,7 @@ export class FlowScheduledComponent implements OnInit {
   async ngOnInit() { await this.load(); }
   async load() { try { this.rows = await this.api.get('scheduled/', { status: this.status }); } catch (e) { zToast(this.api.err(e), 'err'); } this.loaded = true; this.cd.markForCheck(); }
   overdue(s: any) { return s.status === 'pending' && new Date(s.due_at) < new Date(); }
-  async cancel(s: any) { if (!confirm('Cancel this scheduled action? The run stops here.')) { return; } try { await this.api.post(`scheduled/${s.id}/cancel/`); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
+  async cancel(s: any) { if (!(await zConfirm('Cancel this scheduled action? The run stops here.'))) { return; } try { await this.api.post(`scheduled/${s.id}/cancel/`); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
   async runDue() { this.busy = true; try { const r = await this.api.post('scheduled/run_due/'); this.res = `Scheduler ran: ${r.resumed} resumed, ${r.date_runs} date runs, ${r.schedule_runs} scheduled runs, ${r.approval_reminders} approval reminders.`; await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } this.busy = false; this.cd.markForCheck(); }
 }
 
@@ -220,7 +221,7 @@ export class FlowTemplatesComponent implements OnInit {
   modelLabel(k: string) { return this.meta?.models.find(m => m.key === k)?.label || k || '–'; }
   edit(t: any) { this.cur = { ...t }; this.pv = null; }
   async save() { try { if (this.cur.id) { await this.api.patch(`templates/${this.cur.id}/`, this.cur); } else { await this.api.post('templates/', this.cur); } zToast('Template saved.', 'ok'); this.cur = null; await this.api.meta(true); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
-  async del(t: any) { if (!confirm(`Delete "${t.name}"?`)) { return; } try { await this.api.delete(`templates/${t.id}/`); await this.api.meta(true); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
+  async del(t: any) { if (!(await zConfirm(`Delete "${t.name}"?`))) { return; } try { await this.api.delete(`templates/${t.id}/`); await this.api.meta(true); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
   async preview() { try { this.pv = await this.api.post(`templates/${this.cur.id}/preview/`, { id: this.pid, model: this.cur.model }); } catch (e) { zToast(this.api.err(e), 'err'); } this.cd.markForCheck(); }
 }
 

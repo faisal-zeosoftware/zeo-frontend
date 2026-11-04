@@ -2,31 +2,34 @@
 <div class="container hr-page">
   <div class="comapny_section">
 
+    <!-- v1.62.0 talent-ops: a card header like the newer screens – title and its one-line description in the card, search and
+         actions at the right (the Create button floated in the middle and the description sat outside the card) -->
     <div class="header_section">
-      <div class="row align-items-center">
-        <div class="col-md-4"><h1>{{ config.title }}</h1></div>
-        <div class="col-md-3">
-          <div class="search-container">
+      <div class="hr-head">
+        <div class="hr-head-t">
+          <h1>{{ config.title }}</h1>
+          <p class="hr-head-d" *ngIf="config.intro">{{ config.intro }}</p>
+        </div>
+        <div class="hr-head-a">
+          <div class="search-container hr-head-s">
             <input type="text" class="search-input" placeholder="Search..." [(ngModel)]="search" (ngModelChange)="page = 1">
             <button class="search-btn" type="button"><i class="fa fa-search"></i></button>
           </div>
         </div>
-        <div class="col-md-5">
-          <div class="button-group pull-right hr-toolbar">
-            <ng-container *ngFor="let a of config.toolbarActions">
-              <button type="button" class="btn hr-btn" [ngClass]="'hr-btn-' + (a.color || 'blue')" (click)="runAction(a, null)">
-                <mat-icon *ngIf="a.icon">{{ a.icon }}</mat-icon> {{ a.label }}
-              </button>
-            </ng-container>
-            <button type="button" class="btn-Create btn btn-success" *ngIf="config.canCreate !== false && config.fields?.length && canAdd" (click)="openCreate()">
-              <span class="header-btn-icon"><mat-icon>add_circle</mat-icon></span> Create
+        <!-- v1.62.0 people: the buttons sit in their own box – the list tools hide the page's search box with its parent, and the
+             "+ New …" button went with it (no Create on any of these screens) -->
+        <div class="hr-head-a hr-head-b">
+          <ng-container *ngFor="let a of config.toolbarActions">
+            <button type="button" class="hr-tbtn" (click)="runAction(a, null)">
+              <mat-icon *ngIf="a.icon">{{ a.icon }}</mat-icon> {{ a.label }}
             </button>
-          </div>
+          </ng-container>
+          <button type="button" class="hr-tbtn primary" *ngIf="config.canCreate !== false && config.fields?.length && canAdd" (click)="openCreate()" data-hr-create>
+            + {{ newLabel() }}
+          </button>
         </div>
       </div>
     </div>
-
-    <p class="hr-intro" *ngIf="config.intro">{{ config.intro }}</p>
 
     <!-- stat tiles -->
     <div class="hr-stats" *ngIf="config.stats && stats">
@@ -54,7 +57,7 @@
           <table class="table hr-table">
             <thead>
               <tr>
-                <th *ngFor="let c of config.columns" [attr.data-ztype]="c.type === 'money' ? 'money' : c.type === 'date' || c.type === 'datetime' ? 'date' : null">{{ c.label }}</th><!-- v1.62.0 ui column type -->
+                <th *ngFor="let c of config.columns" [class.hr-num]="c.type === 'money' || c.type === 'percent'" [attr.data-ztype]="c.type === 'money' ? 'money' : c.type === 'date' || c.type === 'datetime' ? 'date' : null">{{ c.label }}</th><!-- v1.62.0 ui column type -->
                 <th class="hr-col-actions" *ngIf="config.rowActions?.length || config.fields?.length">Actions</th>
               </tr>
             </thead>
@@ -62,7 +65,7 @@
               <tr *ngIf="loading"><td [attr.colspan]="config.columns.length + 1" class="hr-empty">Loading…</td></tr>
               <tr *ngIf="!loading && !filteredRows.length"><td [attr.colspan]="config.columns.length + 1" class="hr-empty">{{ config.emptyText || 'No records yet.' }}</td></tr>
               <tr *ngFor="let r of pagedRows; trackBy: trackById" (click)="openDetail(r)" [class.selected]="detail?.id === r.id">
-                <td *ngFor="let c of config.columns" [ngSwitch]="c.type || 'text'">
+                <td *ngFor="let c of config.columns" [ngSwitch]="c.type || 'text'" [class.hr-nw]="nwCol(c)" [class.hr-num]="c.type === 'money' || c.type === 'percent'">
                   <span *ngSwitchCase="'tag'" [ngClass]="tagClass(r, c)">{{ cell(r, c) }}</span>
                   <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd/MM/yyyy' }}</span>
                   <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -204,7 +207,12 @@
               </div>
               <label *ngSwitchCase="'checkbox'" class="hr-check"><input type="checkbox" [(ngModel)]="formModel[f.key]"> {{ f.help || 'Yes' }}</label>
               <input *ngSwitchCase="'file'" type="file" class="form-control" (change)="onFile(f.key, $event)">
-              <input *ngSwitchCase="'datetime'" type="datetime-local" class="form-control" [(ngModel)]="formModel[f.key]">
+              <!-- v1.62.0 people: dates typed and shown dd/mm/yyyy whatever the browser language -->
+              <z-date-field *ngSwitchCase="'date'" [(value)]="formModel[f.key]" [label]="f.label"></z-date-field>
+              <span *ngSwitchCase="'datetime'" class="hr-dt">
+                <z-date-field [value]="dtDate(formModel[f.key])" (valueChange)="formModel[f.key] = dtJoin($event, dtTime(formModel[f.key]))" [label]="f.label"></z-date-field>
+                <input type="text" class="form-control hr-dt-t" placeholder="HH:MM" maxlength="5" [value]="dtTime(formModel[f.key])" (input)="formModel[f.key] = dtJoin(dtDate(formModel[f.key]), $any($event.target).value)">
+              </span>
               <input *ngSwitchDefault [type]="f.type" class="form-control" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''">
             </ng-container>
             <small class="hr-help" *ngIf="f.help && f.type !== 'checkbox'">{{ f.help }}</small>
@@ -233,6 +241,7 @@
             <option *ngFor="let o of options[f.key]" [ngValue]="o.value">{{ o.label }}</option>
           </select>
           <label *ngSwitchCase="'checkbox'" class="hr-check"><input type="checkbox" [(ngModel)]="promptModel[f.key]"> {{ f.help || 'Yes' }}</label>
+          <z-date-field *ngSwitchCase="'date'" [(value)]="promptModel[f.key]" [label]="f.label"></z-date-field>
           <input *ngSwitchDefault [type]="f.type" class="form-control" [(ngModel)]="promptModel[f.key]">
         </ng-container>
       </div>
@@ -243,14 +252,26 @@
     </div>
   </div>
 
+  <!-- v1.62.5 (item 19): the server asks before saving (salary of the leave days already paid): Cancel or its choice -->
+  <div class="hr-modal" *ngIf="choiceAsk" data-period-paid>
+    <div class="hr-modal-box narrow" data-zr-off>
+      <div class="hr-modal-head"><h2>{{ choiceAsk.title }}</h2><span class="close-btn" (click)="answerChoice(false)">×</span></div>
+      <p class="hr-choice-text" style="white-space: pre-line; line-height: 1.5; margin: 4px 0 8px">{{ choiceAsk.text }}</p>
+      <div class="hr-modal-foot">
+        <button type="button" class="btn btn-danger" data-choice-cancel (click)="answerChoice(false)">{{ choiceAsk.cancel }}</button>
+        <button type="button" class="btn btn-primary hr-save" data-choice-ok (click)="answerChoice(true)">{{ choiceAsk.ok }}</button>
+      </div>
+    </div>
+  </div>
+
   <!-- printable document -->
-  <div class="hr-modal" *ngIf="docHtml">
-    <div class="hr-modal-box" data-zr-off>
-      <div class="hr-modal-head"><h2>Preview</h2><span class="close-btn" (click)="docHtml = null">×</span></div>
+  <div class="hr-modal" *ngIf="docHtml" [class.hr-side]="docPanel" (click)="docPanel && $event.target === $event.currentTarget && (docHtml = null)">
+    <div class="hr-modal-box" data-zr-off [attr.data-panel]="docPanel ? '' : null">
+      <div class="hr-modal-head"><h2>{{ docTitle || 'Preview' }}</h2><span class="close-btn" (click)="docHtml = null">×</span></div><!-- v1.62.1 panel -->
       <div class="hr-doc-body" [innerHTML]="docHtml"></div>
       <div class="hr-modal-foot">
         <button type="button" class="btn btn-danger" (click)="docHtml = null">Close</button>
-        <button type="button" class="btn btn-primary hr-save" (click)="printDoc()">Print / PDF</button>
+        <button type="button" class="btn btn-primary hr-save" *ngIf="!docPanel" (click)="printDoc()">Print / PDF</button>
       </div>
     </div>
   </div>

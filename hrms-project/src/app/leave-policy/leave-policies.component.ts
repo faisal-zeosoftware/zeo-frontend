@@ -1,5 +1,6 @@
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +9,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 interface Line { id?: number; leave_type_id: number; leave_type_name?: string; [k: string]: any; }
 
@@ -28,7 +30,7 @@ const BLANK_LINE = {
 @Component({
   selector: 'app-leave-policies',
   standalone: true,
-  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, RouterModule, ZListDirective],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, RouterModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['./leave-policy.css'],
   template: `
 <div class="container">
@@ -41,11 +43,10 @@ const BLANK_LINE = {
         </div>
         <div class="lp-actions">
           <button type="button" class="lp-btn" *zCountry="'pack:AE'" (click)="openSetup()">Load UAE standard setup</button>
-          <button type="button" class="lp-btn" (click)="openRun('accrual')">Monthly accrual</button>
-          <button type="button" class="lp-btn" (click)="openRun('year')">Leave year end</button>
+          <button type="button" class="lp-btn" (click)="openRun('accrual')" title="Shows the days each employee earns for a month, then credits them when you confirm">Monthly accrual</button>
+          <button type="button" class="lp-btn" (click)="openRun('year')" title="Shows the carry-forward of each balance, then closes the leave year when you confirm">Leave year end</button>
           <button type="button" class="lp-btn" (click)="startLedger()" title="Writes an opening line for every balance that has no ledger yet">Start ledger from balances</button>
-          <label class="lp-btn" title="Excel / CSV: Employee Code + one column per leave type (e.g. Annual Leave), or employee_code, leave_type, days">Load opening balances
-            <input type="file" accept=".xlsx,.xls,.csv" hidden (change)="loadOpenings($event)"></label>
+          <button type="button" class="lp-btn" (click)="openOpenings()" title="Excel / CSV: Employee Code + one column per leave type (e.g. Annual Leave), or employee_code, leave_type, days">Load opening balances</button>
         </div>
       </div>
       <div class="lp-tabs" role="tablist">
@@ -62,12 +63,36 @@ const BLANK_LINE = {
       <!-- policies -->
       <ng-container *ngIf="tab === 'policies'">
         <div class="lp-cards">
-          <button type="button" class="lp-card" *ngFor="let p of policies" [class.on]="edit?.id === p.id" (click)="pick(p)">
+          <button type="button" class="lp-card" *ngFor="let p of inUse()" [class.on]="edit?.id === p.id" (click)="pick(p)" [attr.data-policy]="p.code">
             <h3>{{ p.name }} <span class="lp-badge" [class.labour]="p.kind === 'labour'">{{ kindLabel(p.kind) }}</span><span class="lp-badge" *ngIf="p.is_default">Default</span></h3>
             <p>{{ p.employees_count }} employees · {{ p.lines?.length || 0 }} leave types</p>
-            <div class="lp-chips"><span class="lp-chip" *ngFor="let c of p.categories">{{ c }}</span><span class="lp-muted" *ngIf="!p.categories?.length">No category</span></div>
+            <div class="lp-chips"><span class="lp-chip" *ngFor="let c of p.categories">{{ c }}</span><span class="lp-muted" *ngIf="!p.categories?.length">Given to employees one by one</span></div>
           </button>
           <button type="button" class="lp-card" (click)="newPolicy()"><h3>+ New policy</h3><p>Start from an empty policy or copy one.</p></button>
+        </div>
+        <!-- v1.62.1: the ready-made policies nobody uses are kept apart from the company's own -->
+        <section class="lp-tpl" *ngIf="templates().length">
+          <button type="button" class="lp-tpl-head" (click)="showTpl = !showTpl" [attr.aria-expanded]="showTpl">
+            <span class="lp-caret" [class.open]="showTpl">›</span>
+            <b>Templates for other business types</b><span class="lp-count">{{ templates().length }}</span>
+          </button>
+          <p class="lp-muted lp-tpl-note">Ready-made policies that no employee uses – they change nothing until you give one to a category or an employee. Open one to use it, or copy it into a policy of your own.</p>
+          <div class="lp-cards" *ngIf="showTpl">
+            <button type="button" class="lp-card tpl" *ngFor="let p of templates()" [class.on]="edit?.id === p.id" (click)="pick(p)" [attr.data-policy]="p.code">
+              <h3>{{ p.name }} <span class="lp-badge">Template</span></h3>
+              <p>{{ p.lines?.length || 0 }} leave types</p>
+              <p class="lp-tpl-desc" [title]="p.description">{{ p.description }}</p>
+            </button>
+          </div>
+        </section>
+        <!-- v1.62.1: which leave types the policies cover -->
+        <div class="lp-cover" *ngIf="cover?.uncovered?.length" data-cover="uncovered">
+          <b>Leave types no policy covers:</b> <span>{{ coverNames(cover.uncovered) }}</span>.
+          <span>They follow the rules set on the leave type itself</span> – <a routerLink="/main-sidebar/leave-options/leave-master">Leave types</a> › <span>open the type › Entitlement</span>.
+        </div>
+        <div class="lp-cover info" *ngIf="cover?.branch_copies?.length" data-cover="copies">
+          <b>Branch copies of leave types:</b> <span>{{ coverNames(cover.branch_copies) }}</span>.
+          <span>Each follows the policy line of the leave type with the same name – employees earn and take the leave on the copy of their own branch.</span>
         </div>
         <p class="lp-muted" *ngIf="!policies.length">No policies yet. <ng-container *zCountry="'pack:AE'">Press <b>Load UAE standard setup</b> to add the UAE leave types and an Office staff and a Labour policy.</ng-container><ng-container *zCountry="'!pack:AE'">Press <b>+ New policy</b>. An administrator can load your country's leave types under Settings → Country settings → Apply country defaults.</ng-container></p>
 
@@ -107,7 +132,7 @@ const BLANK_LINE = {
                   <td><select [(ngModel)]="l.worked_source" [disabled]="l.prorate !== 'worked'" [attr.aria-label]="'Days worked from – ' + typeName(l.leave_type_id)"><option value="punch">Check-ins</option><option value="calendar">Attendance calendar</option></select>
                     <label class="lp-inline"><input type="checkbox" [(ngModel)]="l.worked_paid_leave" [disabled]="l.prorate !== 'worked'"> paid leave counts</label></td>
                   <td><input type="checkbox" [(ngModel)]="l.first_year_uae" title="Nothing in the first 6 months, then 2 days a month until 1 year"></td>
-                  <td><select [(ngModel)]="l.count_days"><option value="calendar">Calendar</option><option value="working">Working</option></select></td>
+                  <td><select [(ngModel)]="l.count_days"><option value="calendar">Calendar</option><option value="working">Working</option><option value="cal_nohol">Calendar except public holidays</option></select></td><!-- v1.65.0 (item 87) -->
                   <td><select [(ngModel)]="l.gender"><option value="B">Both</option><option value="F">Female</option><option value="M">Male</option></select></td>
                   <td><input type="number" min="0" [(ngModel)]="l.min_service_months"></td>
                   <td><input type="checkbox" [(ngModel)]="l.after_probation"></td>
@@ -135,7 +160,7 @@ const BLANK_LINE = {
             </table>
           </div>
           <div class="lp-add">
-            <select [(ngModel)]="addType"><option [ngValue]="null">Add a leave type…</option><option *ngFor="let t of freeTypes()" [ngValue]="t.id">{{ t.name }}</option></select>
+            <select [(ngModel)]="addType"><option [ngValue]="null">Add a leave type…</option><option *ngFor="let t of freeTypes()" [ngValue]="t.id">{{ typeLabel(t) }}</option></select>
             <button type="button" class="lp-btn" [disabled]="!addType" (click)="addLine()">Add</button>
             <span class="lp-muted">Empty number = no limit. Pay slabs: days at pay %, counted from the start of the leave year.</span>
           </div>
@@ -185,7 +210,7 @@ const BLANK_LINE = {
           <label>&nbsp;<button type="button" class="lp-btn primary" [disabled]="!who" (click)="saveOverride()">Save</button></label>
         </div>
         <div *ngIf="eff" class="lp-msg" style="background:#f7f6ff;color:#2b2f42;border-color:#ddd8ff">
-          <b>{{ eff.employee }}</b> – {{ eff.policy || 'no policy' }} ({{ eff.how }}), {{ eff.service_months }} months of service.
+          <b>{{ eff.employee }}</b> – <span>{{ eff.policy || 'no policy' }}</span> (<span>{{ eff.how }}</span>), <span>{{ eff.service_months }} months of service</span>.
           <span *ngFor="let l of eff.lines">· {{ l.leave_type }}<small *ngIf="l.step_from_year"> ({{ l.days_per_year }} days a year, service year {{ l.service_year }})</small>: <ng-container *ngIf="l.balance !== null"><b>{{ l.balance }}</b> available</ng-container><ng-container *ngIf="l.balance === null"><b>{{ l.taken }}</b> taken this year</ng-container>{{ l.eligible ? '' : ' (not yet eligible)' }} </span>
         </div>
         <h3 style="font-size:14px;margin:16px 0 8px">Employees with a policy of their own</h3>
@@ -237,7 +262,7 @@ const BLANK_LINE = {
           <h3 class="lp-h">Check who approves</h3>
           <div class="lp-form" style="margin-top:0">
             <label>Employee<select [(ngModel)]="chkEmp"><option [ngValue]="null">Pick an employee…</option><option *ngFor="let e of directory" [ngValue]="e.id">{{ e.name }} ({{ e.code }})</option></select></label>
-            <label>Leave type<select [(ngModel)]="chkType"><option [ngValue]="null">Pick a leave type…</option><option *ngFor="let t of types" [ngValue]="t.id">{{ t.name }}</option></select></label>
+            <label>Leave type<select [(ngModel)]="chkType"><option [ngValue]="null">Pick a leave type…</option><option *ngFor="let t of types" [ngValue]="t.id">{{ typeLabel(t) }}</option></select></label>
             <label>&nbsp;<button type="button" class="lp-btn" [disabled]="!chkEmp || !chkType" (click)="checkWho()">Check</button></label>
           </div>
           <div *ngIf="chk" class="lp-msg" style="background:#f7f6ff;color:#2b2f42;border-color:#ddd8ff">
@@ -285,6 +310,25 @@ const BLANK_LINE = {
   </div>
 </div>
 
+<!-- v1.62.1 opening balances: what the file needs and which date, before anything is loaded (was a browser prompt for an ISO date) -->
+<div class="lp-modal-back" *ngIf="op" (click)="op = null">
+  <div class="lp-modal" (click)="$event.stopPropagation()" role="dialog" aria-label="Load opening balances">
+    <header><h2>Load opening balances</h2><button type="button" class="lp-btn" (click)="op = null">Close</button></header>
+    <div class="body">
+      <p class="lp-muted">Sets the leave balances of the employees in the file, with an opening line in the leave ledger. Use it at go-live or at the start of a leave year; balances that are not in the file do not change.</p>
+      <p class="lp-muted">The file (Excel or CSV): an <b>Employee Code</b> column and one column per leave type, named as the leave type (e.g. Annual Leave, Sick Leave) – or the three columns employee_code, leave_type, days. A leave type made per branch is booked on the employee's own branch.</p>
+      <div class="lp-form" style="margin-top:0">
+        <label>Opening balance date<z-date-field [(value)]="op.date"></z-date-field></label>
+        <label>How<select [(ngModel)]="op.mode" data-op-mode><option value="set">Replace the balance with the file</option><option value="add">Add the file's days to the balance</option></select></label>
+        <label class="wide">File<input type="file" accept=".xlsx,.xls,.csv" (change)="pickOpFile($event)" data-op-file></label>
+      </div>
+      <p class="lp-muted">The date is usually the day before the leave year starts, or the go-live date.</p>
+    </div>
+    <footer><button type="button" class="lp-btn" (click)="op = null">Cancel</button>
+      <button type="button" class="lp-btn primary" [disabled]="busy || !op.file || !op.date" (click)="loadOpenings()">{{ busy ? 'Loading…' : 'Load the balances' }}</button></footer>
+  </div>
+</div>
+
 <!-- accrual / year end -->
 <div class="lp-modal-back" *ngIf="run" (click)="run = null">
   <div class="lp-modal" (click)="$event.stopPropagation()" role="dialog" [attr.aria-label]="run.kind === 'accrual' ? 'Monthly accrual' : 'Leave year end'">
@@ -292,7 +336,7 @@ const BLANK_LINE = {
     <div class="body">
       <div class="lp-form" style="margin-top:0">
         <label *ngIf="run.kind === 'accrual'">Month to credit<input type="month" [(ngModel)]="run.month" (change)="preview()"></label>
-        <label *ngIf="run.kind === 'year'">Leave year ends on<input type="date" [(ngModel)]="run.date" (change)="preview()"></label>
+        <label *ngIf="run.kind === 'year'">Leave year ends on<z-date-field [(value)]="run.date" (valueChange)="preview()"></z-date-field></label>
       </div>
       <p class="lp-muted" *ngIf="run.kind === 'accrual'">Credits the days earned in the month (annual leave monthly; sick, casual and study leave at the start of the leave year). Running it again for the same month adds nothing.</p>
       <p class="lp-muted" *ngIf="run.kind === 'year'">Balances above the policy's carry-forward limit are kept and flagged, sent for encashment or lapse – as set per policy line.</p>
@@ -327,6 +371,9 @@ export class LeavePoliciesComponent implements OnInit {
   msg = ''; msgErr = false; busy = false;
   setup: any = null;
   run: any = null;
+  op: { date: string; mode: string; file: File | null } | null = null;   // v1.62.1 opening balances dialog
+  cover: any = null;      // v1.62.1 leave types the policies cover
+  showTpl = false;        // v1.62.1 templates section open
   who: number | null = null; overridePolicy: number | null = null; overrideNote = ''; eff: any = null;
   months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   uaeRules = [
@@ -354,6 +401,7 @@ export class LeavePoliciesComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.reload();
+    this.loadCover();
     try { this.types = await firstValueFrom(this.http.get<any[]>(this.url('calendars/api/leave-type/'))); } catch { this.types = []; }
     try { this.categories = await firstValueFrom(this.http.get<any[]>(this.url('organisation/api/Catogory/'))); } catch { this.categories = []; }
     try { this.directory = await firstValueFrom(this.http.get<any[]>(this.url('tools/api/directory/'))); } catch { this.directory = []; }
@@ -365,8 +413,19 @@ export class LeavePoliciesComponent implements OnInit {
     this.cd.detectChanges();
   }
 
+  /** v1.62.1 – a policy nobody uses (no employee, no category, not the default) is a template, shown apart. */
+  isTemplate(p: any): boolean { return !p.is_default && !(p.category_ids || []).length && !p.employees_count; }
+  inUse(): any[] { return this.policies.filter(p => !this.isTemplate(p)); }
+  templates(): any[] { return this.policies.filter(p => this.isTemplate(p)); }
+  async loadCover(): Promise<void> {
+    try { this.cover = await firstValueFrom(this.http.get<any>(this.url('leave-policy/api/coverage/'))); } catch { this.cover = null; }
+    this.cd.detectChanges();
+  }
+  coverNames(rows: any[]): string { return (rows || []).map(r => r.branch ? `${r.name} (${r.branch})` : r.name).join(', '); }
+  typeLabel(t: any): string { return t?.branch ? `${t.name} – ${t.branch}` : t?.name; }
+
   async startLedger(): Promise<void> {
-    if (!confirm('Write an opening ledger line for every leave balance that has no ledger yet? Balances themselves do not change.')) { return; }
+    if (!(await zConfirm('Write an opening ledger line for every leave balance that has no ledger yet? Balances themselves do not change.'))) { return; }
     try { const r = await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/ledger/start/'), {})); this.say(`Ledger started: ${r.opening_lines} opening lines written.`); }
     catch (e: any) { this.say(this.err(e), true); }
   }
@@ -413,7 +472,12 @@ export class LeavePoliciesComponent implements OnInit {
   actionText(r: any): string { return !r.excess ? '–' : ({ encash: 'Send for encashment', keep: 'Keep, flag in report', lapse: 'Lapse' } as any)[r.action] || r.action; }
   typeName(id: number): string { return this.types.find(t => t.id === id)?.name || `#${id}`; }
   typePaid(id: number): string { const t = this.types.find(x => x.id === id); return t ? (t.type === 'unpaid' ? 'Unpaid' : 'Paid') : ''; }
-  freeTypes(): any[] { const used = new Set((this.edit?.lines || []).map((l: Line) => l.leave_type_id)); return this.types.filter(t => !used.has(t.id) && !t.is_compensatory); }
+  freeTypes(): any[] {
+    const used = new Set((this.edit?.lines || []).map((l: Line) => l.leave_type_id));
+    // v1.62.1: a branch copy of a type already in the policy is covered by that line
+    const copies = new Set((this.cover?.branch_copies || []).filter((c: any) => used.has(c.follows_id)).map((c: any) => c.id));
+    return this.types.filter(t => !used.has(t.id) && !copies.has(t.id) && !t.is_compensatory);
+  }
 
   pick(p: any): void { this.edit = JSON.parse(JSON.stringify(p)); this.msg = ''; this.stepLine = null; }
 
@@ -508,7 +572,7 @@ export class LeavePoliciesComponent implements OnInit {
   }
 
   async remove(): Promise<void> {
-    if (!confirm(`Delete the policy ${this.edit.name}? Its employees then follow the default policy.`)) { return; }
+    if (!(await zConfirm(`Delete the policy ${this.edit.name}? Its employees then follow the default policy.`))) { return; }
     try { await firstValueFrom(this.http.delete(this.url(`leave-policy/api/policies/${this.edit.id}/`))); this.edit = null; await this.reload(); this.say('Policy deleted.'); }
     catch (e: any) { this.say(this.err(e), true); }
   }
@@ -569,21 +633,25 @@ export class LeavePoliciesComponent implements OnInit {
   private toBody(): void {
     setTimeout(() => document.querySelectorAll('.lp-modal-back').forEach(el => { if (el.parentElement !== document.body) document.body.appendChild(el); }));
   }
-  async loadOpenings(ev: any): Promise<void> {
-    const f: File | undefined = ev?.target?.files?.[0];
-    if (ev?.target) ev.target.value = '';
-    if (!f) return;
-    const today = new Date().toISOString().slice(0, 10);
-    const d = prompt('Opening balance date (YYYY-MM-DD) – usually the day before the leave year or the go-live date', today);
-    if (d === null) return;
-    const fd = new FormData(); fd.append('file', f); fd.append('date', d || today); fd.append('mode', 'set');
-    this.busy = true; this.say('Loading the opening balances…'); this.cd.detectChanges();
+  openOpenings(): void {
+    const d = new Date(); const pad = (n: number) => String(n).padStart(2, '0');
+    this.op = { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, mode: 'set', file: null };
+    this.toBody();
+  }
+  pickOpFile(ev: any): void { if (this.op) { this.op.file = ev?.target?.files?.[0] || null; } }
+  async loadOpenings(): Promise<void> {
+    if (!this.op?.file || !this.op.date) return;
+    const fd = new FormData(); fd.append('file', this.op.file); fd.append('date', this.op.date); fd.append('mode', this.op.mode);
+    this.busy = true; this.cd.detectChanges();
     try {
       const r = await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/openings/'), fd));
+      this.op = null;
       this.say(`${r.loaded} opening balance(s) loaded` + (r.error_count ? `; ${r.error_count} row(s) not loaded: ${r.errors.slice(0, 5).join(' · ')}` : '.'), !!r.error_count && !r.loaded);
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();
   }
+  /** v1.62.1: "2026-10" → "October 2026" in messages. */
+  monthWords(m: string): string { const [y, mm] = String(m || '').split('-').map(Number); return y && mm ? `${this.months[mm - 1]} ${y}` : m; }
   openRun(kind: 'accrual' | 'year'): void {
     this.toBody();
     const d = new Date(); const last = new Date(d.getFullYear(), d.getMonth(), 0);
@@ -606,7 +674,7 @@ export class LeavePoliciesComponent implements OnInit {
     try {
       const body = this.run.kind === 'accrual' ? { month: this.run.month } : { date: this.run.date };
       const r = await firstValueFrom(this.http.post<any>(this.url(this.run.kind === 'accrual' ? 'leave-policy/api/accrual/' : 'leave-policy/api/year-end/'), body));
-      this.say(this.run.kind === 'accrual' ? `Accrual for ${r.month}: ${r.count} balances credited.` : `Leave year closed: ${r.lines.length} balances checked.`);
+      this.say(this.run.kind === 'accrual' ? `Accrual for ${this.monthWords(r.month)}: ${r.count} balances credited.` : `Leave year closed: ${r.lines.length} balances checked.`);
       this.run = null;
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();

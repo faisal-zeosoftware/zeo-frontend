@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 import { ZAD_STYLES } from './z-admin-pages.component';
 import { httpErrorText } from './z-http-error.interceptor';
 import { TPipe, ZDatePipe, i18nT } from './i18n.service';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.54.0 – Settings › Single sign-on: the company's users sign in with Microsoft Entra ID (Office 365), Google Workspace,
@@ -237,7 +238,7 @@ export class ZSsoSettingsComponent implements OnInit {
   }
 
   async scim(action: string): Promise<void> {
-    if (action === 'scim_token' && this.form.scim_on && !confirm(i18nT('Make a new token? The old one stops working.'))) { return; }
+    if (action === 'scim_token' && this.form.scim_on && !(await zConfirm(i18nT('Make a new token? The old one stops working.')))) { return; }
     try {
       const r = await this.act(this.form.id, { action });
       this.token = r.token || '';
@@ -249,7 +250,7 @@ export class ZSsoSettingsComponent implements OnInit {
   }
 
   async remove(p: any): Promise<void> {
-    if (!confirm(i18nT('Delete this sign-in? Its users sign in with their password again.'))) { return; }
+    if (!(await zConfirm(i18nT('Delete this sign-in? Its users sign in with their password again.')))) { return; }
     try { await firstValueFrom(this.http.delete(this.url(`${p.id}/`))); await this.load(); this.say(i18nT('Deleted.')); }
     catch (e) { this.say(httpErrorText(e), true); }
   }

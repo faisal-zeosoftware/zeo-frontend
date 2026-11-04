@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { AssetApiService, EVENT_ICON, STATUS_CLASS, STATUS_LABEL, money, today } from './asset-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type Dlg = '' | 'ack' | 'damage' | 'loss' | 'return' | 'transfer' | 'history';
 
@@ -199,7 +200,7 @@ export class MyAssetsComponent implements OnInit {
   }
 
   async cancel(t: any): Promise<void> {
-    if (!confirm(`Cancel ${t.number}?`)) return;
+    if (!(await zConfirm(`Cancel ${t.number}?`))) return;
     try { await this.api.post(`${t.path}/${t.id}/cancel/`, {}); this.msg = 'Cancelled.'; this.msgErr = false; await this.load(); }
     catch (e: any) { this.msg = AssetApiService.error(e); this.msgErr = true; this.cd.markForCheck(); }
   }

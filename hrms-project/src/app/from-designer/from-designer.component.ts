@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { FormSettingsService } from '../shared-ui/form-settings.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -1719,8 +1720,8 @@ loadFormFieldsJob(): void {
 
 
 
-deleteCustomField(fieldId: number): void {
-  if (confirm('Are you sure you want to delete this custom field?')) {
+async deleteCustomField(fieldId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
     this.EmployeeService.deleteEmpCustomField(fieldId).subscribe(
       (response) => {
         console.log('Field deleted successfully', response);
@@ -1736,8 +1737,8 @@ deleteCustomField(fieldId: number): void {
   }
 }
 
-deleteCustomFieldDoc(fieldId: number): void {
-  if (confirm('Are you sure you want to delete this custom field?')) {
+async deleteCustomFieldDoc(fieldId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
     this.EmployeeService.deleteEmpCustomFieldDoc(fieldId).subscribe(
       (response) => {
         console.log('Field deleted successfully', response);
@@ -1754,8 +1755,8 @@ deleteCustomFieldDoc(fieldId: number): void {
 }
 
 
-deleteCustomFieldFam(fieldId: number): void {
-  if (confirm('Are you sure you want to delete this custom field?')) {
+async deleteCustomFieldFam(fieldId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
     this.EmployeeService.deleteEmpCustomFieldFam(fieldId).subscribe(
       (response) => {
         console.log('Field deleted successfully', response);
@@ -1773,8 +1774,8 @@ deleteCustomFieldFam(fieldId: number): void {
 
 
 
-deleteCustomFieldQual(fieldId: number): void {
-  if (confirm('Are you sure you want to delete this custom field?')) {
+async deleteCustomFieldQual(fieldId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
     this.EmployeeService.deleteEmpCustomFieldQual(fieldId).subscribe(
       (response) => {
         console.log('Field deleted successfully', response);
@@ -1792,8 +1793,8 @@ deleteCustomFieldQual(fieldId: number): void {
 
 
 
-deleteCustomFieldJob(fieldId: number): void {
-  if (confirm('Are you sure you want to delete this custom field?')) {
+async deleteCustomFieldJob(fieldId: number): Promise<void> {
+  if ((await zConfirm('Are you sure you want to delete this custom field?'))) {
     this.EmployeeService.deleteEmpCustomFieldJob(fieldId).subscribe(
       (response) => {
         console.log('Field deleted successfully', response);

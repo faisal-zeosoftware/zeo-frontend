@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-general-request',
@@ -539,7 +540,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedGeneralReq() { 
+async deleteSelectedGeneralReq() { 
   const selectedEmployeeIds = this.GeneralReq
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -549,7 +550,7 @@ deleteSelectedGeneralReq() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected General Request?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected General Request?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

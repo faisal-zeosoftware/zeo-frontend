@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -16,7 +17,7 @@ import { TPipe } from '../shared-ui/i18n.service';
 @Component({
   selector: 'app-doc-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, TPipe],
+  imports: [CommonModule, FormsModule, RouterModule, TPipe, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="container ep du">
@@ -113,8 +114,8 @@ import { TPipe } from '../shared-ui/i18n.service';
               </td>
               <td><input class="du-in" [ngModel]="r.number" (change)="edit(r, { number: val($event) })" [attr.aria-label]="'Number of ' + r.path" [disabled]="r.skip">
                 <small class="lp-muted" *ngIf="r.from?.number && r.from.number !== 'chosen'">{{ how(r.from.number) | t }}</small></td>
-              <td><input class="du-in" type="date" [ngModel]="r.issue" (change)="edit(r, { issue: val($event) })" [attr.aria-label]="'Issue date of ' + r.path" [disabled]="r.skip"></td>
-              <td><input class="du-in" type="date" [ngModel]="r.expiry" (change)="edit(r, { expiry: val($event) })" [attr.aria-label]="'Expiry date of ' + r.path" [disabled]="r.skip"></td>
+              <td><z-date-field [value]="r.issue" (valueChange)="edit(r, { issue: $event })" [disabled]="r.skip" [label]="'Issue date of ' + r.path"></z-date-field></td>
+              <td><z-date-field [value]="r.expiry" (valueChange)="edit(r, { expiry: $event })" [disabled]="r.skip" [label]="'Expiry date of ' + r.path"></z-date-field></td>
               <td class="du-st">
                 <span class="ep-tag" [ngClass]="tagClass(r.status)">{{ r.status_label }}</span>
                 <small *ngIf="r.action_label && r.status === 'ready'">{{ r.action_label }}</small>

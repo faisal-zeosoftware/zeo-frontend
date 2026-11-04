@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { EssApiService } from './ess-api.service';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.13.0 – Self-service settings (HR):
@@ -39,10 +40,11 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 
       <ng-container *ngIf="tab === 'fields'">
         <p class="es-muted">
-          <span class="es-tag self">self</span> the employee changes it directly ·
-          <span class="es-tag request">request</span> the employee asks, HR approves ·
-          <span class="es-tag hr">hr</span> shown read-only ·
-          <span class="es-tag hidden">hidden</span> not shown. Fields with a lock can only be "hr" or "hidden".
+          <!-- v1.62.0 people: words instead of the keys self / request / hr / hidden -->
+          <span class="es-tag self">Employee changes it</span> directly ·
+          <span class="es-tag request">Needs HR approval</span> the employee asks, HR approves ·
+          <span class="es-tag hr">Read-only</span> shown, kept by HR ·
+          <span class="es-tag hidden">Hidden</span> not shown. Fields with a lock can only be read-only or hidden.
         </p>
         <div *ngFor="let g of grouped" class="es-panel">
           <div class="es-h">{{ g.label | zc }}</div>
@@ -52,13 +54,13 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
                 <td style="width:45%">{{ r.label | zc }} <span *ngIf="r.locked" title="Kept by HR">🔒</span></td>
                 <td>
                   <select class="es-input" style="max-width:220px" [(ngModel)]="r.policy" (ngModelChange)="dirty = true">
-                    <option value="self" [disabled]="r.locked">self – employee changes it</option>
-                    <option value="request" [disabled]="r.locked">request – HR approves</option>
-                    <option value="hr">hr – read-only</option>
-                    <option value="hidden">hidden</option>
+                    <option value="self" [disabled]="r.locked">Employee changes it</option>
+                    <option value="request" [disabled]="r.locked">Needs HR approval</option>
+                    <option value="hr">Read-only</option>
+                    <option value="hidden">Hidden</option>
                   </select>
                 </td>
-                <td class="es-muted" style="white-space:nowrap">default: {{ r.default }}</td>
+                <td class="es-muted" style="white-space:nowrap">default: {{ $any({self: 'Employee changes it', request: 'Needs HR approval', hr: 'Read-only', hidden: 'Hidden'})[r.default] || r.default }}</td>
               </tr>
             </table>
           </div>
@@ -197,7 +199,7 @@ export class EssSettingsComponent implements OnInit {
   }
 
   async restore(v: any): Promise<void> {
-    if (!confirm(`Use the wording of version ${v.version} again? It becomes a new version; the letters already issued keep theirs.`)) { return; }
+    if (!(await zConfirm(`Use the wording of version ${v.version} again? It becomes a new version; the letters already issued keep theirs.`))) { return; }
     this.busy = true;
     try {
       const r: any = await this.api.post(`letter-templates/${this.tpl.id}/versions/`, { restore: v.id });

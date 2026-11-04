@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
 import { httpErrorText } from './z-http-error.interceptor';
 import { TPipe, ZDatePipe } from './i18n.service';   // v1.53.1 Arabic
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.51.0 Settings › WhatsApp, SMS and push: the company's own WhatsApp / SMS gateway (optional – the customer brings the
  *  account; the token is kept encrypted) and the company's own Firebase project for push notifications to the ZEO app. */
@@ -115,7 +116,7 @@ export class ZMessagingSettingsComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async clearKey(): Promise<void> {
-    if (!confirm('Remove your Firebase project? The server\'s project (if any) is used again.')) { return; }
+    if (!(await zConfirm('Remove your Firebase project? The server\'s project (if any) is used again.'))) { return; }
     try { this.p = await firstValueFrom(this.http.put<any>(this.url('push-settings/'), { clear_key: true })); } catch (e) { this.say(httpErrorText(e), true); }
     this.cd.markForCheck();
   }

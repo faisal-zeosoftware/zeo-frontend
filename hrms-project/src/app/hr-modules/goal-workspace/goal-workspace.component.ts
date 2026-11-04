@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ModuleApiService } from '../module-api.service';
 import { SessionService } from '../../login/session.service';
 import { HrPermissionService } from '../hr-permission.service';
+import { zConfirm } from '../../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const SHEETS = '/performance/api/goal-sheets/';
 const GOALS = '/performance/api/goals/';
@@ -37,6 +38,9 @@ export class GoalWorkspaceComponent implements OnInit {
   kpis: any[] = [];
   cycleId: any = null;
   scope: 'mine' | 'team' | 'all' = 'mine';
+  allSheets: any[] = [];
+  canAll = false;            // v1.62.0 talent-ops: HR (view goal sheets) opens on All, not on an empty "My sheet"
+  private scopeTouched = false;
   statusFilter = '';
   sheets: any[] = [];
   sheet: any = null;
@@ -59,10 +63,15 @@ export class GoalWorkspaceComponent implements OnInit {
     const uid = this.session.getUserId();
     this.userId = uid === null || uid === undefined ? null : Number(uid);
     this.perms.isSuperuser().subscribe(v => (this.isAdmin = v));
+    this.perms.can('goalsheet').subscribe(p => {   // v1.62.0 talent-ops
+      this.canAll = p.view;
+      if (p.view && !this.scopeTouched && this.scope !== 'all') { this.scope = 'all'; this.sheet = null; this.loadSheets(); }
+    });
     this.route.data.subscribe(d => {
       this.mode = d['mode'] || 'goals';
       this.title = ({ goals: 'Goal setting', checkin: 'Mid-year check-in', self: 'Self appraisal', review: 'Manager review' } as any)[this.mode];
-      this.scope = this.mode === 'review' || this.mode === 'checkin' ? 'team' : 'mine';
+      this.scope = this.canAll ? 'all' : this.mode === 'review' || this.mode === 'checkin' ? 'team' : 'mine';   // v1.62.0 talent-ops
+      this.scopeTouched = false;
       this.sheet = null;
       this.loadSheets();
     });
@@ -85,6 +94,7 @@ export class GoalWorkspaceComponent implements OnInit {
     this.api.list(SHEETS, q).subscribe({
       next: rows => {
         this.sheets = rows;
+        if (!this.statusFilter) { this.allSheets = rows; }   // v1.62.0 talent-ops: the summary counts every stage
         if (this.sheet) this.sheet = rows.find(r => r.id === this.sheet.id) || null;
         if (!this.sheet && rows.length === 1 && this.scope === 'mine') this.open(rows[0]);
       },
@@ -114,6 +124,19 @@ export class GoalWorkspaceComponent implements OnInit {
   get isOwner(): boolean { return !!this.sheet && (Number(this.sheet.employee_user) === this.userId || this.isAdmin); }
   get isManager(): boolean { return !!this.sheet && (Number(this.sheet.manager) === this.userId || this.isAdmin); }
   get showList(): boolean { return this.scope !== 'mine' || this.sheets.length !== 1; }
+  setScope(s: 'mine' | 'team' | 'all'): void { this.scope = s; this.scopeTouched = true; this.sheet = null; this.loadSheets(); }   // v1.62.0 talent-ops
+  /** v1.62.0 talent-ops: the summary shown until a sheet is opened – sheets per stage of the flow, goals set, ratings. */
+  get summary(): any {
+    const all = this.allSheets;
+    const n = all.length;
+    const by = this.flow.map(f => ({ ...f, n: all.filter(s => s.status === f.key).length }));
+    const goalsSet = all.filter(s => (s.goals || []).length && Math.round(Number(s.total_weight || 0)) === 100).length;
+    const rated = all.filter(s => s.final_rating_label || s.manager_score).length;
+    const noGoals = all.filter(s => !(s.goals || []).length).length;
+    return { n, by, goalsSet, rated, noGoals, pct: n ? Math.round(goalsSet * 100 / n) : 0 };
+  }
+  get cycleName(): string { return (this.cycles.find(c => c.id === this.cycleId) || {}).name || ''; }
+  get cycleStatus(): string { return (this.cycles.find(c => c.id === this.cycleId) || {}).status_label || ''; }
   stepIndex(key: string): number { return this.flow.findIndex(f => f.key === key); }
 
   get totalWeight(): number { return (this.sheet?.goals || []).reduce((a: number, g: any) => a + Number(g.weight || 0), 0); }
@@ -150,8 +173,8 @@ export class GoalWorkspaceComponent implements OnInit {
     req.subscribe({ next: () => { this.goalForm = null; this.refresh(); }, error: e => this.err(e) });
   }
 
-  deleteGoal(g: any): void {
-    if (!confirm('Delete this goal?')) return;
+  async deleteGoal(g: any): Promise<void> {
+    if (!(await zConfirm('Delete this goal?'))) return;
     this.api.remove(GOALS, g.id).subscribe({ next: () => this.refresh(), error: e => this.err(e) });
   }
 
@@ -162,8 +185,8 @@ export class GoalWorkspaceComponent implements OnInit {
   }
 
   // ----- sheet actions -----
-  act(action: string, body: any = {}, confirmText?: string): void {
-    if (confirmText && !confirm(confirmText)) return;
+  async act(action: string, body: any = {}, confirmText?: string): Promise<void> {
+    if (confirmText && !(await zConfirm(confirmText))) return;
     this.busy = true;
     this.api.action(SHEETS, this.sheet.id, action, body).subscribe({
       next: (r: any) => { this.busy = false; this.ok(r.detail); this.sheet = r.sheet; this.loadSheets(); },

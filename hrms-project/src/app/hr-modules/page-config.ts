@@ -74,8 +74,11 @@ export interface ActionConfig {
   body?: (row: any, filters: any) => any;
   /** 'document' opens a printable view using the GET response */
   document?: (data: any) => string;
+  panel?: boolean;   // v1.62.1 the result is shown as an in-app panel (no print preview)
   /** navigate instead of calling the API */
   route?: (row: any) => string;
+  /** v1.62.10 (item 172): open a form in the page (e.g. the shared form); resolves true when something was saved → the list reloads */
+  open?: (row: any) => Promise<boolean>;
   /** v1.14.0: country condition – the button is left out when it does not hold */
   country?: string;
 }
@@ -123,6 +126,8 @@ export interface PageConfig {
   /** model name for permission checks, e.g. 'kpi' -> add_kpi / change_kpi */
   model?: string;
   intro?: string;
+  /** v1.62.0 talent-ops: order of the rows as loaded (e.g. open training needs first) */
+  sortRows?: (a: any, b: any) => number;
   columns: ColumnConfig[];
   fields?: FieldConfig[];
   filters?: FilterConfig[];

@@ -18,6 +18,7 @@ import { UserGroupingEditComponent } from '../user-grouping-edit/user-grouping-e
 
 import {combineLatest, Subscription } from 'rxjs';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 
@@ -428,7 +429,7 @@ onCheckboxChange(employee:number) {
   // You can add any additional logic if needed.
 }
 
-deleteSelectedEmployees() { 
+async deleteSelectedEmployees() { 
   const selectedEmployeeIds = this.Groups
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -438,7 +439,7 @@ deleteSelectedEmployees() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Group?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Group?'))) {
     selectedEmployeeIds.forEach(DeptId => {
       this.UserMasterService.deleteDept(DeptId).subscribe(
         (res: any) => {

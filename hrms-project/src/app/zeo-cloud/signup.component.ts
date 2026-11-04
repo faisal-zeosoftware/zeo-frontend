@@ -1,3 +1,4 @@
+import { ZJobProgressComponent } from '../shared-ui/z-job-progress.component';   // v1.62.1
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 @Component({
   selector: 'app-cloud-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ...I18N_UI],
+  imports: [CommonModule, FormsModule, RouterModule, ZJobProgressComponent, ...I18N_UI],
   styleUrls: ['./signup.css'],
   template: `
 <div class="su-page" data-no-help>
@@ -87,8 +88,8 @@ const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
     <section *ngIf="step === 4">
       <h1>{{ state === 'done' ? ('Your company is ready' | t) : state === 'failed' ? ('The company could not be created' | t) : ('Creating your company…' | t) }}</h1>
       <p class="su-sub">{{ f.company }}</p>
-      <ol class="su-prog" *ngIf="state === 'running'"><li *ngFor="let s of jobSteps; let i = index" [class.dn]="i + 1 < stepNo" [class.now]="i + 1 === stepNo">{{ s | t }}</li></ol>
-      <p class="su-muted" *ngIf="state === 'running'">{{ 'This takes about a minute.' | t }}</p>
+      <!-- v1.62.1: %, what is being done now, steps with times -->
+      <z-job-progress *ngIf="state === 'running'" [job]="jobSt || { state: 'running', percent: 0, step: 'Creating the company' }" [title]="f.company" [note]="'This takes about a minute.'"></z-job-progress>
       <div class="su-act" *ngIf="state === 'done'"><a class="su-btn" routerLink="/login" [queryParams]="{ u: f.email }">{{ 'Sign in' | t }}</a></div>
     </section>
   </main>
@@ -129,6 +130,7 @@ export class CloudSignupComponent implements OnInit, OnDestroy {
     if (p.extra_companies) { return T('Up to {0} companies + extra companies (cap {1})', p.included_companies, p.max_companies); }
     return T('Unlimited companies · own database · group features');
   }
+  jobSt: any = null;   // v1.62.1 job status for <z-job-progress>
   toggle(k: string): void { const i = this.f.apps.indexOf(k); if (i >= 0) { this.f.apps.splice(i, 1); } else { this.f.apps.push(k); } }
   async submit(): Promise<void> {
     this.busy = true; this.error = '';
@@ -139,6 +141,7 @@ export class CloudSignupComponent implements OnInit, OnDestroy {
         try {
           const s: any = await firstValueFrom(this.http.get(`${environment.apiBaseUrl}/cloud/api/jobs/${r.job}/`));
           this.stepNo = s.step_no || this.stepNo;
+          this.jobSt = s;   // v1.62.1
           if (s.state !== 'running') { clearInterval(this.poll); this.poll = null; this.state = s.state; if (s.state === 'failed') { this.error = s.error || T('Unknown error.'); } }
         } catch { /* keep trying */ }
       }, 2000);

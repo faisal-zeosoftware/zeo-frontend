@@ -8,15 +8,17 @@
  *      shift-master/?active=1, meta/, team-schedule/ (employee list for HR)
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list (Branch filter …)
 import { SpApiService, SpMeta, isoDate, niceDate } from './sp-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-sp-requests',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -80,7 +82,7 @@ import { SpApiService, SpMeta, isoDate, niceDate } from './sp-api.service';
           <h2>Post an open shift</h2>
           <p class="lp-muted" style="margin:0">Employees of the branch (and department) are told and can claim it in My schedule.</p>
           <div class="lp-form">
-            <label>Day<input type="date" [(ngModel)]="osForm.date" [min]="today"><span class="sp-err" *ngIf="err['date']">{{ err['date'] }}</span></label>
+            <label>Day<z-date-field [(value)]="osForm.date" [min]="today"></z-date-field><span class="sp-err" *ngIf="err['date']">{{ err['date'] }}</span></label>
             <label>Shift<select [(ngModel)]="osForm.shift"><option [ngValue]="null">Choose…</option><option *ngFor="let s of shifts" [ngValue]="s.id">{{ s.name }}</option></select><span class="sp-err" *ngIf="err['shift']">{{ err['shift'] }}</span></label>
             <label>Branch<select [(ngModel)]="osForm.branch"><option [ngValue]="null">Choose…</option><option *ngFor="let b of meta?.branches" [ngValue]="b.id">{{ b.branch_name }}</option></select><span class="sp-err" *ngIf="err['branch']">{{ err['branch'] }}</span></label>
             <label>Department<select [(ngModel)]="osForm.department"><option [ngValue]="null">Any department</option><option *ngFor="let d of meta?.departments" [ngValue]="d.id">{{ d.dept_name }}</option></select></label>
@@ -154,7 +156,7 @@ export class SpRequestsComponent implements OnInit {
     catch (e) { this.err = SpApiService.fieldErrors(e); this.say(SpApiService.error(e), true); }
   }
   async cancelOpen(o: any): Promise<void> {
-    if (!confirm('Cancel this open shift? Employees who claimed it are told.')) return;
+    if (!(await zConfirm('Cancel this open shift? Employees who claimed it are told.'))) return;
     try { await this.api.post(`open-shifts/${o.id}/cancel/`, {}); this.say('Open shift cancelled.'); await this.load(); } catch (e) { this.say(SpApiService.error(e), true); }
   }
 }

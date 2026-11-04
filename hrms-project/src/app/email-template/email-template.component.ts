@@ -1,4 +1,5 @@
 import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+import { emailTemplateForm, zFormThenReload } from '../shared-ui/z-forms';   // v1.62.1
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef,ViewChild, AfterViewInit } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -17,6 +18,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import {MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -697,6 +699,7 @@ toggleAllDesignations(): void {
 
 
   openEditPopuss(selectedTemplate: any): void {
+    zFormThenReload(emailTemplateForm('/employee/api/email-template/', 'general request e-mail template', 'template_type'), selectedTemplate); return;   // v1.62.1 one shared template editor
     this.dialog.open(EmailTemplateEditComponent, {
       width: '80%',
       height: '700px',
@@ -715,6 +718,7 @@ toggleAllDesignations(): void {
 
 
 openPopus(): void {
+  zFormThenReload(emailTemplateForm('/employee/api/email-template/', 'general request e-mail template', 'template_type')); return;   // v1.62.1 one shared template editor
 
   this.iscreateLoanApp = true;
 
@@ -860,7 +864,7 @@ onCheckboxChange(employee:number) {
 
 
 
-   deleteSelectedAssetType() { 
+   async deleteSelectedAssetType() { 
       const selectedEmployeeIds = this.tempEmails
         .filter(employee => employee.selected)
         .map(employee => employee.id);
@@ -870,7 +874,7 @@ onCheckboxChange(employee:number) {
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected Email Template?')) {
+      if ((await zConfirm('Are you sure you want to delete the selected Email Template?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -975,5 +979,11 @@ filterBranches(): any[] {
     designation.desgntn_job_title.toLowerCase().includes(search)
   );
 }
-    
+
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

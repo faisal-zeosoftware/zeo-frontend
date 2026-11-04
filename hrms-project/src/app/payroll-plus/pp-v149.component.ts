@@ -8,10 +8,11 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 class Api {
   constructor(private http: HttpClient, private rec: ZRecordService) {}
@@ -33,7 +34,7 @@ const KINDS = [['gratuity', 'Gratuity'], ['leave', 'Leave salary'], ['air_ticket
   selector: 'app-provisions',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [`.pv-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
     @media (max-width: 900px) { .pv-grid { grid-template-columns: 1fr; } }
     .pv-list button { display: flex; justify-content: space-between; width: 100%; padding: 9px 12px; border: 0; border-bottom: 1px solid #eef0f2; background: #fff; cursor: pointer; text-align: left; }
@@ -47,17 +48,17 @@ const KINDS = [['gratuity', 'Gratuity'], ['leave', 'Leave salary'], ['air_ticket
 <div class="lp-page" style="padding:16px 20px">
   <div class="lp-head"><div><h1>Provisions</h1>
     <p class="lp-desc">Gratuity (end of service), leave salary and air-ticket liability of every employee at each month end, and the change on the month before – the provision to book. Made on the 1st of every month; post it to accounting or export it.</p></div>
-    <div class="lp-actions"><input type="month" [(ngModel)]="month" aria-label="Month"><button type="button" class="lp-btn primary" (click)="make()" [disabled]="busy" data-make>Make / remake the month</button></div></div>
+    <div class="lp-actions"><select [(ngModel)]="month" aria-label="Month" data-pv-month><option *ngFor="let m of monthOpts" [value]="m[0]">{{ m[1] }}</option></select><button type="button" class="lp-btn primary" (click)="make()" [disabled]="busy" data-make>Make / remake the month</button></div></div>
   <p class="lp-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <div class="pv-grid">
     <div class="pv-list"><button type="button" *ngFor="let r of runs" [class.on]="d?.id === r.id" (click)="open(r.id)"><span>{{ r.label }}</span><small>{{ r.status_label }}</small></button>
       <p class="lp-desc" *ngIf="!runs.length" style="padding:10px">No month yet.</p></div>
     <div *ngIf="d">
-      <div class="lp-head" style="margin:0"><h2 style="margin:0">{{ d.label }} · {{ d.employees }} employees · {{ d.status_label }}</h2>
+      <div class="lp-head" style="margin:0"><h2 style="margin:0;font-size:16px">{{ d.label }} <span class="lp-muted" style="font-size:13px;font-weight:400">· {{ d.employees }} employees · {{ d.status_label }}</span></h2>
         <div class="lp-actions"><button type="button" class="lp-btn" (click)="csv()">CSV</button>
           <button type="button" class="lp-btn" *ngIf="d.status === 'draft'" (click)="act('final')">Mark final</button>
           <button type="button" class="lp-btn primary" *ngIf="d.status !== 'posted' && d.accounting" (click)="act('post')">Post to accounting</button></div></div>
-      <div class="pv-tot"><div *ngFor="let k of kinds"><small>{{ k[1] }} – liability</small><b>{{ n(d.totals[k[0]]?.closing) }}</b>
+      <div class="pv-tot"><div *ngFor="let k of kinds"><small>{{ k[1] }} – liability</small><b>AED {{ n(d.totals[k[0]]?.closing) }}</b>
         <small>Change on the month before: <span [class.neg]="+d.totals[k[0]]?.movement < 0">{{ n(d.totals[k[0]]?.movement) }}</span></small></div></div>
       <div style="overflow-x:auto"><table class="pv">
         <tr><th>Employee</th><th>Department</th><th *ngFor="let k of kinds" class="r" colspan="2">{{ k[1] }}</th></tr>
@@ -72,6 +73,11 @@ const KINDS = [['gratuity', 'Gratuity'], ['leave', 'Leave salary'], ['air_ticket
 export class ProvisionsComponent implements OnInit {
   api: Api; runs: any[] = []; d: any = null; msg = ''; err = false; busy = false; kinds = KINDS;
   month = (() => { const t = new Date(); t.setDate(0); return t.toISOString().slice(0, 7); })();
+  // v1.62.0 talent-ops: the month as "September 2026" (a native month field showed 2026-09)
+  monthOpts: string[][] = (() => { const o: string[][] = []; const t = new Date(); t.setDate(1);
+    for (let i = 0; i < 18; i++) { const d = new Date(t.getFullYear(), t.getMonth() - i, 1);
+      o.push([`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })]); }
+    return o; })();
   constructor(http: HttpClient, rec: ZRecordService, private cd: ChangeDetectorRef) { this.api = new Api(http, rec); }
   async ngOnInit(): Promise<void> { await this.load(); if (this.runs.length) { await this.open(this.runs[0].id); } }
   async load(): Promise<void> { try { this.runs = await this.api.get('provisions/'); } catch (e) { this.say(httpErrorText(e), true); } this.cd.markForCheck(); }
@@ -97,8 +103,8 @@ export class ProvisionsComponent implements OnInit {
 @Component({
   selector: 'app-loans',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  imports: [CommonModule, FormsModule, RouterLink],   // v1.62.0 talent-ops
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [`.ln-grid { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
     @media (max-width: 900px) { .ln-grid { grid-template-columns: 1fr; } }
     .ln-list button { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid #eef0f2; background: #fff; padding: 9px 12px; cursor: pointer; }
@@ -111,39 +117,50 @@ export class ProvisionsComponent implements OnInit {
     .ln-act label { display: flex; flex-direction: column; font-size: 12px; color: #5d6670; }`],
   template: `
 <div class="lp-page" style="padding:16px 20px">
-  <div class="lp-head"><div><h1>{{ mine ? 'My loans' : 'Loans' }}</h1>
-    <p class="lp-desc">{{ mine ? 'Your loans: what is paid, what is left and the months still to be deducted.' : 'Running loans with their balance and schedule. Top up a loan, change the instalment, pause it, or settle it early (also at exit).' }}</p></div>
-    <div class="lp-actions" *ngIf="!mine"><select [(ngModel)]="status" (ngModelChange)="load()" aria-label="Status"><option value="running">Running</option><option value="Closed">Closed</option><option value="all">All</option></select></div></div>
+  <!-- v1.62.0 talent-ops: stage words, buttons instead of a select used as a menu, chips on the schedule, AED, links to the requests -->
+  <div class="lp-head"><div><h1>{{ mine ? 'My loans' : 'Loan balances and schedules' }}</h1>
+    <p class="lp-desc">{{ mine ? 'Your loans: what is paid, what is left and the months still to be deducted.' : 'Each loan with what is paid, what is left and the months payroll still deducts. Top up a loan, change the instalment, pause it, or settle it early (also at exit).' }}</p></div>
+    <div class="lp-actions" *ngIf="!mine">
+      <div class="pp-seg" role="tablist" data-ln-status><button type="button" *ngFor="let s of statuses" [class.on]="status === s[0]" (click)="status = s[0]; load()">{{ s[1] }}</button></div>
+      <a class="lp-btn" routerLink="/main-sidebar/loan-sidebar/loan-application">Loan requests</a></div></div>
   <p class="lp-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <div class="ln-grid">
     <div class="ln-list"><button type="button" *ngFor="let l of rows" [class.on]="d?.id === l.id" (click)="open(l.id)" [attr.data-loan]="l.id">
-      <b>{{ l.employee }}</b> · {{ l.type }}<small><span>Balance {{ n(l.balance) }} of {{ n(l.amount) }}</span><span>{{ l.months_left }} months · {{ l.status }}</span></small></button>
-      <p class="lp-desc" *ngIf="loaded && !rows.length" style="padding:10px">No loans.</p></div>
+      <b>{{ l.employee }}</b> <span class="lp-muted">{{ l.code }}</span><div class="lp-muted" style="font-size:12px">{{ l.type }} · {{ l.number }}</div>
+      <small><span>{{ aed(l.balance) }} left of {{ aed(l.amount) }}</span><span class="pp-chip" [ngClass]="stageClass(l)">{{ stage(l) }}</span></small></button>
+      <p class="lp-desc" *ngIf="loaded && !rows.length" style="padding:10px">{{ status === 'running' ? 'No running loan.' : 'No loan.' }}</p></div>
     <div *ngIf="d">
-      <h2 style="margin:0">{{ d.employee }} – {{ d.type }} {{ d.number }}</h2>
-      <div class="ln-facts"><div><small>Loan</small><b>{{ n(d.amount) }}</b></div><div><small>Paid</small><b>{{ n(d.paid) }}</b></div>
-        <div><small>Balance</small><b>{{ n(d.balance) }}</b></div><div><small>Instalment</small><b>{{ n(d.emi) }}</b></div>
-        <div><small>Months left</small><b>{{ d.months_left }}</b></div><div><small>Last month</small><b>{{ d.last_month ? (d.last_month | date:'MMM yyyy') : '–' }}</b></div>
-        <div><small>Status</small><b>{{ d.status }}</b></div></div>
+      <h2 style="margin:0">{{ d.employee }} <span class="lp-muted" style="font-size:13px">{{ d.code }}</span></h2>
+      <p class="lp-muted" style="margin:2px 0 0">{{ d.type }} · {{ d.number }}</p>
+      <div class="ln-facts"><div><small>Loan</small><b>{{ aed(d.amount) }}</b></div><div><small>Paid</small><b>{{ aed(d.paid) }}</b></div>
+        <div><small>Left to pay</small><b>{{ aed(d.balance) }}</b></div><div><small>Instalment</small><b>{{ aed(d.emi) }}</b></div>
+        <div><small>Months left</small><b>{{ months(d.months_left) }}</b></div><div><small>Last deduction</small><b>{{ d.last_month ? (d.last_month | date:'MMM yyyy') : '–' }}</b></div>
+        <div><small>Stage</small><b><span class="pp-chip" [ngClass]="stageClass(d)">{{ stage(d) }}</span></b></div></div>
       <div *ngIf="d.can_edit && !mine && ['Approved','Disbursed','In Progress','Paused'].includes(d.status)">
-        <div class="ln-act">
-          <select [(ngModel)]="act" aria-label="Change"><option value="">Change the loan…</option><option value="topup">Top-up</option><option value="reschedule">New instalment</option>
-            <option value="settle">Early settlement</option><option value="pause" *ngIf="d.status !== 'Paused'">Pause</option><option value="resume" *ngIf="d.status === 'Paused'">Resume</option></select>
-          <label *ngIf="act === 'topup'">Amount<input type="number" min="0" [(ngModel)]="f.amount"></label>
+        <div class="ln-act" data-ln-actions>
+          <button type="button" class="lp-btn" [class.primary]="act === 'topup'" (click)="pick('topup')">Top-up</button>
+          <button type="button" class="lp-btn" [class.primary]="act === 'reschedule'" (click)="pick('reschedule')">New instalment</button>
+          <button type="button" class="lp-btn" [class.primary]="act === 'pause'" *ngIf="d.status !== 'Paused'" (click)="pick('pause')">Pause</button>
+          <button type="button" class="lp-btn" [class.primary]="act === 'resume'" *ngIf="d.status === 'Paused'" (click)="pick('resume')">Resume</button>
+          <button type="button" class="lp-btn danger" [class.primary]="act === 'settle'" (click)="pick('settle')">Settle early</button></div>
+        <div class="ln-act" *ngIf="act">
+          <label *ngIf="act === 'topup'">Amount (AED)<input type="number" min="0" [(ngModel)]="f.amount"></label>
           <label *ngIf="act === 'topup' || act === 'reschedule'">Months left (optional)<input type="number" min="1" [(ngModel)]="f.months"></label>
-          <label *ngIf="act === 'reschedule'">or new instalment<input type="number" min="0" [(ngModel)]="f.emi"></label>
+          <label *ngIf="act === 'reschedule'">or new instalment (AED)<input type="number" min="0" [(ngModel)]="f.emi"></label>
           <label *ngIf="act === 'pause'">From<input type="date" [(ngModel)]="f.start"></label><label *ngIf="act === 'pause'">Resume on<input type="date" [(ngModel)]="f.resume"></label>
           <label *ngIf="act === 'settle'"><span><input type="checkbox" [(ngModel)]="f.at_exit"> at exit (final settlement)</span></label>
-          <label *ngIf="act">Note<input [(ngModel)]="f.note"></label>
-          <button type="button" class="lp-btn primary" *ngIf="act" (click)="run()" [disabled]="busy" data-run>{{ act === 'settle' ? 'Settle ' + n(d.balance) : 'Apply' }}</button></div>
+          <label>Note<input [(ngModel)]="f.note"></label>
+          <button type="button" class="lp-btn primary" (click)="run()" [disabled]="busy" data-run>{{ act === 'settle' ? 'Settle ' + aed(d.balance) : 'Apply' }}</button>
+          <button type="button" class="lp-btn" (click)="act = ''; f = {}">Cancel</button></div>
       </div>
       <h3>Schedule</h3>
-      <div style="overflow-x:auto;max-height:420px"><table class="ln"><tr><th>#</th><th>Month</th><th class="r">Instalment</th><th class="r">Balance after</th><th></th></tr>
-        <tr *ngFor="let s of d.schedule" [class]="s.state === 'planned' ? 'planned' : 'paid'"><td>{{ s.n }}</td><td>{{ s.month | date:'MMM yyyy' }}</td><td class="r">{{ n(s.amount) }}</td><td class="r">{{ n(s.balance) }}</td><td>{{ s.state }}</td></tr></table></div>
+      <div style="overflow-x:auto;max-height:420px"><table class="ln"><tr><th>#</th><th>Payroll month</th><th class="r">Instalment</th><th class="r">Left after</th><th>Status</th></tr>
+        <tr *ngFor="let s of d.schedule" [class]="s.state === 'planned' ? 'planned' : 'paid'"><td>{{ s.n }}</td><td>{{ s.month | date:'MMM yyyy' }}</td><td class="r">{{ aed(s.amount) }}</td><td class="r">{{ aed(s.balance) }}</td>
+          <td><span class="pp-chip" [ngClass]="s.state === 'planned' ? 'muted' : s.state === 'paused' ? 'warn' : 'ok'">{{ schedState(s.state) }}</span></td></tr></table></div>
       <ng-container *ngIf="d.events.length"><h3>Changes</h3>
         <table class="ln"><tr><th>Date</th><th>Change</th><th class="r">Amount</th><th class="r">New instalment</th><th class="r">Balance</th><th>Note</th><th>By</th></tr>
-          <tr *ngFor="let e of d.events"><td>{{ e.date | date:'d MMM yyyy' }}</td><td>{{ e.kind }}</td><td class="r">{{ n(e.amount) }}</td><td class="r">{{ e.new_emi ? n(e.new_emi) : '' }}</td>
-            <td class="r">{{ e.balance_after ? n(e.balance_after) : '' }}</td><td>{{ e.note }}</td><td>{{ e.by }}</td></tr></table></ng-container>
+          <tr *ngFor="let e of d.events"><td>{{ e.date | date:'dd/MM/yyyy' }}</td><td>{{ e.kind }}</td><td class="r">{{ aed(e.amount) }}</td><td class="r">{{ e.new_emi ? aed(e.new_emi) : '' }}</td>
+            <td class="r">{{ e.balance_after ? aed(e.balance_after) : '' }}</td><td>{{ e.note }}</td><td>{{ e.by }}</td></tr></table></ng-container>
     </div>
   </div>
 </div>`,
@@ -152,7 +169,27 @@ export class LoansComponent implements OnInit {
   api: Api; rows: any[] = []; d: any = null; msg = ''; err = false; busy = false; loaded = false; mine = false; status = 'running';
   act = ''; f: any = {};
   constructor(http: HttpClient, rec: ZRecordService, private route: ActivatedRoute, private cd: ChangeDetectorRef) { this.api = new Api(http, rec); }
-  async ngOnInit(): Promise<void> { this.mine = !!(this.route.snapshot.data['mine'] || this.route.snapshot.queryParamMap.get('mine')); await this.load(); if (this.rows.length) { await this.open(this.rows[0].id); } }
+  statuses = [['running', 'Running'], ['Closed', 'Closed'], ['all', 'All']];   // v1.62.0 talent-ops
+  async ngOnInit(): Promise<void> {
+    this.mine = !!(this.route.snapshot.data['mine'] || this.route.snapshot.queryParamMap.get('mine'));
+    const want = +(this.route.snapshot.queryParamMap.get('loan') || 0);   // v1.62.0 talent-ops: opened from a loan request / repayment
+    if (want) { this.status = 'all'; }
+    await this.load();
+    if (want && this.rows.some(r => r.id === want)) { await this.open(want); } else if (this.rows.length) { await this.open(this.rows[0].id); }
+  }
+  pick(a: string): void { this.act = this.act === a ? '' : a; this.f = {}; }
+  aed(v: any): string { return v === undefined || v === null || v === '' ? '–' : 'AED ' + this.n(v); }
+  months(n: any): string { const k = +n || 0; return k === 1 ? '1 month' : `${k} months`; }
+  /** v1.62.0 talent-ops: the loan's stage in words (a running loan said "Approved") */
+  stage(l: any): string {
+    if (l.status === 'Paused') { return 'Paused'; }
+    if (l.status === 'Closed' || (+l.balance <= 0 && +l.paid > 0)) { return 'Closed'; }
+    if (l.status === 'Rejected') { return 'Rejected'; }
+    if (l.status === 'Pending') { return 'In approval'; }
+    return +l.paid > 0 ? 'Repaying' : 'Approved – not deducted yet';
+  }
+  stageClass(l: any): string { const s = this.stage(l); return s === 'Closed' ? 'ok' : s === 'Paused' ? 'warn' : s === 'Rejected' ? 'bad' : s === 'Repaying' ? '' : 'info'; }
+  schedState(s: string): string { return ({ paid: 'Paid in payroll', 'paid outside payroll': 'Paid outside payroll', planned: 'Planned', paused: 'Paused' } as any)[s] || s; }
   async load(): Promise<void> {
     try { const r: any = await this.api.get('loans/', { mine: this.mine ? 1 : '', status: this.mine ? 'all' : this.status }); this.rows = r.rows; }
     catch (e) { this.say(httpErrorText(e), true); }
@@ -160,7 +197,7 @@ export class LoansComponent implements OnInit {
   }
   async open(id: number): Promise<void> { this.act = ''; this.f = {}; try { this.d = await this.api.get(`loans/${id}/`); } catch (e) { this.say(httpErrorText(e), true); } this.cd.markForCheck(); }
   async run(): Promise<void> {
-    if (this.act === 'settle' && !confirm(`Settle the balance ${this.n(this.d.balance)} now? The loan is closed.`)) { return; }
+    if (this.act === 'settle' && !(await zConfirm(`Settle the balance ${this.n(this.d.balance)} now? The loan is closed.`))) { return; }
     this.busy = true;
     try { this.d = await this.api.post(`loans/${this.d.id}/${this.act}/`, this.f); this.say('Done.'); this.act = ''; this.f = {}; await this.load(); }
     catch (e) { this.say(httpErrorText(e), true); }

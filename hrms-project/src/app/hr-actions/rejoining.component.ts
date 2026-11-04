@@ -22,6 +22,7 @@
  * Permissions: change_employeerejoining / view_employeerejoining (backend checks them too).
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -41,7 +42,7 @@ function dmy(s: any): string { return s ? String(s).slice(0, 10).split('-').reve
 @Component({
   selector: 'app-rejoining',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './hr-actions.css'],
   template: `
 <div class="container ha-wrap">
@@ -130,7 +131,7 @@ function dmy(s: any): string { return s ? String(s).slice(0, 10).split('-').reve
           </select></label>
         <label *ngIf="rec0.employee && empLeavesAll.length > empLeaves.length" style="flex-direction:row;align-items:center;gap:6px;font-weight:400;color:#2b2f42">
           <input type="checkbox" style="height:auto" [(ngModel)]="showOld" (ngModelChange)="filterLeaves()"> Show older leaves</label>
-        <label *ngIf="rec0.leave_request">Back on (first day at work)<input type="date" [(ngModel)]="rec0.rejoin_date" [min]="minBack()"></label>
+        <label *ngIf="rec0.leave_request">Back on (first day at work)<z-date-field [(value)]="rec0.rejoin_date" [min]="minBack()"></z-date-field></label>
       </div>
       <p class="lp-muted" *ngIf="chosenLeave() as l">The leave ends {{ dmy(l.end_date) }}. Back on {{ dmy(nextDay(l.end_date)) }} is on time; later is a late return, earlier gives days back.</p>
     </div>

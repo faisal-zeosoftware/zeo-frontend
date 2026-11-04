@@ -1,4 +1,7 @@
 import { HttpClient } from '@angular/common/http';
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
@@ -10,12 +13,40 @@ import { DepartmentServiceService } from '../department-master/department-servic
 
 import {combineLatest, Subscription } from 'rxjs';
 
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 166)
+import { assetRequestForm } from '../shared-ui/z-request-forms';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-asset-request',
   templateUrl: './asset-request.component.html',
-  styleUrl: './asset-request.component.css'
+  styleUrls: ['./asset-request.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class AssetRequestComponent {
+  // v1.62.0 talent-ops: the register reads /asset-plus/api/desk/requests/; the forms stay as they were
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  lnRows: any[] = [];
+  lnSum: any = {};
+  lnLoading = true;
+  lnMsg = '';
+  lnTab = 'all';
+  lnBranches: number[] = [];
+  lnTabs = [{ k: 'all', label: 'All' }, { k: 'in_approval', label: 'In approval' }, { k: 'approved', label: 'Approved' }, { k: 'rejected', label: 'Rejected' }];
+  get lnShown(): any[] {
+    const q = (this.searchQuery || '').toLowerCase().trim();
+    return this.lnRows.filter(r => (this.lnTab === 'all' || r.stage === this.lnTab) && (!q || [r.number, r.employee, r.code, r.type, r.note].join(' ').toLowerCase().includes(q)));
+  }
+  lnCount(k: string): number { return this.lnRows.filter(r => k === 'all' || r.stage === k).length; }
+  async lnLoad(): Promise<void> {
+    try { const r: any = await this.ln.get('/asset-plus/api/desk/requests/', { branch_id: this.lnBranches }); this.lnRows = r.rows || []; this.lnSum = r.summary || {}; this.lnMsg = ''; }
+    catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The asset requests could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnGo(url: string): void { this.lnRouter.navigateByUrl(url); }
+  lnEdit(r: any): void { const row = (this.AssetsRequest || []).find((x: any) => x.id === r.id); this.openEditModal(row || { id: r.id }); }   // v1.62.10 (item 166): also before the old list has loaded
+  async lnDelete(r: any): Promise<void> {
+    if (await this.ln.remove('/organisation/api/asset-Request', r.id, this.ln.t('asset request {0} of {1}', [r.number, r.employee]))) { await this.lnLoad(); }
+  }
 
 
     private apiUrl = `${environment.apiBaseUrl}`; 
@@ -238,6 +269,7 @@ this.loadUsers();
  isLoading: boolean = false;
 
     fetchEmployees(schema: string, branchIds: number[]): void {
+      this.lnBranches = branchIds || []; this.lnLoad();   // v1.62.0 talent-ops
       this.isLoading = true;
       this.employeeService.getAssetRequestNew(schema, branchIds).subscribe({
 
@@ -517,7 +549,22 @@ loadEmployees(callback?: Function): void {
 
 
 
+  // v1.62.10 (item 166): New / Edit open the shared form (same endpoint and fields as the old pop-ups); the list reloads after a save
+  async zOpen(record?: any): Promise<void> {
+    if (await openZForm(assetRequestForm(), record)) {
+      await this.lnLoad();
+      const sch = this.authService.getSelectedSchema();
+      if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+    }
+  }
+  /** the record answers the asset and employee by name / code – the desk row has their ids */
+  private zRecord(row: any): any {
+    const d = (this.lnRows || []).find((x: any) => x.id === row.id);
+    return { ...row, requested_asset: d?.asset?.id ?? row.requested_asset, employee: d?.employee_id ?? row.employee };
+  }
+
       openPopus():void{
+        this.zOpen(); return;   // v1.62.10 (item 166)
         this.iscreateLoanApp = true;
         this.document_number = null;
         this.automaticNumbering = false;
@@ -580,6 +627,7 @@ loadEmployees(callback?: Function): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  this.zOpen(this.zRecord(asset)); return;   // v1.62.10 (item 166)
 
   this.editAsset = { ...asset };
 
@@ -656,7 +704,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetReq() { 
+async deleteSelectedAssetReq() { 
   const selectedEmployeeIds = this.AssetsRequest
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -666,7 +714,7 @@ deleteSelectedAssetReq() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset Request ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Asset Request ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -753,8 +801,8 @@ loadLAsset(callback?: Function): void {
   
 
 
-    approveRequest(id: number): void {
-      const confirmApproval = confirm('Are you sure you want to approve this asset request?');
+    async approveRequest(id: number): Promise<void> {
+      const confirmApproval = (await zConfirm('Are you sure you want to approve this asset request?'));
       if (!confirmApproval) {
         return; // Exit if user cancels
       }

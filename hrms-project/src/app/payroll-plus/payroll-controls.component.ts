@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZSuiteService } from '../shared-ui/z-suite.service';
+import { i18nT } from '../shared-ui/i18n.service';   // v1.62.11 (item 230)
 
 @Component({
   selector: 'app-payroll-controls',
@@ -54,6 +55,27 @@ import { ZSuiteService } from '../shared-ui/z-suite.service';
             <option value="en">English</option>
             <option value="en_ar">English and Arabic on the same payslip</option></select>
           <span><b>Payslip language</b><p><i>The reader's language:</i> English, or the language the user chose in ZEO (Arabic right to left). <i>English and Arabic:</i> every payslip PDF has each label in both languages on the same page – the usual request of the labour office. Employees can also download the English + Arabic payslip from My payslips.</p></span></div>   <!-- v1.50.0 -->
+        <div class="pc-freq" data-payslip-password>   <!-- v1.62.11 (item 230) -->
+          <b>Payslip password</b>
+          <p>Off by default. When it is on, the payslip PDF e-mailed to the employee and the one the employee downloads in self service open only with a password. HR's payroll screens are not protected. A rule never uses a full ID number – only the last 4 characters, together with the employee code.</p>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.payslip_password" [disabled]="!s.can_edit" data-pp-on>
+            <span><b>Protect payslips with a password</b><p>When an employee has no date of birth / passport / Emirates ID for the rule, the payslip is not sent or given unprotected – HR completes the record first.</p></span></label>
+          <div class="pc-row"><select [(ngModel)]="s.payslip_password_rule" [disabled]="!s.can_edit || !s.payslip_password" aria-label="Password rule" class="pc-sel" data-pp-rule>
+              <option *ngFor="let r of s.payslip_password_rules" [value]="r.key">{{ r.label }}</option></select>
+            <span><b>Password rule</b><p>{{ hint() }}</p></span></div>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.payslip_password_email" [disabled]="!s.can_edit || !s.payslip_password" data-pp-email>
+            <span><b>Payslips sent by e-mail</b><p>The e-mail says how the password is made.</p></span></label>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.payslip_password_download" [disabled]="!s.can_edit || !s.payslip_password" data-pp-download>
+            <span><b>Payslips the employee downloads (self service)</b><p>Also the employee's own payslip downloaded from the payslip list.</p></span></label>
+        </div>
+        <div class="pc-freq" data-net-pay>   <!-- v1.62.2 (item 51) -->
+          <b>Net pay and deductions</b>
+          <p>Off by default. Confirm the deduction limit that applies to your company before you switch it on.</p>
+          <label class="pc-row"><input type="checkbox" [(ngModel)]="s.keep_net_positive" [disabled]="!s.can_edit" data-keep-net>
+            <span><b>Keep net pay at or above 0 – carry the rest of the deductions to next month</b><p>Deductions are taken in this order: statutory, loans, advances, others. What does not fit is not lost: it is deducted on the next payslip as "Deductions carried over". When this is off, a negative net pay is only shown as a warning on the payslip and in the payroll register.</p></span></label>
+          <div class="pc-row"><input type="number" min="1" max="100" step="0.01" [(ngModel)]="s.max_deduction_pct" [disabled]="!s.can_edit || !s.keep_net_positive" aria-label="Maximum deductions percent" data-max-ded placeholder="–">
+            <span><b>Maximum deductions as % of gross</b><p>Optional. Leave empty for no limit (net pay is kept at or above 0). Used only when the setting above is on.</p></span></div>
+        </div>
         <div class="pc-freq" data-pay-freq>   <!-- v1.55.0 -->
           <b>Pay frequencies</b>
           <p>Every employee is paid monthly. Switch on another frequency to pay some employees on a pay calendar – Pay calendars appears in the Payroll menu only once one is on.</p>
@@ -88,9 +110,17 @@ export class PayrollControlsComponent implements OnInit {
     try { this.s = await firstValueFrom(this.http.get<any>(this.url())); } catch (e: any) { this.msg = e?.error?.detail || 'Could not load the controls.'; this.msgErr = true; }
     this.cd.detectChanges();
   }
+  hint(): string {   // v1.62.11 (item 230)
+    const h: Record<string, string> = {
+      dob: 'The password is your date of birth as DDMMYYYY (for example 05031990 for 5 March 1990).',
+      code_passport4: 'The password is your employee code followed by the last 4 characters of your passport number (for example GD-00057K21).',
+      code_eid4: 'The password is your employee code followed by the last 4 digits of your Emirates ID (for example GD-00054321).' };
+    return i18nT(h[this.s?.payslip_password_rule] || h['dob']);
+  }
   async save(): Promise<void> {
     this.busy = true;
-    try { this.s = await firstValueFrom(this.http.put<any>(this.url(), this.s)); this.msg = 'Controls saved.'; this.msgErr = false; this.suite.loadActive(true); }   // v1.55.0: menu follows the pay frequencies
+    try { const body = { ...this.s, max_deduction_pct: (this.s.max_deduction_pct === null || this.s.max_deduction_pct === undefined) ? '' : String(this.s.max_deduction_pct) };   // v1.62.2 (item 51): empty = no limit
+      this.s = await firstValueFrom(this.http.put<any>(this.url(), body)); this.msg = 'Controls saved.'; this.msgErr = false; this.suite.loadActive(true); }   // v1.55.0: menu follows the pay frequencies
     catch (e: any) { this.msg = e?.error?.detail || 'Could not save.'; this.msgErr = true; }
     this.busy = false; this.cd.detectChanges();
   }

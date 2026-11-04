@@ -1,4 +1,7 @@
 
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter, ActivatedRoute as LnRoute } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -10,13 +13,32 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-advance-salary-escalation',
   templateUrl: './advance-salary-escalation.component.html',
-  styleUrl: './advance-salary-escalation.component.css'
+  styleUrls: ['./advance-salary-escalation.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class AdvanceSalaryEscalationComponent {
+  // v1.62.0 talent-ops: the workflows in words from /payroll-plus/api/loan-desk/levels/; the actions open this screen's own forms
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  private lnRoute = lnInject(LnRoute);
+  lnRows: any[] = [];
+  lnLoading = true;
+  lnMsg = '';
+  async lnLoad(): Promise<void> {
+    try { this.lnRows = (await this.ln.get('levels', { kind: 'advance' })).rows || []; this.lnMsg = ''; }
+    catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The approval levels could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnGo(p: string): void { this.lnRouter.navigate(['..', p], { relativeTo: this.lnRoute }); }
+  lnEditLevel(id: number): void {
+    const row = ((this as any).GeneralReq || []).find((x: any) => x.id === id);
+    if (row) { (this as any).openEditModal(row); }
+  }
+  lnReset(l: any): void { (this as any).resetSingleReq(l.id); setTimeout(() => this.lnLoad(), 1500); }
 
   private dataSubscription?: Subscription;
     // doc_number: any = '';
@@ -158,6 +180,8 @@ nextPage(): void {
   ) {}
   
   ngOnInit(): void {
+  
+    this.lnLoad();   // v1.62.0 talent-ops
 
 
 
@@ -372,7 +396,7 @@ nextPage(): void {
   }
   
   
-  deleteSelectedGeneralReq() { 
+  async deleteSelectedGeneralReq() { 
     const selectedEmployeeIds = this.GeneralReq
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -382,7 +406,7 @@ nextPage(): void {
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected General Request?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected General Request?'))) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -412,7 +436,7 @@ nextPage(): void {
     }
   }
   
-  resetSelectedGeneralReq() {
+  async resetSelectedGeneralReq() {
     const selectedIds = this.GeneralReq
       .filter(item => item.selected)
       .map(item => item.id);
@@ -422,7 +446,7 @@ nextPage(): void {
       return;
     }
   
-    if (confirm('Are you sure you want to reset the selected General Request(s)?')) {
+    if ((await zConfirm('Are you sure you want to reset the selected General Request(s)?'))) {
   
       let total = selectedIds.length;
       let completed = 0;
@@ -447,8 +471,8 @@ nextPage(): void {
     }
   }
   
-  resetSingleReq(id: number) {
-    if (confirm("Are you sure you want to reset this rule?")) {
+  async resetSingleReq(id: number) {
+    if ((await zConfirm("Are you sure you want to reset this rule?"))) {
       this.employeeService.resetAdvSalEsc(id).subscribe(
         () => {
           alert("Reset successful!");

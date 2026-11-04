@@ -131,7 +131,8 @@ export class ZRecordService {
         if (!it || typeof it !== 'object' || it.id === undefined) { continue; }
         const vals = new Set<string>();
         for (const v of Object.values(it)) { if (v !== null && typeof v !== 'object') { vals.add(String(v).trim().toLowerCase()); } }
-        const n = cells.filter(c => vals.has(c)).length;
+        // v1.62.10 (item 171): a row may name its record (<tr data-z-id="…">) – that record wins over another one whose values match as many cells
+        const n = cells.filter(c => vals.has(c)).length + (tr.dataset['zId'] !== undefined && tr.dataset['zId'] === String(it.id) && cells.some(c => vals.has(c)) ? 1000 : 0);
         if (n > bestN) { bestN = n; best = { endpoint: l.path.endsWith('/') ? l.path : l.path + '/', id: String(it.id), item: it }; }
       }
     }

@@ -9,6 +9,7 @@ import { ZRecordService } from './z-record.service';
 import { httpErrorText } from './z-http-error.interceptor';
 import { ZAD_STYLES } from './z-admin-pages.component';
 import { ZChartComponent } from '../hr-modules/dashboards/z-chart.component';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.53.0 – insights:
@@ -200,7 +201,7 @@ export class ZReportBuilderComponent extends Base implements OnInit {
   async save(): Promise<void> {
     if (await this.act(async () => { const r = await this.post('/insights/api/reports/', this.body()); this.f.id = r.id; this.say(`Saved – "${r.name}" is in the report centre under ${r.section}.`); })) { await this.load(); }
   }
-  async remove(r: any): Promise<void> { if (!confirm(`Delete the report "${r.name}"? Dashboards and schedules that use it stop showing it.`)) { return; } if (await this.act(() => this.del(`/insights/api/reports/${r.id}/`), 'Deleted.')) { await this.load(); } }
+  async remove(r: any): Promise<void> { if (!(await zConfirm(`Delete the report "${r.name}"? Dashboards and schedules that use it stop showing it.`))) { return; } if (await this.act(() => this.del(`/insights/api/reports/${r.id}/`), 'Deleted.')) { await this.load(); } }
 }
 
 /* ------------------------------------------------------------------------------------------------ dashboards */
@@ -248,7 +249,7 @@ export class ZReportBuilderComponent extends Base implements OnInit {
       <ng-container *ngIf="data[c.id] as d; else loading">
         <div class="err" *ngIf="d.error">{{ d.error }}</div>
         <ng-container *ngIf="!d.error">
-          <ng-container *ngIf="d.view === 'number'"><div class="big">{{ fmt(d.value) }}</div><div class="sub">{{ subLabel(d.value_label) }}{{ d.period ? ' · ' + dmy(d.period.from) + ' – ' + dmy(d.period.to) : '' }}</div></ng-container>
+          <ng-container *ngIf="d.view === 'number'"><div class="big">{{ fmt(d.value) }}</div><div class="sub">{{ subLabel(d.value_label) }}{{ d.period ? ' · ' + (d.period_note ? d.period_note + ': ' : '') + dmy(d.period.from) + ' – ' + dmy(d.period.to) : '' }}</div><!-- v1.62.0 ui period note --></ng-container>
           <z-chart *ngIf="d.view === 'bar'" type="bar" [horizontal]="true" [labels]="d.labels" [values]="d.values" [height]="Math.max(140, d.labels.length * 26)" [ariaLabel]="d.title"></z-chart>
           <z-chart *ngIf="d.view === 'line'" type="line" [labels]="d.labels" [values]="d.values" [height]="190" [ariaLabel]="d.title"></z-chart>
           <div class="sub" *ngIf="d.view === 'bar' || d.view === 'line'">{{ subLabel(d.value_label) }} by {{ d.group_label | lowercase }} · {{ fmt(d.value) }} in all</div>
@@ -329,7 +330,7 @@ export class ZDashboardsComponent extends Base implements OnInit {
     }
   }
   async removeDash(): Promise<void> {
-    if (!confirm(`Delete the dashboard "${this.cur.name}"?`)) { return; }
+    if (!(await zConfirm(`Delete the dashboard "${this.cur.name}"?`))) { return; }
     if (await this.act(() => this.del(`/insights/api/dashboards/${this.cur.id}/`), 'Deleted.')) { this.cur = null; this.editing = false; await this.loadList(); if (this.list.length) { await this.open(this.list[0].id); } }
   }
 }

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { ZAppTitleComponent, ZModuleMenuComponent } from '../shared-ui/z-module-menu.component';
 import { ZA_APPS, ZaApiService, ZaClient, appOf, base, day, when } from './za-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** Frame of a kit app (CRM / Property / Maintenance): module menu (shared-ui/menu-config.ts) and the page.
  *  Until the app is activated every page goes to its activation step. v1.18.0 */
@@ -134,7 +135,7 @@ export class ZaActivateComponent implements OnInit {
   label(code: string): string { return this.a?.packs?.find((p: any) => p.code === code)?.label || 'General'; }
   go(p: any[]): void { this.router.navigate([base(this.app), ...p]); }
   async activate(code: string): Promise<void> {
-    if (!confirm(`Activate ${this.a.title} with the ${this.label(code)} pack?`)) return;
+    if (!(await zConfirm(`Activate ${this.a.title} with the ${this.label(code)} pack?`))) return;
     this.busy = true; this.msg = '';
     try {
       this.a = await this.api.post('activate/', { industry: code });
@@ -336,7 +337,7 @@ export class ZaSetupComponent implements OnInit {
   }
 
   async install(code: string, primary: boolean): Promise<void> {
-    if (!confirm(primary ? 'Make this the industry of the app? Its items are added (nothing is overwritten).' : 'Add this pack? Its items are added as "to review".')) return;
+    if (!(await zConfirm(primary ? 'Make this the industry of the app? Its items are added (nothing is overwritten).' : 'Add this pack? Its items are added as "to review".'))) return;
     try { const r = await this.api.post('pack/', { code, primary }); this.ok = 'Added: ' + (Object.entries(r.added || {}).map(([k, v]) => `${v} ${k}`).join(', ') || 'nothing new'); this.api.clear(); await this.load(); }
     catch (e) { this.msg = ZaApiService.error(e); }
   }

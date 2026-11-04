@@ -4,6 +4,13 @@ import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { ActivatedRoute } from '@angular/router';
 import { DesignationService } from '../designation-master/designation.service';
+import { HttpClient } from '@angular/common/http';
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 168)
+import { folderFileForm } from '../shared-ui/z-forms-records';
+import { zToast } from '../shared-ui/z-toast';
+import { i18nT } from '../shared-ui/i18n-core';
+import { environment } from '../../environments/environment';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-document-folder-files',
@@ -15,7 +22,7 @@ export class DocumentFolderFilesComponent {
   documents: any[] = [];  // store fetched docs
 
   hasAddPermission: boolean = false;
-  // hasDeletePermission: boolean = false;
+  hasDeletePermission: boolean = false;   // v1.62.10 (item 168): Delete on each file
   hasViewPermission: boolean = false;
   // hasEditPermission: boolean = false;
 
@@ -33,6 +40,7 @@ export class DocumentFolderFilesComponent {
         private employeeService: EmployeeService,
         private route: ActivatedRoute,
         private DesignationService: DesignationService,
+        private http: HttpClient,
 
 
 
@@ -56,6 +64,7 @@ export class DocumentFolderFilesComponent {
     console.log("Folder changed → ", this.folderId);
 
     this.getDocuments(); // reload documents
+    this.loadFolderName();
   });
 
 
@@ -85,7 +94,7 @@ export class DocumentFolderFilesComponent {
             // Grant all permissions
             this.hasViewPermission = true;
             this.hasAddPermission = true;
-            // this.hasDeletePermission = true;
+            this.hasDeletePermission = true;   // v1.62.10 (item 168)
             // this.hasEditPermission = true;
 
             // Fetch designations without checking permissions
@@ -110,7 +119,7 @@ export class DocumentFolderFilesComponent {
                     // Grant all permissions
                     this.hasViewPermission = true;
                     this.hasAddPermission = true;
-                    // this.hasDeletePermission = true;
+                    this.hasDeletePermission = true;   // v1.62.10 (item 168)
                     // this.hasEditPermission = true;
 
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
@@ -124,7 +133,7 @@ export class DocumentFolderFilesComponent {
                     // this.hasEditPermission = this.checkGroupPermission('change_folder', groupPermissions);
                     // console.log('Has edit permission:', this.hasEditPermission);
 
-                    // this.hasDeletePermission = this.checkGroupPermission('delete_folder', groupPermissions);
+                    this.hasDeletePermission = this.checkGroupPermission('delete_folder', groupPermissions) || this.checkGroupPermission('delete_document', groupPermissions);   // v1.62.10 (item 168)
                     // console.log('Has delete permission:', this.hasDeletePermission);
 
 
@@ -184,95 +193,24 @@ export class DocumentFolderFilesComponent {
   }
 
   
-  isopenDocement: boolean = false;
-
-
-  name: any = '';
-  folder: number | null = null;
-
-  openPopus(): void {
-    this.isopenDocement = true;
-  
-    // Automatically set folder ID when popup opens
-    this.folder = this.folderId;  
-    console.log("Popup opened with folder:", this.folder);
+  /** v1.62.10 (item 168): "+ Upload file" – the shared form (name and file) instead of the old "Uplaod file" pop-up and alerts */
+  async openPopus(): Promise<void> {
+    if (!this.folderId) { return; }
+    if (await openZForm(folderFileForm(this.folderId))) { this.getDocuments(); }
   }
 
-    closeapplicationModal():void{
-    this.isopenDocement = false;
-  
+  /** v1.62.10 (item 168): Delete on a file – one confirmation, a short message */
+  async deleteFile(doc: any): Promise<void> {
+    if (!(await zConfirm(i18nT('Delete the file "{0}"?', [doc.name])))) { return; }
+    const sch = localStorage.getItem('selectedSchema') || '';
+    this.http.delete(`${environment.apiBaseUrl}/organisation/api/documents/${doc.id}/?schema=${encodeURIComponent(sch)}`).subscribe({
+      next: () => { zToast(i18nT('File deleted.'), 'ok'); this.getDocuments(); },
+      error: (e: any) => zToast(String(e?.error?.detail || i18nT('It could not be deleted.')), 'err'),
+    });
   }
 
-  selectedFile: File | null = null;
-
-
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-    }
-  }
- 
-
-  FolderDocuments:any []=[];
-
-// ✅ Fetch document folders from backend
-loadDocumentfolders(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.employeeService.getDocuments(selectedSchema).subscribe(
-      (result: any) => {
-        // Filter only top-level folders (no parent)
-        this.FolderDocuments = result.filter((folder: any) => folder.parent === null);
-        console.log('Fetched Document :', this.FolderDocuments);
-      },
-      (error) => {
-        console.error('Error fetching document folders:', error);
-      }
-    );
-  }
-}
-
- 
-
-uploadfolderDocument(): void {
-  if (!this.name) {
-    alert("Please enter document name.");
-    return;
-  }
-
-  if (!this.folder) {
-    alert("Folder not selected!");
-    return;
-  }
-
-  if (!this.selectedFile) {
-    alert("Please upload a document.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('name', this.name);
-  formData.append('folder', this.folder.toString());
-  formData.append('file', this.selectedFile);
-
-  this.employeeService.registerDocument(formData).subscribe(
-    (response) => {
-      console.log('Document added:', response);
-      alert('Document Uploaded Successfully');
-      this.isopenDocement = false;
-      this.selectedFile = null;
-      this.name = '';
-      this.getDocuments();
-    },
-    (error) => {
-      console.error('Upload failed', error);
-      alert('Upload failed. Try again!');
-    }
-  );
-}
-    
+  folderName = '';
+  fileKind(doc: any): string { const m = String(doc?.file || '').split('?')[0].match(/\.([a-z0-9]{1,5})$/i); return m ? m[1].toUpperCase() : ''; }
 
 getDocuments(): void {
   if (!this.folderId) {
@@ -282,7 +220,7 @@ getDocuments(): void {
 
   this.employeeService.getDocumentsByFolder(this.folderId).subscribe(
     (data) => {
-      this.documents = data;
+      this.documents = Array.isArray(data) ? data : (data?.results || []);
       console.log("Fetched Documents:", this.documents);
     },
     (error) => {
@@ -291,4 +229,12 @@ getDocuments(): void {
   );
 }
 
+
+  /** v1.62.10 (item 168): the open folder's name as the page title */
+  private loadFolderName(): void {
+    const sch = localStorage.getItem('selectedSchema') || '';
+    if (!this.folderId) { this.folderName = ''; return; }
+    this.http.get<any>(`${environment.apiBaseUrl}/organisation/api/folders/${this.folderId}/?schema=${encodeURIComponent(sch)}`).subscribe({
+      next: f => { this.folderName = f?.name || ''; }, error: () => { this.folderName = ''; } });
+  }
 }

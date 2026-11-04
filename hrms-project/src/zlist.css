@@ -338,3 +338,37 @@ table.zl-table td.zl-hascode .zl-pname { color: var(--zl-text); font-size: 13px;
 .zl-scroll { overflow-x: auto; max-width: 100%; min-width: 0; }
 /* v1.62.0 ui: native date fields painted as dd/mm/yyyy while not edited (shared-ui/z-date-input.ts) */
 input.zdi-on::-webkit-datetime-edit { opacity: 0; }
+
+/* v1.62.0 ui: legacy registers – one primary "+ New <thing>" at the top right, Edit / Delete on each row */
+.header_section .z-new-btn, button.z-new-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border: 0; border-radius: 8px;
+  background: var(--zl-primary); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 2px rgba(27,22,64,.12); }
+button.z-new-btn:hover { background: var(--zl-primary-ink); }
+button.z-new-btn:focus-visible { outline: 2px solid var(--zl-primary); outline-offset: 2px; }
+.header_section .button-group:has(> .z-new-btn) { display: flex; justify-content: flex-end; align-items: center; gap: 8px; float: none !important; }
+button.z-row-btn { display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid var(--zl-line); border-radius: 7px;
+  background: #fff; color: var(--zl-primary-ink); cursor: pointer; vertical-align: middle; margin-inline-start: 4px; }
+button.z-row-btn mat-icon { font-size: 18px; width: 18px; height: 18px; line-height: 18px; color: inherit !important; }
+button.z-row-btn:hover { background: var(--zl-weak); }
+button.z-row-btn.danger { color: var(--zl-bad); }
+button.z-row-btn.danger:hover { background: var(--zl-bad-bg); }
+/* the old round edit buttons (mat-fab) of those rows: the same small icon button */
+table td button.mat-mdc-fab[aria-label="Edit icon"], table td button.mat-mdc-fab { width: 30px !important; height: 30px !important; min-height: 30px; box-shadow: none !important;
+  border-radius: 7px !important; background: #fff !important; border: 1px solid var(--zl-line) !important; vertical-align: middle; }
+table td button.mat-mdc-fab mat-icon { color: var(--zl-primary-ink) !important; font-size: 18px; width: 18px; height: 18px; }
+/* v1.62.1 selection bar, bulk delete result, used rows */
+.zl-selbar { display: flex; flex-direction: column; gap: 6px; margin: 0 0 8px; }
+.zl-selrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid #d9d4ff; background: #f4f2ff; border-radius: 10px; font-size: 13px; color: var(--zl-ink); }
+.zl-selrow .zl-dot { color: #a8a4c8; }
+.zl-btn.danger { background: #fff; color: var(--zl-bad); border: 1px solid #f2c1c8; }
+.zl-btn.danger:hover { background: var(--zl-bad-bg); }
+.zl-selres { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border-radius: 10px; background: #fffaf0; border: 1px solid #f3dfb6; color: #5c4400; font-size: 13px; }
+.zl-selres .zl-link:last-child { margin-inline-start: auto; }
+button.z-row-btn.zl-inact { width: auto; padding: 0 9px; font-size: 12px; font-weight: 600; color: var(--zl-warn); white-space: nowrap; }   /* v1.62.1 ui: Arabic stays on one line */
+.zl-inuse { display: inline-block; font-size: 11.5px; color: var(--zl-muted); border: 1px dashed var(--zl-line); border-radius: 8px; padding: 2px 8px; cursor: help; }
+.zl-actsel { height: 36px; border: 1px solid var(--zl-line); border-radius: 10px; padding: 0 10px; font-size: 13px; background: #fff; color: var(--zl-ink); }
+/* v1.62.1 the old registers' header as a card header: title, one-line description, "+ New" on the right */
+.header_section.z-card-head h1 { margin-bottom: 2px !important; font-size: 22px; }
+.header_section.z-card-head .z-legacy-desc { margin: 2px 0 0; color: var(--zl-muted); font-size: 13px; line-height: 1.45; max-width: 760px; font-weight: 400; }
+/* v1.62.1 ui: the "+ New" column of a legacy header sits at the right edge also when the old search column is hidden */
+.header_section.z-card-head .row { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.header_section.z-card-head .row > [class*="col-"]:has(.z-new-btn) { margin-inline-start: auto; }

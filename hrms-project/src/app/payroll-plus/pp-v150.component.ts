@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 class Api {
   constructor(private http: HttpClient, private rec: ZRecordService) {}
@@ -55,7 +56,7 @@ const STYLES = `.wf-grid { display: grid; grid-template-columns: 240px minmax(0,
   selector: 'app-payroll-what-if',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [STYLES],
   template: `
 <div class="lp-page" style="padding:16px 20px">
@@ -168,7 +169,7 @@ export class WhatIfComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async apply(): Promise<void> {
-    if (!confirm(`Write the new amounts to ${this.res.changed} employees' salaries? The next payroll uses them.`)) { return; }
+    if (!(await zConfirm(`Write the new amounts to ${this.res.changed} employees' salaries? The next payroll uses them.`))) { return; }
     this.busy = true;
     try {
       await this.api.put(`what-if/${this.f.id}/`, { effective_from: this.f.effective_from + '-01' });
@@ -177,7 +178,7 @@ export class WhatIfComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async remove(): Promise<void> {
-    if (!confirm('Delete this scenario?')) { return; }
+    if (!(await zConfirm('Delete this scenario?'))) { return; }
     try { await this.api.del(`what-if/${this.f.id}/`); this.say('Deleted.'); await this.load(); this.newOne(); } catch (e) { this.say(httpErrorText(e), true); }
     this.cd.markForCheck();
   }
@@ -191,7 +192,7 @@ export class WhatIfComponent implements OnInit {
   selector: 'app-cost-allocation',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [STYLES + ` .ca-tabs { display: flex; gap: 6px; margin-bottom: 12px; } .ca-tabs button { border: 1px solid #cfd5dc; background: #fff; border-radius: 16px; padding: 5px 14px; cursor: pointer; }
     .ca-tabs button.on { background: #1f2433; color: #fff; border-color: #1f2433; } .ca-sp { font-size: 12px; color: #3b4057; } .ca-sp span { display: inline-block; margin: 0 8px 2px 0; }
     .ca-home { color: #5d6670; }`],
@@ -208,7 +209,7 @@ export class WhatIfComponent implements OnInit {
       <span style="flex:1"></span><button type="button" class="lp-btn" (click)="csv()" *ngIf="m?.rows?.length">CSV</button>
       <button type="button" class="lp-btn primary" *ngIf="m?.accounting && m?.rows?.length && canEdit" (click)="post()" [disabled]="busy">Post to accounting</button></div>
     <div *ngIf="m">
-      <div class="wf-tot"><div><small>Payroll cost (gross)</small><b>{{ n(m.total) }}</b></div><div><small>Allocated to projects / cost centres</small><b>{{ n(m.allocated) }}</b></div>
+      <div class="wf-tot"><div><small>Payroll cost (gross)</small><b>AED {{ n(m.total) }}</b></div><div><small>Allocated to projects / cost centres</small><b>AED {{ n(m.allocated) }}</b></div>
         <div><small>Employees</small><b>{{ m.employees }}</b></div></div>
       <p class="lp-desc" *ngIf="!m.rows.length">No processed payroll in this month.</p>
       <div class="wf-two" *ngIf="m.rows.length">
@@ -216,7 +217,7 @@ export class WhatIfComponent implements OnInit {
           <tr *ngFor="let t of m.targets" [attr.data-target]="t.kind + '-' + t.id"><td>{{ t.name }} <small class="lp-desc">{{ label(t.kind) }}</small><div class="wf-bar"><i [style.width.%]="+t.amount * 100 / (+m.total || 1)"></i></div></td>
             <td class="r">{{ t.employees }}</td><td class="r">{{ n(t.amount) }}</td></tr></table></div>
         <div class="wf-card"><h2>Employees</h2><div style="max-height:420px;overflow:auto"><table class="wf"><tr><th>Employee</th><th class="r">Cost</th><th>Split</th></tr>
-          <tr *ngFor="let r of m.rows"><td>{{ r.name }} <small class="lp-desc">{{ r.code }}</small><br><small class="lp-desc">{{ r.basis === 'timesheet' ? 'Timesheet hours' : r.basis === 'percent' ? 'Percentages' : 'No rule' }}</small></td>
+          <tr *ngFor="let r of m.rows"><td>{{ r.name }} <small class="lp-desc nw">{{ r.code }}</small><br><small class="lp-desc">{{ r.basis === 'timesheet' ? 'Timesheet hours' : r.basis === 'percent' ? 'Percentages' : 'No rule' }}</small></td>
             <td class="r">{{ n(r.cost) }}</td><td class="ca-sp"><span *ngFor="let s of r.splits" [class.ca-home]="s.home">{{ s.name }} {{ s.percent }}%{{ s.hours ? ' (' + s.hours + ' h)' : '' }} = {{ n(s.amount) }}</span></td></tr></table></div></div>
       </div>
     </div>
@@ -242,9 +243,9 @@ export class WhatIfComponent implements OnInit {
         <button type="button" class="lp-btn primary" (click)="save()" [disabled]="busy" data-save>Save the rule</button></div>
     </div>
     <div class="wf-card"><table class="wf"><tr><th>Employee</th><th>Split</th><th>From</th><th>Until</th><th></th></tr>
-      <tr *ngFor="let x of rules" [attr.data-rule]="x.id"><td>{{ x.employee }} <small class="lp-desc">{{ x.code }}</small></td>
+      <tr *ngFor="let x of rules" [attr.data-rule]="x.id"><td>{{ x.employee }} <small class="lp-desc nw">{{ x.code }}</small></td>
         <td class="ca-sp"><ng-container *ngIf="x.basis === 'timesheet'">Timesheet hours</ng-container><span *ngFor="let l of x.lines">{{ l.name }} {{ l.percent }}%</span></td>
-        <td>{{ x.valid_from | date:'d MMM yyyy' }}</td><td>{{ x.valid_until | date:'d MMM yyyy' }}</td>
+        <td class="nw">{{ x.valid_from | date:'dd/MM/yyyy' }}</td><td class="nw">{{ x.valid_until ? (x.valid_until | date:'dd/MM/yyyy') : 'Open' }}</td>
         <td><ng-container *ngIf="canEdit"><button type="button" class="lp-btn" (click)="edit(x)">Change</button> <button type="button" class="lp-btn" (click)="del(x)">Delete</button></ng-container></td></tr>
       <tr *ngIf="!rules.length"><td colspan="5" class="lp-desc">No rule yet – every employee's cost stays on the own cost centre or department.</td></tr></table></div>
   </ng-container>
@@ -277,7 +278,7 @@ export class CostAllocationComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async del(x: any): Promise<void> {
-    if (!confirm(`Delete the rule of ${x.employee}?`)) { return; }
+    if (!(await zConfirm(`Delete the rule of ${x.employee}?`))) { return; }
     try { await this.api.del(`cost-allocation/rules/${x.id}/`); await this.loadRules(); await this.loadMonth(); } catch (e) { this.say(httpErrorText(e), true); }
     this.cd.markForCheck();
   }

@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { apiUrl, errText, wsUrl } from './pay162';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-payslip-approvals',
@@ -26,7 +27,7 @@ import { apiUrl, errText, wsUrl } from './pay162';
           <h1 class="page-title">Payslip approvals</h1>
           <p class="lp-desc">Payslips sent to you for approval, by payroll run. Check the totals, open a payslip if needed, then approve or reject the whole run or the payslips you tick.</p>
         </div>
-        <div class="py-tools"><a class="py-btn" routerLink="/main-sidebar/salary-options/payslip-approval-list">Show as one list</a></div>
+        <!-- v1.62.10 (item 173): "Show as one list" retired – its address opens this page -->
       </div>
     </div>
     <div class="com_list mt-4">
@@ -122,7 +123,7 @@ export class PayslipApprovalsComponent implements OnInit {
 
   async approve(g: any): Promise<void> {
     const ids = this.ids(g);
-    if (!confirm(`Approve ${ids.length} payslip(s) of ${g.run.name || g.run.period}?`)) { return; }
+    if (!(await zConfirm(`Approve ${ids.length} payslip(s) of ${g.run.name || g.run.period}?`))) { return; }
     this.busy = true;
     try {
       const r: any = await firstValueFrom(this.http.post(apiUrl('payroll/api/approval-payroll/bulk_approve/'), { approval_ids: ids, note: '' }));

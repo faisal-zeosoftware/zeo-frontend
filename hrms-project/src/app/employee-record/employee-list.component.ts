@@ -5,6 +5,7 @@
  * invite, Deactivate). API: employee-profile/api/directory/.
  */
 import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { VCol, VRow, ViewState, defaults as viewDefaults, graphHtml, pivotData, pivotHtml } from '../shared-ui/z-views';
 import { CommonModule } from '@angular/common';
@@ -14,15 +15,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { ErService, avatarColour, badgeClass, dmy, erPage } from './er.service';
 import { zToast } from '../shared-ui/z-toast';
 import { i18nT } from '../shared-ui/i18n-core';
-import { CreateEmployeeComponent } from '../create-employee/create-employee.component';
+import { EmployeeNewComponent } from './employee-new.component';   // v1.62.1 new-design New employee (was the classic Create Employee form)
 import { ZEmployeeImportComponent } from '../shared-ui/z-employee-import.component';   // v1.26.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./er.css'],
   template: `
 <div class="er-page">
@@ -42,7 +44,7 @@ type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
       <button type="button" class="er-seg-t" [class.on]="mode === 'graph'" (click)="setMode('graph')" [attr.aria-pressed]="mode === 'graph'" title="Graph"><svg class="er-seg-ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="9" width="3" height="5" rx="1"/><rect x="6.5" y="5" width="3" height="9" rx="1"/><rect x="11" y="2" width="3" height="12" rx="1"/></svg> Graph</button>
       <button type="button" class="er-seg-t" [class.on]="mode === 'pivot'" (click)="setMode('pivot')" [attr.aria-pressed]="mode === 'pivot'" title="Pivot"><span aria-hidden="true">⊞</span> Pivot</button>
     </div>
-    <button type="button" class="er-btn primary" *ngIf="canAdd" (click)="create()">New employee</button>
+    <button type="button" class="er-btn primary" *ngIf="canAdd" (click)="create()">+ {{ t('New employee') }}</button>
     <div class="er-menu-wrap">
       <button type="button" class="er-btn icon" (click)="menu = menu === 'more' ? '' : 'more'; $event.stopPropagation()" aria-label="More actions">⋯</button>
       <div class="er-menu" *ngIf="menu === 'more'" (click)="$event.stopPropagation()">
@@ -68,13 +70,17 @@ type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
       <option value="expiring">Expiring in 30 days</option><option value="incomplete">Incomplete files</option>
       <option *ngFor="let v of myViews" [value]="'my:' + v.name">{{ v.name }}</option>
     </select>
+    <select [ngModel]="sortPick()" (ngModelChange)="setSort($event)" [attr.aria-label]="t('Sort')" class="er-view">
+      <option value="added">{{ t('Newest first') }}</option><option value="name">{{ t('Name A–Z') }}</option>
+      <option value="other" *ngIf="sortPick() === 'other'">{{ t('Column sort') }}</option>
+    </select>
     <select [(ngModel)]="f.branch" (ngModelChange)="load()" aria-label="Branch" [class.set]="f.branch"><option value="">Branch</option><option *ngFor="let o of look?.branches" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.department" (ngModelChange)="load()" aria-label="Department" [class.set]="f.department"><option value="">Department</option><option *ngFor="let o of look?.departments" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.designation" (ngModelChange)="load()" aria-label="Designation" [class.set]="f.designation"><option value="">Designation</option><option *ngFor="let o of look?.designations" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.category" (ngModelChange)="load()" aria-label="Category" [class.set]="f.category"><option value="">Category</option><option *ngFor="let o of look?.categories" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.status" (ngModelChange)="load()" aria-label="Status" [class.set]="f.status"><option value="">Status</option><option value="active">Active</option><option value="probation">On probation</option><option value="on_notice">Notice period</option><option value="left">Left</option></select>
     <select [(ngModel)]="f.nationality" (ngModelChange)="load()" aria-label="Nationality" [class.set]="f.nationality"><option value="">Nationality</option><option *ngFor="let o of look?.nationalities" [value]="o.value">{{ o.label }}</option></select>
-    <label class="er-date">Joined from <input type="date" [(ngModel)]="f.joined_from" (change)="load()"></label>
+    <label class="er-date">Joined from <z-date-field [(value)]="f.joined_from" (valueChange)="load()"></z-date-field></label>
     <select [(ngModel)]="f.expiring" (ngModelChange)="load()" aria-label="Documents expiring" [class.set]="f.expiring"><option value="">Documents expiring</option><option value="30">In 30 days</option><option value="60">In 60 days</option><option value="90">In 90 days</option></select>
     <button type="button" class="er-link" *ngIf="anyFilter()" (click)="clear()">Clear</button>
     <button type="button" class="er-link" *ngIf="anyFilter()" (click)="saveView()">Save view</button>
@@ -167,7 +173,7 @@ type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
       <option *ngFor="let k of kbFields" [value]="k.key">{{ k.label }}</option></select></label>
       <span class="zv-muted">{{ t('{0} employees', [shown.length]) }} · {{ t('open a card to see the employee') }}</span></div>
     <div class="er-kb">
-      <section class="er-kb-lane" *ngFor="let g of lanes()">
+      <section class="er-kb-lane" *ngFor="let g of lanes(); trackBy: trackLane">
         <header><span class="zv-dot" [ngClass]="g.tone"></span><b>{{ g.label }}</b><span class="zv-n">{{ g.rows.length }}</span></header>
         <div class="er-kb-cards">
           <div class="er-kb-card" *ngFor="let r of g.rows" (click)="open(r)" (keydown.enter)="open(r)" tabindex="0" role="link" [class.dim]="!r.is_active">
@@ -199,7 +205,9 @@ export class EmployeeListComponent implements OnInit {
   rows: any[] = []; shown: any[] = []; look: any = null; counters: any = {};
   q = ''; view = 'all'; mode: 'table' | 'cards' | 'kanban' | 'graph' | 'pivot' = 'table'; menu = ''; rowMenu = 0;
   f: any = { branch: '', department: '', designation: '', category: '', status: '', nationality: '', joined_from: '', expiring: '' };
-  sort = 'name'; dir = 1; per = 25; pg = 0; loading = true; busy = false;
+  // v1.62.1 (tester 30-10 item 182): newest first by default – sorted by name, a new employee landed on whatever page its
+  // name falls on (25 rows a page), so it was found only by searching
+  sort = 'added'; dir = -1; per = 25; pg = 0; loading = true; busy = false;
   canAdd = false; canDelete = false; sel = new Set<number>(); bulkDept = ''; bulkMgr = '';
   myViews: { name: string; f: any; q: string }[] = [];
   dmy = dmy; badgeClass = badgeClass; min = Math.min; t = i18nT;
@@ -222,6 +230,7 @@ export class EmployeeListComponent implements OnInit {
     try { const v = JSON.parse(localStorage.getItem('er_vs') || '{}'); if (v.kbBy) { this.kbBy = v.kbBy; } delete v.kbBy; this.vs = v; } catch { this.vs = {}; }
     try { const c = JSON.parse(localStorage.getItem('er_cols') || 'null'); if (c) { this.cols.forEach(x => { if (x.key in c) { x.on = c[x.key]; } }); } } catch { /* ignore */ }
     try { this.myViews = JSON.parse(localStorage.getItem('er_views') || '[]'); } catch { this.myViews = []; }
+    try { const o = localStorage.getItem('er_sort'); if (o === 'name') { this.sort = 'name'; this.dir = 1; } } catch { /* ignore */ }
     this.api.lookups().then(l => { this.look = l; this.cd.markForCheck(); }).catch(() => {});
     await this.load();
   }
@@ -250,6 +259,9 @@ export class EmployeeListComponent implements OnInit {
     if (k === 'year') { return r.joined ? String(r.joined).slice(0, 4) : i18nT('(none)'); }
     return r[k] || i18nT('(none)');
   }
+  /** v1.62.1 (as bug 30-10 #1): lanes() makes new lane objects on every check – without trackBy the cards were re-created on
+   *  the mouse-down and the click on a Kanban card was lost. */
+  trackLane(_i: number, g: { label: string }): string { return g.label; }
   lanes(): { label: string; rows: any[]; tone: string }[] {
     const m = new Map<string, any[]>();
     for (const r of this.shown) { const k = this.facet(r, this.kbBy); if (!m.has(k)) { m.set(k, []); } m.get(k)!.push(r); }
@@ -323,10 +335,16 @@ export class EmployeeListComponent implements OnInit {
   }
   clear(): void { this.q = ''; this.view = 'all'; Object.keys(this.f).forEach(k => this.f[k] = ''); this.load(); }
 
+  sortPick(): string { return this.sort === 'added' && this.dir < 0 ? 'added' : this.sort === 'name' && this.dir > 0 ? 'name' : 'other'; }
+  setSort(v: string): void {
+    if (v === 'added') { this.sort = 'added'; this.dir = -1; } else if (v === 'name') { this.sort = 'name'; this.dir = 1; } else { return; }
+    try { localStorage.setItem('er_sort', v); } catch { /* ignore */ }
+    this.pg = 0; this.applySort();
+  }
   sortBy(k: string): void { if (this.sort === k) { this.dir = -this.dir; } else { this.sort = k; this.dir = 1; } this.applySort(); }
   applySort(): void {
     const c = this.cols.find(x => x.key === this.sort);
-    const val = (r: any) => c?.sort ? c.sort(r) : (r[this.sort] ?? '');
+    const val = (r: any) => this.sort === 'added' ? (r.id || 0) : c?.sort ? c.sort(r) : (r[this.sort] ?? '');
     this.shown = [...this.rows].sort((a, b) => { const x = val(a), y = val(b); return (x > y ? 1 : x < y ? -1 : 0) * this.dir; });
     this.renderView();
     try { sessionStorage.setItem('er_order', JSON.stringify(this.shown.map(r => r.id))); } catch { /* ignore */ }
@@ -356,7 +374,9 @@ export class EmployeeListComponent implements OnInit {
       .afterClosed().subscribe(r => { if (r === 'imported') { this.load(); } });
   }
   create(): void {
-    const ref = this.dialog.open(CreateEmployeeComponent, { width: 'min(1180px, 96vw)', maxWidth: '96vw', height: '90vh', panelClass: 'er-create-dialog' });
+    const ref = this.dialog.open(EmployeeNewComponent, { width: 'min(980px, 96vw)', maxWidth: '96vw', maxHeight: '92vh', panelClass: 'er-create-dialog', autoFocus: false });
+    // v1.62.1 (tester 30-10 item 182): closed with Escape or a click outside, the window returns nothing – employees saved
+    // with "Save and add another" were then missing until the page was opened again; the list is read again on every close
     ref.afterClosed().subscribe(() => this.load());
   }
 
@@ -372,14 +392,14 @@ export class EmployeeListComponent implements OnInit {
     this.sel.clear(); await this.load();
   }
   async deactivate(rows: any[]): Promise<void> {
-    if (!rows.length || !confirm(rows.length === 1 ? `Deactivate ${rows[0].name}?` : `Deactivate ${rows.length} employees?`)) { return; }
+    if (!rows.length || !(await zConfirm(rows.length === 1 ? `Deactivate ${rows[0].name}?` : `Deactivate ${rows.length} employees?`))) { return; }
     let ok = 0;
     for (const r of rows) { try { await this.api.patch(`employee/api/Employee/${r.id}/`, { is_active: false }); ok++; } catch (e) { zToast(`${r.name}: ${ErService.error(e)}`, 'err'); } }
     if (ok) { zToast(`${ok} employee${ok === 1 ? '' : 's'} deactivated`, 'ok'); }
     this.sel.clear(); await this.load();
   }
   async remove(r: any): Promise<void> {
-    if (!confirm(`Delete ${r.name}? This cannot be undone.`)) { return; }
+    if (!(await zConfirm(`Delete ${r.name}? This cannot be undone.`))) { return; }
     try { await this.api.del(`employee/api/Employee/${r.id}/`); zToast(`${r.name} deleted`, 'ok'); await this.load(); }
     catch (e) { zToast(ErService.error(e, 'It could not be deleted. Deactivate the employee instead.'), 'err'); }
   }

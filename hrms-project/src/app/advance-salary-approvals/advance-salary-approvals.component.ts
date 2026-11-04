@@ -1,3 +1,6 @@
+import { inject as lnInject } from '@angular/core';
+import { Router as LnRouter } from '@angular/router';
+import { LnUiService } from '../loan-ui/ln-ui.service';   // v1.62.0 talent-ops
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
@@ -8,12 +11,53 @@ import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { UserMasterService } from '../user-master/user-master.service';
+import { openZReview } from '../shared-ui/z-review.component';   // v1.62.10 (item 167)
 @Component({
   selector: 'app-advance-salary-approvals',
   templateUrl: './advance-salary-approvals.component.html',
-  styleUrl: './advance-salary-approvals.component.css'
+  styleUrls: ['./advance-salary-approvals.component.css', '../loan-ui/ln.css']   // v1.62.0 talent-ops
 })
 export class AdvanceSalaryApprovalsComponent {
+  // v1.62.0 talent-ops: one row per request (/payroll-plus/api/loan-desk/approvals/); approve / reject through the existing endpoints
+  ln = lnInject(LnUiService);
+  private lnRouter = lnInject(LnRouter);
+  lnRows: any[] = [];
+  lnBox: 'waiting' | 'open' | 'decided' = 'waiting';
+  lnWaiting = 0;
+  lnOpen: number | null = null;
+  lnLoading = true;
+  lnMsg = '';
+  lnDone = '';
+  lnBusy = false;
+  lnAsk: any = null;
+  lnCanSee = false;   // v1.62.10 (item 167): the desk answered – an approver without the view right sees their own steps
+  private lnFirst = true;
+  lnBranches: number[] = [];
+  async lnLoad(): Promise<void> {
+    try {
+      let r: any = await this.ln.get('approvals', { kind: 'advance', box: this.lnBox, branch_id: this.lnBranches });
+      if (this.lnFirst && this.lnBox === 'waiting' && !(r.rows || []).length && r.open) {   // nothing for me: HR sees every request in approval
+        this.lnBox = 'open'; r = await this.ln.get('approvals', { kind: 'advance', box: 'open', branch_id: this.lnBranches });
+      }
+      this.lnFirst = false;
+      this.lnRows = r.rows || []; this.lnWaiting = r.waiting || 0; this.lnOpen = r.open ?? null; this.lnMsg = ''; this.lnCanSee = true;   // v1.62.10 (item 167)
+    } catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('The approvals could not be loaded.')); }
+    this.lnLoading = false;
+  }
+  lnSwitch(b: 'waiting' | 'open' | 'decided'): void { this.lnBox = b; this.lnLoading = true; this.lnRows = []; this.lnDone = ''; this.lnLoad(); }
+  lnGo(url: string): void { this.lnRouter.navigate([url]); }
+  lnDecide(r: any, what: 'approve' | 'reject'): void { this.lnAsk = { r, what, text: '' }; }
+  async lnConfirm(): Promise<void> {
+    const a = this.lnAsk; if (!a) { return; }
+    this.lnBusy = true;
+    try {
+      const body: any = a.what === 'approve' ? { note: a.text || '', status: 'Approved' } : { note: a.text || '', status: 'Rejected', rejection_reason: a.text };
+      await this.ln.post(`approval-salaryrequest/${a.r.approval_id}/${a.what}`, body);
+      this.lnDone = this.ln.t(a.what === 'approve' ? '{0} approved.' : '{0} rejected.', [a.r.number]);
+      this.lnAsk = null; await this.lnLoad();
+    } catch (e) { this.lnMsg = this.ln.err(e, this.ln.t('It could not be saved.')); this.lnAsk = null; }
+    this.lnBusy = false;
+  }
 
   
   private dataSubscription?: Subscription;
@@ -301,6 +345,7 @@ export class AdvanceSalaryApprovalsComponent {
 
 
 fetchEmployees(schema: string, branchIds: number[]): void {
+  this.lnBranches = branchIds || []; this.lnLoad();   // v1.62.0 talent-ops
   this.isLoading = true;
   this.EmployeeService.getApprovalslistadvSalaryNew(schema, branchIds).subscribe({
 next: (data: any) => {
@@ -379,7 +424,18 @@ note: string = '';  // To hold the note entered by the user
 
 
  // Fetching approval details when an item is clicked
+  // v1.62.10 (item 167): one shared review window (approve / reject with reason / delegate) instead of the old review and delegation pop-ups
+  async zReview(approvalId: number): Promise<void> {
+    const r = this.lnRows.find((x: any) => x.approval_id === approvalId);
+    const res = await openZReview(this.ln.review(r, 'advance', '/payroll/api/approval-salaryrequest/', approvalId));
+    if (!res) { return; }
+    this.lnDone = this.ln.t(res === 'approved' ? '{0} approved.' : res === 'rejected' ? '{0} rejected.' : '{0} delegated.', [r?.number || '']);
+    await this.lnLoad();
+    const sch = this.authService.getSelectedSchema();
+    if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+  }
  selectedaprovaldetalis(approvalId: number): void {
+    this.zReview(approvalId); return;   // v1.62.10 (item 167)
   const selectedSchema = this.authService.getSelectedSchema();
 
   if (selectedSchema) {

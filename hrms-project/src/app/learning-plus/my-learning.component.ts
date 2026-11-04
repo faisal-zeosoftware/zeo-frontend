@@ -1,6 +1,7 @@
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { LpApi } from './lp-api';
@@ -9,7 +10,7 @@ import { LpApi } from './lp-api';
 @Component({
   selector: 'app-my-learning',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],   // v1.62.0 talent-ops: RouterLink
   styleUrls: ['./learning-plus.css'],
   template: `
 <div class="lp-wrap">
@@ -18,8 +19,18 @@ import { LpApi } from './lp-api';
   </div>
   <p class="lp-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <p class="lp-muted" *ngIf="loading">Loading…</p>
+  <!-- v1.62.0 talent-ops: a login without an employee record (an HR administrator) gets a way on, not a red error -->
+  <div class="lp-card" *ngIf="data && !data.employee && !loading" data-no-employee>
+    <h2>No personal learning for this login</h2>
+    <p class="lp-muted" style="margin:0 0 10px">Your login is not linked to an employee, so there are no sessions or certificates of your own. The company's training is under:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <a class="lp-btn primary" routerLink="/main-sidebar/learning-options/reports" style="display:inline-flex;align-items:center;text-decoration:none">Learning reports</a>
+      <a class="lp-btn" routerLink="/main-sidebar/learning-options/calendar" style="display:inline-flex;align-items:center;text-decoration:none">Training calendar</a>
+      <a class="lp-btn" routerLink="/main-sidebar/learning-options/nominations" style="display:inline-flex;align-items:center;text-decoration:none">Nominations</a>
+    </div>
+  </div>
 
-  <ng-container *ngIf="data && !loading">
+  <ng-container *ngIf="data && data.employee && !loading">
     <div class="lp-tiles">
       <div class="lp-tile"><div class="k">Sessions</div><div class="v">{{ data.nominations.length }}</div></div>
       <div class="lp-tile"><div class="k">Online courses</div><div class="v">{{ data.online.length }}</div></div>
@@ -69,7 +80,7 @@ import { LpApi } from './lp-api';
                 <td>{{ n.course }}<div class="lp-muted">{{ n.session }}<span *ngIf="n.venue"> · {{ n.venue }}</span></div></td>
                 <td style="white-space:nowrap">{{ n.start_date | date:'dd/MM/yyyy' }}<span *ngIf="n.end_date !== n.start_date"> – {{ n.end_date | date:'dd/MM/yyyy' }}</span></td>
                 <td><span class="lp-tag" [ngClass]="tone(n.manager_status)">Mgr {{ n.manager_status }}</span> <span class="lp-tag" [ngClass]="tone(n.ld_status)">L&amp;D {{ n.ld_status }}</span></td>
-                <td><span class="lp-tag" [ngClass]="n.seat_status === 'confirmed' ? 'green' : n.seat_status === 'cancelled' ? 'red' : 'amber'">{{ n.seat_status }}</span></td>
+                <td><span class="lp-tag" [ngClass]="n.seat_status === 'confirmed' ? 'green' : n.seat_status === 'cancelled' ? 'red' : 'amber'">{{ (n.seat_status || '').charAt(0).toUpperCase() + (n.seat_status || '').slice(1) }}</span></td>
                 <td>{{ n.passed === null ? '–' : n.passed ? 'Passed' : 'Not passed' }}<div class="lp-muted" *ngIf="n.attendance_percent !== null">{{ n.attendance_percent }}% attended</div></td>
               </tr>
             </tbody>
@@ -81,7 +92,7 @@ import { LpApi } from './lp-api';
         <p class="lp-muted" *ngIf="!data.certificates.length">No certificates yet.</p>
         <div class="lp-mod" *ngFor="let c of data.certificates">
           <span class="t">{{ c.title }}<div class="lp-muted">{{ c.number || '' }} · issued {{ c.issued_on | date:'dd/MM/yyyy' }}<span *ngIf="c.expiry_date"> · expires {{ c.expiry_date | date:'dd/MM/yyyy' }}</span></div></span>
-          <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ c.status }}</span>
+          <span class="lp-tag" [ngClass]="c.status === 'valid' ? 'green' : c.status === 'expired' ? 'red' : c.status === 'expiring' ? 'amber' : 'grey'">{{ (c.status || '').charAt(0).toUpperCase() + (c.status || '').slice(1) }}</span><!-- v1.62.0 people: Valid, not valid -->
           <button type="button" class="lp-btn small" (click)="pdf(c.id, c.number)">PDF</button>
         </div>
       </div>

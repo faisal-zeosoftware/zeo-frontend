@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
 import { ZFieldInputComponent } from './z-field-input.component';
 import { DesignField, DesignerAdapter, FIELD_TYPES, SHOW_OPS, VISIBLE_PLACES, bySection, hasOptions, ruleKinds, typeLabel } from './field-types';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** Form designer for one screen: add, edit, order and preview the screen's extra fields. */
 @Component({
@@ -245,7 +246,7 @@ export class ZFieldDesignerComponent implements OnInit, OnDestroy {
         // the change does not fit values already entered: ask, then save anyway (the values stay until the records are edited)
         if (!e?.error?.needs_confirm) { throw e; }
         this.affected = e.error.affected || [];
-        if (!confirm(`${e.error.detail}\n\nSave the change anyway?`)) { throw e; }
+        if (!(await zConfirm(`${e.error.detail}\n\nSave the change anyway?`))) { throw e; }
         await send({ ...body, confirm: true });
       }
       this.changed = true; this.edit = null; this.affected = []; await this.load();
@@ -254,7 +255,7 @@ export class ZFieldDesignerComponent implements OnInit, OnDestroy {
   }
 
   async remove(): Promise<void> {
-    if (!confirm(`Delete “${this.edit.label}”? The values entered in it are deleted too.`)) { return; }
+    if (!(await zConfirm(`Delete “${this.edit.label}”? The values entered in it are deleted too.`))) { return; }
     try { if (this.adapter) { await this.adapter.remove(this.edit); } else { await firstValueFrom(this.rec.deleteField(this.edit.id)); } this.changed = true; this.edit = null; await this.load(); }
     catch (e: any) { this.error = e?.error?.detail || 'Not deleted.'; }
   }

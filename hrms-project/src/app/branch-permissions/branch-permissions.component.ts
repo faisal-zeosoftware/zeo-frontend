@@ -8,6 +8,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { combineLatest, Subscription } from 'rxjs';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-branch-permissions',
@@ -362,8 +363,8 @@ loadAssignedPermissionsForUser(): void {
 
 
   
-  deleteAssignedPermission(permissionId: number): void {
-    if (confirm('Are you sure you want to delete this permission?')) {
+  async deleteAssignedPermission(permissionId: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this permission?'))) {
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
       this.DepartmentServiceService.deleteBranchPermission(permissionId,selectedSchema).subscribe(
@@ -383,7 +384,7 @@ loadAssignedPermissionsForUser(): void {
   }
 
 
-  deleteSelectedPermissions(): void {
+  async deleteSelectedPermissions(): Promise<void> {
 
   const selectedPermissions = this.UserPermissions.filter(
     (permission: any) => permission.selected
@@ -394,7 +395,7 @@ loadAssignedPermissionsForUser(): void {
     return;
   }
 
-  if (!confirm('Are you sure you want to delete selected permissions?')) {
+  if (!(await zConfirm('Are you sure you want to delete selected permissions?'))) {
     return;
   }
 

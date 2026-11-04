@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { zFormThenReload, DOC_REQUEST_TYPE_FORM } from '../shared-ui/z-forms';   // v1.62.1
 import { HttpClient } from '@angular/common/http';
 import { CountryService } from '../country.service';
 import { DocumentEditComponent } from '../document-edit/document-edit.component';
@@ -11,6 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
 import { combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-document-request-type',
@@ -390,8 +392,8 @@ updateDocumentNumber(): void {
   }
 
 
-  deleteDoc(permissionId: number): void {
-    if (confirm('Are you sure you want to delete this Document type?')) {
+  async deleteDoc(permissionId: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this Document type?'))) {
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
       this.countryService.deleteAssignedPermission(permissionId,selectedSchema).subscribe(
@@ -430,6 +432,7 @@ updateDocumentNumber(): void {
 
 
 openPopus(): void {
+  zFormThenReload(DOC_REQUEST_TYPE_FORM); return;   // v1.62.1 new-design form
 
   this.iscreateLoanApp = true;
 
@@ -493,6 +496,7 @@ isEditModalOpen: boolean = false;
 editDocReqtype: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  zFormThenReload(DOC_REQUEST_TYPE_FORM, { id: asset?.id }); return;   // v1.62.1 new-design form
   this.editDocReqtype = { ...asset };
 
   this.mapBranchesNameToId();
@@ -506,7 +510,7 @@ this.editDocReqtype = {};
 }
 
 
-deleteSelectedDocumentReqType() { 
+async deleteSelectedDocumentReqType() { 
 const selectedEmployeeIds = this.filteredDocuments
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -516,7 +520,7 @@ alert('No States selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected Document Type ?')) {
+if ((await zConfirm('Are you sure you want to delete the selected Document Type ?'))) {
       let total = selectedEmployeeIds.length;
     let completed = 0;
 
@@ -658,4 +662,10 @@ filteredBranches() {
 
 }
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedDocumentReqType();
+  }
 }

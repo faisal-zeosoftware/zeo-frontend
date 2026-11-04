@@ -26,6 +26,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -785,8 +786,8 @@ attendanceData: any = null; // Define this at the class level
     }
 
 
-    onDeleteEmployee(employeeId: number): void {
-      if (confirm('Are you sure you want to delete this employee?')) {
+    async onDeleteEmployee(employeeId: number): Promise<void> {
+      if ((await zConfirm('Are you sure you want to delete this employee?'))) {
           this.EmployeeService.deleteEmployee(employeeId).subscribe(
               () => {
                   console.log('Employee deleted successfully');
@@ -857,8 +858,8 @@ employeefamAdd(section: string): void {
 
 
 
-  onDeleteEmployeeLanguage(id: number): void {
-    if (confirm('Are you sure you want to delete this language skill?')) {
+  async onDeleteEmployeeLanguage(id: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this language skill?'))) {
       this.EmployeeService.deleteEmployeeLanguageSkill(id).subscribe(
         () => {
           // Remove the skill from the local list
@@ -872,8 +873,8 @@ employeefamAdd(section: string): void {
     }
   }
 
-  onDeleteEmployeeProgramLanguage(id: number): void {
-    if (confirm('Are you sure you want to delete this program language skill?')) {
+  async onDeleteEmployeeProgramLanguage(id: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this program language skill?'))) {
       this.EmployeeService.deleteEmployeeProgramLanguageSkill(id).subscribe(
         () => {
           // Remove the skill from the local list
@@ -887,8 +888,8 @@ employeefamAdd(section: string): void {
     }
   }
 
-  onDeleteEmployeeMarketLanguage(id: number): void {
-    if (confirm('Are you sure you want to delete this Marketing language skill?')) {
+  async onDeleteEmployeeMarketLanguage(id: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this Marketing language skill?'))) {
       this.EmployeeService.deleteEmployeeMarketanguageSkill(id).subscribe(
         () => {
           // Remove the skill from the local list

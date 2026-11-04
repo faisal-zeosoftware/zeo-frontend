@@ -1171,3 +1171,8 @@
     font-size: 11px;
   }
 }
+/* v1.62.1 (tester 30-10 item 202): employee pager of the Create / Edit form */
+.ss-emp-pager { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.ss-emp-range { margin-inline-end: auto; color: #6b7280; font-size: 13px; }
+.ss-emp-per { font-size: 13px; color: #6b7280; display: inline-flex; gap: 6px; align-items: center; margin: 0; }
+.ss-emp-per select { border: 1px solid #d1d5db; border-radius: 6px; padding: 2px 6px; }

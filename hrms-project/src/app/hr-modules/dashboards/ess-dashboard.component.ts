@@ -10,6 +10,7 @@ import { ZStatusPipe } from '../../shared-ui/status-label';   // v1.15.1
 import { DashPeriod, DashPeriods, savedPeriod } from '../../shared-ui/z-dash-period';   // v1.16.0
 import { recordUrl } from '../../shared-ui/z-nav';
 import { I18N_UI, i18nT } from '../../shared-ui/i18n.service';   // v1.17.0: t / zdate
+import { zConfirm } from '../../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * Employee self-service home: today, 30-day attendance ribbon, leave, requests in every module,
@@ -177,9 +178,9 @@ export class EssDashboardComponent implements OnInit {
   }
 
   /** acknowledge the current version (OrgStructure my-policies/<id>/acknowledge/), then reload the dashboard */
-  ackPolicy(p: any, ev?: Event): void {
+  async ackPolicy(p: any, ev?: Event): Promise<void> {
     ev?.stopPropagation();
-    if (!confirm(i18nT('Confirm that you have read and accept “{0}”?', [p.title]))) { return; }
+    if (!(await zConfirm(i18nT('Confirm that you have read and accept “{0}”?', [p.title])))) { return; }
     this.busy = true;
     this.svc.ackPolicy(p.id).subscribe({
       next: () => { this.busy = false; this.msg = 'Thank you – the policy is acknowledged.'; this.msgErr = false; this.load(); },

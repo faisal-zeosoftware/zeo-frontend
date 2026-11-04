@@ -16,6 +16,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { TPipe, ZDatePipe, i18nT } from '../shared-ui/i18n.service';
 import { LV_STYLES } from './leavers.styles';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-leaver-case',
@@ -44,7 +45,7 @@ import { LV_STYLES } from './leavers.styles';
 .lv .stepper .st.cur .dot{border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 4px var(--acc2)}
 .lv .stepper .st .t{font-weight:700;color:var(--ink);font-size:12.5px}
 .lv .stepper .st .w{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.35}
-.lv .facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line);border-radius:0 0 14px 14px;overflow:hidden}
+.lv .facts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line);border-radius:0 0 14px 14px;overflow:hidden}
 @media (max-width:1150px){.lv .facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .lv .facts div{background:#fff;padding:11px 16px}
 .lv .facts span{display:block;font-size:11.5px;color:var(--mut);font-weight:600}
@@ -97,6 +98,24 @@ import { LV_STYLES } from './leavers.styles';
 .lv .addl .full{grid-column:1 / -1;display:flex;gap:8px}
 .lv .addl .full input{flex:1}
 .lv .nocalc{padding:28px 22px;text-align:center}
+/* v1.62.11 (EOS settings): 6 facts a row (Emirates ID, contract type added) */
+.lv .brk{margin:8px 0 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12px}
+.lv .brk div{display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-bottom:1px solid #f0f1f5}
+.lv .brk div:last-child{border-bottom:0}
+.lv .brk .x{color:var(--mut);background:#fafbfd}
+.lv .netbox.rec{background:#7a2a2a}
+.lv .jrn{margin:0 18px 14px;font-size:12.5px;color:var(--ink2);display:flex;gap:10px;flex-wrap:wrap}
+.lv .ent{padding:4px 18px 16px}
+.lv .ent .row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid #f0f1f5}
+.lv .ent .row:last-of-type{border-bottom:0}
+.lv .ent .row > b{font-size:12.5px;color:var(--ink);padding-top:8px}
+.lv .ent .in{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lv .ent .in .f{flex:1 1 140px}
+.lv .ent .in .f.n{flex:0 0 120px}
+.lv .ent .calc{font-size:11.5px;color:var(--mut);flex-basis:100%}
+.lv .ent .foot{display:flex;justify-content:flex-end;gap:8px;padding-top:10px}
+@media (max-width:700px){.lv .ent .row{grid-template-columns:1fr}.lv .ent .row > b{padding-top:0}}
+.lv .wf{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
 .lv .nocalc p{color:var(--mut);max-width:520px;margin:6px auto 16px;line-height:1.5}
 `],
   template: `
@@ -115,8 +134,8 @@ import { LV_STYLES } from './leavers.styles';
         <div class="meta" *ngIf="s?.number || c.document_number">{{ s?.number ? ('Settlement {0}' | t:s.number) : '' }}<ng-container *ngIf="s?.number && c.document_number"> · </ng-container>{{ c.document_number ? ('Exit document {0}' | t:c.document_number) : '' }}</div>
       </div>
       <div class="pay">
-        <span>Net payable</span>
-        <b class="num" *ngIf="s"><small>AED</small>{{ s.net | number:'1.2-2' }}</b>
+        <span>{{ s?.recoverable ? ('Net recoverable from the employee' | t) : ('Net payable' | t) }}</span>   <!-- v1.62.11 (EOS settings) -->
+        <b class="num" *ngIf="s"><small>AED</small>{{ (s.recoverable ? -s.net : s.net) | number:'1.2-2' }}</b>
         <b class="mut" *ngIf="!s" style="font-size:16px">Not calculated</b>
         <ng-container *ngIf="c.stage === 'paid'"><span class="chip ok">{{ 'Paid {0}' | t:(c.paid_on | zdate) }}</span></ng-container>
         <ng-container *ngIf="c.stage !== 'paid' && c.stage !== 'cancelled'">
@@ -148,6 +167,8 @@ import { LV_STYLES } from './leavers.styles';
       <div><span>Exit type</span><b>{{ c.exit_type_label }}</b></div>
       <div><span>Branch</span><b>{{ c.branch || '–' }}</b></div>
       <div><span>Reason</span><b style="font-weight:500" [attr.title]="c.reason">{{ c.reason || '–' }}</b></div>
+      <div><span>{{ 'Emirates ID' | t }}</span><b class="num">{{ c.emirates_id || '–' }}</b></div>   <!-- v1.62.11 (EOS settings) -->
+      <div><span>{{ 'Contract type' | t }}</span><b>{{ c.contract_type || '–' }}</b></div>
     </div>
   </div>
 
@@ -162,7 +183,12 @@ import { LV_STYLES } from './leavers.styles';
         <div class="sec"><span>Earnings</span><span class="num">{{ s.total_earnings | number:'1.2-2' }}</span></div>
         <div class="ln" *ngFor="let l of earnings">
           <div><div class="lb">{{ l.label }}</div><div class="bs" *ngIf="l.basis">{{ l.basis }}</div>
-            <ul class="calc" *ngIf="l.calc?.length"><li *ngFor="let x of l.calc">{{ x }}</li></ul>
+            <ul class="calc" *ngIf="l.calc?.length && !l.breakup?.length"><li *ngFor="let x of l.calc">{{ x }}</li></ul>
+            <div class="brk" *ngIf="l.breakup?.length" data-salary-breakup>   <!-- v1.62.11 (EOS settings): one line per month -->
+              <div *ngFor="let b of l.breakup"><span>{{ b.label }}</span><b class="num">{{ b.amount | number:'1.2-2' }}</b></div>
+              <div class="x" *ngFor="let x of l.excluded"><span>{{ 'Left out of the final salary: {0}' | t:x.name }}</span><span class="num">{{ x.amount | number:'1.2-2' }}</span></div>
+            </div>
+            <div class="by" *ngIf="l.manual_input && l.by">{{ 'Entered by {0}' | t:l.by }}</div>
             <div class="by" *ngIf="l.manual">{{ 'Added by {0}' | t:l.by }}<ng-container *ngIf="r.edit"> · <button type="button" class="lv-link" (click)="removeLine(l)">Remove</button></ng-container></div></div>
           <div class="am num">{{ l.amount | number:'1.2-2' }}</div>
         </div>
@@ -172,14 +198,19 @@ import { LV_STYLES } from './leavers.styles';
         <div class="ln d" *ngFor="let l of deductions">
           <div><div class="lb">{{ l.label }}</div><div class="bs" *ngIf="l.basis">{{ l.basis }}</div>
             <ul class="calc" *ngIf="l.calc?.length"><li *ngFor="let x of l.calc">{{ x }}</li></ul>
+            <div class="by" *ngIf="l.manual_input && l.by">{{ 'Entered by {0}' | t:l.by }}</div>
             <div class="by" *ngIf="l.manual || (l.section === 'assets' && l.by)">{{ (l.manual ? 'Added by {0}' : 'Decided by {0}') | t:l.by }}<ng-container *ngIf="r.edit && l.manual"> · <button type="button" class="lv-link" (click)="removeLine(l)">Remove</button></ng-container></div></div>
           <div class="am num">−{{ l.amount | number:'1.2-2' }}</div>
         </div>
         <div class="ln" *ngIf="!deductions.length"><div class="mut">No deductions.</div><div></div></div>
 
-        <div class="netbox">
-          <div><span>Net payable</span><em>{{ s.net_words }}</em></div>
-          <b class="num">AED {{ s.net | number:'1.2-2' }}</b>
+        <div class="netbox" [class.rec]="s.recoverable">
+          <div><span>{{ s.net_label || ('Net payable' | t) }}</span><em>{{ s.net_words }}</em></div>
+          <b class="num">AED {{ (s.recoverable ? -s.net : s.net) | number:'1.2-2' }}</b>
+        </div>
+        <div class="jrn" *ngIf="s.journal || s.accounting_date">   <!-- v1.62.11 (EOS settings) -->
+          <span *ngIf="s.journal"><span class="material-icons" style="font-size:15px;vertical-align:-3px">account_balance</span> {{ 'Journal {0}' | t:s.journal.number }} · <span class="chip" [class.ok]="s.journal.status === 'posted' || s.journal.status === 'exported'">{{ s.journal.status_label }}</span></span>
+          <span *ngIf="s.accounting_date">{{ 'Accounting date {0}' | t:(s.accounting_date | zdate) }}</span>
         </div>
         <div class="notes" *ngIf="infos.length"><h3 style="margin-bottom:6px">Notes</h3>
           <div *ngFor="let l of infos">{{ l.label }}<span class="mut" *ngIf="l.basis"> – {{ l.basis }}</span></div></div>
@@ -190,7 +221,39 @@ import { LV_STYLES } from './leavers.styles';
           <label class="fl">Description<input class="f" [(ngModel)]="nl.label" name="nlb" placeholder="For example: traffic fine"></label>
           <label class="fl">Amount (AED)<input class="f num" type="number" min="0" step="0.01" [(ngModel)]="nl.amount" name="nam"></label>
           <div class="full"><input class="f" [(ngModel)]="nl.note" name="nnt" placeholder="Note (shown on the statement)">
+            <input class="f" style="flex:0 0 150px" [(ngModel)]="nl.account" name="nac" [placeholder]="'Account (optional)' | t" [attr.aria-label]="'Account (optional)' | t">
             <button type="button" class="lv-btn primary" [disabled]="busy || !nl.label || !(nl.amount > 0)" (click)="addLine()">Add line</button></div>
+        </div>
+      </div>
+
+      <!-- v1.62.11 (EOS settings): HR's entries on the draft -->
+      <div class="card no-print" style="margin-top:16px" *ngIf="s && r.inputs" data-eos-entries>
+        <div class="ch"><h2>{{ 'HR entries' | t }}</h2><span class="mut" style="font-size:12px">{{ 'Saving calculates the draft again' | t }}</span></div>
+        <div class="ent">
+          <div class="row"><b>{{ 'Unpaid salary from' | t }}</b><div class="in">
+            <input class="f n" type="date" [(ngModel)]="en.salary_from" name="esf" [attr.aria-label]="'Unpaid salary from' | t" style="flex:0 0 170px">
+            <span class="calc">{{ 'Calculated: {0} (the day after the last payroll month)' | t:(comp.salary_from | zdate) }}</span></div></div>
+          <div class="row"><b>{{ 'Gratuity adjustment' | t }}</b><div class="in">
+            <input class="f n num" type="number" step="0.01" [(ngModel)]="en.ga_amount" name="ega" [placeholder]="'+ / − AED' | t" [attr.aria-label]="'Gratuity adjustment' | t">
+            <input class="f" [(ngModel)]="en.ga_reason" name="egr" [placeholder]="'Reason (required)' | t" [attr.aria-label]="'Reason' | t"></div></div>
+          <div class="row"><b>{{ 'Leave balance' | t }}</b><div class="in">
+            <input class="f n num" type="number" step="0.01" [(ngModel)]="en.lb_days" name="elb" [placeholder]="'Days' | t" [attr.aria-label]="'Leave balance' | t">
+            <input class="f" [(ngModel)]="en.lb_reason" name="elr" [placeholder]="'Reason (required)' | t" [attr.aria-label]="'Reason' | t">
+            <span class="calc" *ngIf="comp.leave_days !== undefined">{{ 'Calculated: {0} days – an entry replaces it' | t:comp.leave_days }}</span></div></div>
+          <div class="row" *ngIf="rules.leave_daily === 'contract'"><b>{{ 'Contract leave days' | t }}</b><div class="in">
+            <input class="f n num" type="number" min="1" max="366" [(ngModel)]="en.cld" name="ecl" [placeholder]="comp.contract_leave_days || ''" [attr.aria-label]="'Contract leave days' | t">
+            <span class="calc" *ngIf="comp.contract_leave_days">{{ 'Used: {0} days ({1})' | t:comp.contract_leave_days:(cldFrom[comp.contract_leave_days_from] || '' | t) }}</span></div></div>
+          <div class="row"><b>{{ 'Unpaid leave days' | t }}</b><div class="in">
+            <input class="f n num" type="number" min="0" step="0.5" [(ngModel)]="en.ud_days" name="eud" [placeholder]="'Days' | t" [attr.aria-label]="'Unpaid leave days' | t">
+            <input class="f" [(ngModel)]="en.ud_reason" name="eur" [placeholder]="'Reason (required)' | t" [attr.aria-label]="'Reason' | t">
+            <span class="calc" *ngIf="comp.unpaid_days !== undefined">{{ 'Calculated: {0} days (taken off the service)' | t:comp.unpaid_days }}</span></div></div>
+          <div class="row"><b>{{ 'Air ticket' | t }}</b><div class="in">
+            <input class="f n num" type="number" min="0" step="0.01" [(ngModel)]="en.at_amount" name="eaa" [placeholder]="'AED' | t" [attr.aria-label]="'Air ticket amount' | t">
+            <input class="f" [(ngModel)]="en.at_sector" name="eas" [placeholder]="'Sector, e.g. DXB-COK-DXB' | t" [attr.aria-label]="'Sector' | t">
+            <input class="f n" [(ngModel)]="en.at_class" name="eac" [placeholder]="'Class' | t" [attr.aria-label]="'Class' | t">
+            <input class="f n num" type="number" min="0" [(ngModel)]="en.at_travellers" name="eat" [placeholder]="'Travellers' | t" [attr.aria-label]="'Travellers' | t">
+            <span class="calc">{{ rules.air_ticket === 'hr' ? ('Entered by HR: this amount is paid, the policy amount is only shown.' | t) : ('Added to the air ticket of the policy.' | t) }}</span></div></div>
+          <div class="foot"><button type="button" class="lv-btn primary" [disabled]="busy" (click)="saveEntries()" data-eos-save-entries><span class="material-icons">save</span>{{ 'Save and calculate' | t }}</button></div>
         </div>
       </div>
 
@@ -237,6 +300,21 @@ import { LV_STYLES } from './leavers.styles';
             <textarea class="f" rows="2" [(ngModel)]="reason" name="rj" placeholder="Reason for sending it back to HR"></textarea>
             <button type="button" class="lv-btn danger" [disabled]="busy || !reason" (click)="act('reject')"><span class="material-icons">undo</span>Send back to HR</button>
           </ng-container>
+          <!-- v1.62.11 (EOS settings): reset to draft, cancel with the journal, delete a draft -->
+          <div class="wf" *ngIf="r.reset || r.cancel_any" data-eos-workflow>
+            <textarea class="f" rows="2" [(ngModel)]="wfReason" name="wfr" [placeholder]="'Reason (required)' | t" [attr.aria-label]="'Reason' | t"></textarea>
+            <div class="row2">
+              <button type="button" class="lv-btn" *ngIf="r.reset" [disabled]="busy || !wfReason" (click)="flow('reset')"><span class="material-icons">restart_alt</span>{{ 'Reset to draft' | t }}</button>
+              <button type="button" class="lv-btn danger" *ngIf="r.cancel_any" [disabled]="busy || !wfReason" (click)="flow('cancel')"><span class="material-icons">cancel</span>{{ 'Cancel settlement' | t }}</button>
+            </div>
+            <span class="mut" style="font-size:11.5px" *ngIf="s.journal">{{ 'Its journal {0} is cancelled (or reversed when posted).' | t:s.journal.number }}</span>
+          </div>
+          <div class="wf" *ngIf="r.delete"><button type="button" class="lv-btn danger" [disabled]="busy" (click)="del()"><span class="material-icons">delete</span>{{ 'Delete this draft' | t }}</button></div>
+          <div class="wf" *ngIf="r.accounting_date && !(s.journal && (s.journal.status === 'posted' || s.journal.status === 'exported'))">
+            <label class="fl">{{ 'Accounting date' | t }}<div style="display:flex;gap:8px"><input class="f" type="date" style="flex:1" [(ngModel)]="accDate" name="acd">
+              <button type="button" class="lv-btn sm" [disabled]="busy" (click)="saveAccDate()">{{ 'Save' | t }}</button></div></label>
+            <span class="mut" style="font-size:11.5px">{{ 'Empty = the payment date, else the last working day.' | t }}</span>
+          </div>
         </div>
       </div>
 
@@ -275,6 +353,13 @@ import { LV_STYLES } from './leavers.styles';
           <div class="a">{{ h.label }}</div><div class="w">{{ h.by }}<ng-container *ngIf="h.at"> · <span class="num">{{ h.at | zdate:'datetime' }}</span></ng-container></div>
           <div class="n" *ngIf="h.note">{{ h.note }}</div></li></ul>
       </div>
+      <div class="card" style="margin-top:16px" *ngIf="!mine && c.deleted_settlements?.length">   <!-- v1.62.11 (EOS settings) -->
+        <div class="ch"><h2>{{ 'Deleted drafts' | t }}</h2></div>
+        <ul class="tl"><li class="ret" *ngFor="let x of c.deleted_settlements">
+          <div class="a">{{ 'Draft {0} deleted' | t:(x.number || '–') }} · <span class="num">AED {{ x.net | number:'1.2-2' }}</span></div>
+          <div class="w">{{ x.by }} · <span class="num">{{ x.at | zdate:'datetime' }}</span></div><div class="n" *ngIf="x.note">{{ x.note }}</div>
+          <div class="n mut">{{ histText(x.history) }}</div></li></ul>
+      </div>
     </div>
   </div>
   <iframe #pf class="no-print" style="position:absolute;width:0;height:0;border:0;visibility:hidden" title="print"></iframe>
@@ -285,7 +370,10 @@ export class LeaverCaseComponent implements OnInit {
   c: any = null; s: any = null; r: any = {}; loading = true; busy = false; mine = false; rtl = false;
   earnings: any[] = []; deductions: any[] = []; infos: any[] = []; blocks: any[] = []; history: any[] = []; stepRows: any[] = [];
   openAssets = 0; decidedAssets = 0; hasNoticeShort = false; msg = ''; msgErr = false; reason = ''; payRef = ''; paidOn = new Date().toISOString().slice(0, 10);
-  nl: any = { kind: 'deduction', label: '', amount: null, note: '' }; af: any = null; id = 0;
+  nl: any = { kind: 'deduction', label: '', amount: null, note: '', account: '' }; af: any = null; id = 0;
+  // v1.62.11 (EOS settings)
+  en: any = {}; comp: any = {}; rules: any = {}; wfReason = ''; accDate = '';
+  cldFrom: Record<string, string> = { settlement: 'entered on this settlement', policy: 'annual leave policy', company: 'company setting' };
   constructor(private http: HttpClient, private rec: ZRecordService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
   private url(p: string): string { return `${this.rec.api}/payroll-plus/api/${p}?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`; }
   media(p: string): string { return /^https?:/.test(p) ? p : this.rec.api + p; }
@@ -317,6 +405,14 @@ export class LeaverCaseComponent implements OnInit {
     this.blocks = ls.filter(l => l.kind === 'block');
     this.hasNoticeShort = ls.some(l => l.key === 'notice_short');
     this.history = this.s?.history || [];
+    // v1.62.11 (EOS settings): HR's entries, what the records give, the rules
+    const ip = this.s?.inputs || {};
+    this.comp = this.s?.computed || {}; this.rules = this.s?.rules || c.eos_rules || {};
+    this.en = { salary_from: ip.salary_from || '', ga_amount: ip.gratuity_adjustment?.amount ?? null, ga_reason: ip.gratuity_adjustment?.reason || '',
+      lb_days: ip.leave_balance?.days ?? null, lb_reason: ip.leave_balance?.reason || '', ud_days: ip.unpaid_days?.days ?? null, ud_reason: ip.unpaid_days?.reason || '',
+      cld: ip.contract_leave_days ?? null, at_amount: ip.air_ticket?.amount ?? null, at_sector: ip.air_ticket?.sector || '', at_class: ip.air_ticket?.travel_class || '',
+      at_travellers: ip.air_ticket?.travellers ?? null };
+    this.accDate = this.s?.accounting_date || '';
     this.openAssets = (c.assets || []).filter((a: any) => a.state === 'not_returned' && !a.decision).length;
     this.decidedAssets = (c.assets || []).filter((a: any) => a.state === 'not_returned' && a.decision).length;
     const last = (acts: string[]) => { const h = [...this.history].reverse().find(x => acts.includes(x.action)); return h ? { by: h.by, at: h.at } : {}; };
@@ -340,7 +436,7 @@ export class LeaverCaseComponent implements OnInit {
     if (action === 'recalculate') { body.notice_waived = this.s.notice_waived; }
     if (action === 'pay') { body.payment_ref = this.payRef; body.paid_on = this.paidOn; }
     if (action === 'reject') { body.reason = this.reason; body.note = this.reason; }
-    if (action === 'submit' && !confirm(i18nT('Submit this settlement to Finance? It cannot be changed until it is sent back.'))) { return; }
+    if (action === 'submit' && !(await zConfirm(i18nT('Submit this settlement to Finance? It cannot be changed until it is sent back.')))) { return; }
     this.busy = true;
     try {
       await firstValueFrom(this.http.post<any>(this.url(`settlements/${this.s.id}/${action}/`), body));
@@ -352,18 +448,55 @@ export class LeaverCaseComponent implements OnInit {
     } catch (e: any) { this.say(this.err(e), true); await this.load(); }
     this.busy = false; this.cd.detectChanges();
   }
+  // v1.62.11 (EOS settings): HR's entries, accounting date, reset / cancel / delete
+  private v(x: any): boolean { return x !== null && x !== undefined && x !== ''; }
+  async saveEntries(): Promise<void> {
+    const e = this.en;
+    const body: any = {
+      salary_from: e.salary_from || null,
+      gratuity_adjustment: this.v(e.ga_amount) && +e.ga_amount !== 0 ? { amount: e.ga_amount, reason: e.ga_reason } : { amount: 0 },
+      leave_balance: this.v(e.lb_days) ? { days: e.lb_days, reason: e.lb_reason } : null,
+      unpaid_days: this.v(e.ud_days) ? { days: e.ud_days, reason: e.ud_reason } : null,
+      air_ticket: this.v(e.at_amount) ? { amount: e.at_amount, sector: e.at_sector, travel_class: e.at_class, travellers: e.at_travellers || 0 } : null,
+    };
+    if (this.rules.leave_daily === 'contract') { body.contract_leave_days = this.v(e.cld) ? e.cld : null; }
+    await this.post('inputs', body, 'Entries saved – the draft is calculated again.');
+  }
+  async saveAccDate(): Promise<void> { await this.post('inputs', { accounting_date: this.accDate || null }, 'Accounting date saved.'); }
+  async flow(action: 'reset' | 'cancel'): Promise<void> {
+    const q = action === 'reset' ? 'Reset this settlement to draft? Its approvals are cleared and an open journal is cancelled.' : 'Cancel this settlement? Its journal is cancelled, or reversed when it is posted.';
+    if (!(await zConfirm(i18nT(q)))) { return; }
+    await this.post(action, { note: this.wfReason }, action === 'reset' ? 'Reset to draft.' : 'Settlement cancelled.');
+    this.wfReason = '';
+  }
+  private async post(action: string, body: any, done: string): Promise<void> {
+    this.busy = true;
+    try { await firstValueFrom(this.http.post<any>(this.url(`settlements/${this.s.id}/${action}/`), body)); await this.load(); this.say(i18nT(done)); }
+    catch (e: any) { this.say(this.err(e), true); }
+    this.busy = false; this.cd.detectChanges();
+  }
+  async del(): Promise<void> {
+    if (!(await zConfirm(i18nT('Delete this draft settlement? Its history stays on the leaver.')))) { return; }
+    this.busy = true;
+    try {
+      await firstValueFrom(this.http.delete<any>(this.url(`settlements/${this.s.id}/`), { body: { note: this.wfReason } } as any));
+      await this.load(); this.say(i18nT('Draft deleted.'));
+    } catch (e: any) { this.say(this.err(e), true); }
+    this.busy = false; this.cd.detectChanges();
+  }
+  histText(h: any[]): string { return (h || []).map(x => x.label).join(' → '); }
   async addLine(): Promise<void> {
     this.busy = true;
     try {
       await firstValueFrom(this.http.post<any>(this.url(`settlements/${this.s.id}/lines/`), this.nl));
-      this.nl = { kind: 'deduction', label: '', amount: null, note: '' };
+      this.nl = { kind: 'deduction', label: '', amount: null, note: '', account: '' };
       await this.load(); this.say(i18nT('Line added.'));
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();
   }
   async removeLine(l: any): Promise<void> {
     const id = String(l.key || '').replace('other_', '');
-    if (!confirm(i18nT('Remove this line?'))) { return; }
+    if (!(await zConfirm(i18nT('Remove this line?')))) { return; }
     this.busy = true;
     try { await firstValueFrom(this.http.delete<any>(this.url(`settlements/${this.s.id}/lines/${id}/`))); await this.load(); this.say(i18nT('Line removed.')); }
     catch (e: any) { this.say(this.err(e), true); }
@@ -371,7 +504,7 @@ export class LeaverCaseComponent implements OnInit {
   }
   async decide(a: any, decision: string, f: any = null): Promise<void> {
     if (!this.s) { this.say(i18nT('Calculate the settlement first.'), true); return; }
-    if (decision === 'returned' && !confirm(i18nT('Record that {0} was returned?', [a.name]))) { return; }
+    if (decision === 'returned' && !(await zConfirm(i18nT('Record that {0} was returned?', [a.name])))) { return; }
     this.busy = true;
     try {
       await firstValueFrom(this.http.post<any>(this.url(`settlements/${this.s.id}/assets/`), { key: a.key, decision, amount: f?.amount, note: f?.note || '' }));

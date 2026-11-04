@@ -1,69 +1,67 @@
-<div class="container" *ngIf="hasViewPermission">
+<!-- v1.62.10 (item 167): an approver without the view right still sees what waits for them (the server returns only their own steps), as on Air ticket approvals -->
+<div class="container" *ngIf="hasViewPermission || lnCanSee">
 
   <div class="comapny_section">
 
-    <!-- ================= HEADER CARD ================= -->
-    <div class="header-card">
-
-      <div class="row align-items-center">
-
-        <!-- Title -->
-        <div class="col-md-4">
-          <h2 class="page-title">
-            Advance salary approvals
-          </h2>
+<!-- v1.62.0 talent-ops: one row per request with its stage; Approve / Reject in the list for the steps waiting for me -->
+    <div class="header_section">
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Advance salary approvals</h1>
+          <p class="at-desc">One row per advance salary request with the level it has reached. Approve or reject the requests waiting for you right here; Review shows the full request and lets you delegate.</p>
         </div>
-
-        <!-- Search -->
-        <div class="col-md-4">
-
-          
-
+        <div class="at-actions">
+          <button type="button" class="at-btn" (click)="lnGo('/main-sidebar/salary-options/advance-salary-request')">{{ ln.t('All requests') }}</button>
         </div>
-
-        <!-- Filter -->
-        <div class="col-md-4 text-md-right">
-
-          
-
-        </div>
-
       </div>
-
     </div>
 
-
-    <!-- ================= APPROVAL CARDS ================= -->
-
-    <div class="approval-list apr-list">
-
-      <!-- v1.20.1: approvals as a standard list (search, filters, group by, export from the list bar) -->
-  <table class="table zl-apr-table">
-    <thead>
-      <tr><th>Request</th><th>Employee</th><th>Level</th><th>Reason / note</th><th>Approver</th><th>Status</th><th style="width:150px"></th></tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let apr of filteredApprovals">
-        <td><a class="apr-link" (click)="selectedaprovaldetalis(apr.id)">{{ apr.request }}</a></td>
-        <td>{{ apr.employee || '—' }}</td>
-        <td>{{ apr.level }}</td>
-        <td>{{ apr.note || '—' }}</td>
-        <td>{{ apr.approver }}</td>
-        <td><span
-            class="status-badge"
-            [ngClass]="{
-              'status-pending': apr.status === 'Pending',
-              'status-approved': apr.status === 'Approved',
-              'status-rejected': apr.status === 'Rejected'
-            }"
-          >{{ apr.status }}</span></td>
-        <td class="text-end apr-acts">
-          <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectedaprovaldetalis(apr.id)">View</button>
-          <button *ngIf="apr.is_deligate" type="button" class="btn btn-sm btn-light" (click)="apr.showDelegation = !apr.showDelegation">{{ apr.showDelegation ? 'Hide delegation' : 'Delegation' }}</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="com_list mt-4">
+      <div class="at-tabs" role="tablist" data-ln-boxes>
+        <button type="button" [class.on]="lnBox === 'waiting'" (click)="lnSwitch('waiting')" data-box="waiting">{{ ln.t('Waiting for me') }}<span class="n">{{ lnWaiting }}</span></button>
+        <button type="button" *ngIf="lnOpen !== null" [class.on]="lnBox === 'open'" (click)="lnSwitch('open')" data-box="open">{{ ln.t('All in approval') }}<span class="n">{{ lnOpen }}</span></button>
+        <button type="button" [class.on]="lnBox === 'decided'" (click)="lnSwitch('decided')" data-box="decided">{{ ln.t('Decided') }}</button>
+      </div>
+      <p class="at-msg" *ngIf="lnDone">{{ lnDone }}</p>
+      <p class="at-msg err" *ngIf="lnMsg">{{ lnMsg }}</p>
+      <p class="at-muted" *ngIf="lnLoading">{{ ln.t('Loading…') }}</p>
+      <div class="ln-wrap" *ngIf="!lnLoading && lnRows.length">
+      <table class="table at-table ln-table" zPlain data-ln-approvals>
+        <thead><tr><th>{{ ln.t('Request') }}</th><th>{{ ln.t('Employee') }}</th><th>{{ ln.t('Reason') }}</th><th class="num">{{ ln.t('Amount') }}</th><th>{{ ln.t('Stage') }}</th><th>{{ ln.t('Approvals') }}</th><th class="at-acts">{{ ln.t('Actions') }}</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let r of lnRows" [attr.data-ln-row]="r.id">
+            <td class="nw"><span class="at-code">{{ r.number }}</span><span class="at-sub">{{ ln.dmy(r.applied) }}</span></td>
+            <td class="at-who"><b>{{ r.employee }}</b><small>{{ r.code }}<ng-container *ngIf="r.branch"> · {{ r.branch }}</ng-container></small></td>
+            <td class="ln-note" [title]="r.note || ''">{{ r.note || '–' }}</td>
+            <td class="num ln-amt">{{ ln.money(r.amount) }}<small>{{ ln.t('One deduction') }}</small></td>
+            <td><span class="at-st" [ngClass]="r.for_me && r.stage === 'in_approval' ? 'warn' : ln.stageClass(r.stage)">{{ r.for_me && r.stage === 'in_approval' ? ln.t('Waiting for me') : ln.stage(r.stage, 'advance') }}</span><span class="at-sub" *ngIf="ln.progress(r)">{{ ln.progress(r) }}</span></td>
+            <td><div class="ln-steps"><span *ngFor="let s of r.steps" [ngClass]="ln.stepClass(s.status)" [title]="ln.stepWord(s.status) + (s.reason || s.note ? ' – ' + (s.reason || s.note) : '')">{{ ln.t('L{0}', [s.level]) }} {{ s.who || s.role || '–' }}</span></div></td>
+            <td class="at-acts">
+              <ng-container *ngIf="r.can_act">
+                <button type="button" class="at-btn sm primary" (click)="lnDecide(r, 'approve')" data-ln-approve>{{ ln.t('Approve') }}</button>
+                <button type="button" class="at-btn sm danger" (click)="lnDecide(r, 'reject')" data-ln-reject>{{ ln.t('Reject') }}</button>
+              </ng-container>
+              <button type="button" class="at-btn sm" (click)="selectedaprovaldetalis(r.approval_id)" *ngIf="r.approval_id">{{ ln.t(r.can_act ? 'Review' : 'View') }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="at-empty" *ngIf="!lnLoading && !lnMsg && !lnRows.length" data-ln-empty>
+        <b>{{ ln.t(lnBox === 'waiting' ? 'Nothing is waiting for your approval.' : lnBox === 'open' ? 'No request is in approval.' : 'No decided request yet.') }}</b>
+        {{ ln.t(lnBox === 'waiting' ? (lnOpen ? 'Requests waiting for other approvers are under All in approval.' : 'New requests for you will appear here.') : lnBox === 'open' ? 'New requests appear here until the last level approves them.' : 'Requests you approve or reject will appear here.') }}
+      </div>
+      <div class="ln-dlg-bg" *ngIf="lnAsk" (click)="lnAsk = null">
+        <div class="ln-dlg" (click)="$event.stopPropagation()" role="dialog" data-ln-dialog>
+          <h3>{{ ln.t(lnAsk.what === 'approve' ? 'Approve {0}?' : 'Reject {0}?', [lnAsk.r.number]) }}</h3>
+          <p>{{ lnAsk.r.employee }} · {{ ln.money(lnAsk.r.amount) }}<ng-container *ngIf="lnAsk.r.progress?.total > 1"> · {{ ln.t('Level {0} of {1}', [lnAsk.r.level, lnAsk.r.progress.total]) }}</ng-container></p>
+          <textarea [(ngModel)]="lnAsk.text" [ngModelOptions]="{ standalone: true }" [placeholder]="ln.t(lnAsk.what === 'approve' ? 'Note (optional)' : 'Why is it rejected? (the employee sees this)')" data-ln-text></textarea>
+          <footer>
+            <button type="button" class="at-btn" (click)="lnAsk = null">{{ ln.t('Cancel') }}</button>
+            <button type="button" class="at-btn" [class.primary]="lnAsk.what === 'approve'" [class.danger]="lnAsk.what === 'reject'" [disabled]="lnBusy || (lnAsk.what === 'reject' && !lnAsk.text?.trim())" (click)="lnConfirm()" data-ln-confirm>{{ ln.t(lnAsk.what === 'approve' ? 'Approve' : 'Reject') }}</button>
+          </footer>
+        </div>
+      </div>
   <ng-container *ngFor="let apr of filteredApprovals">
     <div
           *ngIf="apr.delegation_details && apr.showDelegation"
@@ -203,258 +201,12 @@
 
     <!-- ================= EXISTING APPROVAL MODAL ================= -->
 
-    <div
-      *ngIf="isAddFieldsModalOpen"
-      class="modal"
-    >
-
-      <div class="modal-content">
-
-        <div class="col-md-12 text-right">
-
-          <span
-            class="close-btn"
-            (click)="closemarketModal()"
-          >
-            ×
-          </span>
-
-        </div>
-
-
-        <div *ngIf="selectedApproval">
-
-          <h6>
-            Advance salary request approvals
-          </h6>
-
-          <hr />
-
-
-          <h6>
-            Advance salary request -
-            {{ selectedApproval.request }}
-          </h6>
-
-          <h6>
-            Status -
-            {{ selectedApproval.status }}
-          </h6>
-
-          <h6>
-            Level -
-            {{ selectedApproval.level }}
-          </h6>
-
-
-          <textarea
-            class="form-control"
-            [(ngModel)]="note"
-            placeholder="Add a comment here..."
-            [ngModelOptions]="{ standalone: true }"
-          ></textarea>
-
-
-          <div class="row mt-2">
-
-            <div class="col-md-3">
-
-              <button
-                class="btn btn-primary"
-                (click)="openDelegationModalFromApproval(selectedApproval)"
-              >
-                Delegate
-              </button>
-
-            </div>
-
-
-            <div class="col-md-3"></div>
-
-
-            <div class="col-md-3">
-
-              <button
-                type="button"
-                class="btn btn-danger btn-full"
-                (click)="rejectApproval(selectedApproval.id)"
-              >
-                Reject
-              </button>
-
-            </div>
-
-
-            <div class="col-md-3">
-
-              <button
-                type="button"
-                class="btn btn-success btn-full"
-                (click)="approveApproval(selectedApproval.id)"
-              >
-                Approve
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <!-- Rejection Reason -->
-
-          <div *ngIf="showRejectionReason">
-
-            <textarea
-              class="form-control mt-2"
-              [(ngModel)]="rejection_reason"
-              placeholder="Add a Rejection Reason..."
-              [ngModelOptions]="{ standalone: true }"
-            ></textarea>
-
-          </div>
-
-
-          <div
-            class="mt-2"
-            *ngIf="showRejectionReason"
-          >
-
-            <button
-              type="button"
-              class="btn btn-danger btn-full"
-              (click)="confirmRejection(selectedApproval.id)"
-            >
-              Confirm rejection
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
+    <!-- v1.62.10 (item 167): the old review and delegation pop-ups are replaced by the shared review window (shared-ui/z-review.component.ts) -->
 
 
     <!-- ================= DELEGATION MODAL ================= -->
 
-    <div
-      *ngIf="isDelegationModalOpen"
-      class="modal"
-    >
-
-      <div class="modal-content">
-
-        <div class="text-right">
-
-          <span
-            class="close-btn"
-            (click)="closeDelegationModal()"
-          >
-            ×
-          </span>
-
-        </div>
-
-
-        <h5>
-          Send delegation
-        </h5>
-
-        <hr />
-
-
-        <div class="row">
-
-          <!-- Request -->
-
-          <div class="col-md-4">
-
-            <label>
-              Request
-            </label>
-
-            <select
-              class="form-control"
-              [(ngModel)]="delegationForm.request"
-              disabled
-            >
-
-              <option
-                *ngFor="let req of Assetreq"
-                [value]="req.id"
-              >
-                {{ req.document_number }}
-                -
-                {{ req.request_type }}
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <!-- Delegator -->
-
-          <div class="col-md-4">
-
-            <label>
-              Delegator
-            </label>
-
-            <input
-              type="text"
-              class="form-control"
-              [value]="delegationForm.deligator"
-              readonly
-            />
-
-          </div>
-
-
-          <!-- Delegate To -->
-
-          <div class="col-md-4">
-
-            <label>
-              Delegate to
-            </label>
-
-            <select
-              class="form-control"
-              [(ngModel)]="delegationForm.deligate_to"
-            >
-              <!-- v1.40.1: a placeholder – without it the first user LOOKED selected while the model was still null, so Send posted no delegate -->
-              <option [ngValue]="null" disabled>Select a user…</option>
-
-              <option
-                *ngFor="let user of Users"
-                [ngValue]="user.id"
-              >
-                {{ user.username }}
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <div class="col-md-12 mt-3 text-right">
-
-            <button
-              class="btn btn-success"
-              (click)="createDelegation()"
-            >
-              Send
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
+    <!-- v1.62.10 (item 167): the old review and delegation pop-ups are replaced by the shared review window (shared-ui/z-review.component.ts) -->
 
   </div>
 

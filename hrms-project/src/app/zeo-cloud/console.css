@@ -34,3 +34,6 @@
 
 .cc-id { white-space: nowrap; font-size: 12px; }   /* v1.28.0 installation IDs on one line */
 .cc-nw { white-space: nowrap; }
+
+/* v1.62.1 progress cards of the moves */
+.cc-moveprog z-job-progress + z-job-progress { margin-top: 10px; }

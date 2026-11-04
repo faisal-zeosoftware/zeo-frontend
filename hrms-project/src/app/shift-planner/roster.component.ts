@@ -7,15 +7,17 @@
  *      template/roster/, shift-master/?active=1, meta/
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list (Branch filter …)
 import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-sp-roster',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -44,8 +46,8 @@ import { SpApiService, SpMeta, addDays, mondayOf, niceDate } from './sp-api.serv
           <label>Name<input [(ngModel)]="form.name" maxlength="120" placeholder="e.g. Sharjah warehouse – November"><span class="sp-err" *ngIf="err['name']">{{ err['name'] }}</span></label>
           <label>Branch<select [(ngModel)]="form.branch"><option [ngValue]="null">Choose…</option><option *ngFor="let b of meta?.branches" [ngValue]="b.id">{{ b.branch_name }}</option></select><span class="sp-err" *ngIf="err['branch']">{{ err['branch'] }}</span></label>
           <label>Department<select [(ngModel)]="form.department"><option [ngValue]="null">All departments</option><option *ngFor="let d of meta?.departments" [ngValue]="d.id">{{ d.dept_name }}</option></select></label>
-          <label>From<input type="date" [(ngModel)]="form.date_from"><span class="sp-err" *ngIf="err['date_from']">{{ err['date_from'] }}</span></label>
-          <label>To<input type="date" [(ngModel)]="form.date_to"><span class="sp-err" *ngIf="err['date_to']">{{ err['date_to'] }}</span></label>
+          <label>From<z-date-field [(value)]="form.date_from"></z-date-field><span class="sp-err" *ngIf="err['date_from']">{{ err['date_from'] }}</span></label>
+          <label>To<z-date-field [(value)]="form.date_to"></z-date-field><span class="sp-err" *ngIf="err['date_to']">{{ err['date_to'] }}</span></label>
           <label>Approver (optional)<select [(ngModel)]="form.approver"><option [ngValue]="null">Anyone with approval rights</option><option *ngFor="let u of meta?.approvers" [ngValue]="u.id">{{ u.username }}</option></select></label>
           <label>Default shift (optional)<select [(ngModel)]="form.default_shift"><option [ngValue]="null">None</option><option *ngFor="let s of shifts" [ngValue]="s.id">{{ s.name }}</option></select>
             <small class="lp-muted" style="font-weight:400">Used on working days of employees without a shift schedule.</small></label>
@@ -273,8 +275,8 @@ export class SpRosterComponent implements OnInit {
     } catch (e) { this.say(SpApiService.error(e), true); }
   }
   async action(a: string, body: any = {}): Promise<void> {
-    if (a === 'publish' && !confirm('Publish this roster? Every employee on it gets their schedule.')) return;
-    if (a === 'reopen' && !confirm('Reopen this roster? It stops counting for attendance and payroll until it is published again.')) return;
+    if (a === 'publish' && !(await zConfirm('Publish this roster? Every employee on it gets their schedule.'))) return;
+    if (a === 'reopen' && !(await zConfirm('Reopen this roster? It stops counting for attendance and payroll until it is published again.'))) return;
     try {
       const r: any = await this.api.post(`periods/${this.p.id}/${a}/`, body);
       this.problems = r.problems || [];
@@ -287,7 +289,7 @@ export class SpRosterComponent implements OnInit {
   reject(): void { const note = prompt('Why is the roster sent back? The planner sees this note.'); if (note) this.action('reject', { note }); }
   copyWeek(): void { this.action('copy-week', { target_start: this.weekFrom }); }
   async remove(): Promise<void> {
-    if (!confirm('Delete this draft roster?')) return;
+    if (!(await zConfirm('Delete this draft roster?'))) return;
     try { await this.api.delete(`periods/${this.p.id}/`); this.say('Roster deleted.'); this.close(); } catch (e) { this.say(SpApiService.error(e), true); }
   }
   template(): void { this.api.download('template/roster/', {}, 'roster_upload_template.csv'); }

@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { zFormThenReload, USER_FORM, LEAVE_TYPE_FORM, DOCUMENT_TYPE_FORM } from '../shared-ui/z-forms';   // v1.62.1
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
@@ -14,6 +15,8 @@ import { CreateLeavetypeComponent } from '../create-leavetype/create-leavetype.c
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { environment } from '../../environments/environment';
+import { i18nT } from '../shared-ui/i18n-core';   // v1.62.1
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 
@@ -400,6 +403,20 @@ leaveApplicableTopSection!: ElementRef;
 
 
 
+// v1.62.1: the category in words (as in the form), Branch / validity shown only when they mean something, Delete per row
+categoryLabel(c: string): string {
+  return ({ annual: 'Annual Leave', sick: 'Sick Leave', casual: 'Casual Leave', maternity: 'Maternity Leave', paternity: 'Paternity Leave',
+            compensatory: 'Compensatory Leave', bereavement: 'Bereavement Leave', unpaid: 'Unpaid Leave' } as any)[c] || (c ? c.charAt(0).toUpperCase() + c.slice(1) : '');
+}
+hasValidity(): boolean { return (this.LeaveTypes || []).some(t => t.valid_from || t.valid_to); }
+async deleteOne(t: any): Promise<void> {
+  if (!(await zConfirm(i18nT('Delete the leave type {0}? Leave requests and balances of this type stop working.', [t.name])))) { return; }
+  this.leaveService.deleteLeavetype(t.id).subscribe(
+    () => { this.LeaveTypes = this.LeaveTypes.filter(x => x.id !== t.id); },
+    (error: any) => { alert('The leave type could not be deleted: ' + (error?.error?.detail || error?.error?.error || error.statusText)); }
+  );
+}
+
 // Toggle edit icon
 showEditBtn: boolean = false;
 EditShowButtons() {
@@ -424,6 +441,7 @@ isLeaveTypeEditModalOpen: boolean = false;
 editLeaveType: any = {};
 
 openEditLeaveTypeModal(type: any): void {
+    zFormThenReload(LEAVE_TYPE_FORM, { id: type?.id }); return;   // v1.62.1 new-design form
   this.editLeaveType = { ...type }; // clone
   this.isLeaveTypeEditModalOpen = true;
 }
@@ -437,7 +455,7 @@ closeEditLeaveTypeModal(): void {
 
 
 
-deleteSelectedLeavetype() {
+async deleteSelectedLeavetype() {
   const selectedLeaveIds = this.LeaveTypes
     .filter(leave => leave.selected)
     .map(leave => leave.id);
@@ -447,7 +465,7 @@ deleteSelectedLeavetype() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Leave Type(s)?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Leave Type(s)?'))) {
     let total = selectedLeaveIds.length;
     let completed = 0;
 
@@ -1150,9 +1168,9 @@ editFullConfiguration(ent: any): void {
 
 
 
-deleteFullConfiguration(ent: any): void {
+async deleteFullConfiguration(ent: any): Promise<void> {
 
-  if (!confirm('Delete complete configuration permanently?')) {
+  if (!(await zConfirm('Delete complete configuration permanently?'))) {
     return;
   }
 
@@ -1573,9 +1591,9 @@ resetApplicableForm(): void {
   this.role = [];
 }
 
-deleteLeaveApplicable(id: number): void {
+async deleteLeaveApplicable(id: number): Promise<void> {
 
-  if (!confirm('Are you sure you want to delete this applicable rule?')) {
+  if (!(await zConfirm('Are you sure you want to delete this applicable rule?'))) {
     return;
   }
 
@@ -1766,11 +1784,11 @@ openLeaveConfigurationModal(leavetype: any): void {
 }
 
 
-deletePayRule(id: number): void {
+async deletePayRule(id: number): Promise<void> {
 
   const selectedSchema = this.authService.getSelectedSchema();
 
-  if (!confirm('Are you sure you want to delete this pay rule?')) {
+  if (!(await zConfirm('Are you sure you want to delete this pay rule?'))) {
     return;
   }
 
@@ -1879,6 +1897,7 @@ updatePayRule(): void {
   }
 
   CreateLeaveModal(){
+    zFormThenReload(LEAVE_TYPE_FORM); return;   // v1.62.1 new-design form
     this.dialog.open(CreateLeavetypeComponent,{
       width:'80%',
       height:'700px',

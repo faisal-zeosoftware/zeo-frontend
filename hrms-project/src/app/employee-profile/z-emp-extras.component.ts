@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -47,7 +48,7 @@ const CFG: Record<Kind, { title: string; endpoint: string; name: (r: any) => str
 @Component({
   selector: 'z-emp-extras',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep ep-sec" *ngIf="cfg && (rows.length || denied)">
@@ -85,7 +86,7 @@ const CFG: Record<Kind, { title: string; endpoint: string; name: (r: any) => str
                   <div class="ep-f" *ngFor="let f of cfg.fields" [class.check]="f.type === 'bool'" [class.bad]="ferr[f.key]">
                     <ng-container [ngSwitch]="f.type">
                       <ng-container *ngSwitchCase="'bool'"><input type="checkbox" [(ngModel)]="v[f.key]" [id]="'epx-' + f.key"><label [for]="'epx-' + f.key">{{ f.label }}</label></ng-container>
-                      <ng-container *ngSwitchCase="'date'"><span>{{ f.label }}</span><input type="date" [(ngModel)]="v[f.key]"></ng-container>
+                      <ng-container *ngSwitchCase="'date'"><span>{{ f.label }}</span><z-date-field [(value)]="v[f.key]"></z-date-field></ng-container>
                       <ng-container *ngSwitchCase="'select'"><span>{{ f.label }}</span>
                         <select [(ngModel)]="v[f.key]"><option [ngValue]="''">Not set</option><option *ngFor="let o of f.options" [ngValue]="o.v">{{ o.l }}</option></select></ng-container>
                       <ng-container *ngSwitchCase="'nationality'"><span>{{ f.label }}</span>

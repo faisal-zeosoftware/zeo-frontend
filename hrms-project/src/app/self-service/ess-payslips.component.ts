@@ -3,12 +3,13 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EssApiService, money } from './ess-api.service';
+import { TPipe } from '../shared-ui/i18n.service';   // v1.62.11 (item 230)
 
 /** v1.13.0 – my approved / paid payslips, PDF download through the authenticated API, year-to-date totals. */
 @Component({
   selector: 'app-ess-payslips',
   standalone: true,
-  imports: [CommonModule, FormsModule, OtBreakdownComponent],
+  imports: [CommonModule, FormsModule, OtBreakdownComponent, TPipe],   // v1.62.11 (item 230) TPipe
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -23,6 +24,7 @@ import { EssApiService, money } from './ess-api.service';
     </div>
     <div class="com_list mt-4">
       <p class="es-msg err" *ngIf="msg">{{ msg }}</p>
+      <p class="es-desc" *ngIf="d?.password_hint" data-pp-hint><span class="material-icons" style="font-size:16px;vertical-align:-3px">lock</span> {{ 'Your payslip PDFs are password-protected.' | t }} {{ d.password_hint }}</p>   <!-- v1.62.11 (item 230) -->
       <div class="es-tiles" *ngIf="d">
         <div class="es-tile"><div class="lbl">Gross {{ d.ytd?.year }} so far</div><div class="num" style="font-size:19px">{{ m(d.ytd?.gross) }}</div><div class="sub">{{ d.ytd?.payslips }} payslip(s)</div></div>
         <div class="es-tile t2"><div class="lbl">Deductions {{ d.ytd?.year }}</div><div class="num" style="font-size:19px">{{ m(d.ytd?.deductions) }}</div></div>
@@ -80,6 +82,9 @@ export class EssPayslipsComponent implements OnInit {
 
   async pdf(p: any, lang = ''): Promise<void> {   // v1.50.0 lang 'en_ar': English and Arabic on the same payslip
     try { await this.api.download(`payslips/${p.id}/pdf/` + (lang ? `?lang=${lang}` : ''), `payslip-${p.year}-${String(p.month).padStart(2, '0')}${lang ? '-' + lang : ''}.pdf`); }
-    catch (e: any) { this.msg = EssApiService.error(e, 'The payslip PDF could not be downloaded.'); this.cd.detectChanges(); }
+    catch (e: any) {
+      let t = '';   // v1.62.11 (item 230): a protected payslip whose password cannot be made answers with the reason (as a blob)
+      try { if (e?.error instanceof Blob) { t = JSON.parse(await e.error.text())?.detail || ''; } } catch { t = ''; }
+      this.msg = t || EssApiService.error(e, 'The payslip PDF could not be downloaded.'); this.cd.detectChanges(); }
   }
 }

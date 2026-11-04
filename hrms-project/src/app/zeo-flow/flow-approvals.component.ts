@@ -9,6 +9,7 @@ import { zToast } from '../shared-ui/z-toast';
 import { SessionService } from '../login/session.service';
 import { TPipe } from '../shared-ui/i18n.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const IMPORTS = [CommonModule, FormsModule, RouterModule, TPipe, ZListDirective];   // v1.38.0: the HRMS list bar (search, views, columns, export) on the lists
 
@@ -73,7 +74,7 @@ export class FlowApprovalsComponent implements OnInit {
     } catch (e) { zToast(this.api.err(e), 'err'); }
     this.busy = false; this.cd.markForCheck();
   }
-  async cancelReq() { if (!confirm('Cancel this approval request?')) { return; } try { await this.api.post(`approvals/${this.sel.id}/cancel/`); this.sel = null; await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
+  async cancelReq() { if (!(await zConfirm('Cancel this approval request?'))) { return; } try { await this.api.post(`approvals/${this.sel.id}/cancel/`); this.sel = null; await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
   async resubmit() { try { await this.api.post(`approvals/${this.sel.id}/resubmit/`, { note: 'Submitted again' }); zToast('Submitted again – the approvers are notified.', 'ok'); this.sel = null; this.box = 'submitted'; await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
 }
 
@@ -153,6 +154,6 @@ export class FlowApprovalFlowsComponent implements OnInit {
     try { if (this.cur.id) { await this.api.patch(`approval-flows/${this.cur.id}/`, this.cur); } else { await this.api.post('approval-flows/', this.cur); } zToast('Approval flow saved.', 'ok'); this.cur = null; await this.api.meta(true); await this.load(); }
     catch (e) { zToast(this.api.err(e), 'err'); }
   }
-  async del(f: any) { if (!confirm(`Delete "${f.name}"? Its requests are deleted too.`)) { return; } try { await this.api.delete(`approval-flows/${f.id}/`); await this.api.meta(true); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
+  async del(f: any) { if (!(await zConfirm(`Delete "${f.name}"? Its requests are deleted too.`))) { return; } try { await this.api.delete(`approval-flows/${f.id}/`); await this.api.meta(true); await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
   async submitRec() { try { const r = await this.api.post('approvals/submit/', { flow: this.submitOn.id, model: this.submitOn.model, id: this.subId, note: this.subNote }); zToast(`Submitted: ${r.record_label} – ${r.status_label}.`, 'ok'); this.submitOn = null; await this.load(); } catch (e) { zToast(this.api.err(e), 'err'); } }
 }

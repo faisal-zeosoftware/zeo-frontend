@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { TPipe, i18nT } from '../shared-ui/i18n.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 class Api {
   constructor(private http: HttpClient, private rec: ZRecordService) {}
@@ -39,7 +40,7 @@ const STYLES = `.pc-card { background: #fff; border: 1px solid #e3e6ea; border-r
   selector: 'app-pay-calendars',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, TPipe],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [STYLES],
   template: `
 <div class="lp-page" style="padding:16px 20px" data-pay-calendars>
@@ -111,7 +112,7 @@ export class PayCalendarsComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async run(c: any, p: any): Promise<void> {
-    if (!confirm(i18nT('Make and calculate the payroll run of {0} – {1}?', [p.start, p.end]))) { return; }
+    if (!(await zConfirm(i18nT('Make and calculate the payroll run of {0} – {1}?', [p.start, p.end])))) { return; }
     this.busy = true;
     try { const r: any = await this.api.post(`pay-calendars/${c.id}/`, { action: 'run', start: p.start }); await this.load(); this.say(i18nT('Payroll run made: {0} payslips.', [r.run.payslips])); }
     catch (e) { this.say(httpErrorText(e), true); }
@@ -124,7 +125,7 @@ export class PayCalendarsComponent implements OnInit {
   selector: 'app-off-cycle',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, TPipe],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [STYLES],
   template: `
 <div class="lp-page" style="padding:16px 20px" data-off-cycle>
@@ -152,18 +153,20 @@ export class PayCalendarsComponent implements OnInit {
         <td><button type="button" class="lp-btn" (click)="form.lines.splice(i, 1)">Remove</button></td></tr>
     </table>
     <div class="lp-actions" style="margin-top:10px"><button type="button" class="lp-btn" (click)="line()" data-oc-line-add>Add a line</button>
-      <span style="flex:1"></span><span class="pc-muted">{{ 'Total {0}' | t:[n2(total())] }}</span>
+      <span style="flex:1"></span><span class="pc-muted">{{ 'Total {0}' | t:['AED ' + n2(total())] }}</span>
       <button type="button" class="lp-btn primary" (click)="save()" [disabled]="busy" data-oc-save>Make the run</button>
       <button type="button" class="lp-btn" (click)="form = null">Cancel</button></div>
   </div>
 
   <div class="pc-card">
     <table class="pc">
-      <tr><th>Run</th><th>Kind</th><th>Pay date</th><th>Status</th><th class="r">Payslips</th><th class="r">Net pay</th></tr>
-      <tr *ngFor="let o of rows" [attr.data-oc]="o.id"><td><a routerLink="/main-sidebar/salary-options/pay-roll">{{ o.title }}</a></td><td><span class="pc-tag">{{ o.kind_label }}</span></td>
-        <td>{{ o.pay_date | date:'d MMM y' }}</td><td><span class="pc-tag" [class.ok]="o.run?.status === 'paid'">{{ (o.run?.status || '') | titlecase }}</span></td>
-        <td class="r">{{ o.run?.payslips }}</td><td class="r">{{ n2(o.run?.net) }}</td></tr>
-      <tr *ngIf="loaded && !rows.length"><td colspan="6" class="pc-muted">No off-cycle run yet.</td></tr>
+      <!-- v1.62.0 talent-ops: dd/mm/yyyy, AED, the run opens from a row button -->
+      <tr><th>Run</th><th>Kind</th><th>Pay date</th><th>Status</th><th class="r">Payslips</th><th class="r">Net pay</th><th></th></tr>
+      <tr *ngFor="let o of rows" [attr.data-oc]="o.id"><td><b>{{ o.title }}</b></td><td><span class="pc-tag">{{ o.kind_label }}</span></td>
+        <td class="nw">{{ o.pay_date | date:'dd/MM/yyyy' }}</td><td><span class="pc-tag" [class.ok]="o.run?.status === 'paid'">{{ (o.run?.status || '') | titlecase }}</span></td>
+        <td class="r">{{ o.run?.payslips }}</td><td class="r nw">AED {{ n2(o.run?.net) }}</td>
+        <td class="r"><a class="lp-btn" style="height:28px;font-size:12px" routerLink="/main-sidebar/salary-options/pay-roll">Open the run</a></td></tr>
+      <tr *ngIf="loaded && !rows.length"><td colspan="7" class="pc-muted">No off-cycle run yet. Use New off-cycle run for a bonus, a commission or a correction.</td></tr>
     </table>
   </div>
 </div>`,
@@ -196,7 +199,7 @@ export class OffCycleComponent implements OnInit {
   selector: 'app-arrears',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, TPipe],
-  styleUrls: ['../leave-policy/leave-policy.css'],
+  styleUrls: ['../leave-policy/leave-policy.css', './pp-card.css'],   // v1.62.0 talent-ops: card header
   styles: [STYLES],
   template: `
 <div class="lp-page" style="padding:16px 20px" data-arrears>
@@ -209,14 +212,24 @@ export class OffCycleComponent implements OnInit {
   <div class="pc-card">
     <h2>Calculate arrears</h2>
     <div class="pc-form">
-      <label>Employees<select multiple [(ngModel)]="pick" data-ar-emps><option *ngFor="let e of employees" [ngValue]="e.id">{{ e.name }}</option></select></label>
+      <!-- v1.62.0 talent-ops: searchable pickers with ticks (were native multi-select boxes; components were listed once per branch) -->
+      <div class="pp-field"><span>Employees</span>
+        <div class="pp-pick" data-ar-emps>
+          <input class="pp-q" [(ngModel)]="eq" placeholder="Search a name or code" aria-label="Search employees">
+          <div class="pp-list"><label class="pp-opt" *ngFor="let e of empShown()"><input type="checkbox" [checked]="pick.includes(e.id)" (change)="toggle(pick, e.id)"> {{ e.name }}</label></div>
+          <div class="pp-sum"><span>{{ pick.length }} picked</span><button type="button" *ngIf="pick.length" (click)="pick = []">Clear</button></div>
+        </div></div>
       <label>Effective from<input type="date" [(ngModel)]="eff" data-ar-eff></label>
-      <label>Components (empty = those changed since that date)<select multiple [(ngModel)]="comps"><option *ngFor="let c of components" [ngValue]="c.id">{{ c.name }}</option></select></label>
+      <div class="pp-field"><span>Components</span>
+        <div class="pp-pick" data-ar-comps>
+          <div class="pp-list"><label class="pp-opt" *ngFor="let c of compGroups"><input type="checkbox" [checked]="comps.includes(c.name)" (change)="toggle(comps, c.name)"> {{ c.name }}</label></div>
+          <div class="pp-sum"><span>{{ comps.length ? comps.length + ' picked' : 'None = those changed since that date' }}</span><button type="button" *ngIf="comps.length" (click)="comps = []">Clear</button></div>
+        </div></div>
       <button type="button" class="lp-btn" (click)="calc(false)" [disabled]="busy" data-ar-preview>Preview</button>
       <button type="button" class="lp-btn primary" (click)="calc(true)" [disabled]="busy || !preview?.rows?.length" data-ar-save>Save the arrears</button>
     </div>
     <div *ngIf="preview" style="margin-top:12px" data-ar-result>
-      <p><b>{{ 'Total {0}' | t:[n2(preview.total)] }}</b></p>
+      <p><b>{{ 'Total {0}' | t:['AED ' + n2(preview.total)] }}</b></p>
       <table class="pc" *ngFor="let r of preview.rows">
         <tr><th colspan="6">{{ r.employee }} <span class="pc-muted">{{ r.note || '' }}</span></th></tr>
         <tr *ngIf="r.lines.length"><th>Period</th><th>Component</th><th class="r">Paid</th><th class="r">New salary</th><th class="r">Paid days</th><th class="r">Arrears</th></tr>
@@ -227,12 +240,12 @@ export class OffCycleComponent implements OnInit {
   </div>
 
   <div class="pc-card">
-    <h2>Arrears <span class="pc-muted">{{ '{0} waiting' | t:[waiting().length] }}</span></h2>
+    <h2>Arrears <span class="pc-muted">{{ waiting().length }} waiting for the next payslip · {{ lines.length - waiting().length }} paid or included</span></h2>
     <table class="pc">
-      <tr><th></th><th>Employee</th><th>Period</th><th>Component</th><th class="r">Amount</th><th>Status</th></tr>
+      <tr><th></th><th>Employee</th><th>Period</th><th>Component</th><th class="r">Amount (AED)</th><th>Status</th></tr>
       <tr *ngFor="let l of lines" [attr.data-ar-line]="l.id"><td><input type="checkbox" *ngIf="l.status === 'pending'" [(ngModel)]="sel[l.id]"></td>
         <td>{{ l.employee }}</td><td>{{ l.month | date:'MMM y' }}</td><td>{{ l.component }}</td><td class="r">{{ n2(l.amount) }}</td>
-        <td><span class="pc-tag" [class.ok]="l.status === 'included'" [class.warn]="l.status === 'pending'">{{ l.status_label }}</span></td></tr>
+        <td><span class="pc-tag" [class.ok]="l.status === 'included' || l.status === 'paid'" [class.warn]="l.status === 'pending'">{{ l.status_label }}</span></td></tr>
       <tr *ngIf="loaded && !lines.length"><td colspan="6" class="pc-muted">No arrears.</td></tr>
     </table>
     <div class="lp-actions" style="margin-top:8px" *ngIf="waiting().length"><button type="button" class="lp-btn" (click)="cancel()" [disabled]="!selected().length">Cancel the ticked lines</button></div>
@@ -240,20 +253,28 @@ export class OffCycleComponent implements OnInit {
 
   <div class="pc-card" *ngIf="revisions.length">
     <h2>Recent salary changes</h2>
-    <table class="pc"><tr><th>Employee</th><th>Component</th><th class="r">Old</th><th class="r">New</th><th>Changed on</th><th>Effective (as entered)</th></tr>
+    <table class="pc"><tr><th>Employee</th><th>Component</th><th class="r">Old (AED)</th><th class="r">New (AED)</th><th>Changed on</th><th>Effective (as entered)</th></tr>
       <tr *ngFor="let v of revisions"><td>{{ v.employee }}</td><td>{{ v.component }}</td><td class="r">{{ n2(v.old) }}</td><td class="r">{{ n2(v.new) }}</td>
-        <td>{{ v.revised_on | date:'d MMM y' }}</td><td>{{ v.effective_period || '–' }}</td></tr></table>
+        <td>{{ v.revised_on | date:'dd/MM/yyyy' }}</td><td>{{ period(v.effective_period) }}</td></tr></table>
   </div>
 </div>`,
 })
 export class ArrearsComponent implements OnInit {
-  api: Api; employees: any[] = []; components: any[] = []; lines: any[] = []; revisions: any[] = []; pick: number[] = []; comps: number[] = [];
+  api: Api; employees: any[] = []; components: any[] = []; lines: any[] = []; revisions: any[] = []; pick: number[] = []; comps: string[] = [];
+  eq = ''; compGroups: { name: string; ids: number[] }[] = [];   // v1.62.0 talent-ops
   eff = ''; preview: any = null; sel: Record<number, boolean> = {}; msg = ''; err = false; busy = false; loaded = false; n2 = n2;
   constructor(http: HttpClient, rec: ZRecordService, private cd: ChangeDetectorRef) { this.api = new Api(http, rec); }
   async ngOnInit(): Promise<void> {
     try { const o: any = await this.api.get('off-cycle/'); this.employees = o.employees; this.components = o.components.filter((c: any) => c.type !== 'others'); } catch { /* rights */ }
+    const g: Record<string, number[]> = {};   // v1.62.0 talent-ops: one line per component name (the same component exists per branch)
+    this.components.forEach((c: any) => { (g[c.name] = g[c.name] || []).push(c.id); });
+    this.compGroups = Object.keys(g).sort().map(name => ({ name, ids: g[name] }));
     await this.load();
   }
+  empShown(): any[] { const q = this.eq.toLowerCase().trim(); return this.employees.filter((e: any) => !q || String(e.name).toLowerCase().includes(q)); }
+  toggle(list: any[], v: any): void { const i = list.indexOf(v); if (i >= 0) { list.splice(i, 1); } else { list.push(v); } }
+  /** "November2026" (as entered on the salary change) → "November 2026". */
+  period(v: any): string { if (!v) { return '–'; } const m = /^([A-Za-z]+)\s*(\d{4})$/.exec(String(v)); return m ? `${m[1]} ${m[2]}` : String(v); }
   async load(): Promise<void> {
     try { const r: any = await this.api.get('arrears/'); this.lines = r.lines; this.revisions = r.revisions; }
     catch (e) { this.say(httpErrorText(e), true); }
@@ -265,7 +286,8 @@ export class ArrearsComponent implements OnInit {
   async calc(save: boolean): Promise<void> {
     this.busy = true;
     try {
-      const r: any = await this.api.post('arrears/', { action: save ? 'save' : 'preview', employee_ids: this.pick, effective_from: this.eff, component_ids: this.comps });
+      const ids = this.compGroups.filter(c => this.comps.includes(c.name)).flatMap(c => c.ids);
+      const r: any = await this.api.post('arrears/', { action: save ? 'save' : 'preview', employee_ids: this.pick, effective_from: this.eff, component_ids: ids });
       if (save) { this.preview = null; await this.load(); this.say(i18nT('{0} arrears lines saved – they are paid with the next payslip.', [r.lines])); } else { this.preview = r; }
     } catch (e) { this.say(httpErrorText(e), true); }
     this.busy = false; this.cd.markForCheck();

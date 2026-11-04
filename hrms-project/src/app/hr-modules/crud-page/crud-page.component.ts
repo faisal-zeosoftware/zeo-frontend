@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { i18nT } from '../../shared-ui/i18n.service';   // v1.62.0 people
+import { ZDateFieldComponent } from '../../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { ZMoneyPipe } from '../../shared-ui/country-pack.service';   // v1.62.0 ui
 import { ZListDirective } from '../../shared-ui/z-list.directive';
 import { ZOrgPickDirective } from '../../shared-ui/z-org-pick.directive';
@@ -13,13 +15,14 @@ import { HrPermissionService } from '../hr-permission.service';
 import { CountryPackService, cpLocalize } from '../../shared-ui/country-pack.service';
 import { ZTranslateComponent } from '../../shared-ui/z-translate.component';
 import { I18nService, i18nLocalize } from '../../shared-ui/i18n.service';   // v1.15.0
+import { zConfirm } from '../../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type Opt = { value: any; label: string };
 
 @Component({
   selector: 'app-hr-crud-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent, ZMoneyPipe],   // v1.62.0 ui zmoney
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent, ZMoneyPipe, ZDateFieldComponent],   // v1.62.0 ui zmoney
   templateUrl: './crud-page.component.html',
   styleUrls: ['../hr-shared.css'],
 })
@@ -59,12 +62,18 @@ export class CrudPageComponent implements OnInit {
   promptTitle = '';
   private promptResolve: ((v: any) => void) | null = null;
 
+  // v1.62.5 (item 19): a save the server answers 409 with a choice (code period_paid: salary of the days already paid) –
+  // "Cancel" (nothing saved) or the server's choice ("Add to December salary"), sent again with confirm.key = confirm.value
+  choiceAsk: { title: string; text: string; ok: string; cancel: string } | null = null;
+  private choiceResolve: ((ok: boolean) => void) | null = null;
+
   // detail panel
   detail: any = null;
   childRows: Record<string, any[]> = {};
 
   // document view
   docHtml: SafeHtml | null = null;
+  docTitle = ''; docPanel = false;   // v1.62.1
 
   toast: { text: string; kind: 'ok' | 'err' } | null = null;
   canAdd = true;
@@ -122,7 +131,7 @@ export class CrudPageComponent implements OnInit {
     this.loading = true;
     this.api.list(this.config.endpoint, this.filters).subscribe({
       next: rows => {
-        this.rows = rows;
+        this.rows = this.config.sortRows ? [...rows].sort(this.config.sortRows) : rows;   // v1.62.0 talent-ops
         this.loading = false;
         if (this.detail) {
           const fresh = rows.find(r => r.id === this.detail.id);
@@ -167,6 +176,12 @@ export class CrudPageComponent implements OnInit {
   }
 
   // ---------------- cells ----------------
+  /** v1.62.0 talent-ops: short values (codes, numbers, dates, money, status chips) never wrap over several lines. */
+  nwCol(c: ColumnConfig): boolean {
+    if (['date', 'datetime', 'money', 'percent', 'tag', 'stars', 'number'].includes(c.type || '')) { return true; }
+    return /(^|_)(code|number|no|job_code|document_number|emp_code|employee_code)$/.test(c.key) || ['No.', 'Code', 'Job code', 'Number'].includes(c.label);
+  }
+
   cellRaw(row: any, key: string): any {
     return key.split('.').reduce((o, k) => (o == null ? o : o[k]), row);
   }
@@ -362,6 +377,11 @@ export class CrudPageComponent implements OnInit {
       return;
     }
     this.saving = true;
+    this.formErrors = '';
+    this.send(body);
+  }
+
+  private send(body: any): void {
     const req = this.formEditId ? this.api.update(this.formEndpoint, this.formEditId, body) : this.api.create(this.formEndpoint, body);
     req.subscribe({
       next: () => {
@@ -371,13 +391,39 @@ export class CrudPageComponent implements OnInit {
         this.afterSave?.();
         this.loadStats();
       },
-      error: err => { this.saving = false; this.formErrors = ModuleApiService.errorText(err); },
+      error: async err => {
+        const again = await this.choiceFor(err, body);   // v1.62.5 (item 19)
+        if (again) { this.send(again); return; }
+        this.saving = false;
+        if (!this.isChoice(err)) { this.formErrors = ModuleApiService.errorText(err); }
+      },
     });
   }
 
-  remove(row: any, ev?: Event): void {
+  // ---------------- v1.62.5 (item 19): the server asks before saving ----------------
+  private isChoice(err: any): boolean { return err?.status === 409 && !!err?.error?.confirm?.key; }
+
+  /** 409 with a choice: show it; the body to send again (with the choice) when the user takes it, else null. A 409 without a
+   *  choice (the employee for their own leave) is an ordinary error message. */
+  private async choiceFor(err: any, body: any): Promise<any> {
+    if (!this.isChoice(err)) return null;
+    const e = err.error;
+    this.choiceAsk = { title: e.title || '', text: e.detail || '', ok: e.confirm.label || 'OK', cancel: e.cancel_label || 'Cancel' };
+    const ok = await new Promise<boolean>(resolve => (this.choiceResolve = resolve));
+    if (!ok) return null;
+    if (body instanceof FormData) { const fd = new FormData(); body.forEach((v, k) => fd.append(k, v as any)); fd.set(e.confirm.key, e.confirm.value); return fd; }
+    return { ...(body || {}), [e.confirm.key]: e.confirm.value };
+  }
+
+  answerChoice(ok: boolean): void {
+    this.choiceAsk = null;
+    this.choiceResolve?.(ok);
+    this.choiceResolve = null;
+  }
+
+  async remove(row: any, ev?: Event): Promise<void> {
     ev?.stopPropagation();
-    if (!confirm(`Delete this ${this.singular().toLowerCase()}?`)) return;
+    if (!(await zConfirm(`Delete this ${this.singular().toLowerCase()}?`))) return;
     this.api.remove(this.config.endpoint, row.id).subscribe({
       next: () => { this.showOk('Deleted.'); if (this.detail?.id === row.id) this.detail = null; this.load(); },
       error: err => this.showError(err),
@@ -385,19 +431,33 @@ export class CrudPageComponent implements OnInit {
   }
 
   // ---------------- actions ----------------
+  /** v1.62.0 people: "New leave request" in the user's language (the button showed "+ New طلب إجازة" in Arabic). */
+  newLabel(): string { const it = this.config.itemName || 'record'; return i18nT('New {0}', [/^[A-Za-z]/.test(it) ? it.toLowerCase() : it]); }
+
+  // v1.62.0 people: a date-and-time value 'yyyy-mm-ddTHH:MM' edited as a dd/mm/yyyy date box plus HH:MM
+  dtDate(v: any): string { const m = /^(\d{4}-\d{2}-\d{2})/.exec(String(v || '')); return m ? m[1] : ''; }
+  dtTime(v: any): string { const m = /[T ](\d{2}:\d{2})/.exec(String(v || '')); return m ? m[1] : ''; }
+  dtJoin(d: string, t: string): string { if (!d) { return ''; } const m = /^(\d{1,2}):(\d{2})$/.exec((t || '').trim()); return m ? `${d}T${m[1].padStart(2, '0')}:${m[2]}` : `${d}T00:00`; }
+
   async runAction(a: ActionConfig, row: any | null, endpoint = this.config.endpoint, after?: () => void, ev?: Event): Promise<void> {
     ev?.stopPropagation();
     if (a.route) { this.router.navigateByUrl(a.route(row)); return; }
-    if (a.confirm && !confirm(a.confirm)) return;
+    if (a.open) { if (await a.open(row)) { this.load(); } return; }   // v1.62.10 (item 172)
+    if (a.confirm && !(await zConfirm(a.confirm))) return;
     let body: any = a.body ? a.body(row, this.filters) : {};
     if (a.prompt?.length) {
       const answer = await this.ask(a.label, a.prompt);
       if (!answer) return;
       body = { ...body, ...answer };
     }
+    this.callAction(a, row, endpoint, body, after);
+  }
+
+  private callAction(a: ActionConfig, row: any | null, endpoint: string, body: any, after?: () => void): void {
     this.api.action(endpoint, row ? row.id : null, a.action || '', body, a.method || 'post').subscribe({
       next: (res: any) => {
         if (a.document) {
+          this.docTitle = a.panel ? a.label : 'Preview'; this.docPanel = !!a.panel;   // v1.62.1
           this.docHtml = this.sanitizer.bypassSecurityTrustHtml(this.cp.text(a.document(res)));   // v1.14.0: currency / law captions
           return;
         }
@@ -405,7 +465,11 @@ export class CrudPageComponent implements OnInit {
         after ? after() : this.load();
         this.loadStats();
       },
-      error: err => this.showError(err),
+      error: async err => {
+        const again = await this.choiceFor(err, body);   // v1.62.5 (item 19)
+        if (again) { this.callAction(a, row, endpoint, again, after); return; }
+        if (!this.isChoice(err)) { this.showError(err); }
+      },
     });
   }
 
@@ -466,8 +530,8 @@ export class CrudPageComponent implements OnInit {
     this.openForm(this.childFieldsWithoutParent(ch), ch.endpoint, row.id, row, `Edit - ${ch.title}`, false, () => { this.loadChild(ch); this.load(); });
   }
 
-  removeChild(ch: ChildConfig, row: any): void {
-    if (!confirm('Delete this line?')) return;
+  async removeChild(ch: ChildConfig, row: any): Promise<void> {
+    if (!(await zConfirm('Delete this line?'))) return;
     this.api.remove(ch.endpoint, row.id).subscribe({ next: () => { this.loadChild(ch); this.load(); }, error: e => this.showError(e) });
   }
 

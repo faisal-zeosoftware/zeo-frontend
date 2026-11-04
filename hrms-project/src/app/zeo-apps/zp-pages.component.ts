@@ -477,20 +477,40 @@ export class ZpReviewComponent implements OnInit {
     <p class="ex-desc">The members of a medical plan for the insurer – each employee and their insured family members, with gender, date of birth, nationality, Emirates ID, passport, visa, salary band and member number – or the additions and deletions since a date for the monthly endorsement.</p></div></div></div>
   <div class="com_list mt-4">
     <p class="hs-note err" *ngIf="err">{{ err }}</p>
-    <div class="hs-card">
+    <!-- v1.62.0 talent-ops: opens on the medical plans with their members (was a bare "Plan: Choose…" form) -->
+    <div class="hs-card" data-ins-plans>
+      <table class="hs-table" zPlain>
+        <thead><tr><th>Plan</th><th>Insurer · policy</th><th style="text-align:end">Employees</th><th style="text-align:end">Family members</th><th>This month</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let p of plans" [attr.data-plan]="p.id" [style.background]="plan === p.id ? '#f6f5ff' : ''">
+            <td><b>{{ p.name }}</b><div class="hs-muted" *ngIf="!p.covers_dependants">Employees only</div></td>
+            <td>{{ p.provider || '–' }}<div class="hs-muted">{{ p.policy_no || '' }}</div></td>
+            <td style="text-align:end">{{ p.members ?? '–' }}</td>
+            <td style="text-align:end">{{ p.dependants ?? '–' }}</td>
+            <td><span *ngIf="p.added || p.removed">+{{ p.added || 0 }} / −{{ p.removed || 0 }} since {{ dmy(p.since) }}</span><span class="hs-muted" *ngIf="!p.added && !p.removed">No change</span></td>
+            <td style="text-align:end;white-space:nowrap">
+              <button type="button" class="ex-btn" (click)="plan = p.id; since = ''; show()" data-ins-show>Members</button>
+              <button type="button" class="ex-btn" (click)="plan = p.id; since = p.since; show()" *ngIf="p.added || p.removed">Changes</button>
+              <button type="button" class="ex-btn primary" (click)="plan = p.id; since = ''; dl('xlsx')" [disabled]="busy" data-ins-xlsx>Excel</button></td>
+          </tr>
+          <tr *ngIf="!plans.length"><td colspan="6" class="hs-muted">No active medical plan. Add one under Benefit plans (kind: medical) and enrol the employees.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hs-card" style="margin-top:12px" *ngIf="plan">
       <div class="ex-form">
-        <label>Plan<select [(ngModel)]="plan" data-ins-plan><option [ngValue]="null">Choose…</option><option *ngFor="let p of plans" [ngValue]="p.id">{{ p.name }}{{ p.provider ? ' – ' + p.provider : '' }}</option></select></label>
+        <label>Plan<select [(ngModel)]="plan" data-ins-plan><option *ngFor="let p of plans" [ngValue]="p.id">{{ p.name }}{{ p.provider ? ' – ' + p.provider : '' }}</option></select></label>
         <label>Members on<input type="date" [(ngModel)]="on" data-ins-on></label>
         <label>Only the changes since (optional)<input type="date" [(ngModel)]="since" data-ins-since></label>
       </div>
       <div class="hs-acts" style="margin-top:10px">
-        <button type="button" class="ex-btn primary" (click)="show()" [disabled]="busy || !plan" data-ins-show>Show</button>
-        <button type="button" class="ex-btn" (click)="dl('xlsx')" [disabled]="busy || !plan" data-ins-xlsx>Excel</button>
+        <button type="button" class="ex-btn primary" (click)="show()" [disabled]="busy || !plan">Show</button>
+        <button type="button" class="ex-btn" (click)="dl('xlsx')" [disabled]="busy || !plan">Excel</button>
         <button type="button" class="ex-btn" (click)="dl('csv')" [disabled]="busy || !plan">CSV</button></div>
       <p class="hs-muted" style="margin-top:8px">Insurers use different templates: check the columns against your insurer's file before the first upload. Family members are taken from Employee › Family where "insured" is ticked (else from the dependants written on the enrolment).</p>
     </div>
     <div class="hs-card" *ngIf="r" style="margin-top:12px" data-ins-result>
-      <p><b>{{ r.principals }}</b> employee(s), <b>{{ r.dependants }}</b> family member(s){{ r.since ? ' – changes since ' + r.since : ' on ' + r.on }}.</p>
+      <p><b>{{ r.principals }}</b> {{ r.principals === 1 ? 'employee' : 'employees' }}, <b>{{ r.dependants }}</b> {{ r.dependants === 1 ? 'family member' : 'family members' }}{{ r.since ? ' – changes since ' + dmy(r.since) : ' on ' + dmy(r.on) }}.</p>
       <div class="hs-note err" *ngIf="r.problems.length" data-ins-problems>{{ r.problems.length }} member(s) miss data the insurer needs:
         <span *ngFor="let p of r.problems.slice(0, 8); let l = last">{{ p.member }} ({{ p.missing.join(', ') }}){{ l ? '' : '; ' }}</span>{{ r.problems.length > 8 ? ' …' : '' }}</div>
       <div style="overflow:auto;max-height:480px">
@@ -508,8 +528,9 @@ export class ZpInsurerFileComponent implements OnInit {
   constructor(private za: ZaApiService) {}
   async ngOnInit(): Promise<void> {
     this.api = this.za.for(APP);
-    try { this.plans = (await this.api.get('insurer-file/plans/')).plans; if (this.plans.length === 1) { this.plan = this.plans[0].id; } } catch (e) { this.err = ZaApiService.error(e); }
+    try { this.plans = (await this.api.get('insurer-file/plans/')).plans; } catch (e) { this.err = ZaApiService.error(e); }
   }
+  dmy(v: any): string { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); return m ? `${m[3]}/${m[2]}/${m[1]}` : (v || ''); }   // v1.62.0 talent-ops
   private q(fmt: string): any { return { plan: this.plan, on: this.on, since: this.since, file: fmt }; }
   async show(): Promise<void> {
     this.err = ''; this.busy = true;

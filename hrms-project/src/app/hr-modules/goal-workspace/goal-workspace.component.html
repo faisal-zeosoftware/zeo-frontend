@@ -10,9 +10,9 @@
             <option *ngFor="let c of cycles" [ngValue]="c.id">{{ c.name }}</option>
           </select>
           <div class="gw-scope">
-            <button type="button" [class.on]="scope === 'mine'" (click)="scope = 'mine'; sheet = null; loadSheets()">My sheet</button>
-            <button type="button" [class.on]="scope === 'team'" (click)="scope = 'team'; sheet = null; loadSheets()">My team</button>
-            <button type="button" *ngIf="isAdmin" [class.on]="scope === 'all'" (click)="scope = 'all'; sheet = null; loadSheets()">All</button>
+            <button type="button" [class.on]="scope === 'mine'" (click)="setScope('mine')" data-scope="mine">My sheet</button>
+            <button type="button" [class.on]="scope === 'team'" (click)="setScope('team')" data-scope="team">My team</button>
+            <button type="button" *ngIf="isAdmin || canAll" [class.on]="scope === 'all'" (click)="setScope('all')" data-scope="all">All</button>
           </div>
         </div>
       </div>
@@ -26,7 +26,8 @@
           <option *ngFor="let f of flow" [value]="f.key">{{ f.label }}</option>
         </select>
         <div class="gw-item" *ngFor="let s of sheets" (click)="open(s)" [class.on]="sheet?.id === s.id">
-          <div><b>{{ s.employee_display }}</b><div class="muted">{{ s.department }} · {{ s.designation }}</div></div>
+          <div><b>{{ s.employee_display }}</b><div class="muted">{{ s.department }} · {{ s.designation }}</div>
+            <div class="muted gw-prog" data-progress>{{ (s.goals || []).length === 1 ? '1 goal' : (s.goals || []).length + ' goals' }} · weight {{ s.total_weight || 0 }}%<ng-container *ngIf="s.final_rating_label"> · {{ s.final_rating_label }}</ng-container></div></div>
           <span [ngClass]="statusClass(s.status)">{{ s.status_label }}</span>
         </div>
         <div class="muted p-3" *ngIf="!sheets.length">No goal sheets for this view.</div>
@@ -213,7 +214,24 @@
         </div>
       </div>
 
-      <div class="gw-sheet muted p-4" *ngIf="!sheet && cycleId">Select a goal sheet.</div>
+      <!-- v1.62.0 talent-ops: a summary of the cycle until a sheet is opened (was a bare "Select a goal sheet.") -->
+      <div class="gw-sheet" *ngIf="!sheet && cycleId && showList" data-gw-summary>
+        <div class="gw-card">
+          <div class="gw-card-head"><h4>{{ cycleName }}</h4><span class="muted">{{ cycleStatus }}</span></div>
+          <p class="muted" style="margin:0 0 10px">{{ scope === 'all' ? 'Every goal sheet of the cycle' : scope === 'team' ? 'The goal sheets of your team' : 'Your goal sheet' }} – open one on the left to see its goals, check-ins and ratings.</p>
+          <div class="gw-scores" style="grid-template-columns: repeat(4, minmax(0, 1fr))">
+            <div class="gw-stat"><span>Goal sheets</span><b>{{ summary.n }}</b></div>
+            <div class="gw-stat"><span>Goals set (weight 100%)</span><b>{{ summary.goalsSet }}</b><small>{{ summary.pct }}% of the sheets</small></div>
+            <div class="gw-stat"><span>No goal yet</span><b [class.bad]="summary.noGoals > 0">{{ summary.noGoals }}</b></div>
+            <div class="gw-stat"><span>Rated</span><b>{{ summary.rated }}</b></div>
+          </div>
+          <div class="gw-stages">
+            <button type="button" class="gw-stage" *ngFor="let f of summary.by" [class.zero]="!f.n" [class.on]="statusFilter === f.key" (click)="statusFilter = statusFilter === f.key ? '' : f.key; loadSheets()" [attr.data-stage]="f.key">
+              <b>{{ f.n }}</b><span>{{ f.label }}</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="gw-sheet muted p-4" *ngIf="!sheet && cycleId && !showList">Select a goal sheet.</div>
       <div class="gw-sheet muted p-4" *ngIf="!cycleId">No active appraisal cycle yet. HR creates and launches one under Appraisal Cycle.</div>
     </div>
   </div>

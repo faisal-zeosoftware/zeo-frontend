@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { exportExcel, exportPdf } from '../shared-ui/z-export';
 import { ZpApiService } from './zp-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** Plan templates (v1.15.0): one project plan per product / project type – phases, tasks, working-day timing, hours,
  *  role and milestones. Picked when a project is created (or applied later); everything stays editable in the project.
@@ -162,7 +163,7 @@ export class ZpPlansComponent implements OnInit {
   }
 
   async remove(): Promise<void> {
-    if (!confirm(`Delete the template "${this.cur.name}"? Projects made from it keep their plan.`)) return;
+    if (!(await zConfirm(`Delete the template "${this.cur.name}"? Projects made from it keep their plan.`))) return;
     try { await this.api.delete(`plan-templates/${this.cur.id}/`); this.cur = null; await this.load(); } catch (e) { this.msg = ZpApiService.error(e); }
   }
 

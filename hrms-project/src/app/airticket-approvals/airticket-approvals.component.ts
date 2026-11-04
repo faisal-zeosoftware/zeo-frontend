@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { UserMasterService } from '../user-master/user-master.service';
+import { openZReview } from '../shared-ui/z-review.component';   // v1.62.10 (item 167)
 
 @Component({
   selector: 'app-airticket-approvals',
@@ -377,7 +378,26 @@ export class AirticketApprovalsComponent {
     
     
      // Fetching approval details when an item is clicked
+  // v1.62.10 (item 167): one shared review window (approve / reject with reason / delegate) instead of the old review and delegation pop-ups
+  async zReview(approvalId: number): Promise<void> {
+    const r = this.atRows.find((x: any) => x.approval_id === approvalId);
+    const T = (x: string, a?: any[]) => this.at.t(x, a);
+    const res = await openZReview({
+      title: T('Air ticket request {0}', [r?.number || '']), base: '/payroll/api/airticket-approval/', approvalId, kind: 'airticket',   // v1.62.11 (item 95)
+      facts: r ? [
+        { label: 'Employee', value: r.code ? `${r.employee} (${r.code})` : r.employee }, { label: 'Branch', value: r.branch },
+        { label: 'Ticket or cash', value: this.at.requestType(r.type) }, { label: 'Route', value: this.at.route(r) },
+        { label: 'Travel dates', value: r.departure ? (r.return ? `${this.at.dmy(r.departure)} – ${this.at.dmy(r.return)}` : this.at.dmy(r.departure)) : '' },
+        { label: 'Amount', value: this.at.money(r.amount) }, { label: 'Requested on', value: this.at.dmy(r.request_date) },
+        { label: 'Level', value: T('Level {0} of {1}', [r.level, r.progress?.total || r.level]) }] : [],
+    });
+    if (!res) { return; }
+    await this.atLoad();
+    const sch = this.authService.getSelectedSchema();
+    if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+  }
      selectedaprovaldetalis(approvalId: number): void {
+      this.zReview(approvalId); return;   // v1.62.10 (item 167)
       const selectedSchema = this.authService.getSelectedSchema();
     
       if (selectedSchema) {

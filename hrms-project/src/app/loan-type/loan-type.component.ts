@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { LOAN_TYPE_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -11,6 +13,7 @@ import {combineLatest, Subscription } from 'rxjs';
 import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -407,6 +410,7 @@ fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
 
 
       openPopus():void{
+    zFormThenReload(LOAN_TYPE_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
         this.iscreateLoanApp = true;
 
               this.branch = [];
@@ -463,6 +467,7 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(LOAN_TYPE_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
 this.editAsset = { ...asset };
 this.mapBranchesNameToId(); // copy asset data
 this.isEditModalOpen = true;
@@ -474,7 +479,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedLoanType() { 
+async deleteSelectedLoanType() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -484,7 +489,7 @@ deleteSelectedLoanType() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Loan Types ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Loan Types ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -615,4 +620,10 @@ mapBranchesNameToId() {
 
 }
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedLoanType();
+  }
 }

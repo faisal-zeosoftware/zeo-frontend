@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { OrgSettingsService } from './org-settings.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.12.0 – My policies (ESS): the company policies that apply to me; open the document and confirm I have read it.
@@ -78,7 +79,7 @@ export class MyPoliciesComponent implements OnInit {
   }
 
   async ack(p: any): Promise<void> {
-    if (!confirm(`Confirm that you have read and accept “${p.title}”?`)) { return; }
+    if (!(await zConfirm(`Confirm that you have read and accept “${p.title}”?`))) { return; }
     this.busy = true;
     try {
       await firstValueFrom(this.http.post(this.url(`my-policies/${p.id}/acknowledge/`), {}));

@@ -65,10 +65,23 @@ export const RULE_PAGE: PageConfig = {
     { key: 'ot_rate_night', label: 'Rate: night shift', type: 'number', width: 2, placeholder: '1.50', showIf: m => m.ot_enabled !== false },
     // night / cross midnight
     { key: 'night_start', label: 'Night window from', type: 'time', default: '22:00', width: 3 },
-    { key: 'night_end', label: 'Night window to', type: 'time', default: '06:00', width: 3 },
+    { key: 'night_end', label: 'Night window to', type: 'time', default: '06:00', width: 3,
+      help: 'The standard 22:00–06:00 counts as the law\'s night window where Overtime law › Night overtime says so (UAE: 22:00–04:00).' },   // v1.62.6 (item 24)
     { key: 'night_min_minutes', label: 'Night shift if at least (minutes in window)', type: 'number', default: 120, width: 3 },
     { key: 'cross_midnight', label: 'Punches after midnight belong to', type: 'select', default: 'shift_start', width: 3, options: opt([['shift_start', 'The day the shift started'], ['calendar', 'Their own calendar day']]) },
     { key: 'day_change_hour', label: 'Without a shift: day changes at (hour)', type: 'number', default: 4, width: 3 },
+    // v1.67.0 (item 25b–d): punch matching after a night shift, back-to-back shifts, rest-day / holiday hours
+    { key: 'after_night_hours', label: 'Punches up to … hours after a night shift belong to it', type: 'number', default: 6, width: 3,
+      help: 'After a shift that runs past midnight (standard 6).' },
+    { key: 'before_next_hours', label: '… unless the next own shift starts within (hours)', type: 'number', default: 2, width: 3, help: 'Standard 2.' },
+    { key: 'back_to_back', label: 'Back-to-back shifts: the out punch closes the open shift first', type: 'checkbox', default: false, width: 6,
+      help: 'For 24-hour or back-to-back shifts (08:00–08:00): a punch at the end of the shift is its clock-out, the next punch starts the new shift.' },
+    { key: 'rest_day_hours_by', label: 'A shift running into a rest day or holiday: hours count by', type: 'select', default: 'shift_start', width: 6,
+      options: opt([['shift_start', 'The shift start date (standard)'], ['calendar', 'The calendar date the hours fall on']]),
+      help: 'Calendar date: a night shift from Friday (rest day) 22:00 to Saturday 06:00 gives 2 h rest-day overtime; Saturday\'s 6 h are working-day hours.' },
+    // v1.67.0 (item 23): rest days of the people this rule applies to – the same weekend records as Calendar › Assign weekends
+    { key: 'rest_days', label: 'Rest days (weekend) of the people this rule applies to', type: 'chips', chipOptions: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], width: 12,
+      help: 'Written as their weekend (Whole company = every branch). Half days, alternate weeks, a change from a date and single days stay on Calendar › Weekend calendar.' },
     // breaks & rounding
     { key: 'break_minutes', label: 'Break (minutes) when the shift has none', type: 'number', default: 0, width: 3 },
     { key: 'break_paid', label: 'Break is paid', type: 'checkbox', default: false, width: 3 },
@@ -162,7 +175,7 @@ export const PUNCH_PAGE: PageConfig = {
     + 'HR can add a missed punch for an employee or remove a wrong one; the day is recalculated at once.',
   defaultParams: { from: new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10) },
   columns: [
-    { key: 'employee_display', label: 'Employee' }, { key: 'work_date', label: 'Work day', type: 'date' }, { key: 'local_time', label: 'Time' },
+    { key: 'employee_display', label: 'Employee' }, { key: 'work_date', label: 'Work day', type: 'date' }, { key: 'local_time', label: 'Time', value: (r: any) => { const m = /^(\d{4})-(\d\d)-(\d\d) (\d\d:\d\d)/.exec(r.local_time || ''); return m ? `${m[3]}/${m[2]}/${m[1]} ${m[4]}` : (r.local_time || '–'); } },   // v1.62.0 people dd/mm/yyyy
     { key: 'kind_label', label: 'Punch' }, { key: 'source_label', label: 'Method', type: 'tag', colorKey: 'source', tagColors: { web: 'blue', mobile: 'cyan', kiosk: 'green', device: 'grey', qr: 'green', import: 'orange', correction: 'orange', manual: 'orange', biometric: 'cyan' } },
     { key: 'device_display', label: 'Device / kiosk' }, { key: 'ip', label: 'Address' }, { key: 'geofence_ok', label: 'In fence', type: 'bool' }, { key: 'is_void', label: 'Removed', type: 'bool' },
   ],
@@ -200,6 +213,9 @@ export const DAY_PAGE: PageConfig = {
     { key: 'late', label: 'Late', options: opt([['true', 'Late']]) }, { key: 'early', label: 'Early out', options: opt([['true', 'Early out']]) },
   ],
   canCreate: false, canEdit: false, canDelete: false,
+  // v1.62.0 people: ask the employee to confirm the location now (location recheck) – replaces the separate Recheck screen's "Send"
+  rowActions: [{ label: 'Ask to recheck', icon: 'my_location', action: 'ask_recheck', color: 'blue', showIf: (r: any) => !!r.first_in && !r.last_out && r.date === new Date(Date.now() - new Date().getTimezoneOffset() * 6e4).toISOString().slice(0, 10),
+    confirm: 'Ask the employee to confirm the location now with a location recheck?' }],
   toolbarActions: [{ label: 'Recalculate', icon: 'refresh', action: 'recompute', color: 'blue',
     prompt: [{ key: 'from', label: 'From', type: 'date', required: true }, { key: 'to', label: 'To', type: 'date', required: true }, { key: 'employee', label: 'Employee (empty = all)', type: 'select', lookup: LOOKUPS.employees }] }],
 };
@@ -207,7 +223,7 @@ export const DAY_PAGE: PageConfig = {
 export const MISSING_PAGE: PageConfig = {
   ...DAY_PAGE, title: 'Missing punches', endpoint: AP_API + 'days/', defaultParams: { missing: 'true' },
   intro: 'Days with a clock-in but no clock-out after the shift end plus the hours set in the rule. The employee is notified to request a correction; HR can also add the missing punch under Punches.',
-  toolbarActions: [],
+  toolbarActions: [], rowActions: [],
 };
 
 export const CORRECTION_PAGE: PageConfig = {

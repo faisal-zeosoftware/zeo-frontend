@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service';
@@ -12,7 +13,7 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 @Component({
   selector: 'z-emp-employment',
   standalone: true,
-  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep" *ngIf="d">
@@ -42,23 +43,23 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
   <div class="ep-row-form" *ngIf="mode">
     <ng-container [ngSwitch]="mode">
       <div *ngSwitchCase="'confirm'" class="ep-grid">
-        <label class="ep-f" [class.bad]="ferr['date']"><span>Confirmation date</span><input type="date" [(ngModel)]="f.date"><small class="err" *ngIf="ferr['date']">{{ ferr['date'] }}</small></label>
+        <label class="ep-f" [class.bad]="ferr['date']"><span>Confirmation date</span><z-date-field [(value)]="f.date"></z-date-field><small class="err" *ngIf="ferr['date']">{{ ferr['date'] }}</small></label>
         <label class="ep-f"><span>Note (optional)</span><input type="text" [(ngModel)]="f.note"></label>
       </div>
       <div *ngSwitchCase="'extend'" class="ep-grid">
-        <label class="ep-f" [class.bad]="ferr['to_date']"><span>New end date *</span><input type="date" [(ngModel)]="f.to_date" [max]="d.limits?.max_end_date">
+        <label class="ep-f" [class.bad]="ferr['to_date']"><span>New end date *</span><z-date-field [(value)]="f.to_date" [max]="d.limits?.max_end_date"></z-date-field>
           <small class="hint" *zCountry="'pack:AE'">UAE law allows at most 6 months in total – latest {{ fmt(d.limits?.max_end_date) }}.</small><small class="hint" *zCountry="'!pack:AE'">Latest end date allowed: {{ fmt(d.limits?.max_end_date) }}.</small><small class="err" *ngIf="ferr['to_date']">{{ ferr['to_date'] }}</small></label>
         <label class="ep-f" [class.bad]="ferr['reason']"><span>Reason *</span><input type="text" [(ngModel)]="f.reason"><small class="err" *ngIf="ferr['reason']">{{ ferr['reason'] }}</small></label>
       </div>
       <div *ngSwitchCase="'fail'" class="ep-grid">
-        <label class="ep-f" [class.bad]="ferr['last_day']"><span>Last working day</span><input type="date" [(ngModel)]="f.last_day">
+        <label class="ep-f" [class.bad]="ferr['last_day']"><span>Last working day</span><z-date-field [(value)]="f.last_day"></z-date-field>
           <small class="hint">Leave empty for 14 days from today<ng-container *zCountry="'pack:AE'"> (the written notice UAE law asks for)</ng-container>.</small><small class="err" *ngIf="ferr['last_day']">{{ ferr['last_day'] }}</small></label>
         <label class="ep-f" [class.bad]="ferr['reason']"><span>Reason *</span><input type="text" [(ngModel)]="f.reason"><small class="err" *ngIf="ferr['reason']">{{ ferr['reason'] }}</small></label>
       </div>
       <div *ngSwitchCase="'status'" class="ep-grid">
         <label class="ep-f" [class.bad]="ferr['status']"><span>Status</span>
           <select [(ngModel)]="f.status"><option *ngFor="let s of statuses" [ngValue]="s.v">{{ s.l }}</option></select><small class="err" *ngIf="ferr['status']">{{ ferr['status'] }}</small></label>
-        <label class="ep-f" [class.bad]="ferr['date_of_leaving']" *ngIf="leaving(f.status)"><span>Date of leaving (last working day) *</span><input type="date" [(ngModel)]="f.date_of_leaving">
+        <label class="ep-f" [class.bad]="ferr['date_of_leaving']" *ngIf="leaving(f.status)"><span>Date of leaving (last working day) *</span><z-date-field [(value)]="f.date_of_leaving"></z-date-field>
           <small class="err" *ngIf="ferr['date_of_leaving']">{{ ferr['date_of_leaving'] }}</small></label>
         <label class="ep-f" *ngIf="leaving(f.status)"><span>Reason</span><input type="text" [(ngModel)]="f.leaving_reason"></label>
         <label class="ep-f" [class.bad]="ferr['unpaid_days_before_golive']"><span>Unpaid days before ZEO go-live</span><input type="number" min="0" step="0.5" [(ngModel)]="f.unpaid_days_before_golive">

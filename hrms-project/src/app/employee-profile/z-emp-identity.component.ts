@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService, eidProblem } from './employee-profile.service';
@@ -58,7 +59,7 @@ const SECTIONS: Sec[] = [
 @Component({
   selector: 'z-emp-identity',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './employee-profile.css'],
   template: `
 <div class="ep">
@@ -91,7 +92,7 @@ const SECTIONS: Sec[] = [
           </ng-container>
           <ng-container *ngIf="editing">
             <ng-container [ngSwitch]="f.type || 'text'">
-              <input *ngSwitchCase="'date'" type="date" [(ngModel)]="v[f.key]" [attr.aria-label]="s.title + ' ' + f.label">
+              <z-date-field *ngSwitchCase="'date'" [(value)]="v[f.key]" [label]="s.title + ' ' + f.label"></z-date-field>
               <select *ngSwitchCase="'select'" [(ngModel)]="v[f.key]" [attr.aria-label]="f.label">
                 <option [ngValue]="''">Not set</option>
                 <option *ngFor="let o of f.options" [ngValue]="o.v">{{ o.l }}</option>

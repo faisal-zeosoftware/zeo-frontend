@@ -98,7 +98,7 @@ export function day(v: any): string {
   return isNaN(d.getTime()) ? String(v) : dmy(d);   // v1.62.0 ui: dd/mm/yyyy (was "27 Sept 2026")
 }
 export const today = (): string => new Date().toISOString().slice(0, 10);
-export const money = (v: any): string => (v === null || v === undefined || v === '') ? '–' : Number(v).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+export const money = (v: any): string => (v === null || v === undefined || v === '') ? '–' : Number(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });   // v1.62.0 ui: amounts with 2 decimals
 
 /** Status → badge colour class (za.css / hs-b). */
 export function stClass(s: string): string {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { zFormThenReload, BRANCH_FORM, branchCopySetupForm } from '../shared-ui/z-forms';   // v1.62.1
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -10,6 +11,7 @@ import { BranchCreationComponent } from '../branch-creation/branch-creation.comp
 import { BranchEditComponent } from '../branch-edit/branch-edit.component';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-branch-master',
@@ -23,7 +25,7 @@ import { EmployeeService } from '../employee-master/employee.service';
               </div>
               <div class="col-md-6">
                   <div class="button-group pull-right">
-                      <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle</mat-icon></span> Create</button>
+                      <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New branch</button><!-- v1.62.1 -->
                   </div>
               </div>
           </div>
@@ -54,6 +56,7 @@ import { EmployeeService } from '../employee-master/employee.service';
               <td class="text-end bm-acts">
                 <z-translate *ngIf="hasEditPermission" endpoint="/organisation/api/Branch/" [recordId]="b.id" [small]="true" [iconOnly]="true"></z-translate>
                 <button type="button" class="bm-act" title="Edit" *ngIf="hasEditPermission" (click)="openEditPopuss(b.id)"><mat-icon>edit</mat-icon></button>
+                <button type="button" class="bm-act" title="Copy the setup from another branch" *ngIf="hasEditPermission && branches.length > 1" (click)="copySetup(b)" data-bm-copysetup><mat-icon>content_copy</mat-icon></button>
                 <button type="button" class="bm-act bm-del" title="Delete" *ngIf="hasDeletePermission" (click)="deleteOne(b)"><mat-icon>delete_outline</mat-icon></button>
               </td>
             </tr>
@@ -270,12 +273,11 @@ if (this.userId !== null) {
   // }
 
 
+  copySetup(b: any): void { zFormThenReload(branchCopySetupForm(b.id, b.branch_name)); }   // v1.62.1
+
   openPopus(){
-    this.dialog.open(BranchCreationComponent,{
-      width:'80%',
-      height:'700px',
-    })
-  }
+    zFormThenReload(BRANCH_FORM);   // v1.62.1 new-design form (was BranchCreationComponent)
+}
 
 
   
@@ -296,7 +298,7 @@ onCheckboxChange(employee:number) {
   // You can add any additional logic if needed.
 }
 
-deleteSelectedEmployees() { 
+async deleteSelectedEmployees() { 
   const selectedEmployeeIds = this.branches
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -306,7 +308,7 @@ deleteSelectedEmployees() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Branch?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected Branch?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -360,6 +362,7 @@ deleteSelectedEmployees() {
 
 
 openEditPopuss(employeeId: number):void{
+  zFormThenReload(BRANCH_FORM, { id: employeeId }); return;   // v1.62.1 new-design form
   const dialogRef = this.dialog.open(BranchEditComponent, {
     width:'80%',
     height:'500px',

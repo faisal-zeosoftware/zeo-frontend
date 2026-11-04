@@ -13,6 +13,7 @@ declare var $: any;
 
 import { combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -1004,7 +1005,7 @@ getDesignationName(id: number | string): string {
   }
 
 
-  deleteSelectedAssetType() {
+  async deleteSelectedAssetType() {
     const selectedEmployeeIds = this.LoanTypes
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1014,7 +1015,7 @@ getDesignationName(id: number | string): string {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Announcement ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Announcement ?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1554,5 +1555,10 @@ FilterEditEmployee() {
   this.updateEditPagination();
 }
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

@@ -9,6 +9,7 @@ import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { SchemaCreationComponent } from '../schema-creation/schema-creation.component';
 import { MatDialog } from '@angular/material/dialog';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-location-master',
@@ -466,7 +467,7 @@ closeEditModal(): void {
 
 
 
-  deleteSelectedLocationmaster() { 
+  async deleteSelectedLocationmaster() { 
   const selectedEmployeeIds = this.Schemas
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -476,7 +477,7 @@ closeEditModal(): void {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected  Company?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected  Company?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -561,8 +562,11 @@ closeEditModal(): void {
 
 
   
+  logoPreview: string | null = null;
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
+    if (this.logoPreview) { URL.revokeObjectURL(this.logoPreview); }
+    this.logoPreview = this.selectedFile ? URL.createObjectURL(this.selectedFile) : null;   // v1.62.1 preview of the new logo
   }
 
   // updateCompany(): void {
@@ -870,7 +874,10 @@ getFileName(fileUrl: string): string {
   return fileUrl?.split('/').pop() || 'Existing File';
 }
 
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedLocationmaster();
+  }
 }
-/////////////////////////////////////

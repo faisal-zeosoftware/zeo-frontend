@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui: "+ New leave type" top right -->
 <!-- v1.62.0 ui: dates dd/MM/yyyy -->
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
@@ -16,22 +17,10 @@
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button type="button" class="btn-Create btn btn-success" (click)="CreateLeaveModal()"
-              *ngIf="hasAddPermission"> <span class="header-btn-icon"><mat-icon>add_circle
-                </mat-icon></span> Create</button>
+            <button type="button" class="z-new-btn" data-z-new (click)="CreateLeaveModal()"
+              *ngIf="hasAddPermission">+ New leave type</button>
             <span *ngIf="!hasAddPermission"></span>
-
-            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
-              <span class="header-btn-icon">
-                <mat-icon>draw
-                </mat-icon></span> Edit</button>
-            <span *ngIf="!hasEditPermission"></span>
-            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission">
-              <span class="header-btn-icon">
-                <mat-icon> delete
-                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-            <span *ngIf="!hasDeletePermission"></span>
+            <!-- v1.62.1: Edit / Delete moved to each row -->
 
 
 
@@ -45,19 +34,9 @@
     </div>
 
 
-    <div class="row">
-      <div class="col-md-2">
-
-        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllLeaveTypes()">Select all</button>
-
-      </div>
-      <div class="col-md-3">
-        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedLeavetype()">Delete
-          selected </button>
-
-      </div>
-    </div>
+    <!-- v1.62.1: leave rules live in Leave policies; this list is the leave types themselves -->
+    <p class="lm-note"><span>The days, accrual and limits of each leave type are set per employee group in</span>
+      <a routerLink="/main-sidebar/leave-options/leave-policies">Leave policies</a>. <span>The Entitlement tab of a leave type is used only for a type that no policy covers.</span></p>
 
 
 
@@ -77,8 +56,8 @@
                   <th>Type</th>
                   <th>Branch</th>
                   <th>Unit</th>
-                  <th>Valid from</th>
-                  <th>Valid to</th>
+                  <th *ngIf="hasValidity()">Valid from</th>
+                  <th *ngIf="hasValidity()">Valid to</th>
                   <th>Half day</th>
                   <th>Negative</th>
                   <th>Enable leave pay rule</th>
@@ -95,27 +74,24 @@
                   <td data-label="Leave Type">
                     <strong>{{ leavetype.name }}</strong>
                   </td>
-                   <td data-label="Leave Category">
-                    
-                    {{ leavetype.leave_category }}
-                  </td>
+                   <td data-label="Leave Category">{{ categoryLabel(leavetype.leave_category) | t }}</td>
                   <td data-label="Code">{{ leavetype.code }}</td>
                   <td data-label="Type">
                     <span class="badge" [class.badge-success]="leavetype.type === 'paid'" [class.badge-warning]="leavetype.type === 'unpaid'">
                       {{ leavetype.type | titlecase }}
                     </span>
                   </td>
-                  <td data-label="Branch">{{ leavetype.branch }}</td>
+                  <td data-label="Branch">{{ leavetype.branch || ('All branches' | t) }}</td>
                   <td data-label="Unit">{{ leavetype.unit | titlecase }}</td>
-                  <td data-label="Valid From">{{ leavetype.valid_from | date:'dd/MM/yyyy' }}</td>
-                  <td data-label="Valid To">{{ leavetype.valid_to | date:'dd/MM/yyyy' }}</td>
+                  <td data-label="Valid From" *ngIf="hasValidity()">{{ leavetype.valid_from ? (leavetype.valid_from | date:'dd/MM/yyyy') : ('Always' | t) }}</td>
+                  <td data-label="Valid To" *ngIf="hasValidity()">{{ leavetype.valid_to ? (leavetype.valid_to | date:'dd/MM/yyyy') : ('No end' | t) }}</td>
                                      <td data-label="Half Day">
                     <span class="status-badge" [class.status-yes]="leavetype.allow_half_day" [class.status-no]="!leavetype.allow_half_day">
                       {{ leavetype.allow_half_day ? 'Yes' : 'No' }}
                     </span>
                   </td>
                    <td data-label="Negative">
-                    <span class="status-badge" [class.status-yes]="leavetype.negative" [class.status-no]="!leavetype.allow_half_day">
+                    <span class="status-badge" [class.status-yes]="leavetype.negative" [class.status-no]="!leavetype.negative">
                       {{ leavetype.negative ? 'Yes' : 'No' }}
                     </span>
                   </td>
@@ -141,21 +117,13 @@
                   </td>
 <td data-label="Action" class="sticky-right">
 
-  <button
-    type="button"
-    mat-mini-fab
-    color="primary"
-    *ngIf="showEditBtn"
-    (click)="openEditLeaveTypeModal(leavetype)"
-    class="table-edit-btn">
-    <mat-icon>draw</mat-icon>
-  </button>
-  <z-translate *ngIf="showEditBtn" endpoint="/calendars/api/leave-type/" [recordId]="leavetype.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
-
-  <mat-checkbox
-    *ngIf="Delete"
-    [(ngModel)]="leavetype.selected">
-  </mat-checkbox>
+  <span class="lm-acts">
+    <button type="button" class="lm-icon" *ngIf="hasEditPermission" title="Edit" [attr.aria-label]="'Edit ' + leavetype.name"
+      (click)="openEditLeaveTypeModal(leavetype)"><mat-icon>edit</mat-icon></button>
+    <z-translate *ngIf="hasEditPermission" endpoint="/calendars/api/leave-type/" [recordId]="leavetype.id" [small]="true"></z-translate>
+    <button type="button" class="lm-icon danger" *ngIf="hasDeletePermission" title="Delete" [attr.aria-label]="'Delete ' + leavetype.name"
+      (click)="deleteOne(leavetype)"><mat-icon>delete</mat-icon></button>
+  </span>
 
 </td>
 
@@ -167,7 +135,7 @@
                   </td> -->
                 </tr>
                 <tr *ngIf="LeaveTypes.length === 0">
-                  <td colspan="12" class="text-center text-muted py-4">
+                  <td colspan="16" class="text-center text-muted py-4">
                     <i class="fa-solid fa-inbox fa-2x mb-2"></i><br>
                     No Leave Types Found
                   </td>

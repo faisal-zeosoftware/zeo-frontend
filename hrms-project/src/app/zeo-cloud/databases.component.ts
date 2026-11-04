@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
+import { ZJobProgressComponent } from '../shared-ui/z-job-progress.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const T = (t: string, ...a: any[]) => i18nT(t, a.length ? a : null);
 const API = () => `${environment.apiBaseUrl}/cloud/api`;
@@ -14,11 +16,13 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
  * v1.26.0 – the own databases of a Premium account (Settings → Subscription for the owner, and the console's
  * Databases tab for Adept). Add an empty database, duplicate one with all its companies, choose the default one
  * (where new companies are made), rename, remove an empty one, and move a company between the databases.
+ * v1.62.1: Add database, Duplicate and every move show <z-job-progress> – the %, what is being done now, the steps with
+ * their seconds, time taken and left – and a done / failed state with a Close button (no pop-up at the end).
  */
 @Component({
   selector: 'z-cloud-databases',
   standalone: true,
-  imports: [CommonModule, FormsModule, ...I18N_UI],
+  imports: [CommonModule, FormsModule, ZJobProgressComponent, ...I18N_UI],
   styleUrls: ['../leave-policy/leave-policy.css', './cloud.css'],
   template: `
 <div class="zk-card zdb" data-no-help>
@@ -40,7 +44,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
       <span class="zk-sp"></span>
       <button type="button" class="lp-btn" *ngIf="!d.default && d.state === 'ready'" (click)="act(d, 'default')" [disabled]="busy">{{ 'Make default' | t }}</button>
       <button type="button" class="lp-btn" (click)="d._ren = !d._ren; d._label = d.title" [disabled]="busy">{{ 'Rename' | t }}</button>
-      <button type="button" class="lp-btn" *ngIf="d.state === 'ready' && d.company_list.length" (click)="openDup(d)" [disabled]="busy || !info?.can_add || !!job">{{ 'Duplicate' | t }}</button>
+      <button type="button" class="lp-btn" *ngIf="d.state === 'ready' && d.company_list.length" (click)="openDup(d)" data-act="duplicate" [disabled]="busy || !info?.can_add || !!job">{{ 'Duplicate' | t }}</button>
       <button type="button" class="lp-btn danger" *ngIf="!d.default && !d.company_list.length" (click)="remove(d)" [disabled]="busy">{{ 'Remove' | t }}</button>
     </div>
     <small class="cc-err" *ngIf="d.note && d.state === 'failed'">{{ d.note }}</small>
@@ -57,11 +61,11 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 
     <div class="zk-scroll" *ngIf="d.company_list.length"><table class="zk-table">
       <tr><th>{{ 'Company' | t }}</th><th>{{ 'Move to' | t }}</th></tr>
-      <tr *ngFor="let c of d.company_list"><td>{{ c.name }}<small *ngIf="c.archived">{{ 'archived' | t }}</small><small *ngIf="c.moving || moving(c.id)">{{ 'Moving' | t }}: {{ (moving(c.id)?.step || '') | t }}</small></td>
+      <tr *ngFor="let c of d.company_list"><td>{{ c.name }}<small *ngIf="c.archived">{{ 'archived' | t }}</small><small *ngIf="c.moving || moving(c.id)">{{ 'Moving' | t }}: {{ moving(c.id)?.percent || 0 }}%</small></td>
         <td><ng-container *ngIf="dbs.length > 1 && !c.moving && !moving(c.id)">
           <select class="zk-in" [(ngModel)]="c._to" [attr.aria-label]="'Move to' | t"><option [ngValue]="undefined">–</option>
             <option *ngFor="let o of others(d)" [ngValue]="o.key">{{ o.title }}</option></select>
-          <button type="button" class="cc-link" (click)="move(c, c._to)" [disabled]="busy || !c._to">{{ 'Move' | t }}</button></ng-container></td></tr>
+          <button type="button" class="cc-link" (click)="move(c, c._to)" data-act="move" [disabled]="busy || !c._to">{{ 'Move' | t }}</button></ng-container></td></tr>
     </table></div>
     <p class="zk-note" *ngIf="!d.company_list.length">{{ 'No companies yet.' | t }}</p>
 
@@ -76,24 +80,44 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <label class="wide cc-inline"><input type="checkbox" [(ngModel)]="dup.neutralize"> {{ 'Test copy – no e-mails are sent from the copies' | t }}</label></div>
       <div class="zk-row"><span class="zk-note">{{ 'Example: {0}' | t:(d.company_list[0]?.name + ' (' + (dup.suffix || dup.label || 'Copy') + ')') }}</span><span class="zk-sp"></span>
         <button type="button" class="lp-btn" (click)="dup = null">{{ 'Cancel' | t }}</button>
-        <button type="button" class="lp-btn primary" (click)="runDup()" [disabled]="busy || !dup.label.trim()">{{ 'Duplicate' | t }}</button></div>
+        <button type="button" class="lp-btn primary" (click)="runDup()" data-act="run-duplicate" [disabled]="busy || !dup.label.trim()">{{ 'Duplicate' | t }}</button></div>
     </div>
   </div>
 
-  <!-- progress of a copy -->
-  <div class="zdb-dup" *ngIf="job && js">
-    <h3>{{ js.state === 'running' ? ('Copying the database…' | t) : js.state === 'done' ? ('The copy is ready' | t) : ('The copy failed' | t) }}</h3>
-    <p class="zk-note" *ngIf="js.state === 'running'">{{ js.step | t }}</p>
-    <ul class="zdb-steps"><li *ngFor="let c of js.companies" [ngClass]="c.state">{{ c.name }} → {{ c.copy }}
-      <small>{{ stepText(c.state) }}</small>
-      <small class="cc-err" *ngIf="c.error">{{ c.error }}</small></li></ul>
-    <p class="cc-err" *ngIf="js.error">{{ js.error }}</p>
-    <div class="zk-row" *ngIf="js.state !== 'running'"><span class="zk-sp"></span><button type="button" class="lp-btn" (click)="job = ''; js = null">{{ 'Close' | t }}</button></div>
+  <!-- v1.62.1 progress of the moves (one card per moving company) -->
+  <div class="zdb-prog zdb-moves" *ngIf="moveCards().length">
+    <z-job-progress *ngFor="let m of moveCards(); trackBy: byId" class="zdb-move" [compact]="true" [job]="m" [title]="moveTitle(m)"
+      [doneText]="'The company is open in the new database.'" [note]="'The company is closed while it moves.'">
+      <button type="button" class="lp-btn" (click)="closeMove(m)">{{ 'Close' | t }}</button>
+    </z-job-progress>
+  </div>
+
+  <!-- progress of a copy (v1.62.1 with %, steps and the % of every company) -->
+  <div class="zdb-prog" *ngIf="job && js">
+    <z-job-progress class="zdb-dupjob" [job]="js" [title]="'Copying the database {0}' | t:(js.label || '')"
+      [doneText]="js.failed ? ('{0} of {1} companies copied – see below.' | t:((js.companies?.length || 0) - js.failed):(js.companies?.length || 0)) : ('The copy is ready. Its companies are in the new database.' | t)"
+      [note]="'You can leave this window open. Large companies take longer.'">
+      <button type="button" class="lp-btn" (click)="closeJob()">{{ 'Close' | t }}</button>
+    </z-job-progress>
+    <ul class="zdb-steps zdb-comp" *ngIf="js.companies?.length">
+      <li *ngFor="let c of js.companies" [ngClass]="c.state">
+        <span class="zdb-cn">{{ c.name }} → {{ c.copy }}</span>
+        <span class="zdb-cbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="cpct(c)" [attr.aria-label]="c.name"><i [style.width.%]="cpct(c)"></i></span>
+        <small>{{ cpct(c) }}% · {{ stepText(c.state) }}</small>
+        <small class="cc-err" *ngIf="c.error">{{ c.error }}</small></li></ul>
+  </div>
+
+  <!-- v1.62.1 progress of a new database -->
+  <div class="zdb-prog" *ngIf="cjob && cs">
+    <z-job-progress class="zdb-addjob" [job]="cs" [title]="'Creating the database {0}' | t:(cs.label || '')"
+      [doneText]="'The database is ready. New companies can be made in it, or companies moved to it.'" [note]="'This takes about a minute.'">
+      <button type="button" class="lp-btn" (click)="closeCreate()">{{ 'Close' | t }}</button>
+    </z-job-progress>
   </div>
 
   <div class="zk-row zdb-add" *ngIf="info?.premium">
     <input class="zk-in" [(ngModel)]="newLabel" maxlength="120" [placeholder]="'Name of a new, empty database (e.g. Group 2)' | t" [attr.aria-label]="'New database' | t">
-    <button type="button" class="lp-btn primary" (click)="add()" [disabled]="busy || !info?.can_add || newLabel.trim().length < 2">{{ busy && adding ? ('Creating…' | t) : ('Add database – 14-day trial' | t) }}</button>
+    <button type="button" class="lp-btn primary" (click)="add()" [disabled]="busy || !!cjob || !info?.can_add || newLabel.trim().length < 2">{{ (busy && adding) || cs?.state === 'running' ? ('Creating…' | t) : ('Add database – 14-day trial' | t) }}</button>
     <span class="zk-note" *ngIf="info && !info.can_add">{{ info.add_note }}</span>
   </div>
 </div>`,
@@ -108,6 +132,16 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
   .zdb-pay{gap:8px;flex-wrap:wrap;margin-top:6px;font-size:13px}.zdb-pay .zk-in{width:auto}
   .zdb-add{border-top:1px solid #ecebf5;padding-top:12px;gap:8px;flex-wrap:wrap}
   .zdb-add .zk-in{min-width:260px;flex:1}
+  .zdb-prog{margin-top:12px}
+  .zdb-moves{display:grid;gap:10px}
+  .zdb-comp{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
+  .zdb-comp li{display:grid;grid-template-columns:minmax(0,1fr) 140px auto;align-items:center;gap:10px;font-size:13px}
+  .zdb-comp .zdb-cn{overflow-wrap:anywhere}
+  .zdb-cbar{display:block;height:6px;border-radius:4px;background:#EEF0F5;overflow:hidden}
+  .zdb-cbar i{display:block;height:100%;background:#5B4FE0;border-radius:4px;transition:width .6s ease}
+  .zdb-comp li.done .zdb-cbar i{background:#2E9B47}.zdb-comp li.failed .zdb-cbar i{background:#D64550}
+  :host-context([dir=rtl]) .zdb-cbar i{margin-inline-start:auto}
+  @media (max-width:600px){.zdb-comp li{grid-template-columns:1fr}}
   `]
 })
 export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
@@ -116,12 +150,26 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
   msg = ''; bad = false; busy = false; adding = false; newLabel = '';
   dup: { key: string; label: string; suffix: string; neutralize: boolean } | null = null;
   job = ''; js: any = null;
-  private t1: any = null; private t2: any = null;
+  cjob = ''; cs: any = null;   // v1.62.1 a new database being made
+  private watched = new Set<number>();   // moves started or seen running here: their card stays until Close
+  private t1: any = null; private t2: any = null; private t3: any = null;
 
   constructor(private http: HttpClient) {}
 
-  ngOnChanges(): void { if (this.accountId) { this.load(); this.loadMoves(); } }
-  ngOnDestroy(): void { clearTimeout(this.t1); clearInterval(this.t2); }
+  ngOnChanges(): void {
+    if (this.accountId) {
+      this.load(); this.loadMoves();
+      // a job started before a reload of the page goes on showing (this browser only)
+      const j = this.mem('dup'); if (j && !this.job) { this.job = j; this.watch(); }
+      const c = this.mem('add'); if (c && !this.cjob) { this.cjob = c; this.watchCreate(); }
+    }
+  }
+  ngOnDestroy(): void { clearTimeout(this.t1); clearInterval(this.t2); clearInterval(this.t3); }
+  private mem(k: string, v?: string): string {
+    const key = `zdb-${k}-${this.accountId}`;
+    try { if (v === undefined) { return localStorage.getItem(key) || ''; } if (v) { localStorage.setItem(key, v); } else { localStorage.removeItem(key); } } catch { /* no storage */ }
+    return '';
+  }
 
   async load(): Promise<void> {
     try {
@@ -134,13 +182,24 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
     try {
       this.moves = await firstValueFrom(this.http.get<any[]>(`${API()}/accounts/${this.accountId}/moves/`));
       const running = this.moves.some(m => m.state === 'running' || m.state === 'waiting');
+      this.moves.forEach(m => { if (m.state === 'running' || m.state === 'waiting') { this.watched.add(m.id); } });
       clearTimeout(this.t1);
-      if (running) { this.t1 = setTimeout(() => { this.loadMoves(); }, 3000); }
+      if (running) { this.t1 = setTimeout(() => { this.loadMoves(); }, 2000); }
       else if (this.wasMoving) { this.load(); }
       this.wasMoving = running;
     } catch { /* keep */ }
   }
   private wasMoving = false;
+  /** v1.62.1 the moves with a progress card: running ones, and finished ones seen running here (until Close) */
+  moveCards(): any[] {   // the move inside a database copy is shown by the copy's card
+    return this.moves.filter(m => this.watched.has(m.id) && !(this.js && this.js.target && m.target === this.js.target));
+  }
+  moveTitle(m: any): string { return T('Moving {0} to {1}', m.company, m.to_label || T(m.to)); }
+  closeMove(m: any): void { this.watched.delete(m.id); }
+  byId(_i: number, m: any): any { return m.id; }
+  cpct(c: any): number { return c.state === 'done' ? 100 : Math.max(0, Math.min(100, Math.round(Number(c.percent) || 0))); }
+  closeJob(): void { this.job = ''; this.js = null; this.mem('dup', ''); }
+  closeCreate(): void { this.cjob = ''; this.cs = null; this.mem('add', ''); }
   moving(companyId: number): any { return this.moves.find(m => m.company_id === companyId && (m.state === 'running' || m.state === 'waiting')) || null; }
   others(d: any): any[] { return this.dbs.filter(x => x.key !== d.key && x.state === 'ready'); }
   priceNote(): string {
@@ -162,10 +221,26 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
   dbState(s: string): string { return T(({ ready: 'Ready', creating: 'Creating', failed: 'Failed', retired: 'Retired' } as any)[s] || s); }
 
   async add(): Promise<void> {
-    this.busy = true; this.adding = true;
-    try { await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/databases/`, { label: this.newLabel.trim() })); this.say(T('Database {0} is ready.', this.newLabel.trim()), false); this.newLabel = ''; await this.load(); }
+    this.busy = true; this.adding = true; this.msg = '';
+    try {   // v1.62.1 in the background: the card shows the %, the steps and the time
+      const r: any = await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/databases/`, { label: this.newLabel.trim(), background: true }));
+      this.cjob = r.job; this.mem('add', r.job);
+      this.cs = { state: 'running', percent: 0, step: 'Creating the database', label: this.newLabel.trim() };
+      this.newLabel = ''; this.watchCreate(); await this.load();
+    }
     catch (e) { this.say(err(e, T('The database could not be created.')), true); }
     this.busy = false; this.adding = false;
+  }
+  private watchCreate(): void {
+    clearInterval(this.t3);
+    const tick = async () => {
+      try {
+        this.cs = await firstValueFrom(this.http.get<any>(`${API()}/db-jobs/${this.cjob}/`));
+        if (this.cs.state !== 'running') { clearInterval(this.t3); this.load(); }
+      } catch (e: any) { if (e?.status === 404 || e?.status === 403) { clearInterval(this.t3); this.closeCreate(); } }
+    };
+    tick();
+    this.t3 = setInterval(tick, 1500);
   }
   async act(d: any, action: string, extra: any = {}): Promise<void> {
     this.busy = true;
@@ -173,8 +248,8 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
     catch (e) { this.say(err(e, T('Not saved.')), true); }
     this.busy = false;
   }
-  remove(d: any): void {
-    if (!confirm(T('Remove the empty database {0}? It is deleted after 7 days.', d.title))) { return; }
+  async remove(d: any): Promise<void> {
+    if (!(await zConfirm(T('Remove the empty database {0}? It is deleted after 7 days.', d.title)))) { return; }
     this.act(d, 'remove');
   }
   openDup(d: any): void { this.dup = { key: d.key, label: T('Copy of {0}', d.title), suffix: 'Test', neutralize: true }; }
@@ -184,7 +259,9 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
     try {
       const r: any = await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/databases/${dp.key}/`,
         { action: 'duplicate', label: dp.label.trim(), suffix: dp.suffix.trim(), neutralize: dp.neutralize }));
-      this.job = r.job; this.dup = null; this.watch();
+      this.job = r.job; this.mem('dup', r.job); this.dup = null;
+      this.js = { state: 'running', percent: 0, step: 'Creating the new database', label: dp.label.trim(), companies: [] };
+      this.watch(); this.load();
     } catch (e) { this.say(err(e, T('The copy could not start.')), true); }
     this.busy = false;
   }
@@ -193,17 +270,17 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
     const tick = async () => {
       try {
         this.js = await firstValueFrom(this.http.get<any>(`${API()}/db-jobs/${this.job}/`));
-        if (this.js.state !== 'running') { clearInterval(this.t2); this.load(); }
-      } catch { /* keep trying */ }
+        if (this.js.state !== 'running') { clearInterval(this.t2); this.load(); this.loadMoves(); }
+      } catch (e: any) { if (e?.status === 404 || e?.status === 403) { clearInterval(this.t2); this.closeJob(); } }
     };
     tick();
-    this.t2 = setInterval(tick, 3000);
+    this.t2 = setInterval(tick, 2000);
   }
   async move(c: any, key: string): Promise<void> {
     const to = this.dbs.find(x => x.key === key);
-    if (!confirm(T('Move {0} to {1}? The company is closed for a minute or two while it moves.', c.name, to?.title || key))) { return; }
+    if (!(await zConfirm(T('Move {0} to {1}? The company is closed for a minute or two while it moves.', c.name, to?.title || key)))) { return; }
     this.busy = true;
-    try { await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/moves/`, { company: c.id, db: key })); this.say(T('Move started – {0}.', c.name), false); this.wasMoving = true; await this.loadMoves(); }
+    try { const r: any = await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/moves/`, { company: c.id, db: key })); if (r?.id) { this.watched.add(r.id); } this.msg = ''; this.wasMoving = true; await this.loadMoves(); }
     catch (e) { this.say(err(e, T('The move could not start.')), true); }
     this.busy = false;
   }

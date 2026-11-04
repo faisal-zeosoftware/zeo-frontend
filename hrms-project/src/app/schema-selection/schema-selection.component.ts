@@ -24,12 +24,12 @@ interface Invite { id: number; company: string; account: string; invited_by: str
 interface MakeJob {
   acc: CloudAcc; name: string; industry: string; apps: { key: string; title: string; ok: boolean; on: boolean; note: string }[];
   state: 'ask' | 'running' | 'done' | 'failed'; error: string; job: string; schema: string; stepNo: number; companyId: number | null;
-  db: string;
+  db: string; st?: any;   // v1.62.1 job status for <z-job-progress>
 }
 
 interface DupJob {
   source: MyCompany; name: string; neutralize: boolean; state: 'ask' | 'running' | 'done' | 'failed';
-  error: string; job: string; schema: string; stepNo: number; companyId: number | null;
+  error: string; job: string; schema: string; stepNo: number; companyId: number | null; st?: any;   // v1.62.1
 }
 
 /**
@@ -92,12 +92,38 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
         // the company opened last comes first; the others by name
         this.companies = [...list.filter(c => c.schema_name === this.last), ...list.filter(c => c.schema_name !== this.last)];
         this.loading = false;
+        // v1.62.1: "open this company next time" – straight into the last company (the top-bar menu still switches)
+        if (this.autoOpen && this.last && !new URLSearchParams(location.search).has('choose')) {
+          const c = this.companies.find(x => x.schema_name === this.last && !x.moving);
+          if (c) { this.open(c); }
+        }
       },
       error: (e: HttpErrorResponse) => {
         this.loading = false;
         this.error = e.status === 401 ? i18nT('Your session has ended. Sign in again.') : i18nT('The companies could not be loaded. Try again.');
       },
     });
+  }
+
+  // ---- v1.62.1 favourites (star), recent, open next time, ⋯ menu ----
+  menuFor = '';
+  get favs(): string[] { try { return JSON.parse(localStorage.getItem('zeo:favCompanies') || '[]'); } catch { return []; } }
+  isFav(c: MyCompany): boolean { return this.favs.includes(c.schema_name); }
+  toggleFav(c: MyCompany, ev: Event): void {
+    ev.stopPropagation();
+    const f = this.favs; const i = f.indexOf(c.schema_name);
+    if (i >= 0) { f.splice(i, 1); } else { f.push(c.schema_name); }
+    try { localStorage.setItem('zeo:favCompanies', JSON.stringify(f)); } catch { /* storage blocked */ }
+  }
+  get autoOpen(): boolean { try { return localStorage.getItem('zeo:autoOpenCompany') === '1'; } catch { return false; } }
+  setAutoOpen(on: boolean): void { try { on ? localStorage.setItem('zeo:autoOpenCompany', '1') : localStorage.removeItem('zeo:autoOpenCompany'); } catch { /* */ } }
+  /** favourites and the recently opened companies, shown on top (with more than 3 companies, no search) */
+  quick(): MyCompany[] {
+    if (this.query.trim() || this.companies.length <= 3) { return []; }
+    let recent: string[] = [];
+    try { recent = JSON.parse(localStorage.getItem('zeoRecentCompanies') || '[]'); } catch { recent = []; }
+    const keys = [...this.favs, ...(this.last ? [this.last] : []), ...recent].filter((k, i, a) => a.indexOf(k) === i);
+    return keys.map(k => this.companies.find(c => c.schema_name === k)).filter(Boolean).slice(0, 6) as MyCompany[];
   }
 
   shown(): MyCompany[] {
@@ -121,7 +147,7 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     return h % 4;
   }
 
-  open(c: MyCompany): void {
+  open(c: MyCompany, to = ''): void {   // v1.62.1 to: the page to open (the new company's setup guide)
     if (this.opening) { return; }
     this.opening = c.schema_name;
     try {
@@ -129,9 +155,11 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
       localStorage.setItem('selectedSchemaId', String(c.id));
       localStorage.setItem('selectedSchemaStateLabel', c.state_label || '');
       localStorage.setItem('zeo:lastCompany', c.schema_name);
+      const r = JSON.parse(localStorage.getItem('zeoRecentCompanies') || '[]');   // v1.62.1 recent (shared with the top-bar menu)
+      localStorage.setItem('zeoRecentCompanies', JSON.stringify([c.schema_name, ...r.filter((x: string) => x !== c.schema_name)].slice(0, 8)));
     } catch { /* storage blocked */ }
     // a full load, so every service starts with the chosen company (as before)
-    window.location.href = '/main-sidebar/dashboard-contents';
+    window.location.href = to || '/main-sidebar/dashboard-contents';
   }
 
   logout(): void {
@@ -170,6 +198,7 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     this.poll = setInterval(() => {
       this.http.get<any>(`${environment.apiBaseUrl}/users/api/my-companies/duplicate/${d.job}/`).subscribe({
         next: r => {
+          d.st = r;   // v1.62.1
           d.stepNo = r.step_no || d.stepNo;
           if (r.state === 'done') {
             this.stopPoll(); d.state = 'done'; d.companyId = r.company_id; this.fresh = d.schema; this.load(true);
@@ -266,6 +295,7 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     this.poll = setInterval(() => {
       this.http.get<any>(`${environment.apiBaseUrl}/cloud/api/jobs/${m.job}/`).subscribe({
         next: r => {
+          m.st = r;   // v1.62.1
           m.stepNo = r.step_no || m.stepNo;
           if (r.state === 'done') { this.stopPoll(); m.state = 'done'; m.companyId = r.company_id; this.fresh = m.schema; this.load(true); }
           else if (r.state === 'failed') { this.stopPoll(); m.state = 'failed'; m.error = r.error || i18nT('Unknown error.'); }
@@ -275,12 +305,12 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
     }, 2000);
   }
 
-  openMade(): void {
+  openMade(to = ''): void {
     const m = this.mk;
     if (!m || !m.companyId) { return; }
     const c = this.companies.find(x => x.id === m.companyId) || { id: m.companyId, name: m.name, schema_name: m.schema, state_label: '' } as MyCompany;
     this.mk = null;
-    this.open(c);
+    this.open(c, to);
   }
 
   /** v1.26.0: accept or decline an invitation – on accept the company is added to this login and shows in the list. */

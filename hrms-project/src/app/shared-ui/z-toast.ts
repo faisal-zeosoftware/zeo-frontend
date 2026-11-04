@@ -44,7 +44,13 @@ export function withServerReason(text: string): string {
   return `${t.replace(/[.!:]\s*$/, '')} – ${r.text}`;
 }
 
+// v1.62.1: while the "Finish the setup first" notice is shown (z-setup-gate.ts), the screen's own error toast of the same
+// refused save is not shown on top of it
+let gateAt = 0;
+export function markSetupGateShown(): void { gateAt = Date.now(); }
+
 export function zToast(message: any, kind?: ZToastKind, remember = true): void {
+  if (Date.now() - gateAt < 5000 && (kind || kindOf(String(message ?? ''))) !== 'ok') { return; }
   let text = message === undefined || message === null ? '' : (typeof message === 'string' ? message : (() => { try { return JSON.stringify(message); } catch { return String(message); } })());
   if (!text.trim()) { return; }
   if ((kind || kindOf(text)) === 'err') { text = withServerReason(text); }

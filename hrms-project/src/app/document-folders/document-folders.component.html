@@ -84,7 +84,7 @@
                   class="sidenav-opt"
                   *ngIf="isMenuOpen"
                 >
-                  Add folder
+                  New folder
                 </span>
 
               </button>
@@ -160,6 +160,10 @@
                   </button>
 
 
+                  <!-- v1.62.10 (item 168): rename -->
+                  <button *ngIf="hasEditPermissionDocumentFolder && isMenuOpen" type="button" class="btn-add-sub" (click)="renameFolder(folder, $event)" title="Rename" [attr.aria-label]="'Rename' | t" data-df-rename>
+                    <mat-icon>edit</mat-icon>
+                  </button>
                   <!-- EXPAND / COLLAPSE -->
 
                   <mat-icon
@@ -211,6 +215,7 @@
                       <span class="subnav-text">
                         {{ sub.name }}
                       </span>
+                      <button *ngIf="hasEditPermissionDocumentFolder" type="button" class="btn-add-sub df-sub-ren" (click)="renameFolder(sub, $event)" title="Rename" [attr.aria-label]="'Rename' | t"><mat-icon>edit</mat-icon></button>
 
                     </a>
 
@@ -259,248 +264,11 @@
         <mat-icon>folder_open</mat-icon>
         <h2>{{ Documentfolders?.length ? 'Open a folder' : 'No folders yet' }}</h2>
         <p>{{ Documentfolders?.length ? 'Pick a folder on the left, then a subfolder, to see its files.' : 'Folders keep company documents in one place – policies, licences, contracts.' }}</p>
-        <button type="button" class="btn btn-primary" *ngIf="hasAddPermissionDocumentFolder" (click)="openPopus()"><mat-icon>add</mat-icon> Add folder</button>
+        <button type="button" class="z-new-btn" data-z-new *ngIf="hasAddPermissionDocumentFolder" (click)="openPopus()">+ New folder</button>
       </div>
 
     </main>
 
   </mat-sidenav-container>
-
-
-
-  <!-- =======================================================
-       CREATE MAIN FOLDER MODAL
-       ======================================================= -->
-
-  <div
-    *ngIf="iscreateLoanApp"
-    class="modal-backdrop"
-  >
-
-    <div class="modal-dialog-custom">
-
-      <!-- HEADER -->
-      <div class="modal-header-custom">
-
-        <div class="modal-title-wrapper">
-
-          <div class="modal-icon">
-            <mat-icon>
-              create_new_folder
-            </mat-icon>
-          </div>
-
-          <div>
-            <h3>
-              Create folder
-            </h3>
-
-            <p>
-              Add a new document folder
-            </p>
-          </div>
-
-        </div>
-
-
-        <button
-          type="button"
-          class="close-btn"
-          (click)="closeapplicationModal()"
-          aria-label="Close"
-        >
-          <mat-icon>
-            close
-          </mat-icon>
-        </button>
-
-      </div>
-
-
-      <!-- BODY -->
-      <div class="modal-body-custom">
-
-        <form
-          (ngSubmit)="CreateFolder()"
-        >
-
-          <div class="form-group">
-
-            <label
-              class="form-label"
-              for="folderName"
-            >
-              Folder name
-            </label>
-
-            <input
-              id="folderName"
-              type="text"
-              class="form-control"
-              required
-              [(ngModel)]="name"
-              placeholder="Enter folder name"
-              [ngModelOptions]="{
-                standalone: true
-              }"
-            />
-
-          </div>
-
-
-          <!-- FOOTER -->
-          <div class="modal-footer-custom">
-
-            <button
-              type="button"
-              class="btn-modal-secondary"
-              (click)="closeapplicationModal()"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              class="btn-modal-primary"
-            >
-              <mat-icon>
-                add
-              </mat-icon>
-
-              Add folder
-            </button>
-
-          </div>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- =======================================================
-       CREATE SUB FOLDER MODAL
-       ======================================================= -->
-
-  <div
-    *ngIf="iscreatesubfolder"
-    class="modal-backdrop"
-  >
-
-    <div class="modal-dialog-custom">
-
-      <!-- HEADER -->
-      <div class="modal-header-custom">
-
-        <div class="modal-title-wrapper">
-
-          <div class="modal-icon">
-            <mat-icon>
-              create_new_folder
-            </mat-icon>
-          </div>
-
-          <div>
-            <h3>
-              Create subfolder
-            </h3>
-
-            <p>
-              Add a new subfolder
-            </p>
-          </div>
-
-        </div>
-
-
-        <button
-          type="button"
-          class="close-btn"
-          (click)="closeSubfolderModal()"
-          aria-label="Close"
-        >
-          <mat-icon>
-            close
-          </mat-icon>
-        </button>
-
-      </div>
-
-
-      <!-- BODY -->
-      <div class="modal-body-custom">
-
-        <form
-          (ngSubmit)="CreateFolderSubFolder()"
-        >
-
-          <div class="form-group">
-
-            <label
-              class="form-label"
-              for="subFolderName"
-            >
-              Subfolder name
-            </label>
-
-            <input
-              id="subFolderName"
-              type="text"
-              class="form-control"
-              required
-              [(ngModel)]="name"
-              placeholder="Enter subfolder name"
-              [ngModelOptions]="{
-                standalone: true
-              }"
-            />
-
-          </div>
-
-
-          <!-- PARENT FOLDER -->
-          <input
-            type="hidden"
-            [(ngModel)]="parent"
-            [ngModelOptions]="{
-              standalone: true
-            }"
-          />
-
-
-          <!-- FOOTER -->
-          <div class="modal-footer-custom">
-
-            <button
-              type="button"
-              class="btn-modal-secondary"
-              (click)="closeSubfolderModal()"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              class="btn-modal-primary"
-            >
-              <mat-icon>
-                add
-              </mat-icon>
-
-              Add Subfolder
-            </button>
-
-          </div>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  </div>
-
+  <!-- v1.62.10 (item 168): the create folder / subfolder pop-ups are the shared form now -->
 </div>

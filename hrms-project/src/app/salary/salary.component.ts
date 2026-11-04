@@ -13,6 +13,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import { combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-salary',
   templateUrl: './salary.component.html',
@@ -783,8 +784,8 @@ mapBranchNameToId() {
   }
 
 
-  deletePayroll(payrollId: number): void {
-    if (confirm('Are you sure you want to delete this Component?')) {
+  async deletePayroll(payrollId: number): Promise<void> {
+    if ((await zConfirm('Are you sure you want to delete this Component?'))) {
       this.leaveService.deleteSalary(payrollId).subscribe(
         () => {
           // Filter out the deleted payroll from the list
@@ -954,7 +955,59 @@ openEditModal(asset: any): void {
   this.editAsset = { ...asset, formula: asset.formula || '' };
   this.isEditModalOpen = true;
   this.mapBranchNameToId();
+  this.accLoad(asset.id);   // v1.62.7 (item 18)
+  this.miLoad(asset.id);   // v1.62.11 (item 18b)
 }
+
+  // v1.62.11 (item 18b): "Monthly input" flag of the component (company setting, PayrollPlus API; saved after Update)
+  mi: any = null;
+  miOrig: any = null;
+  miLoad(id: any): void {
+    this.mi = null;
+    if (!id) { return; }
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any>(`${environment.apiBaseUrl}/payroll-plus/api/monthly-inputs/components/${id}/?schema=${encodeURIComponent(schema)}`).subscribe({
+      next: r => { this.mi = { eligible: !!r.eligible, auto: !!r.auto, on: !!r.monthly_input }; this.miOrig = this.mi.on; },
+      error: () => { this.mi = null; },
+    });
+  }
+  miSave(id: any): Promise<void> {
+    if (!this.mi || !this.mi.eligible || this.mi.on === this.miOrig) { return Promise.resolve(); }
+    const schema = localStorage.getItem('selectedSchema') || '';
+    const body = { monthly_input: this.mi.on === this.mi.auto ? null : this.mi.on };
+    return new Promise(res => this.http.put<any>(`${environment.apiBaseUrl}/payroll-plus/api/monthly-inputs/components/${id}/?schema=${encodeURIComponent(schema)}`, body).subscribe({
+      next: () => res(), error: () => res(),
+    }));
+  }
+
+  // v1.62.7 (item 18): accrue now – pay later on the component (PayrollPlus API; saved after Update)
+  acc: any = null;
+  accOrig = '';
+  accMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  accLoad(id: any): void {
+    this.acc = null;
+    if (!id) { return; }
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any>(`${environment.apiBaseUrl}/payroll-plus/api/accruals/components/${id}/?schema=${encodeURIComponent(schema)}`).subscribe({
+      next: r => {
+        const pm = r.known ? r.payout_month : 1;   // v1.62.11 (item 18b): "every year in <month>" = a payout month
+        this.acc = { enabled: !!r.enabled, yearly: pm !== null && pm !== undefined, month: pm || 1, pay_at_exit: r.pay_at_exit !== false,
+                     include_payout_month: r.include_payout_month !== false, accrual_account: r.accrual_account || '224005' };
+        this.accOrig = JSON.stringify(this.acc);
+      },
+      error: () => { this.acc = null; },
+    });
+  }
+  accSave(id: any): Promise<void> {
+    if (!this.acc || JSON.stringify(this.acc) === this.accOrig) { return Promise.resolve(); }
+    const schema = localStorage.getItem('selectedSchema') || '';
+    const { yearly, month, ...body } = this.acc;   // v1.62.11 (item 18b)
+    body.payout_month = yearly ? month : null;
+    return new Promise(res => this.http.put<any>(`${environment.apiBaseUrl}/payroll-plus/api/accruals/components/${id}/?schema=${encodeURIComponent(schema)}`, body).subscribe({
+      next: () => res(),
+      error: e => { alert(e?.error?.detail || 'Accrue now – pay later was not saved.'); res(); },
+    }));
+  }
 
 
   closeEditModal(): void {
@@ -970,8 +1023,12 @@ openEditModal(asset: any): void {
       return;
     }
 
+    // v1.62.7 (item 18): an accrued component is type Others – the type is kept as the accrual setting made it
+    const _id = this.editAsset.id;
     this.EmployeeService.updatesalaryComponent(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
+      async (response) => {
+        await this.accSave(_id);   // v1.62.7 (item 18)
+        await this.miSave(_id);   // v1.62.11 (item 18b)
         alert('Salary component  updated successfully!');
         this.closeEditModal();
         // this.loadLAsset(); 
@@ -997,7 +1054,7 @@ openEditModal(asset: any): void {
   }
 
 
-  deleteSelectedAssetMaster() {
+  async deleteSelectedAssetMaster() {
     const selectedEmployeeIds = this.Salarycomponent
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1007,7 +1064,7 @@ openEditModal(asset: any): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Salary component ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Salary component ?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1082,8 +1139,8 @@ openEditModal(asset: any): void {
     const schema = localStorage.getItem('selectedSchema') || '';
     this.http.get<any>(`${environment.apiBaseUrl}/payroll/api/salarycomponent/${item.id}/?schema=${encodeURIComponent(schema)}`).subscribe(x => this.openEditModal(x));
   }
-  scDelete(item: any): void {
-    if (!confirm(`Delete the component for ${item.branch}? Employees who have it lose it from their salary.`)) { return; }
+  async scDelete(item: any): Promise<void> {
+    if (!(await zConfirm(`Delete the component for ${item.branch}? Employees who have it lose it from their salary.`))) { return; }
     this.EmployeeService.deleteSalaryComponent(item.id).subscribe({
       next: () => { this.Salarycomponent = (this.Salarycomponent || []).filter((x: any) => x.id !== item.id); this.scLoad(); },
       error: (e: any) => alert(e?.error?.detail || e?.error?.error || 'The component could not be deleted – it may be used in payslips.'),

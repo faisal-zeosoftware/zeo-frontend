@@ -10,6 +10,7 @@ import { DepartmentCreationComponent } from '../department-creation/department-c
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { environment } from '../../environments/environment';
+import { PERM_TECHNICAL, permAppLabel, permModelLabel } from '../shared-ui/perm-labels';   // v1.62.1 items 186/187/196
 
 @Component({
   selector: 'app-user-grouping-edit',
@@ -766,8 +767,7 @@ ngOnInit(): void {
   buildExtraGroups(all: any[]): void {
     const placed = new Set(this.allPermissions);
     const byKey = new Map<string, { app: string; model: string; label: string; perms: any[] }>();
-    const technical = new Set(['admin', 'auth', 'authtoken', 'contenttypes', 'sessions', 'django_celery_beat', 'django_celery_results', 'token_blacklist',
-      'tenants', 'ZeoCloud', 'ZeoLicence', 'ZeoMobile', 'Chatter', 'SavedViews', 'AccessControl', 'otp', 'sites']);
+    const technical = PERM_TECHNICAL;   // v1.62.1: framework apps (oauth2_provider … were listed as modules)
     for (const p of all) {
       if (placed.has(p.id) || !p.codename) { continue; }
       const app = String(p.app || p.content_type?.app_label || '');
@@ -776,8 +776,8 @@ ngOnInit(): void {
       const key = app + '|' + model;
       if (!byKey.has(key)) {
         const name = String(p.name || '');
-        const modelLabel = name.replace(/^Can (add|change|delete|view|import|export|approve|run|manage)\s+/i, '') || model.replace(/_/g, ' ');
-        byKey.set(key, { app: UserGroupingEditComponent.APP_LABELS[app] || app, model, label: modelLabel.charAt(0).toUpperCase() + modelLabel.slice(1), perms: [] });
+        // v1.62.1 (items 186/196): module and record type in words (ZeoAccounting → Accounting, lvbalancereport → Lvbalancereport → words)
+        byKey.set(key, { app: permAppLabel(app), model, label: permModelLabel(name, model), perms: [] });
       }
       byKey.get(key)!.perms.push(p);
     }
@@ -786,7 +786,18 @@ ngOnInit(): void {
     this.extraGroups = Array.from(byKey.values()).map(g => ({ ...g, perms: g.perms.sort((a, b) => rank(a.codename) - rank(b.codename) || a.codename.localeCompare(b.codename)) }))
       .sort((a, b) => a.app.localeCompare(b.app) || a.label.localeCompare(b.label));
   }
-  extraApps(): string[] { return Array.from(new Set(this.extraGroupsShown().map(g => g.app))); }
+  // v1.62.1 (items 187/196): one module at a time – a list of the modules (with how many rights each has) on top; a
+  // search looks through every module. Before, about 40 modules and 700 record types were one long list.
+  extraApp = '';
+  extraAppsAll(): string[] { return Array.from(new Set(this.extraGroups.map(g => g.app))).sort((a, b) => a.localeCompare(b)); }
+  extraAppCount(app: string): number { return this.extraGroups.filter(g => g.app === app).reduce((n, g) => n + g.perms.length, 0); }
+  extraAppSelected(app: string): number { return this.extraGroups.filter(g => g.app === app).reduce((n, g) => n + g.perms.filter(p => this.selectedPermissions.includes(p.id)).length, 0); }
+  extraApps(): string[] {
+    const shown = Array.from(new Set(this.extraGroupsShown().map(g => g.app)));
+    if (this.extraSearch.trim()) { return shown; }
+    const pick = this.extraApp && shown.includes(this.extraApp) ? this.extraApp : shown.sort((a, b) => a.localeCompare(b))[0];
+    return pick ? [pick] : [];
+  }
   extraGroupsShown(): { app: string; model: string; label: string; perms: any[] }[] {
     const q = this.extraSearch.trim().toLowerCase();
     return q ? this.extraGroups.filter(g => (g.app + ' ' + g.label + ' ' + g.perms.map(p => p.codename + ' ' + (p.name || '')).join(' ')).toLowerCase().includes(q)) : this.extraGroups;

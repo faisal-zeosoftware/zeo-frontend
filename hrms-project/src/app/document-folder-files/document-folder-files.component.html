@@ -1,196 +1,46 @@
+<!-- v1.62.10 (item 168): folder files in the new design – the folder's name as title, "+ Upload file" opens the shared form,
+     the files as a list (name, type, uploaded, Open, Delete); no pop-up alerts -->
 <div class="container" *ngIf="hasViewPermission">
-
-
-    <div class="comapny_section">
-
-      <div class="header_section">
-
-        <div class="row">
-          <div class="col-md-4">
-            <h1> Documents</h1>
-          </div>
-          <div class="col-md-3">
-  
-            <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-  
-          </div>
-          <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" *ngIf="hasAddPermission" class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>cloud_upload
-
-                        </mat-icon></span> upload</button>
-
-                        <!-- <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                        
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button> -->
-
-            </div>
-          </div>
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-7">
+          <h1>{{ folderName || ('Documents' | t) }}</h1>
+          <p class="ff-sub">{{ 'Files kept in this folder. Open a file to view or download it.' | t }}</p>
         </div>
-  
-  
-  
-      </div>
-  
-      <!-- <div class="row">
-        <div class="col-md-2">
-  
-          <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-            (click)="toggleSelectAllEmployees()">Select all</button>
-  
-        </div>
-        <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete
-            selected </button>
-  
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" *ngIf="hasAddPermission" class="z-new-btn" data-z-new>+ Upload file</button>
+          </div>
         </div>
       </div>
-   -->
-  
- <!-- Documents List -->
- <div *ngIf="documents.length > 0; else noDocs" class="doc-grid">
-
-
-    <div class="doc-card" >
-     
-            <div class="doc-sec" *ngFor="let doc of documents">
-                   <a [href]="doc.file" target="_blank">
-    <div class="folder">
-        
-    </div>
-    <h4>{{ doc.name }}</h4>
-</a>
     </div>
 
-   
-
-</div>
-
-    <!-- <div class="row">
-        <div class="col-md-4">
-            <div class="doc-card" *ngFor="let doc of documents">
-                <a [href]="doc.file" target="_blank">
-          
-                  <div class="row">
-                      <div class="col-md-3">
-                          <mat-icon>folder_open</mat-icon>
-          
-                          </div>
-                          <div class="col-md-9">
-          
-                              </div>
-          
-                  </div>
-                 
-               
-                </a>
-              </div>
-
-
-
-          
-        </div>
-    </div> -->
-
-  
-  
+    <div class="com_list mt-3">
+      <table width="100%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Uploaded</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of documents" [attr.data-ff-row]="doc.id">
+            <td data-label="Name"><a class="ff-link" [href]="doc.file" target="_blank" rel="noopener">{{ doc.name }}</a></td>
+            <td data-label="Type">{{ fileKind(doc) || '–' }}</td>
+            <td data-label="Uploaded">{{ doc.uploaded_at ? (doc.uploaded_at | date:'dd/MM/yyyy') : '–' }}</td>
+            <td data-label="Action" class="ff-act">
+              <a class="z-row-btn ff-open" [href]="doc.file" target="_blank" rel="noopener" title="Open" [attr.aria-label]="'Open' | t"><mat-icon>open_in_new</mat-icon></a>
+              <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="deleteFile(doc); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
+            </td>
+          </tr>
+          <tr *ngIf="!documents.length">
+            <td colspan="4" class="text-center ff-empty">{{ 'No files in this folder yet.' | t }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <!-- When no documents -->
-  <ng-template #noDocs>
-    <div class="no-docs">
-      <mat-icon>folder_open</mat-icon>
-      <p>No documents uploaded in this folder.</p>
-    </div>
-  </ng-template>
-  
-          <div *ngIf="isopenDocement" class="modal">
-              <div class="modal-content">
-                <div class="row">
-                  <div class="col-md-10">
-                    <h2>  Uplaod file </h2>
-                  </div>
-                  <div class="col-md-2">
-                    <span class="close pull-right" (click)="closeapplicationModal()" >&times;</span>
-                  </div>
-                </div>
-                <hr />
-            
-              
-                <form >
-
-         
-                    <div class="col-md-6" >
-                       
-                        <label> Name</label>
-                       <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name"
-                        [ngModelOptions]="{standalone: true}" >
-                       
-                  </div>
-
-                  <div class="col-md-6">
-                    <label>Upload document</label>
-                    <input
-                      type="file"
-                      class="form-control"
-                      (change)="onFileSelected($event)"
-                      required
-                    />
-                 
-                  </div>
-                  
-                  
-        
-                  <!-- <div class="col-md-6" style="display: none;" >
-                    <label>Select  folder</label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="folder"
-                        name="folder"
-                        [(ngModel)]="folder"
-                        [ngModelOptions]="{ standalone: true }"
-                      >
-                        <option *ngFor="let folder of Documentfolders" [value]="folder.id">
-                          {{ folder.name }}
-                        </option>
-                      </select>
-                    </div>
-                  </div> -->
-        
-        
-            
-                    <div class="row">
-                        <div class="col-md-8">
-            
-                        </div>
-                       <div class="col-md-2">
-                          <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
-                      </div>
-
-                        <div class="col-md-2">
-                            <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="uploadfolderDocument()">Add</button>  
-                         </div>
-                    </div>
-                    
-               
-            </form>
-        
-  
-              
-              </div>
-            </div>
-  
-  
-
-
-
-    </div>
 </div>

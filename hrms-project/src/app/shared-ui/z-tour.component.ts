@@ -46,7 +46,7 @@ export const TOURS: Tour[] = [
     { sel: '.zmt-side', title: 'Waiting for you', text: 'Approvals, documents to renew, birthdays and anniversaries and the leave coming up.' },
   ] },
   { id: 'setup-guide', title: 'Setup guide', match: /^\/main-sidebar\/settings\/setup-guide/, steps: [   // v1.56.0
-    { sel: '.zsg-rail', title: 'Fifteen steps', text: 'From the company to the first payroll. A number in red is what still blocks that step; you can open any step at any time.' },
+    { sel: '[data-get-started], [data-gs-dots]', title: 'Fifteen steps', text: 'From the company to the first payroll. A red line is what still blocks that step; you can open any step at any time.' },
     { sel: '[data-checks]', title: 'Checked before Next', text: 'Red items stop Next, orange ones are warnings. Each has a link to the screen that fixes it.' },
     { sel: '[data-next]', title: 'Save and continue', text: 'Saves the step and goes on. Close the browser and continue later from the same step.' },
   ] },
@@ -111,6 +111,7 @@ export class ZTourComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
   private timer: any; private el: HTMLElement | null = null;
   private watch: any;   // v1.62.0 – while a tour runs: ends it (not marked done) when a pop-up opens over the page
+  private forced = false;   // v1.62.1 started from Help → "Take the tour of this page"
 
   constructor(private router: Router, private cmd: ZCommandService, private cd: ChangeDetectorRef, private zone: NgZone) {}
 
@@ -130,6 +131,10 @@ export class ZTourComponent implements OnInit, OnDestroy {
       .some(e => !e.closest('[data-tour-card]') && (e.offsetParent !== null || getComputedStyle(e).position === 'fixed') && getComputedStyle(e).display !== 'none');
   }
 
+  /** v1.62.1 (user request 2 Nov): no tour over the setup guide or over Home's Get started checklist of an unfinished setup */
+  static readonly SETUP = '[data-setup-guide], [data-setup-unfinished]';
+  static setupOpen(): boolean { return !!document.querySelector(ZTourComponent.SETUP); }
+
   private later(): void { clearTimeout(this.timer); this.timer = setTimeout(() => this.start(false), 3200); }
 
   private forUrl(): Tour | null {
@@ -145,12 +150,15 @@ export class ZTourComponent implements OnInit, OnDestroy {
       const f = await this.cmd.flags();
       if ((f['tours'] && f['tours'].off) || f['tour:' + t.id]) { return; }
       if (document.querySelector('[aria-modal="true"]')) { this.later(); return; }   // e.g. "What's new" is open – try again
+      if (ZTourComponent.setupOpen()) { return; }   // v1.62.1 the setup comes first; the tour starts on a later visit
     }
     const steps = t.steps.filter(s => this.find(s.sel));
     if (!steps.length) { return; }
-    this.tour = t; this.steps = steps; this.go(0);
+    this.tour = t; this.steps = steps; this.forced = forced; this.go(0);
     clearInterval(this.watch);   // v1.62.0
-    this.zone.runOutsideAngular(() => { this.watch = setInterval(() => { if (this.tour && ZTourComponent.modalOpen()) { this.zone.run(() => this.stop()); } }, 400); });
+    this.zone.runOutsideAngular(() => { this.watch = setInterval(() => {
+      // v1.62.1: also steps aside when the setup checklist appears under it (Home loads it a moment later) – unless asked from Help
+      if (this.tour && (ZTourComponent.modalOpen() || (!this.forced && ZTourComponent.setupOpen()))) { this.zone.run(() => this.stop()); } }, 400); });
   }
 
   private find(sel: string): HTMLElement | null {

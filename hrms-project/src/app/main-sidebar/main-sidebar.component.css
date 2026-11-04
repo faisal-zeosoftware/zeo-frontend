@@ -1083,21 +1083,7 @@
 
 
 
-/* Hide scrollbar on the main sidebar navigation menu */
-#sidebarMenu,
-.sidebar-wrapper,
-.nav-menu-list {
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
-}
-
-#sidebarMenu::-webkit-scrollbar,
-.sidebar-wrapper::-webkit-scrollbar,
-.nav-menu-list::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
+/* v1.62.1: the main menu shows the thin scrollbar of styles.css (was hidden) */
 
 
 /* Sidebar Styles */
@@ -1210,17 +1196,7 @@
   margin-right: 0;
 }
 
-/* Scrollbar Hiding Rules (retains scroll capability without visual scrollbar) */
-.nav-menu-list {
-  -ms-overflow-style: none !important; /* IE and Edge */
-  scrollbar-width: none !important; /* Firefox */
-}
 
-.nav-menu-list::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Opera */
-  width: 0 !important;
-  height: 0 !important;
-}
 
 
 
@@ -1866,3 +1842,32 @@ body.sidebar-open {
 .loc-work { border: 1px solid #e2e8f0; background: #fff; color: #64748b; font-size: 11px; border-radius: 999px; padding: 2px 8px; cursor: pointer; white-space: nowrap; }
 .loc-work.on { background: #b8730f; border-color: #b8730f; color: #fff; }
 .loc-hint { font-size: 11px; color: #94a3b8; margin: 0; padding: 0 12px 8px; }
+
+/* v1.62.0 ui: "Company and branches" menu */
+.standard-dropdown { width: 360px; }
+.zcm-head { text-transform: none; font-size: 13.5px; color: #1b1640; font-weight: 600; }
+.zcm-head mat-icon { color: #5b4fe0; font-size: 20px; width: 20px; height: 20px; }
+.zcm-search { display: flex; align-items: center; gap: 6px; margin: 10px 12px 4px; padding: 0 10px; border: 1px solid #dfe1ea; border-radius: 8px; background: #fff; }
+.zcm-search:focus-within { border-color: #5b4fe0; box-shadow: 0 0 0 3px rgba(91,79,224,.12); }
+.zcm-search mat-icon { color: #8a8fa3; font-size: 18px; width: 18px; height: 18px; }
+.zcm-search input { flex: 1; border: 0; outline: none; height: 34px; font-size: 13px; background: transparent; min-width: 0; }
+.zcm-group { padding: 10px 16px 4px; font-size: 11px; font-weight: 600; color: #8a8fa3; text-transform: uppercase; letter-spacing: .4px; }
+.zcm-text { display: flex; flex-direction: column; min-width: 0; }
+.zcm-text .company-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+.zcm-sub { font-size: 11.5px; color: #6b7185; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+.schema-item.zcm-current > .schema-row { background: #f4f3ff; }
+.schema-item.zcm-current .avatar { background: #5b4fe0; }
+.zcm-arrow { color: #475569; }
+.zcm-branches { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px 12px; }
+.zcm-count { width: 100%; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #6b7185; margin-bottom: 2px; }
+.zcm-all { border: 0; background: none; color: #5b4fe0; font-weight: 600; font-size: 12px; cursor: pointer; padding: 2px 0; }
+.zcm-branches .branch-option { margin: 0; padding: 4px 10px 4px 6px; border-radius: 16px; gap: 6px; }
+.zcm-branches .branch-option.on { border-color: #5b4fe0; background: #eef0ff; }
+.zcm-branches .branch-option mat-icon.check-box { font-size: 17px; width: 17px; height: 17px; color: #5b4fe0; }
+.zcm-branches .branch-name { font-size: 12.5px; }
+.zcm-none { padding: 18px; text-align: center; color: #8a8fa3; font-size: 13px; }
+
+/* v1.62.1: the name chip in the top bar opens my profile */
+a.zm-me { color: inherit; text-decoration: none; cursor: pointer; transition: background .15s, border-color .15s; }
+a.zm-me:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.25); }
+a.zm-me:focus-visible { outline: 2px solid #A5B4FC; outline-offset: 2px; }

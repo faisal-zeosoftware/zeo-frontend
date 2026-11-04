@@ -17,6 +17,7 @@ import * as L from 'leaflet';
 import { fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 // v1.15.1: Mapillary removed (unused).
@@ -990,7 +991,7 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
   }
 
 
-  deleteSelectedGeoFence() {
+  async deleteSelectedGeoFence() {
     const selectedEmployeeIds = this.geofencepol
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1000,7 +1001,7 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Geo Fence ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Geo Fence ?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -1243,9 +1244,9 @@ onBranchSelectionChange(): void {
       }
 
 
-      deleteGeofence(id:number){
+      async deleteGeofence(id:number){
 
-        if(!confirm("Delete this Geofence?")){
+        if(!(await zConfirm("Delete this Geofence?"))){
         
         return;
         

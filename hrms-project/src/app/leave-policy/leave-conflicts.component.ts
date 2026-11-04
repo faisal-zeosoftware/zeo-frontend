@@ -4,17 +4,19 @@
  * department at work) and the blackout periods (warn or block). API: /leave-policy/api/conflicts/[<id>/]
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-leave-conflicts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./leave-policy.css'],
   styles: [`.lc-card { background: #fff; border: 1px solid #e3e6ea; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
     .lc-card h2 { font-size: 15px; margin: 0 0 10px; } .lc-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
@@ -26,7 +28,7 @@ import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
     .lc-hint { font-size: 12px; color: #5d6670; max-width: 720px; }`],
   template: `
 <div class="lp-page" style="padding:16px 20px">
-  <div class="lp-head"><div><h1>Leave conflicts</h1>
+  <div class="lp-head zp-cardhead"><div><h1>Leave conflicts</h1>
     <p class="lp-desc">What employees and approvers see before a leave is sent or approved: colleagues of the same role away on the same days, too few of the department at work, blackout periods, rostered shifts without cover and a public holiday next to the leave.</p></div></div>
   <p class="lp-msg" *ngIf="msg" [class.err]="err">{{ msg }}</p>
   <ng-container *ngIf="s">
@@ -52,7 +54,7 @@ import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
         <tr *ngIf="!s.blackouts.length"><td colspan="6" class="lc-hint">No blackout period.</td></tr></table>
       <div class="lc-form" style="margin-top:14px" *ngIf="s.can_edit">
         <label style="min-width:220px">Name<input [(ngModel)]="b.name" placeholder="e.g. Year-end closing" data-bo-name></label>
-        <label>From<input type="date" [(ngModel)]="b.start_date" data-bo-from></label><label>To<input type="date" [(ngModel)]="b.end_date" data-bo-to></label>
+        <label>From<z-date-field [(value)]="b.start_date" data-bo-from></z-date-field></label><label>To<z-date-field [(value)]="b.end_date" data-bo-to></z-date-field></label>
         <label>When it applies<select [(ngModel)]="b.action" data-bo-action><option value="warn">Warn the employee</option><option value="block">Block (only HR enters leave)</option></select></label>
         <label>Departments (none = all)<select multiple [(ngModel)]="b.department_ids"><option *ngFor="let o of s.options.departments" [ngValue]="o.id">{{ o.name }}</option></select></label>
         <label>Branches (none = all)<select multiple [(ngModel)]="b.branch_ids"><option *ngFor="let o of s.options.branches" [ngValue]="o.id">{{ o.name }}</option></select></label>
@@ -87,7 +89,7 @@ export class LeaveConflictsComponent implements OnInit {
     this.busy = false; this.cd.markForCheck();
   }
   async del(x: any): Promise<void> {
-    if (!confirm(`Delete "${x.name}"?`)) { return; }
+    if (!(await zConfirm(`Delete "${x.name}"?`))) { return; }
     try { await firstValueFrom(this.http.delete(this.url(`${x.id}/`))); await this.load(); } catch (e) { this.say(httpErrorText(e), true); }
     this.cd.markForCheck();
   }

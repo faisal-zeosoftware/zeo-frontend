@@ -2,7 +2,8 @@ import { Component, Renderer2 } from '@angular/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { DocumentEditComponent } from '../document-edit/document-edit.component';
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 168)
+import { EMP_DOCUMENT_FORM } from '../shared-ui/z-forms-records';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
@@ -306,17 +307,8 @@ if (this.userId !== null) {
   
 
 
-    openEditPopuss(departmentId: number):void{
-      
-      const dialogRef = this.dialog.open(DocumentEditComponent, {
-        width:'80%',
-        maxWidth: '1100px',
-        maxHeight: '92vh',   // v1.40.1: the whole form fits (a fixed 500px cut the employee field off)
-        autoFocus: false,
-        data: { departmentId: departmentId }
-        
-      });
-  
-      dialogRef.afterClosed().subscribe(() => { if (this.last) { this.fetchEmployees(this.last[0], this.last[1]); } });
+    /** v1.62.10 (item 168): Update on the row – the shared form (renewed number, dates, new copy) instead of the old DocumentEditComponent pop-up */
+    async openEditPopuss(documentId: number): Promise<void> {
+      if (await openZForm(EMP_DOCUMENT_FORM, { id: documentId }) && this.last) { this.fetchEmployees(this.last[0], this.last[1]); }
     }
 }

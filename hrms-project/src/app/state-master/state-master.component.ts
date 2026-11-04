@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { STATE_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { CountryService } from '../country.service';
@@ -5,6 +7,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-state-master',
@@ -312,6 +315,7 @@ this.authService.getUserSchema(this.userId).subscribe(
 
 
   openPopus():void{
+    zFormThenReload(STATE_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
     this.iscreateLoanApp = true;
 
   }
@@ -359,6 +363,7 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(STATE_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
 
@@ -371,7 +376,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+async deleteSelectedAssetType() { 
 const selectedEmployeeIds = this.States
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -381,7 +386,7 @@ alert('No States selected for deletion.');
 return;
 }
 
-if (confirm('Are you sure you want to delete the selected States ?')) {
+if ((await zConfirm('Are you sure you want to delete the selected States ?'))) {
 selectedEmployeeIds.forEach(categoryId => {
   this.employeeService.deleteState(categoryId).subscribe(
     () => {
@@ -434,9 +439,10 @@ this.employeeService.updateState(this.editAsset.id, this.editAsset).subscribe(
 );
 }
 
-
-
-
-    
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedAssetType();
+  }
 }

@@ -1274,3 +1274,7 @@
 .df-empty h2 { font-size: 18px; font-weight: 600; color: #1e293b; margin: 10px 0 6px; }
 .df-empty p { font-size: 14px; margin-bottom: 16px; }
 .df-empty .btn mat-icon { font-size: 18px; width: 18px; height: 18px; color: inherit; vertical-align: -3px; }
+
+/* v1.62.10 (item 168) */
+.df-sub-ren { margin-inline-start: auto; opacity: .7; }
+.df-sub-ren:hover { opacity: 1; }

@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 const COLOURS = ['grey', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink'];
 
@@ -91,7 +92,7 @@ export class ZCollabSettingsComponent implements OnInit {
   async rename(t: any, name: string): Promise<void> { try { await firstValueFrom(this.rec.saveTagDef(t.id, { name })); } catch (e: any) { this.error = e?.error?.detail || 'Not saved.'; } await this.loadTags(); }
   async recolour(t: any, color: string): Promise<void> { try { await firstValueFrom(this.rec.saveTagDef(t.id, { color })); } catch (e: any) { this.error = e?.error?.detail || 'Not saved.'; } await this.loadTags(); }
   async remove(t: any): Promise<void> {
-    if (!confirm(`Delete the tag "${t.name}"? It comes off ${t.count} records.`)) { return; }
+    if (!(await zConfirm(`Delete the tag "${t.name}"? It comes off ${t.count} records.`))) { return; }
     try { await firstValueFrom(this.rec.deleteTagDef(t.id)); } catch (e: any) { this.error = e?.error?.detail || 'Not deleted.'; }
     await this.loadTags();
   }

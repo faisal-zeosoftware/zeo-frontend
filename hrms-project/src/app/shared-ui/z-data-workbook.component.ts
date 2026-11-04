@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ZRecordService } from './z-record.service';
 import { TPipe, i18nT } from './i18n.service';
 import { ZAD_STYLES, ZAdminBase, downloadBlob } from './z-admin-pages.component';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.62.0 workbook – Settings › Data workbook (company administrators; also in Settings › Administration and the setup guide).
@@ -230,7 +231,7 @@ export class ZDataWorkbookComponent extends ZAdminBase implements OnInit, OnDest
   }
   async go(kind: 'check' | 'load'): Promise<void> {
     if (!this.cur) { return; }
-    if (kind === 'load' && !this.checkedClean && !confirm(i18nT('This workbook has not been checked clean. Load it anyway? Rows that fail are listed and can be loaded again after correcting them.'))) { return; }
+    if (kind === 'load' && !this.checkedClean && !(await zConfirm(i18nT('This workbook has not been checked clean. Load it anyway? Rows that fail are listed and can be loaded again after correcting them.')))) { return; }
     const body: any = { only: this.only };
     if (kind === 'load' && this.fromMonth) { body.from_month = this.fromMonth; }
     if (kind === 'check') { body.quick = this.quick; }

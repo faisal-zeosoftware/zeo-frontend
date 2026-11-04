@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HSE_BASE, HseApiService } from './hse-api.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.17.0 – HSE activation. The industry is pre-set from the company master; the HSE manager confirms it or changes it
  *  for HSE only. Until HSE is activated the other HSE pages are closed. */
@@ -81,7 +82,7 @@ export class HseActivateComponent implements OnInit {
   go(p: any[]): void { this.router.navigate([HSE_BASE, ...p]); }
 
   async activate(code: string): Promise<void> {
-    if (!confirm(`Activate HSE with the ${this.label(code)} pack?`)) return;
+    if (!(await zConfirm(`Activate HSE with the ${this.label(code)} pack?`))) return;
     this.busy = true; this.msg = '';
     try {
       this.a = await this.api.post('activate/', { industry: code });

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService } from './employee-profile.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** v1.13.0 – "Emergency contacts" tab: list, add, edit, delete, one primary contact. HR edits; the employee reads. */
 @Component({
@@ -109,7 +110,7 @@ export class ZEmpEmergencyComponent implements OnChanges {
   }
 
   async remove(c: any): Promise<void> {
-    if (!confirm(`Delete the emergency contact ${c.name}?`)) { return; }
+    if (!(await zConfirm(`Delete the emergency contact ${c.name}?`))) { return; }
     try {
       await this.svc.del(`emergency-contacts/${c.id}/`);
       this.svc.forget(this.employeeId!);

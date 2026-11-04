@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { OVERTIME_RULE_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
@@ -13,6 +15,7 @@ import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-overtime-rule',
@@ -355,6 +358,7 @@ loadOvertimepolicy(callback?: Function): void {
 
 
       openPopus():void{
+    zFormThenReload(OVERTIME_RULE_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
         this.iscreateovertimepolicy = true;
 
       }
@@ -402,6 +406,7 @@ loadOvertimepolicy(callback?: Function): void {
   editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(OVERTIME_RULE_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
 
   const selectedPolicy = this.Policyget.find(
     p => p.name === asset.policy
@@ -421,7 +426,7 @@ openEditModal(asset: any): void {
   }
 
 
-  deleteSelectedPayrollAprlvl() {
+  async deleteSelectedPayrollAprlvl() {
     const selectedEmployeeIds = this.overtimepol
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -431,7 +436,7 @@ openEditModal(asset: any): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected OverTime Rule ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected OverTime Rule ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -577,6 +582,10 @@ openEditModal(asset: any): void {
                   }
                 }
 
-
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedPayrollAprlvl();
+  }
 }

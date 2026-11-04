@@ -11,6 +11,7 @@ import { ZRecordService } from './z-record.service';
 import { httpErrorText } from './z-http-error.interceptor';
 import { TPipe, ZDatePipe, i18nT } from './i18n.service';
 import { ZAD_STYLES, ZAdminBase, downloadBlob } from './z-admin-pages.component';
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.62.0 – security and history screens (README-UPDATE section 83):
@@ -261,7 +262,7 @@ export class ZGiveAccessComponent extends ZAdminBase implements OnInit {
   tog(id: number): void { if (this.sel.has(id)) { this.sel.delete(id); } else { this.sel.add(id); } }
   all(ev: Event): void { this.sel = (ev.target as HTMLInputElement).checked ? new Set(this.rows.map(r => r.id)) : new Set(); }
   async give(): Promise<void> {
-    if (!confirm(`Give access to ${this.sel.size} employee(s) – ${(this.ways.find(w => w.k === this.way) || {}).t}?`)) { return; }
+    if (!(await zConfirm(`Give access to ${this.sel.size} employee(s) – ${(this.ways.find(w => w.k === this.way) || {}).t}?`))) { return; }
     await this.act(async () => {
       this.res = await this.post('/zeo-admin/api/access/', { employee_ids: [...this.sel], method: this.way, password: this.typed });
       this.say(`${this.res.done.length} given, ${this.res.missed.length} not given.`, !!this.res.missed.length && !this.res.done.length);
@@ -367,7 +368,7 @@ export class ZHistoryCleaningComponent extends ZAdminBase implements OnInit {
   async preview(): Promise<void> { await this.act(async () => { this.pv = (await this.post('/zeo-admin/api/history/', { action: 'preview', categories: [...this.pick] })).preview; this.previewed = true; }); }
   pvText(): string { return (this.pv || []).map(p => `${(p.rows || 0).toLocaleString()} ${i18nT(p.label).toLowerCase()} (${bytes(p.bytes)})`).join('; ') + ' would be removed.'; }
   async clean(): Promise<void> {
-    if (!confirm(`Remove now: ${this.pvText()}`)) { return; }
+    if (!(await zConfirm(`Remove now: ${this.pvText()}`))) { return; }
     await this.act(async () => { const r = await this.post('/zeo-admin/api/history/', { action: 'clean', categories: [...this.pick], confirm: this.confirmName }); this.say(r.run.text); });
     this.previewed = false; this.pv = null; this.confirmName = ''; await this.load();
   }

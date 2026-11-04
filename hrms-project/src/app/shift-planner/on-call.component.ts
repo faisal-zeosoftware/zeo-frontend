@@ -5,6 +5,7 @@
  * API: on-call/?from&to&employee&status (GET, POST), on-call/<id>/ (PATCH, DELETE), on-call/<id>/approve|reject/ (POST)
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list (Branch filter …)
@@ -13,7 +14,7 @@ import { SpApiService, niceDate } from './sp-api.service';
 @Component({
   selector: 'app-sp-on-call',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './shift-planner.css'],
   template: `
 <div class="container sp-wrap">
@@ -25,8 +26,8 @@ import { SpApiService, niceDate } from './sp-api.service';
     <div class="com_list mt-4">
       <div class="lp-msg" *ngIf="msg" [class.err]="msgErr" role="status" style="white-space:pre-line">{{ msg }}</div>
       <div class="sp-bar">
-        <label>From<input type="date" [(ngModel)]="from" (change)="load()"></label>
-        <label>To<input type="date" [(ngModel)]="to" (change)="load()"></label>
+        <label>From<z-date-field [(value)]="from" (valueChange)="load()"></z-date-field></label>
+        <label>To<z-date-field [(value)]="to" (valueChange)="load()"></z-date-field></label>
         <select [(ngModel)]="status" (change)="load()" aria-label="Status">
           <option value="">Any status</option><option value="pending">Waiting for approval</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
         </select>
@@ -67,7 +68,7 @@ import { SpApiService, niceDate } from './sp-api.service';
         <div class="sp-h">Plan on-call duty</div>
         <div class="lp-form">
           <label>Employee<select [(ngModel)]="f.employee"><option [ngValue]="null">Choose…</option><option *ngFor="let e of emps" [ngValue]="e.employee_id">{{ e.name }}</option></select></label>
-          <label>Date<input type="date" [(ngModel)]="f.date"><span class="sp-err" *ngIf="err['date']">{{ err['date'] }}</span></label>
+          <label>Date<z-date-field [(value)]="f.date"></z-date-field><span class="sp-err" *ngIf="err['date']">{{ err['date'] }}</span></label>
           <label>Type<select [(ngModel)]="f.kind"><option value="standby">Standby (at home, reachable)</option><option value="on_site">On site</option></select></label>
           <label>From<input type="time" [(ngModel)]="f.start_time"><span class="sp-err" *ngIf="err['start_time']">{{ err['start_time'] }}</span></label>
           <label>To<input type="time" [(ngModel)]="f.end_time"><span class="sp-err" *ngIf="err['end_time']">{{ err['end_time'] }}</span></label>

@@ -85,6 +85,7 @@ export function mondayOf(iso: string): string { const d = new Date(iso + 'T00:00
 export function niceDate(iso: string): string {
   if (!iso) return '';
   const d = new Date(String(iso).slice(0, 10) + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+  // v1.62.0 people: "Sun 01 Nov 2026" (was the browser's US form "Sun, Nov 01, 2026")
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).replace(',', '');
 }
 export const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

@@ -4,6 +4,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EmployeeService } from '../employee-master/employee.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-employee-create-language',
@@ -98,8 +99,8 @@ export class EmployeeCreateLanguageComponent {
 
 
 
-    onDeleteEmployee(employeeId: number): void {
-      if (confirm('Are you sure you want to delete this employee?')) {
+    async onDeleteEmployee(employeeId: number): Promise<void> {
+      if ((await zConfirm('Are you sure you want to delete this employee?'))) {
           this.employeeService.deleteEmployeeLangague(employeeId).subscribe(
               () => {
                   console.log('Employee deleted successfully');

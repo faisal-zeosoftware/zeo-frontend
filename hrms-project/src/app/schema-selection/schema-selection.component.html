@@ -24,6 +24,15 @@
              [attr.aria-label]="'Search companies' | t">
     </div>
 
+    <label class="zc-auto" *ngIf="!loading && companies.length > 1" data-auto-open>
+      <input type="checkbox" [checked]="autoOpen" (change)="setAutoOpen($any($event.target).checked)">
+      <span>{{ 'Open my last company directly next time' | t }}</span></label>
+    <!-- v1.62.1: favourites and recently opened companies on top -->
+    <section class="zc-quick" *ngIf="!loading && quick().length" data-quick>
+      <h2>{{ 'Favourites and recent' | t }}</h2>
+      <ul class="zc-list" role="list"><ng-container *ngTemplateOutlet="rows; context: { $implicit: quick() }"></ng-container></ul>
+      <h2 class="zc-all-h">{{ 'All companies' | t }}</h2>
+    </section>
     <div class="zc-msg" *ngIf="error" role="alert">{{ error }}</div>
     <!-- v1.23.0 ZEO Cloud: an account removed this person's access -->
     <div class="zc-notice" *ngFor="let n of notices" role="status">{{ n.text }}
@@ -101,9 +110,17 @@
             <span class="zc-spin" *ngIf="opening === c.schema_name" aria-hidden="true"></span>{{ (opening === c.schema_name ? 'Opening…' : 'Open company') | t }}
           </span>
         </button>
-        <!-- v1.22.3: duplicate (like the Odoo database list) -->
-        <button type="button" class="zc-dup" *ngIf="canCreate || ownsAcc(c)" (click)="askDuplicate(c)" [disabled]="!!opening || !!dup"
-                [attr.aria-label]="('Duplicate' | t) + ' ' + c.name" [title]="'Make a copy of this company with all its data' | t">{{ 'Duplicate' | t }}</button>
+        <!-- v1.62.1: star = favourite; Duplicate moved into the ⋯ menu (it asks in its own dialog before anything is copied) -->
+        <button type="button" class="zc-star" [class.on]="isFav(c)" (click)="toggleFav(c, $event)" [attr.aria-pressed]="isFav(c)"
+                [attr.aria-label]="(isFav(c) ? 'Remove from favourites' : 'Add to favourites') | t" [title]="(isFav(c) ? 'Remove from favourites' : 'Add to favourites') | t" data-fav>{{ isFav(c) ? '★' : '☆' }}</button>
+        <span class="zc-more" *ngIf="canCreate || ownsAcc(c)">
+          <button type="button" class="zc-more-btn" (click)="menuFor = menuFor === c.schema_name ? '' : c.schema_name" [attr.aria-expanded]="menuFor === c.schema_name"
+                  [attr.aria-label]="('More actions' | t) + ' ' + c.name" data-more>⋯</button>
+          <span class="zc-more-menu" *ngIf="menuFor === c.schema_name" role="menu">
+            <button type="button" role="menuitem" class="zc-dup" (click)="menuFor = ''; askDuplicate(c)" [disabled]="!!opening || !!dup"
+                    [title]="'Make a copy of this company with all its data' | t">{{ 'Duplicate…' | t }}</button>
+          </span>
+        </span>
       </li>
     </ng-template>
 
@@ -141,14 +158,16 @@
     <ng-container *ngIf="mk.state === 'running'">
       <h2 id="zc-mk-title">{{ 'Creating the company…' | t }}</h2>
       <p class="zc-dsub">{{ mk.name }}<ng-container *ngIf="dbLabel(mk)"> · {{ dbLabel(mk) }}</ng-container></p>
-      <ol class="zc-steps"><li *ngFor="let st of mkSteps; let i = index" [class.done]="i + 1 < mk.stepNo" [class.now]="i + 1 === mk.stepNo">{{ st | t }}</li></ol>
-      <p class="zc-dnote">{{ 'This takes about a minute.' | t }}</p>
+      <!-- v1.62.1: %, what is being done now, steps with times -->
+      <z-job-progress [job]="mk.st || { state: 'running', percent: 0, step: 'Sending the form' }" [title]="mk.name" [note]="'This takes about a minute.'"></z-job-progress>
     </ng-container>
     <ng-container *ngIf="mk.state === 'done'">
       <h2 id="zc-mk-title">{{ 'The company is ready' | t }}</h2>
       <p class="zc-dsub">{{ '{0} is in your list.' | t:mk.name }}</p>
+      <!-- v1.62.1 (user request 2 Nov): "Start the setup" opens the new company on its Get started page -->
       <div class="zc-dact"><button type="button" class="zc-dbtn ghost" (click)="mk = null">{{ 'Close' | t }}</button>
-        <button type="button" class="zc-dbtn" (click)="openMade()">{{ 'Open the company' | t }}</button></div>
+        <button type="button" class="zc-dbtn ghost" (click)="openMade()" data-open-made>{{ 'Open the company' | t }}</button>
+        <button type="button" class="zc-dbtn" (click)="openMade('/main-sidebar/settings/setup-guide')" data-start-setup>{{ 'Start the setup' | t }}</button></div>
     </ng-container>
     <ng-container *ngIf="mk.state === 'failed'">
       <h2 id="zc-mk-title">{{ 'The company could not be created' | t }}</h2>
@@ -177,10 +196,8 @@
     <ng-container *ngIf="dup.state === 'running'">
       <h2 id="zc-dup-title">{{ 'Making the copy…' | t }}</h2>
       <p class="zc-dsub">{{ '{0} → {1}' | t:dup.source.name:dup.name }}</p>
-      <ol class="zc-steps">
-        <li *ngFor="let st of dupSteps; let i = index" [class.done]="i + 1 < dup.stepNo" [class.now]="i + 1 === dup.stepNo">{{ st | t }}</li>
-      </ol>
-      <p class="zc-dnote">{{ 'A large company can take a few minutes. You can keep this page open.' | t }}</p>
+      <!-- v1.62.1: %, what is being done now, steps with times -->
+      <z-job-progress [job]="dup.st || { state: 'running', percent: 0, step: 'Copying the data' }" [title]="dup.name" [note]="'A large company can take a few minutes. You can keep this page open.'"></z-job-progress>
     </ng-container>
     <ng-container *ngIf="dup.state === 'done'">
       <h2 id="zc-dup-title">{{ 'The copy is ready' | t }}</h2>

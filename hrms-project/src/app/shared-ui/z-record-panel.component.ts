@@ -16,7 +16,7 @@ import { assetFieldAdapter } from './asset-field-adapter';   // v1.16.0
 import { ZLocationService } from './z-location.service';   // v1.30.0 location level
 import { ZFormArrangerService } from './z-form-arranger.service';   // v1.39.0 form layout designer
 
-interface FeedItem { kind: 'note' | 'message' | 'email_in' | 'change' | 'created' | 'deleted'; at: string; who: string; body?: string; changes?: any[]; attachments?: any[]; id?: number; mine?: boolean; to?: string; subject?: string;
+interface FeedItem { kind: 'note' | 'message' | 'email_in' | 'change' | 'created' | 'deleted'; at: string; who: string; body?: string; changes?: any[]; attachments?: any[]; id?: number; mine?: boolean; to?: string; subject?: string; rcpts?: any[];
   replies?: FeedItem[]; reactions?: Record<string, any>; resolved?: boolean; resolvedBy?: string; parent?: number | null; }
 const EMOJIS = ['👍', '✅', '❤️', '🎉', '👀', '🙏'];
 const TAG_COLOURS = ['grey', 'red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink'];
@@ -182,7 +182,7 @@ const ACT_TYPES = [
           <ng-container *ngTemplateOutlet="mediaBtns"></ng-container>
           <span class="zr-grow"></span>
           <button type="button" class="zr-btn" (click)="tab = ''">Cancel</button>
-          <button type="button" class="zr-btn primary" [disabled]="busy || recording || (!note.trim() && !noteFiles.length)" (click)="logNote('message')"><mat-icon>send</mat-icon>Send</button>
+          <button type="button" class="zr-btn primary" [disabled]="busy || recording || (!note.trim() && !noteFiles.length) || (!recipients().length && !msgEmails.trim())" [title]="!recipients().length && !msgEmails.trim() ? 'Add an e-mail address or @mention someone first' : ''" (click)="logNote('message')" data-zr-send><mat-icon>send</mat-icon>Send</button>
         </div>
       </div>
       <!-- v1.46.0 voice note (20 s) and photo from the camera -->
@@ -308,7 +308,11 @@ const ACT_TYPES = [
       <div><b>{{ f.who || 'System' }}</b> <span class="zr-muted">· {{ f.at | date:'dd/MM/yyyy HH:mm' }}{{ f.kind === 'created' ? ' · created this record' : f.kind === 'deleted' ? ' · deleted' : f.kind === 'message' ? ' · message' : f.kind === 'email_in' ? ' · replied by e-mail' : '' }}</span>
         <span class="zr-res" *ngIf="f.resolved"><mat-icon>task_alt</mat-icon>Resolved{{ f.resolvedBy ? ' by ' + f.resolvedBy : '' }}</span>
         <button type="button" class="zr-ic" *ngIf="(f.kind === 'note' || f.kind === 'message') && (f.mine || admin)" (click)="removeNote(f)" aria-label="Delete"><mat-icon>delete_outline</mat-icon></button></div>
-      <div class="zr-muted zr-to-line" *ngIf="f.to">To: {{ f.to }}</div>
+      <div class="zr-muted zr-to-line" *ngIf="f.to" data-zr-to>To:
+        <span *ngFor="let r of f.rcpts; let last = last" class="zr-rc" [attr.data-mail]="r.mail || ''">{{ r.name || r.email }}<!-- v1.62.1 e-mail status
+          --><mat-icon *ngIf="r.mail === 'sent'" class="zr-rc-ok" [title]="'E-mail sent to ' + r.email">mark_email_read</mat-icon><mat-icon
+            *ngIf="r.mail === 'sending'" class="zr-rc-wait" title="E-mail being sent">schedule_send</mat-icon><span
+            *ngIf="r.mail === 'failed'" class="zr-rc-bad"><mat-icon>error_outline</mat-icon>e-mail not sent{{ r.why ? ' – ' + r.why : '' }}</span>{{ last ? '' : ', ' }}</span></div>
       <div class="zr-subj" *ngIf="f.subject && f.kind === 'message'">{{ f.subject }}</div>
       <div class="zr-note" *ngIf="f.body">{{ f.body }}</div>
       <div class="zr-pending" *ngIf="f.attachments?.length">
@@ -508,6 +512,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
         this.activities = r.activities || [];
         this.me = r.me; this.admin = r.admin;
         this.feed = this.buildFeed(r);
+        this.pollMail();   // v1.62.1: e-mails go in the background – read the status again shortly
         this.starred = !!r.starred; this.following = !!r.following; this.followers = r.followers || []; this.tags = r.tags || []; this.label = r.label || '';
         this.locLoad(r.model || null).then(() => { if (this.loc) { this.loc.model = r.model; } });
         this.flowLoad(r.model || null);
@@ -543,7 +548,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
   private buildFeed(r: any): FeedItem[] {
     const items: FeedItem[] = [];
     const mk = (n: any): FeedItem => ({ kind: n.kind === 'message' ? 'message' : n.kind === 'email_in' ? 'email_in' : 'note', at: n.at, who: n.author, body: n.body,
-      attachments: n.attachments, id: n.id, mine: n.author_id === r.me, subject: n.subject, to: (n.recipients || []).map((x: any) => x.name || x.email).join(', '),
+      attachments: n.attachments, id: n.id, mine: n.author_id === r.me, subject: n.subject, to: (n.recipients || []).map((x: any) => x.name || x.email).join(', '), rcpts: n.recipients || [],
       reactions: n.reactions || {}, resolved: n.resolved, resolvedBy: n.resolved_by, parent: n.parent_id, replies: [] });
     const tops = new Map<number, FeedItem>();
     const notes = (r.notes || []) as any[];
@@ -634,6 +639,15 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
     this.note = this.note.replace(/@([\p{L}\w.]{0,30})$/u, '@' + u.name + ' ');
     if (!this.mentions.some(x => x.id === u.id)) { this.mentions.push({ id: u.id, name: u.name }); }
     this.mentionQ = null;
+  }
+  private mailPolls = 0;
+  private pollMail(): void {
+    const sending = (r: any[] | undefined) => (r || []).some(x => x.mail === 'sending');
+    const any = this.feed.some(f => sending(f.rcpts) || (f.replies || []).some(x => sending(x.rcpts)));
+    if (!any) { this.mailPolls = 0; return; }
+    if (this.mailPolls >= 6) { return; }
+    this.mailPolls++;
+    setTimeout(() => { this.load(); }, 3000);
   }
   recipients(): any[] {
     const out = this.followers.filter(f => f.user_id !== this.me);

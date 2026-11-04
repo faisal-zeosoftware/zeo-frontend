@@ -126,6 +126,7 @@ import { ZFieldInputComponent } from './shared-ui/z-field-input.component';
 import { ZEmpFieldsComponent } from './shared-ui/z-emp-fields.component';
 import { ZEmpPickComponent } from './shared-ui/z-emp-pick.component';   // v1.40.1
 import { COUNTRY_PACK_UI } from './shared-ui/country-pack.service';   // v1.14.0 country packs
+import { ZJobProgressComponent } from './shared-ui/z-job-progress.component';   // v1.62.1
 import { I18N_UI, I18nInterceptor, I18nService, startI18n } from './shared-ui/i18n.service';   // v1.15.0 language packs
 import { ZTranslateComponent } from './shared-ui/z-translate.component';   // v1.15.0 translated master data (Translate button)
 import { ZEmpOrgFieldsComponent } from './org-structure/z-emp-org-fields.component';   // v1.12.0 organisation fields
@@ -135,7 +136,8 @@ import { ZRecordService } from './shared-ui/z-record.service';
 import { ZRecordServiceToken } from './shared-ui/z-list.service';
 import { ZListRecorderInterceptor } from './shared-ui/z-list.service';
 import { FormSettingsService } from './shared-ui/form-settings.service';
-import { APP_INITIALIZER, NgZone } from '@angular/core';
+import { APP_INITIALIZER, ApplicationRef, EnvironmentInjector, NgZone } from '@angular/core';
+import { setZFormHost } from './shared-ui/z-form.component';   // v1.62.1
 import { startDateInputs } from './shared-ui/z-date-input';   // v1.62.0 ui
 
 /** Load the company's form designer settings before the first screen opens (max 3 s). */
@@ -532,6 +534,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
   ],
   imports: [
     ZImpBannerComponent,   // v1.52.0
+    ZJobProgressComponent,   // v1.62.1 company job progress
     EssDashboardComponent,
     ZListDirective,
     ZAskComponent,
@@ -612,7 +615,8 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     { provide: ZRecordServiceToken, useExisting: ZRecordService },
     { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true },
     { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { dateFormat: 'dd/MM/yyyy' } },   // v1.62.0 ui: dd/mm/yyyy in views (was 12 May 1990)
-    { provide: APP_INITIALIZER, useFactory: (zone: NgZone) => () => zone.runOutsideAngular(() => startDateInputs()), deps: [NgZone], multi: true },   // v1.62.0 ui: date fields show dd/mm/yyyy
+    { provide: APP_INITIALIZER, useFactory: (zone: NgZone) => () => zone.runOutsideAngular(() => startDateInputs()), deps: [NgZone], multi: true },
+    { provide: APP_INITIALIZER, useFactory: (app: ApplicationRef, env: EnvironmentInjector) => () => setZFormHost(app, env), deps: [ApplicationRef, EnvironmentInjector], multi: true },   // v1.62.1 shared forms   // v1.62.0 ui: date fields show dd/mm/yyyy
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }],                                   // v1.19.0: DD/MM/YYYY in date pickers
     
    

@@ -16,6 +16,7 @@ import {combineLatest, forkJoin, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 @Component({
@@ -1285,8 +1286,8 @@ loadEmp(callback?: Function): void {
     }
 
 
-    deletePayroll(payrollId: number): void {
-      if (confirm('Are you sure you want to delete this payroll entry?')) {
+    async deletePayroll(payrollId: number): Promise<void> {
+      if ((await zConfirm('Are you sure you want to delete this payroll entry?'))) {
         this.leaveService.deletePayroll(payrollId).subscribe(
           () => {
             // Filter out the deleted payroll from the list
@@ -1319,13 +1320,13 @@ loadEmp(callback?: Function): void {
       return this.hasEditPermission && String(run?.status || '').toLowerCase() === 'approved';
     }
 
-    setRunStatus(run: any, status: 'approved' | 'paid' | 'processed'): void {
+    async setRunStatus(run: any, status: 'approved' | 'paid' | 'processed'): Promise<void> {
       const question = status === 'approved'
         ? 'Approve this payroll run? Every payslip must be approved or rejected first.'
         : status === 'paid'
           ? 'Mark this payroll run as paid and close it? Do this after the salaries were transferred (WPS). A closed run cannot be changed or deleted.'
           : 'Undo the approval of this payroll run? It goes back to processed so payslips can be corrected.';
-      if (!confirm(question)) return;
+      if (!(await zConfirm(question))) return;
       const body: any = { status };
       if (status === 'paid') {   // v1.18.0: the bank / WPS reference of the salary transfer is kept with the run
         const ref = prompt('Payment reference (bank transfer / WPS file)', '');

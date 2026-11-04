@@ -14,6 +14,9 @@ import { CountryService } from '../country.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import {combineLatest, Subscription } from 'rxjs';
 
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 166)
+import { airTicketRequestForm } from '../shared-ui/z-request-forms';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-airticket-request',
   templateUrl: './airticket-request.component.html',
@@ -33,7 +36,7 @@ export class AirticketRequestComponent {
   }
   atEdit(id: number): void {
     const row = (this.Requests || []).find((x: any) => x.id === id);
-    if (row) { this.openEditModal(row); }
+    this.openEditModal(row || { id });   // v1.62.10 (item 166): also before the old list has loaded
   }
   async atDelete(r: any): Promise<void> {
     if (await this.at.remove('request', r.id, `${r.number || ''} ${r.employee}`.trim())) { this.Requests = (this.Requests || []).filter((x: any) => x.id !== r.id); await this.atLoad(); }
@@ -521,7 +524,24 @@ onBranchChange(event: any): void {
 
 
 
+  // v1.62.10 (item 166): New / Edit open the shared form (same endpoint and fields as the old pop-ups); the list reloads after a save
+  async zOpen(record?: any): Promise<void> {
+    if (await openZForm(airTicketRequestForm(), record)) {
+      await this.atLoad(JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'));
+      const sch = this.authService.getSelectedSchema();
+      if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+    }
+  }
+  /** the record answers the allocation by its policy name – the desk row has its id */
+  private zRecord(row: any): any {
+    const d = (this.atRows || []).find((x: any) => x.id === row.id);
+    const fromDesk = d ? { id: d.id, document_number: d.number, branch: d.branch, request_type: d.type, request_date: d.request_date, departure_date: d.departure,
+      return_date: d.return, origin: d.origin, destination: d.destination, notes: d.notes } : {};
+    return { ...fromDesk, ...row, allocation: d?.allocation_id ?? row.allocation, employee: d?.employee_id ?? row.employee };
+  }
+
       openPopus():void{
+        this.zOpen(); return;   // v1.62.10 (item 166)
         this.iscreateLoanApp = true;
 
       this.document_number = null;
@@ -587,6 +607,7 @@ onBranchChange(event: any): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  this.zOpen(this.zRecord(asset)); return;   // v1.62.10 (item 166)
 
   this.editAsset = { ...asset };
 
@@ -656,7 +677,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAirTicketReq() { 
+async deleteSelectedAirTicketReq() { 
   const selectedEmployeeIds = this.Requests
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -666,7 +687,7 @@ deleteSelectedAirTicketReq() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected AirTicket Request ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected AirTicket Request ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;

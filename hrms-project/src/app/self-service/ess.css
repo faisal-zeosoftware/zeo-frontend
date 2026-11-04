@@ -61,7 +61,7 @@
 .es-tag.pending, .es-tag.submitted, .es-tag.acknowledged, .es-tag.expiring, .es-tag.investigating { background: #fff4e5; color: #9a5b00; }
 .es-tag.approved, .es-tag.issued, .es-tag.resolved, .es-tag.valid, .es-tag.paid, .es-tag.self { background: #e8f7ef; color: #1f7a4d; }
 .es-tag.rejected, .es-tag.expired, .es-tag.failed, .es-tag.overdue { background: #fdecec; color: #b42318; }
-.es-tag.withdrawn, .es-tag.closed, .es-tag.none, .es-tag.hr, .es-tag.hidden { background: #f1f2f6; color: #4a4f63; }
+.es-tag.withdrawn, .es-tag.closed, .es-tag.none, .es-tag.hr, .es-tag.hidden, .es-tag.cancelled { background: #f1f2f6; color: #4a4f63; }   /* v1.65.0 (item 83) cancelled */
 .es-tag.request { background: #eef2ff; color: #3730a3; }
 
 /* tabs */

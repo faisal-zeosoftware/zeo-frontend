@@ -7,6 +7,8 @@ import { UserService } from '../user.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { CountryService } from '../country.service';
 import { SessionService } from '../login/session.service';
+import { environment } from '../../environments/environment';
+import { i18nT } from '../shared-ui/i18n-core';
 
 
 @Component({
@@ -40,6 +42,57 @@ export class SchemaCreationComponent {
   chosenApps(): string[] {   // v1.23.0: HR comes with any app
     const k = this.appChoices.filter(a => a.on).map(a => a.key);
     return k.length && !k.includes('hrms') ? ['hrms', ...k] : k;
+  }
+  // v1.62.1 (user request 2 Nov): "Starting setup" – standard defaults (as before) or the setup of a branch of another company
+  setupMode: 'standard' | 'copy' = 'standard';
+  copySources: { id: number; name: string; schema_name: string }[] = [];
+  copyFrom: any = '';
+  copyBranches: { id: number; name: string; code: string }[] = [];
+  copyBranch: any = '';
+  copyBranchName = '';
+  copyBranchCode = '';
+  copyLoading = false;
+  private loadCopySources(): void {
+    this.http.get<any>(`${environment.apiBaseUrl}/users/api/company-copy-sources/`).subscribe({
+      next: r => { this.copySources = r?.companies || []; },
+      error: () => { this.copySources = []; },
+    });
+  }
+  onCopyFrom(): void {
+    this.copyBranches = []; this.copyBranch = ''; this.copyBranchName = ''; this.copyBranchCode = '';
+    const c = this.copySources.find(x => String(x.id) === String(this.copyFrom));
+    if (!c) { return; }
+    this.copyLoading = true;
+    this.http.get<any>(`${environment.apiBaseUrl}/organisation/api/Branch/?schema=${encodeURIComponent(c.schema_name)}`).subscribe({
+      next: r => {
+        const list = Array.isArray(r) ? r : (r?.results || []);
+        this.copyBranches = list.map((b: any) => ({ id: b.id, name: b.branch_name, code: b.branch_code || '' }));
+        this.copyLoading = false;
+        if (this.copyBranches.length === 1) { this.copyBranch = String(this.copyBranches[0].id); this.onCopyBranch(); }
+      },
+      error: () => { this.copyLoading = false; this.copyBranches = []; },
+    });
+  }
+  onCopyBranch(): void {
+    const b = this.copyBranches.find(x => String(x.id) === String(this.copyBranch));
+    this.copyBranchName = b ? b.name : '';
+    this.copyBranchCode = b ? (b.code || '').toUpperCase() : '';
+  }
+  copySourceName(): string { return this.copySources.find(x => String(x.id) === String(this.copyFrom))?.name || ''; }
+  copyMissing(): boolean {
+    return this.setupMode === 'copy' && (!this.copyFrom || !this.copyBranch || !this.copyBranchName.trim() || !this.copyBranchCode.trim());
+  }
+  /** "Setup copied from X – Head office: 12 leave types, 8 salary components …" of the ready card */
+  copiedText(): string {
+    const c = this.job?.copied;
+    if (!c || !c.source) { return ''; }
+    const parts = (c.items || []).map((i: any) => `${i.count} ${i18nT(i.label)}`);
+    const sep = document.documentElement.dir === 'rtl' ? '، ' : ', ';   // Arabic comma in Arabic
+    return i18nT('Setup copied from {0} – {1}', [c.source, c.branch || '']) + (parts.length ? ': ' + parts.join(sep) : '');
+  }
+  copiedFailed(): string {
+    const f = Object.keys(this.job?.copied?.failed || {});
+    return f.length ? i18nT('Not copied (standard defaults kept): {0}', [f.map(x => i18nT(x)).join(', ')]) : '';
   }
   address_line1 : string = '';
   address_line2 : string = '';
@@ -117,6 +170,7 @@ export class SchemaCreationComponent {
     }
 
     this.loadUsers();
+    this.loadCopySources();   // v1.62.1
   this.loadCountries();
   this.loadCurrencies();
    }
@@ -174,6 +228,7 @@ if (this.financial_year) {
       alert(errorMessage.trim());
       return; // Exit the function if validation fails
     }
+    if (this.copyMissing()) { return; }   // v1.62.1: the copy fields are shown in red under the "Starting setup" choice
   
     // Validation for spaces in the schema_name field
 
@@ -198,6 +253,13 @@ if (this.financial_year) {
     companyData.append('industry_type', this.industry_type);
     if (!this.chosenApps().length) { return; }   // v1.21.0: at least one app
     companyData.append('apps', this.chosenApps().join(','));
+    if (this.setupMode === 'copy' && this.copySources.length) {   // v1.62.1 (user request 2 Nov)
+      companyData.append('setup_mode', 'copy');
+      companyData.append('copy_from', String(this.copyFrom));
+      companyData.append('copy_branch', String(this.copyBranch));
+      companyData.append('copy_branch_name', this.copyBranchName.trim());
+      companyData.append('copy_branch_code', this.copyBranchCode.trim().toUpperCase());
+    }
 
     companyData.append('address_line1', this.address_line1);
 
@@ -233,6 +295,7 @@ if (this.financial_year) {
 
     // Make API call – v1.26.0: answered at once with a job; the company is created in the background
     this.jobStep = 'Sending…';
+    this.job = { state: 'running', percent: 0, step: 'Sending the form', detail: '', stages: [] };   // v1.62.1
     this.userService.getSchema(companyData).subscribe(
       (response: any) => {
         if (response && response.job) {
@@ -245,9 +308,11 @@ if (this.financial_year) {
       (error) => {
         this.isLoading = false;
         this.jobStep = '';
+        this.job = null;
         const e = error?.error || {};
         const msgs: string[] = [];
         if (typeof e === 'string') msgs.push(e);
+        else if (e.detail && String(e.detail).includes('copy the setup')) msgs.push(i18nT(e.detail));   // v1.62.1 copy refused (403)
         else Object.keys(e).forEach(k => msgs.push(`${k === 'detail' || k === 'error' ? '' : k + ': '}${Array.isArray(e[k]) ? e[k].join(' ') : e[k]}`));
         alert(msgs.join('\n') || 'The company could not be created. Please try again.');
       }
@@ -257,29 +322,54 @@ if (this.financial_year) {
   jobStep = '';
   jobStepNo = 0;
   jobSteps = 5;
+  /** v1.62.1: the job status shown by <z-job-progress> (%, what is being done, steps, time) */
+  job: any = null;
+  private created = '';
   private watchJob(job: string, tries = 0): void {
     this.userService.getCompanyJob(job).subscribe({
       next: (st: any) => {
+        this.job = st;
         this.jobStep = st?.step || '';
         this.jobStepNo = st?.step_no || 0;
         this.jobSteps = st?.steps || 5;
         if (st?.state === 'done') {
           this.isLoading = false;
           const failed = Object.keys(st.failed || {});
-          this.finishCreated(st.name || this.name, failed.length ? `Not set up: ${failed.join(', ')} – activate them in Settings → Apps.` : '');
+          // v1.62.1: no pop-up – the progress card shows "ready" (and what could not be set up) with an Open button
+          this.created = st.name || this.name;
+          if (failed.length) { this.job = { ...st, detail: '' }; this.jobNote = `Not set up: ${failed.join(', ')} – activate them in Settings → Apps.`; }
         } else if (st?.state === 'failed') {
           this.isLoading = false;
           this.jobStep = '';
-          alert(`The company could not be created: ${st.error || 'unknown error'}`);
         } else {
-          setTimeout(() => this.watchJob(job, tries + 1), 2500);
+          setTimeout(() => this.watchJob(job, tries + 1), 1500);
         }
       },
       error: () => {
         if (tries < 240) setTimeout(() => this.watchJob(job, tries + 1), 4000);
-        else { this.isLoading = false; alert('The company is still being created. Refresh the company list in a few minutes.'); }
+        else { this.isLoading = false; this.job = { ...(this.job || {}), state: 'failed', error: 'The company is still being created. Refresh the company list in a few minutes.' }; }
       }
     });
+  }
+
+  jobNote = '';
+  /** v1.62.1 (user request 2 Nov): switch to the new company (the same keys as Choose a company) and open its Get started page */
+  startSetup(): void {
+    const sc = this.job?.schema; if (!sc) { this.openCreated(); return; }
+    try {
+      localStorage.setItem('selectedSchema', sc);
+      if (this.job?.company_id) { localStorage.setItem('selectedSchemaId', String(this.job.company_id)); }
+      localStorage.setItem('selectedSchemaStateLabel', '');
+      localStorage.setItem('zeo:lastCompany', sc);
+      const r = JSON.parse(localStorage.getItem('zeoRecentCompanies') || '[]');
+      localStorage.setItem('zeoRecentCompanies', JSON.stringify([sc, ...r.filter((x: string) => x !== sc)].slice(0, 8)));
+    } catch { /* storage blocked */ }
+    this.ref.close('created');
+    window.location.href = '/main-sidebar/settings/setup-guide';   // a full load, so every service starts with the new company
+  }
+  openCreated(): void {
+    this.ref.close('created');
+    window.location.reload();
   }
 
   private finishCreated(name: string, note = ''): void {

@@ -7,6 +7,7 @@ import { ZModuleMenuComponent } from '../../shared-ui/z-module-menu.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HrPermissionService } from '../hr-permission.service';
+import { ZSetupGateNoticeComponent } from '../../shared-ui/z-setup-gate';   // v1.62.1
 
 export interface ModuleMenuItem {
   path: string;
@@ -24,7 +25,7 @@ export interface ModuleMenuItem {
 @Component({
   selector: 'app-hr-module-options',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule, ZModuleMenuComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, MatSidenavModule, ZModuleMenuComponent, ZSetupGateNoticeComponent],
   templateUrl: './module-options.component.html',
   styleUrl: './module-options.component.css',
 })
@@ -51,6 +52,8 @@ export class ModuleOptionsComponent implements OnInit {
     const own = ALL_APPS.find(a => (a.parents || []).includes(seg) || (a.sections || []).some(s => s.items.some(i => i.link.startsWith(this.base + '/'))));
     const cur = appForUrl(this.router.url);
     this.otherApp = cur && own && cur.key !== own.key && (cur.sections || []).length ? cur : null;
+    // v1.62.0 people: a module whose pages are part of a main-menu app (employee master tools → Employees) shows that app's menu
+    if (!this.otherApp && cur && (cur.sections || []).length && this.route.snapshot.data?.['appMenu']) { this.otherApp = cur; }
   }
 
   @HostListener('window:resize')

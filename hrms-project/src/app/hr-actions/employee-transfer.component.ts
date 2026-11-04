@@ -23,6 +23,7 @@
  * Permissions: change_emp_master / run_employee_transfer (backend checks them too).
  */
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { OrgSettingsService } from '../org-structure/org-settings.service';   // v1.12.0
 import { ZIfOrgDirective } from '../org-structure/z-if-org.directive';
 import { CommonModule } from '@angular/common';
@@ -34,6 +35,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { employeeUrl } from '../shared-ui/z-nav';
 import { EmployeeService } from '../employee-master/employee.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 interface Plan { changes: { area: string; what: string; from: string; to: string }[]; warnings: string[]; blockers: string[]; stays: string[]; }
 interface SalRow { code: string; amount: number | null; }
@@ -47,7 +49,7 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
 @Component({
   selector: 'app-employee-transfer',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective, ZIfOrgDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZIfOrgDirective, ZDateFieldComponent],
   styleUrls: ['../leave-policy/leave-policy.css', './hr-actions.css'],
   template: `
 <div class="container ha-wrap">
@@ -82,7 +84,7 @@ function list<T = any>(x: any): T[] { return Array.isArray(x) ? x : (x?.results 
               <option [ngValue]="null">Choose…</option>
               <option *ngFor="let e of empOptions()" [ngValue]="e.id">{{ e.code }} – {{ e.name }}</option>
             </select></label>
-          <label>Effective date<input type="date" [(ngModel)]="form.effective_date" (ngModelChange)="dirty()"></label>
+          <label>Effective date<z-date-field [(value)]="form.effective_date" (valueChange)="dirty()"></z-date-field></label>
         </div>
 
         <div class="ha-now" *ngIf="cur">
@@ -366,7 +368,7 @@ export class EmployeeTransferComponent implements OnInit {
       : action === 'approve' ? `Approve the move of ${r.employee} to report to ${r.to_manager || 'the new manager'} (effective ${String(r.effective_date).split('-').reverse().join('/')})?`
       : action === 'reject' ? `Reject the transfer request for ${r.employee}?`
       : `Cancel the scheduled transfer of ${r.employee}?`;
-    if (!confirm(q)) { return; }
+    if (!(await zConfirm(q))) { return; }
     this.busy = true; this.cd.detectChanges();
     try {
       const d = await firstValueFrom(this.http.post<any>(this.url(`hr-actions/api/transfers/${r.id}/${action}/`), {}));

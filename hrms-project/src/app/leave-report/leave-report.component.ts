@@ -17,6 +17,7 @@ import {combineLatest, Subscription } from 'rxjs';
 import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 interface FieldSetting {
@@ -705,7 +706,7 @@ clearDates() {
 }
 
 
-deleteReport(report: any, event: Event) {
+async deleteReport(report: any, event: Event) {
   event.stopPropagation(); // Stop from loading the report when clicking delete
 
   // STRICT CONDITION: Block if ID is 1 or Name is std_report
@@ -716,7 +717,7 @@ deleteReport(report: any, event: Event) {
   }
 
   // Proceed with deletion for all other IDs
-  if (confirm(`Are you sure you want to delete "${report.file_name}"?`)) {
+  if ((await zConfirm(`Are you sure you want to delete "${report.file_name}"?`))) {
     this.isLoading = true;
     this.leaveService.deleteLeaveReport(report.id).subscribe({
       next: (res) => {

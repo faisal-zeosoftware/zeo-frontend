@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { DOC_EXPIRY_ALERT_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -13,6 +15,7 @@ import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import { CountryService } from '../country.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-notification-settings',
@@ -706,7 +709,7 @@ toggleAllDesignations(): void {
 
 
 
-  deleteSelectedDocNotify() {
+  async deleteSelectedDocNotify() {
     const selectedIds = this.NotSettings
       .filter(item => item.selected)
       .map(item => item.id);
@@ -716,7 +719,7 @@ toggleAllDesignations(): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Document Notification ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Document Notification ?'))) {
 
       let total = selectedIds.length;
       let completed = 0;
@@ -778,6 +781,7 @@ toggleAllDesignations(): void {
 
 
   openPopus(): void {
+    zFormThenReload(DOC_EXPIRY_ALERT_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
     this.iscreateLoanApp = true;
 
     this.branches = [];
@@ -830,6 +834,7 @@ toggleAllDesignations(): void {
   editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(DOC_EXPIRY_ALERT_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
   console.log('Original asset:', asset);
 
   this.editAsset = {
@@ -874,7 +879,7 @@ openEditModal(asset: any): void {
   }
 
 
-  deleteSelectedAssetType() {
+  async deleteSelectedAssetType() {
     const selectedEmployeeIds = this.NotSettings
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -884,7 +889,7 @@ openEditModal(asset: any): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Document Notification Setting ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Document Notification Setting ?'))) {
       selectedEmployeeIds.forEach(categoryId => {
         this.employeeService.deleteNotSetting(categoryId).subscribe(
           () => {
@@ -1402,4 +1407,10 @@ mapDepartmentsNameToId(): void {
 
 
 
+  // v1.62.10 (item 175): Delete on the row – the old "delete selected" with only this row ticked
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedDocNotify();
+  }
 }

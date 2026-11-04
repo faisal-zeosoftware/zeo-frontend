@@ -1,5 +1,6 @@
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +18,7 @@ const NEXT_LABEL: Record<string, string> = {
 @Component({
   selector: 'app-ess-complaints',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZDateFieldComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -59,7 +60,7 @@ const NEXT_LABEL: Record<string, string> = {
               <div class="r">
                 <span class="es-tag overdue" *ngIf="c.overdue">overdue</span>
                 <span class="es-tag" *ngIf="c.escalated">escalated</span>
-                <span class="es-tag" [ngClass]="c.status">{{ c.status }}</span>
+                <span class="es-tag" [ngClass]="c.status">{{ cap(c.status) }}</span>
               </div>
             </div>
             <p class="es-muted" *ngIf="!loading && !rows.length">{{ handler ? 'No cases here.' : 'You have no named complaints.' }}</p>
@@ -72,7 +73,7 @@ const NEXT_LABEL: Record<string, string> = {
         </div>
 
         <div class="es-panel" *ngIf="sel">
-          <div class="es-h">{{ sel.number }} · {{ sel.subject }} <span class="es-tag" [ngClass]="sel.status">{{ sel.status }}</span></div>
+          <div class="es-h">{{ sel.number }} · {{ sel.subject }} <span class="es-tag" [ngClass]="sel.status">{{ cap(sel.status) }}</span></div>
           <p class="es-muted" style="margin:0">{{ sel.category_label }}<span *ngIf="handler"> · {{ sel.employee }}</span><span *ngIf="sel.anonymous && !(handler && sel.employee === 'Anonymous')"> · anonymous</span><span *ngIf="sel.confidential"> · confidential</span>
             · due {{ sel.due_date | date:'dd/MM/yyyy' }}<span *ngIf="sel.overdue" style="color:#b42318"> (overdue)</span></p>
           <p style="font-size:13px;white-space:pre-line;margin-top:8px">{{ sel.description }}</p>
@@ -133,7 +134,7 @@ const NEXT_LABEL: Record<string, string> = {
     <p class="es-msg err" *ngIf="ferr">{{ ferr }}</p>
     <div class="es-form">
       <div><label>Category</label><select [(ngModel)]="f.category"><option *ngFor="let c of cats" [ngValue]="c.value">{{ c.label }}</option></select></div>
-      <div><label>Date IT happened (optional)</label><input type="date" [(ngModel)]="f.incident_date"></div>
+      <div><label>Date IT happened (optional)</label><z-date-field [(value)]="f.incident_date"></z-date-field></div>
       <div class="wide"><label>Subject</label><input [(ngModel)]="f.subject" maxlength="200"></div>
       <div class="wide"><label>What happened</label><textarea [(ngModel)]="f.description" rows="5"></textarea></div>
       <div class="wide"><label>Person or area concerned (optional)</label><input [(ngModel)]="f.against"></div>
@@ -148,6 +149,8 @@ const NEXT_LABEL: Record<string, string> = {
 </div>`,
 })
 export class EssComplaintsComponent implements OnInit {
+  /** v1.62.0 people: one casing for status words (REJECTED / approved → Rejected / Approved) */
+  cap(v: any): string { const t = String(v ?? '').replace(/_/g, ' ').toLowerCase(); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ''; }
   handler = false; rows: any[] = []; sel: any = null; cats: any[] = []; handlers: any[] = [];
   loading = false; busy = false; msg = ''; ok = ''; ferr = '';
   f: any = null; files: FileList | null = null; token = ''; trackToken = ''; tracking = '';

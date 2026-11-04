@@ -9,6 +9,7 @@ import { SessionService } from '../login/session.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { LeaveService } from '../leave-master/leave.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 
 /** v1.37.1: the server's reason, readable (it used to be swallowed – the user saw nothing happen). */
@@ -729,7 +730,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+async deleteSelectedAssetType() { 
   const selectedEmployeeIds = this.ApprovalLEvel
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -739,7 +740,7 @@ deleteSelectedAssetType() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected  Approval Level?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected  Approval Level?'))) {
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteGenreqApprovalLevel(categoryId).subscribe(
         () => {

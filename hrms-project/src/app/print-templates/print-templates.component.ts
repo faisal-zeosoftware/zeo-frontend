@@ -8,6 +8,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { I18N_UI, i18nT } from '../shared-ui/i18n.service';
 import { LANG_LABEL, PrintTemplatesApi, PtBranding, PtDocType, PtMeta, PtTemplate } from './print-templates.service';
 import { PtPreviewDialogComponent } from './print-preview-dialog.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * Settings › Print templates (company administrators and the right "Design the printed documents"):
@@ -269,13 +270,13 @@ export class PrintTemplatesComponent implements OnInit, OnDestroy {
     this.api.save(t.id, { name: n, note: 'Renamed' } as any).subscribe({ next: () => { this.renaming = 0; this.load(); this.refreshMeta(); }, error: e => this.fail(e) });
   }
 
-  remove(t: PtTemplate): void {
-    if (!confirm(i18nT('Delete "{0}"? Documents that use it as the default go back to the old layout.', [t.name]))) { return; }
+  async remove(t: PtTemplate): Promise<void> {
+    if (!(await zConfirm(i18nT('Delete "{0}"? Documents that use it as the default go back to the old layout.', [t.name])))) { return; }
     this.api.remove(t.id).subscribe({ next: () => { this.ok(i18nT('Deleted.')); this.load(); this.refreshMeta(); }, error: e => this.fail(e) });
   }
 
-  reset(t: PtTemplate): void {
-    if (!confirm(i18nT('Bring this sample back to the design of ZEO?'))) { return; }
+  async reset(t: PtTemplate): Promise<void> {
+    if (!(await zConfirm(i18nT('Bring this sample back to the design of ZEO?')))) { return; }
     this.api.reset(t.id).subscribe({ next: () => { this.ok(i18nT('The sample is back to the design of ZEO.')); this.load(); }, error: e => this.fail(e) });
   }
 

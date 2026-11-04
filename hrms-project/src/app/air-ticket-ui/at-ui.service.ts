@@ -8,6 +8,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
 import { cpMoney } from '../shared-ui/country-pack.service';
 import { i18nT as T } from '../shared-ui/i18n-core';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 export const AT_BASE = '/main-sidebar/air-ticket-options';
 
@@ -35,7 +36,7 @@ export class AtUiService {
 
   /** Delete one record through its existing endpoint (after the user confirmed). */
   async remove(kind: string, id: number, what: string): Promise<boolean> {
-    if (!confirm(T('Delete {0}? This cannot be undone.', [what]))) { return false; }
+    if (!(await zConfirm(T('Delete {0}? This cannot be undone.', [what])))) { return false; }
     try {
       await firstValueFrom(this.http.delete(`${this.rec.api}/payroll/api/${DELETE_PATH[kind]}/${id}/?schema=${this.schema()}`));
       return true;
@@ -122,7 +123,7 @@ export class AtUiService {
   allocClass(st: string): string {
     return ({ approved: 'ok', used: 'info', ticket_taken: 'info', expired: 'muted', pending: 'warn', rejected: 'bad', inactive: 'muted' } as any)[st] || '';
   }
-  stepStatus(s: string): string { return T(({ Pending: 'Waiting for me', Approved: 'Approved', Rejected: 'Rejected', Escalated: 'Escalated' } as any)[s] || s); }
+  stepStatus(s: string): string { return T(({ Pending: 'Pending', Approved: 'Approved', Rejected: 'Rejected', Escalated: 'Escalated' } as any)[s] || s); }
   stepClass(s: string): string { return ({ Pending: 'warn', Approved: 'ok', Rejected: 'bad', Escalated: 'info' } as any)[s] || ''; }
   /** Approval progress line of a request. */
   progress(r: any): string {

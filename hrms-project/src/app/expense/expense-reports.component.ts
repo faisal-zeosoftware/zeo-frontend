@@ -8,6 +8,7 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, money } from './expense-
 
 /** Expense reports: list + detail (lines, policy flags, approval timeline, advance, amount to reimburse) with the actions of the user's role. */
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-expense-reports',
@@ -260,7 +261,7 @@ export class ExpenseReportsComponent implements OnInit {
   }
 
   async removeLine(e: any): Promise<void> {
-    if (!confirm('Take this expense out of the report? It stays in your unreported expenses.')) return;
+    if (!(await zConfirm('Take this expense out of the report? It stays in your unreported expenses.'))) return;
     await this.run(() => this.api.post(`reports/${this.cur.id}/remove_expense/`, { expense_id: e.id }), 'Expense taken out of the report.');
   }
 
@@ -290,7 +291,7 @@ export class ExpenseReportsComponent implements OnInit {
   }
 
   async removeReport(): Promise<void> {
-    if (!confirm('Delete this draft report? Its expenses go back to unreported.')) return;
+    if (!(await zConfirm('Delete this draft report? Its expenses go back to unreported.'))) return;
     this.busy = true;
     try { await this.api.delete(`reports/${this.cur.id}/`); this.cur = null; this.flash('Report deleted.', false); await this.load(); }
     catch (e: any) { this.flash(ExpenseApiService.error(e), true); }

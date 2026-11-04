@@ -12,6 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
 import { LeaveService } from '../leave-master/leave.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-compensatory-transaction',
@@ -365,7 +366,7 @@ if (this.userId !== null) {
   }
   
   
-  deleteSelectedCombTrans() { 
+  async deleteSelectedCombTrans() { 
     const selectedEmployeeIds = this.compTransactions
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -375,7 +376,7 @@ if (this.userId !== null) {
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected Compensatory transaction ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Compensatory transaction ?'))) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -435,7 +436,11 @@ if (this.userId !== null) {
   }
     );
   }
-  
-         
 
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedCombTrans();
+  }
 }

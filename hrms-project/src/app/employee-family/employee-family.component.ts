@@ -10,6 +10,7 @@ import { SessionService } from '../login/session.service';
 import { forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { openDocFill } from '../ai-settings/doc-fill-dialog.component';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-employee-family',
@@ -214,7 +215,7 @@ CreateEmployeeFamily() {
   });
 }
 
-removeFamilyMember(index: number) {
+async removeFamilyMember(index: number) {
   const member = this.familyMembers[index];
 
   // Not saved yet, so just remove from the UI
@@ -223,7 +224,7 @@ removeFamilyMember(index: number) {
     return;
   }
 
-  if (!confirm('Delete this family member?')) return;
+  if (!(await zConfirm('Delete this family member?'))) return;
 
   this.EmployeeService.RemoveEmpFamily(this.emp_id, member.id).subscribe({
     next: () => this.familyMembers.splice(index, 1),

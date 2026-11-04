@@ -1,3 +1,5 @@
+import { zFormThenReload } from '../shared-ui/z-forms';   // v1.62.10 (item 175)
+import { REQUEST_TYPE_FORM } from '../shared-ui/z-forms-setup';   // v1.62.10 (item 175)
 import { HttpClient } from '@angular/common/http';
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -9,6 +11,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 declare var $: any;
 
@@ -318,14 +321,12 @@ ngOnInit(): void {
 
           showSalaryDropdown: boolean = false;
 
-          registerGeneralreq(): void {
+          async registerGeneralreq(): Promise<void> {
             this.registerButtonClicked = true;
                
             // ✅ FIRST TIME → Ask question
             if (!this.showSalaryDropdown && !this.salary_component) {
-              const confirmAction = confirm(
-                'Do you want to select Salary Component?'
-              );
+              const confirmAction = (await zConfirm('Do you want to select Salary Component?'));
           
               if (confirmAction) {
                 // 👉 Show dropdown and STOP save
@@ -488,6 +489,7 @@ iscreateLoanApp: boolean = false;
 
 
 openPopus():void{
+    zFormThenReload(REQUEST_TYPE_FORM); return;   // v1.62.10 (item 175) new-design form (was the old pop-up)
   this.iscreateLoanApp = true;
 
                     this.branch = [];
@@ -540,6 +542,7 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+    zFormThenReload(REQUEST_TYPE_FORM, { id: asset?.id }); return;   // v1.62.10 (item 175) new-design form
   this.editAsset = { ...asset };
 
   // Convert branch names to IDs if needed
@@ -562,7 +565,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedRequestType() { 
+async deleteSelectedRequestType() { 
   const selectedEmployeeIds = this.ReqTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -572,7 +575,7 @@ deleteSelectedRequestType() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected  Request Type?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected  Request Type?'))) {
 
      let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -722,5 +725,10 @@ filteredBranches() {
 
 }
 
-      
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedRequestType();
+  }
 }

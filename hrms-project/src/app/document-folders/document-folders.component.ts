@@ -15,6 +15,9 @@ import { combineLatest, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
 
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 168)
+import { folderForm, FOLDER_EDIT_FORM } from '../shared-ui/z-forms-records';
+
 @Component({
   selector: 'app-document-folders',
   templateUrl: './document-folders.component.html',
@@ -54,6 +57,7 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
 
   hasViewPermissionDocumentFolder = false;
   hasAddPermissionDocumentFolder = false;
+  hasEditPermissionDocumentFolder = false;   // v1.62.10 (item 168): rename folders
 
 
   /* =========================================================
@@ -81,16 +85,12 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
      MODALS
      ========================================================= */
 
-  iscreateLoanApp = false;
-  iscreatesubfolder = false;
 
 
   /* =========================================================
      FORM
      ========================================================= */
 
-  name: string = '';
-  parent: number | null = null;
 
 
   /* =========================================================
@@ -179,6 +179,7 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
 
             this.hasViewPermissionDocumentFolder = true;
             this.hasAddPermissionDocumentFolder = true;
+            this.hasEditPermissionDocumentFolder = true;   // v1.62.10 (item 168)
 
             this.fetchDesignations(selectedSchema);
 
@@ -227,6 +228,7 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
 
                 this.hasViewPermissionDocumentFolder = true;
                 this.hasAddPermissionDocumentFolder = true;
+                this.hasEditPermissionDocumentFolder = true;   // v1.62.10 (item 168)
 
               }
 
@@ -266,6 +268,7 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
                     'add_folder',
                     groupPermissions
                   );
+                this.hasEditPermissionDocumentFolder = this.checkGroupPermission('change_folder', groupPermissions);   // v1.62.10 (item 168)
 
 
                 console.log(
@@ -529,211 +532,22 @@ export class DocumentFoldersComponent implements OnInit, OnDestroy {
      CREATE MAIN FOLDER
      ========================================================= */
 
-  openPopus(): void {
-
-    this.name = '';
-
-    this.iscreateLoanApp = true;
-
+  /** v1.62.10 (item 168): "+ New folder" – the shared form instead of the old pop-up and alerts */
+  async openPopus(): Promise<void> {
+    if (await openZForm(folderForm())) { this.reloadFolders(); }
   }
 
-
-  closeapplicationModal(): void {
-
-    this.iscreateLoanApp = false;
-
-    this.name = '';
-
-  }
-
-
-  CreateFolder(): void {
-
-    if (!this.name?.trim()) {
-
-      alert('Enter folder name.');
-
-      return;
-
-    }
-
-
-    const formData = new FormData();
-
-    formData.append(
-      'name',
-      this.name.trim()
-    );
-
-
-    this.employeeService
-      .registerFolder(formData)
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Registration successful',
-            response
-          );
-
-
-          alert('Folder has been added.');
-
-
-          this.iscreateLoanApp = false;
-
-          this.name = '';
-
-
-          /*
-           * Reload folder data without re-creating
-           * the combineLatest subscription.
-           */
-          this.reloadFolders();
-
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'Add folder failed',
-            error
-          );
-
-          alert(
-            'Enter all fields correctly!'
-          );
-
-        }
-
-      });
-
-  }
-
-
-  /* =========================================================
-     CREATE SUBFOLDER
-     ========================================================= */
-
-  openSubFolderPopup(
-    folderId: number,
-    event: Event
-  ): void {
-
-    /*
-     * Prevent folder expand/collapse.
-     */
+  /** v1.62.10 (item 168): "+" on a folder – a subfolder in the shared form */
+  async openSubFolderPopup(folderId: number, event: Event): Promise<void> {
     event.stopPropagation();
-
-
-    this.parent = folderId;
-
-    this.name = '';
-
-    this.iscreatesubfolder = true;
-
-
-    console.log(
-      'Open popup - Parent Folder ID:',
-      this.parent
-    );
-
+    const f = this.Documentfolders.find(x => x.id === folderId);
+    if (await openZForm(folderForm({ id: folderId, name: f?.name || '' }))) { this.reloadFolders(); }
   }
 
-
-  closeSubfolderModal(): void {
-
-    this.iscreatesubfolder = false;
-
-    this.name = '';
-
-    this.parent = null;
-
-  }
-
-
-  CreateFolderSubFolder(): void {
-
-    if (
-      !this.name?.trim() ||
-      !this.parent
-    ) {
-
-      alert(
-        'Enter subfolder name.'
-      );
-
-      return;
-
-    }
-
-
-    const formData = new FormData();
-
-
-    formData.append(
-      'name',
-      this.name.trim()
-    );
-
-
-    formData.append(
-      'parent',
-      this.parent.toString()
-    );
-
-
-    this.employeeService
-      .registerFolder(formData)
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Subfolder added:',
-            response
-          );
-
-
-          alert(
-            'Subfolder has been added.'
-          );
-
-
-          this.iscreatesubfolder = false;
-
-          this.name = '';
-
-          this.parent = null;
-
-
-          /*
-           * Reload only the data.
-           * DO NOT create another combineLatest subscription.
-           */
-          this.reloadFolders();
-
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'Error adding subfolder:',
-            error
-          );
-
-
-          alert(
-            'Failed to create subfolder'
-          );
-
-        }
-
-      });
-
+  /** v1.62.10 (item 168): rename a folder or subfolder */
+  async renameFolder(folder: any, event: Event): Promise<void> {
+    event.stopPropagation(); event.preventDefault();
+    if (await openZForm(FOLDER_EDIT_FORM, { id: folder.id, name: folder.name })) { this.reloadFolders(); }
   }
 
 

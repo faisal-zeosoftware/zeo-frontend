@@ -228,3 +228,9 @@ margin-right: 10px;
   padding: 3px 10px 19px 10px !important;
   font-size: 12px !important;
 }
+
+/* v1.62.1 (tester 30-10 item 183): company logo in the list and in the edit window */
+.lm-logo { width: 36px; height: 36px; object-fit: contain; border-radius: 8px; background: #fff; border: 1px solid #e5e7eb; vertical-align: middle; }
+.lm-logo.none { display: inline-flex; align-items: center; justify-content: center; color: #6b7280; font-weight: 600; background: #f3f4f6; }
+.lm-logo.big { width: 48px; height: 48px; margin-right: 8px; }
+.lm-logo-pick { display: inline-flex; align-items: center; gap: 4px; }

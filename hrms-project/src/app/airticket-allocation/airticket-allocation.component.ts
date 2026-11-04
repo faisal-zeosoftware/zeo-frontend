@@ -13,6 +13,9 @@ import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { openZForm } from '../shared-ui/z-form.component';   // v1.62.10 (item 166)
+import { airTicketAllocationForm } from '../shared-ui/z-request-forms';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 @Component({
   selector: 'app-airticket-allocation',
   templateUrl: './airticket-allocation.component.html',
@@ -32,7 +35,7 @@ export class AirticketAllocationComponent {
   }
   atEdit(id: number): void {
     const row = (this.Allocations || []).find((x: any) => x.id === id);
-    if (row) { this.openEditModal(row); }
+    this.openEditModal(row || { id });   // v1.62.10 (item 166): also before the old list has loaded
   }
   /** v1.62.0 air ticket: deletes the allocation itself (the old "Delete selected" called the policy endpoint with the allocation id) */
   async atDelete(a: any): Promise<void> {
@@ -542,7 +545,18 @@ fetchEmployees(schema: string, branchIds: number[]): void {
 
 
 
+  // v1.62.10 (item 166): New / Edit open the shared form (same endpoint and fields as the old pop-ups); the list reloads after a save
+  async zOpen(record?: any): Promise<void> {
+    if (await openZForm(airTicketAllocationForm(), record)) {
+      const ids = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+      await this.atLoad(ids);
+      const sch = this.authService.getSelectedSchema();
+      if (sch) { this.fetchEmployees(sch, ids); }
+    }
+  }
+
       openPopus():void{
+        this.zOpen(); return;   // v1.62.10 (item 166)
         this.iscreateLoanApp = true;
 
       }
@@ -591,6 +605,7 @@ fetchEmployees(schema: string, branchIds: number[]): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  this.zOpen({ id: asset.id }); return;   // v1.62.10 (item 166)
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 
@@ -638,7 +653,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAirTicketAllocation() { 
+async deleteSelectedAirTicketAllocation() { 
   const selectedEmployeeIds = this.Policies
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -648,7 +663,7 @@ deleteSelectedAirTicketAllocation() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected AirTicket Allocation  ?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected AirTicket Allocation  ?'))) {
 
         let total = selectedEmployeeIds.length;
         let completed = 0;

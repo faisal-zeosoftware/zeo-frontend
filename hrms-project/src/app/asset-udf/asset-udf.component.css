@@ -226,3 +226,15 @@ mat-expansion-panel-header .col-md-1 {
 
   
 }
+
+/* v1.62.0 talent-ops */
+.udf-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 0 24px; flex-wrap: wrap; }
+.udf-head > div:first-child { flex: 1 1 420px; min-width: 0; }
+.udf-head h1.page-title { margin: 0; }
+.comapny_section p.udf-desc, .udf-desc { text-align: start; margin: 6px 0 0; color: #6b7185; font-size: 13px; max-width: 760px; line-height: 1.45; }
+.udf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.udf-btn { height: 34px; border: 1px solid #dfe1ea; background: #fff; border-radius: 8px; padding: 0 12px; font-size: 13px; color: #2b2f42; cursor: pointer; white-space: nowrap; }
+.udf-btn.primary { background: #5b4fe0; border-color: #5b4fe0; color: #fff; }
+.udf-empty { padding: 28px 12px; text-align: center; color: #6b7185; font-size: 14px; }
+.udf-empty b { display: block; color: #1b1640; font-size: 15px; margin-bottom: 4px; }
+.udf-cols { display: grid; grid-template-columns: 1fr 1fr; padding: 4px 24px; font-size: 12px; font-weight: 600; color: #6b7185; }

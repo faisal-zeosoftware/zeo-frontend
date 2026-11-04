@@ -145,7 +145,32 @@ export function lookup(text: string): string | null {
   }
   v = LOWER.get(k.toLowerCase());
   if (v !== undefined) { return v; }
+  const nw = newPhrase(k);   // v1.62.0 ui: "+ New leave request" → "+ طلب إجازة جديد"
+  if (nw !== null) { return nw; }
   return matchTemplate(k);
+}
+
+/** v1.62.0 ui – Arabic "new X" (a button, a dialog title): the noun phrase is indefinite, so the adjective comes after it
+ *  WITHOUT the article and agrees with the head noun: "طلب إجازة جديد", "سياسة جديدة" (was "طلب إجازة الجديد"). */
+export function arNew(noun: string): string {
+  let words = noun.trim().split(/\s+/);
+  // an iḍāfa made definite by its second noun ("طلب الإجازة") becomes indefinite ("طلب إجازة")
+  if (words.length === 2 && !/^ال/.test(words[0]) && /^ال/.test(words[1])) { words = [words[0], words[1].slice(2)]; }
+  // a noun with its adjectives, all definite ("المسمى الوظيفي") → all indefinite ("مسمى وظيفي") – v1.62.1 ui
+  if (words.length && words.every(w => /^ال/.test(w))) { words = words.map(w => w.slice(2)); }
+  const head = words[0] || '';
+  const fem = /ة$/.test(head);   // v1.62.1 ui: ى is not a feminine ending here (مسمى، مستوى، مبنى)
+  return words.join(' ') + (fem ? ' جديدة' : ' جديد');
+}
+
+function newPhrase(k: string): string | null {
+  if (PACK.lang !== 'ar') { return null; }
+  const m = /^(\+\s?)?New\s+(.+)$/.exec(k);
+  if (!m) { return null; }
+  const noun = m[2];
+  const tr = MAP.get(noun) ?? LOWER.get(noun.toLowerCase()) ?? MAP.get(noun.charAt(0).toUpperCase() + noun.slice(1));
+  if (!tr || /[A-Za-z]{3,}/.test(tr)) { return null; }
+  return (m[1] ? '+ ' : '') + arNew(tr);
 }
 
 /** t(): the translated text (English when missing), placeholders filled. */
@@ -153,6 +178,10 @@ export function i18nT(text: any, params?: any[] | Record<string, any> | null): s
   if (text === null || text === undefined) { return ''; }
   const s = String(text);
   if (PACK.lang === 'en') { return params ? fill(s, params) : s; }
+  if (PACK.lang === 'ar' && (s === 'New {0}' || s === '+ New {0}') && Array.isArray(params) && params.length) {   // v1.62.0 ui
+    const n = String(params[0] ?? ''); const tn = /[A-Za-z]/.test(n) ? (lookup(n) ?? lookup(n.charAt(0).toUpperCase() + n.slice(1))) : n;
+    if (tn && !/[A-Za-z]{3,}/.test(tn)) { return (s.startsWith('+') ? '+ ' : '') + arNew(tn); }
+  }
   const v = MAP.get(s) ?? lookup(s);
   if (v && Array.isArray(params)) {
     const slots = suffixSlots(s);

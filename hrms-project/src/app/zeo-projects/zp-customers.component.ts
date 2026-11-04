@@ -5,6 +5,7 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRM
 import { ActivatedRoute, Router } from '@angular/router';
 import { PRIORITY_CLASS, STAGE_CLASS, ZP_BASE, ZpApiService, day, money, slaText, when } from './zp-api.service';
 import { ZpNotifyComponent } from './zp-notify.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** New / edit customer (v1.14.0). */
 @Component({
@@ -287,7 +288,7 @@ export class ZpCustomerComponent implements OnInit {
     } catch (e) { this.msg = ZpApiService.error(e); }
   }
   async portal(p: any, action: string): Promise<void> {
-    if (action === 'disable' && !confirm(`Block the portal login of ${p.name}?`)) return;
+    if (action === 'disable' && !(await zConfirm(`Block the portal login of ${p.name}?`))) return;
     try {
       const r = await this.api.post(`contacts/${p.id}/portal/`, { action });
       this.cred = r.password ? r : null;

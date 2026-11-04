@@ -39,7 +39,7 @@ export const REQUISITION_PAGE: PageConfig = {
     { key: 'headcount', label: 'HC' },
     { key: 'max_salary', label: 'Budget up to (AED)', type: 'money' },
     { key: 'is_emiratisation', label: 'Nafis', type: 'bool', country: 'pack:AE' },   // v1.14.0: UAE programme
-    { key: 'pending_with', label: 'Pending with' },
+    { key: 'pending_with', label: 'Pending with / opening', value: (r: any) => (r.openings || []).length ? r.openings.map((o: any) => `${o.code} · ${o.status_label}`).join(', ') : (r.pending_with || '–') },   // v1.62.0 talent-ops
     { key: 'status', label: 'Status', type: 'tag', tagColors: REQ_STATUS },
   ],
   filters: [
@@ -77,7 +77,7 @@ export const REQUISITION_PAGE: PageConfig = {
     { label: 'Submit', action: 'submit', color: 'blue', showIf: r => r.status === 'draft' || r.status === 'rejected' },
     { label: 'Approve', action: 'approve', color: 'green', showIf: r => r.status === 'pending', prompt: [{ key: 'comments', label: 'Comments', type: 'textarea' }] },
     { label: 'Reject', action: 'reject', color: 'red', showIf: r => r.status === 'pending', prompt: [{ key: 'comments', label: 'Reason', type: 'textarea', required: true }] },
-    { label: 'Create opening', action: 'create_opening', color: 'cyan', showIf: r => r.status === 'approved' },
+    { label: 'Create opening', action: 'create_opening', color: 'cyan', showIf: r => r.status === 'approved' && !(r.openings || []).some((o: any) => o.status !== 'closed') },   // v1.62.0 talent-ops
   ],
   children: [
     {
@@ -141,7 +141,7 @@ export const JOB_PAGE: PageConfig = {
     { label: 'Publish', action: 'publish', color: 'green', showIf: r => r.status === 'draft' || r.status === 'on_hold' },
     { label: 'Pipeline', color: 'blue', route: () => '/main-sidebar/recruitment-options/pipeline', showIf: r => r.applicant_count > 0 },
     // v1.57.0 talent pools
-    { label: 'Matching candidates', action: 'matching_candidates', method: 'get', color: 'cyan', document: matchingDoc },
+    { label: 'Matching candidates', action: 'matching_candidates', method: 'get', color: 'cyan', document: matchingDoc, panel: true },
     { label: 'Add to a talent pool', action: 'to_pool', color: 'grey', showIf: r => r.applicant_count > 0,
       prompt: [{ key: 'pool', label: 'Talent pool', type: 'select', required: true, lookup: { endpoint: API + 'talent-pools/', label: (p: any) => p.name } },
                { key: 'stages', label: 'Candidates', type: 'select', required: true, default: 'rejected,withdrawn',
@@ -244,7 +244,7 @@ export const CANDIDATE_PAGE: PageConfig = {
       prompt: [{ key: 'into', label: 'Keep this candidate', type: 'select', required: true, lookup: { endpoint: API + 'candidates/', label: (r: any) => `${r.full_name || r.first_name} – ${r.email}` } }] },
   ],
   toolbarActions: [
-    { label: 'Possible duplicates', action: 'duplicates', method: 'get', color: 'grey', document: duplicatesDoc },
+    { label: 'Possible duplicates', action: 'duplicates', method: 'get', color: 'grey', document: duplicatesDoc, panel: true },
   ],
   children: [
     {
@@ -393,21 +393,23 @@ export const ONBOARDING_PAGE: PageConfig = {
   endpoint: API + 'offers/',
   model: 'visastep',
   defaultParams: { status: 'accepted,joined' },
-  intro: 'Visa steps (MOHRE offer → work permit → entry / change of status → medical → Emirates ID → labour contract → visa stamping) and onboarding tasks. Create Employee copies the candidate and offer into Employee Master with salary components.',
+  // v1.62.0 talent-ops: the onboarding stage in words; an accepted offer whose employee already exists is linked to it (no duplicate)
+  intro: 'Visa steps (MOHRE offer → work permit → entry / change of status → medical → Emirates ID → labour contract → visa stamping) and onboarding tasks. When the candidate joins, Create employee copies the candidate and the offer into the employee master with the salary; when the employee record already exists, Link to employee joins the two instead.',
   columns: [
-    { key: 'candidate_name', label: 'Candidate' },
-    { key: 'candidate_nationality', label: 'Nationality' },
+    { key: 'candidate_name', label: 'Candidate', value: (r: any) => r.candidate_name + (r.candidate_nationality ? ` · ${r.candidate_nationality}` : '') },
     { key: 'position_title', label: 'Position' },
     { key: 'joining_date', label: 'Joining', type: 'date' },
-    { key: 'visa', label: 'Visa steps', value: r => `${r.visa_progress?.done}/${r.visa_progress?.total}` },
-    { key: 'onb', label: 'Onboarding', value: r => `${r.onboarding_progress?.done}/${r.onboarding_progress?.total}` },
-    { key: 'employee', label: 'Employee' },
-    { key: 'status', label: 'Status', type: 'tag', tagColors: OFFER_STATUS },
+    { key: 'visa', label: 'Visa · onboarding', value: (r: any) => `${r.visa_progress?.done}/${r.visa_progress?.total} · ${r.onboarding_progress?.done}/${r.onboarding_progress?.total}` },
+    { key: 'employee', label: 'Employee', value: (r: any) => r.employee_display || (r.existing_employee ? `Exists: ${r.existing_employee.name} (${r.existing_employee.code})` : '–') },
+    { key: 'stage', label: 'Stage', type: 'tag', value: (r: any) => r.stage?.label || r.status_label || r.status, colorKey: 'stage.key',
+      tagColors: { joined: 'green', ready: 'cyan', visa: 'blue', accepted: 'blue', declined: 'red', withdrawn: 'grey', expired: 'grey' } },
   ],
   canCreate: false,
   canEdit: false,
   rowActions: [
-    { label: 'Create employee', action: 'convert_to_employee', color: 'green', showIf: r => r.status === 'accepted' && !r.employee,
+    { label: 'Link to employee', action: 'link_employee', color: 'blue', showIf: (r: any) => r.status === 'accepted' && !r.employee && !!r.existing_employee,
+      confirm: 'Link this offer to the employee record that already exists? The offer becomes Joined; no second employee is made.' },   // v1.62.0 talent-ops
+    { label: 'Create employee', action: 'convert_to_employee', color: 'green', showIf: r => r.status === 'accepted' && !r.employee && !r.existing_employee,
       prompt: [{ key: 'emp_code', label: 'Employee code (empty = next number)', type: 'text' },
                { key: 'ignore_open_steps', label: 'Open steps', type: 'checkbox', help: 'Create even if some visa steps are still open' }] },
   ],

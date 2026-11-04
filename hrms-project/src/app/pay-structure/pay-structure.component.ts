@@ -13,6 +13,7 @@ import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-pay-structure',
@@ -1111,7 +1112,7 @@ updatePayStr(): void {
   }
 
 
-  deleteSelectedPayrollAprlvl() {
+  async deleteSelectedPayrollAprlvl() {
     const selectedEmployeeIds = this.overtimepol
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -1121,7 +1122,7 @@ updatePayStr(): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected OverTime Rule ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected OverTime Rule ?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -1408,8 +1409,8 @@ loadCAtegory(callback?: Function): void {
   }
   psOt(v: string): string { return ({ ATTENDANCE: 'Attendance', MANUAL: 'Entered by HR', COMBINED: 'Attendance and HR entries' } as any)[v] || '–'; }
   psOrd(n: number): string { const s = ['th', 'st', 'nd', 'rd']; const v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
-  psDelete(p: any): void {
-    if (!confirm(`Delete the pay structure of ${this.psName(p)}? Its employees are then paid on calendar days.`)) { return; }
+  async psDelete(p: any): Promise<void> {
+    if (!(await zConfirm(`Delete the pay structure of ${this.psName(p)}? Its employees are then paid on calendar days.`))) { return; }
     this.employeeService.deletePayStr(p.id).subscribe({
       next: () => { this.overtimepol = this.overtimepol.filter((x: any) => x.id !== p.id); this.reloadList(); },
       error: (e: any) => alert(e?.error?.detail || 'The pay structure could not be deleted.'),

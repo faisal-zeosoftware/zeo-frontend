@@ -12,6 +12,7 @@ import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import {combineLatest, Subscription } from 'rxjs';  
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-shifts',
@@ -890,7 +891,7 @@ openEditModal(asset: any): void {
 
 
 
-deleteSelectedShifts() { 
+async deleteSelectedShifts() { 
   const selectedEmployeeIds = this.Shifts
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -900,7 +901,7 @@ deleteSelectedShifts() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected shifts?')) {
+  if ((await zConfirm('Are you sure you want to delete the selected shifts?'))) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -1067,5 +1068,11 @@ getMonthNameFromDate(dateStr: string): string {
   // 'short' -> "Jan", 'long' -> "January"
   return date.toLocaleString('en-US', { month: 'short' });
 }
-  
+
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedShifts();
+  }
 }

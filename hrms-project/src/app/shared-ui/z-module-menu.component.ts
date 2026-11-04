@@ -70,7 +70,7 @@ export function suiteOfApp(key: string): Exclude<Suite, 'common'> | null {
   encapsulation: ViewEncapsulation.None,
   template: `
   <ul class="nav-menu-list zm-list">
-    <ng-container *ngFor="let s of sections; let first = first">
+    <ng-container *ngFor="let s of sections; let first = first; trackBy: trackSec">
       <li class="zm-section" *ngIf="open && sections.length > 1">
         <button type="button" class="zm-section-head" [class.zm-toggle]="s.collapsed" (click)="toggle(s)"
                 [attr.aria-expanded]="!isClosed(s)">
@@ -81,8 +81,8 @@ export function suiteOfApp(key: string): Exclude<Suite, 'common'> | null {
       </li>
       <li class="zm-rule" *ngIf="!open && !first"></li>
       <ng-container *ngIf="!open || !isClosed(s)">
-        <li *ngFor="let it of s.items">
-          <a [routerLink]="it.link" routerLinkActive="active-link" class="nav-item-link"
+        <li *ngFor="let it of s.items; trackBy: trackItem">
+          <a [routerLink]="it.link" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: exactLinks.has(it.link) }" class="nav-item-link"
              [attr.title]="it.hint || it.label" (click)="picked.emit()">
             <mat-icon class="nav-icon">{{ it.icon || 'chevron_right' }}</mat-icon>
             <span class="sidenav-opt">{{ it.label }}</span>
@@ -116,6 +116,7 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
   @Output() picked = new EventEmitter<void>();
 
   sections: MenuSection[] = [];
+  exactLinks = new Set<string>();
   loaded = false;
   private app: MenuApp | null = null;
   private access: Access = null;
@@ -139,6 +140,10 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
     if (app !== this.app) { this.opened.clear(); }
     this.app = app;
     this.sections = visibleSections(app, this.access, this.cp);
+    // v1.62.1 (tester 30-10 item 185): a link that is the start of another link of the menu (Automation "Dashboard" =
+    // /automation, "My approvals" = /automation/approvals) is active only on its own page – both were highlighted
+    const links = this.sections.flatMap(x => x.items.map(i => i.link));
+    this.exactLinks = new Set(links.filter(l => links.some(o => o !== l && o.startsWith(l + '/'))));
     // a folded section opens by itself when the current page is in it
     const url = this.router.url.split('?')[0];
     for (const s of this.sections) {
@@ -147,6 +152,9 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
     this.cd.markForCheck();
   }
 
+  // v1.62.1: refresh() builds new section objects (permissions, language, navigation) – keep the links by key
+  trackSec(_i: number, s: MenuSection): string { return s.title; }
+  trackItem(_i: number, it: { link?: string; label: string }): string { return (it.link || '') + '|' + it.label; }
   isClosed(s: MenuSection): boolean { return !!s.collapsed && !this.opened.has(s.title); }
 
   toggle(s: MenuSection): void {

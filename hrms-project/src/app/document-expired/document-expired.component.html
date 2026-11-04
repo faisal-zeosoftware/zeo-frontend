@@ -1,4 +1,5 @@
 <!-- v1.62.0 ui: dates dd/MM/yyyy -->
+<!-- v1.62.10 (item 168): Update opens the shared form (renew: number, dates, new copy); no pop-up alerts -->
 <div class="container">
     <div class="comapny_section" *ngIf="hasViewPermission">
         <div class="header_section">
@@ -42,7 +43,7 @@
                         <td>{{ r.expiry | date:'dd/MM/yyyy' }}</td>
                         <td>{{ r.days_left }}</td>
                         <td><span class="de-tag" [ngClass]="tone(r.status)">{{ r.status }}</span></td>
-                        <td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" *ngIf="hasEditPermission" (click)="openEditPopuss(r._id)">Update</button></td>
+                        <td class="text-end"><button type="button" class="de-upd" *ngIf="hasEditPermission" (click)="openEditPopuss(r._id); $event.stopPropagation()" title="Update" data-z-row-edit>{{ 'Update' | t }}</button></td>
                     </tr>
                     <tr *ngIf="!Documents.length && !isLoading"><td colspan="9" class="text-center text-muted py-4">No documents to renew – nothing has expired or expires in this period.</td></tr>
                     <tr *ngIf="isLoading"><td colspan="9" class="text-center text-muted py-4">Loading…</td></tr>

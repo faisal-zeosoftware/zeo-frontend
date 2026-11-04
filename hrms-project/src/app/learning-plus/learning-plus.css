@@ -84,3 +84,9 @@ td.gap .lp-gapn { color: var(--lp-red); font-size: 10px; font-weight: 600; displ
 /* attendance sheet */
 .lp-att td.c { text-align: center; white-space: nowrap; }
 .lp-att input[type=number] { width: 56px; height: 28px; border: 1px solid var(--lp-line); border-radius: 6px; padding: 0 4px; }
+
+/* v1.62.0 talent-ops: session / people lists of the attendance sheet and training history */
+.lp-table td.c, .lp-table th.c { text-align: center; }
+.lp-table td.nw, .lp-table th.nw { white-space: nowrap; }
+.lp-table td b { font-weight: 600; color: #1d2033; }
+.lp-search { height: 34px; border: 1px solid var(--lp-line); border-radius: 8px; padding: 0 10px; font-size: 13px; min-width: 240px; }

@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui legacy rows: "+ New holiday calendar" top right; Edit / Delete on each row -->
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
 
@@ -16,20 +17,13 @@
             </div>
             <div class="col-md-5">
                 <div class="button-group pull-right">
-                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                    </mat-icon></span> Create</button>
+                    <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New holiday calendar</button>
                   <span *ngIf="!hasAddPermission"></span>
 
-                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                        <span class="header-btn-icon">
-                         <mat-icon>draw
-                    </mat-icon></span> Edit</button>
+                    
                     <span *ngIf="hasEditPermission"></span>
                     
-                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                        <span class="header-btn-icon">
-                            <mat-icon> delete
-                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                    
 
                        <span *ngIf="!hasDeletePermission"></span>
                 </div>
@@ -46,8 +40,9 @@
             <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
 
         </div>
-        <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete">Delete selected </button>
+        <div class="col-md-10">
+            <!-- v1.62.1 ui: one line like the lists' selection bar (the old Delete selected had no action) -->
+            <div class="zl-selrow" style="display:inline-flex;align-items:center;gap:10px;white-space:nowrap;margin-top:16px" *ngIf="selCount() > 0" data-hc-selbar><b>{{ selCount() }} selected</b><span class="zl-dot">·</span><button type="button" class="zl-btn danger" (click)="deleteSelectedAssetType()" data-hc-bulkdel>Delete selected</button><span class="zl-dot">·</span><button type="button" class="zl-link" (click)="clearSel()">Clear</button></div>
 
         </div>
     </div>
@@ -433,16 +428,14 @@
       <button
         mat-icon-button
         class="icon-btn edit-btn"
-        *ngIf="showEditBtn"
+        *ngIf="hasEditPermission"
         (click)="openEditModalCal(cal); $event.stopPropagation()">
         <mat-icon>edit</mat-icon>
       </button>
   
       <!-- CHECKBOX -->
-      <mat-checkbox
-        *ngIf="Delete"
-        [(ngModel)]="cal.selected">
-      </mat-checkbox>
+      <mat-checkbox *ngIf="hasDeletePermission" [(ngModel)]="cal.selected" (click)="$event.stopPropagation()" data-hc-tick></mat-checkbox>
+      <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(cal); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button><!-- v1.62.1 -->
   
       <!-- CHEVRON -->
       <button

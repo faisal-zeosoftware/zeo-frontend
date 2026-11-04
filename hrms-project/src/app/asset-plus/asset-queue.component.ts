@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ASSET_BASE, AssetApiService, STATUS_CLASS, STATUS_LABEL, firstOfMonth, money } from './asset-api.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 interface QueueDef {
   title: string;
@@ -19,7 +20,7 @@ const DEFS: Record<string, QueueDef> = {
     tabs: [{ key: 'pending', label: 'Waiting for approval' }, { key: 'completed', label: 'Completed' }, { key: 'rejected', label: 'Rejected' }, { key: '', label: 'All' }] },
   returns: { title: 'Returns', endpoint: 'returns/', intro: 'Employees who asked to give an asset back. Open the asset and use “Receive back” to record the check list.',
     tabs: [{ key: 'requested', label: 'Requested' }, { key: 'completed', label: 'Returned' }, { key: '', label: 'All' }] },
-  damages: { title: 'Damage', endpoint: 'damages/', intro: 'Decide who is responsible and how much is recovered. Payroll recovery creates monthly instalments for the deduction component (formula asset_recovery_amount).',
+  damages: { title: 'Damage', endpoint: 'damages/', intro: 'Decide who is responsible and how much is recovered. Payroll recovery creates monthly instalments that the payroll deducts with the asset recovery deduction.',
     tabs: [{ key: 'reported', label: 'Waiting for approval' }, { key: 'recovering', label: 'Being recovered' }, { key: 'closed', label: 'Closed' }, { key: 'rejected', label: 'Rejected' }, { key: '', label: 'All' }] },
   losses: { title: 'Lost and stolen', endpoint: 'losses/', intro: 'Lost or stolen assets with the police report and investigation. Mark an asset as found to put it back in the store and cancel open deductions.',
     tabs: [{ key: 'reported', label: 'Waiting for approval' }, { key: 'recovering', label: 'Being recovered' }, { key: 'closed', label: 'Closed' }, { key: 'rejected', label: 'Rejected' }, { key: '', label: 'All' }] },
@@ -27,9 +28,9 @@ const DEFS: Record<string, QueueDef> = {
     tabs: [{ key: 'pending', label: 'Waiting for approval' }, { key: 'approved', label: 'Disposed' }, { key: 'rejected', label: 'Rejected' }, { key: '', label: 'All' }] },
   maintenance: { title: 'Maintenance', endpoint: 'maintenance/', intro: 'Repairs, preventive services and inspections. Plans that are due are listed first; open an asset to start or complete work.',
     tabs: [{ key: 'due', label: 'Plans due' }, { key: 'open', label: 'In maintenance' }, { key: 'closed', label: 'Completed' }, { key: '', label: 'All records' }] },
-  allocations: { title: 'Allocations', endpoint: 'allocations/', intro: 'Who holds what. Filter the receipts employees have not confirmed yet and the assets that are overdue.',
+  allocations: { title: 'Allocations', endpoint: 'allocations/', intro: 'Who holds what. Filter the receipts employees have not confirmed yet and the assets that are overdue. A hand-over form the employee signs (Signed hand-over forms) confirms the receipt.',
     tabs: [{ key: 'open', label: 'Current' }, { key: 'pending', label: 'Receipt not confirmed' }, { key: 'overdue', label: 'Overdue' }, { key: '', label: 'All, incl. returned' }] },
-  recoveries: { title: 'Recovery instalments', endpoint: 'recoveries/', intro: 'Monthly salary deductions for damage and loss. The payroll takes the instalments due with a deduction component whose formula is asset_recovery_amount.',
+  recoveries: { title: 'Recovery instalments', endpoint: 'recoveries/', intro: 'Monthly salary deductions for damage and loss. The payroll takes the instalments that are due with the asset recovery deduction.',
     tabs: [{ key: 'pending', label: 'To be deducted' }, { key: 'deducted', label: 'Deducted' }, { key: '', label: 'All' }] },
 };
 
@@ -44,7 +45,7 @@ const DEFS: Record<string, QueueDef> = {
   <div class="comapny_section">
     <div class="header_section">
       <div class="ex-head"><div><h1 class="page-title">{{ d.title }}</h1><p class="ex-desc">{{ d.intro }}</p></div></div>
-      <div class="ex-tabs"><button type="button" *ngFor="let t of d.tabs" [class.on]="tab === t.key" (click)="setTab(t.key)">{{ t.label }}</button></div>
+      <div class="ex-tabs"><button type="button" *ngFor="let t of d.tabs" [class.on]="tab === t.key" (click)="setTab(t.key)" [attr.data-tab]="t.key || 'all'">{{ t.label }}<span class="ap-n" *ngIf="counts[t.key] !== undefined"> {{ counts[t.key] }}</span></button></div>
     </div>
     <div class="com_list mt-4">
       <p class="ex-msg" *ngIf="msg" [class.err]="msgErr">{{ msg }}</p>
@@ -81,7 +82,12 @@ const DEFS: Record<string, QueueDef> = {
           </tr>
         </tbody>
       </table>
-      <p class="ex-muted" *ngIf="!loading && !rows.length">Nothing here.</p>
+      <!-- v1.62.0 talent-ops: the empty state says where the records are and what to do -->
+      <div class="ap-empty" *ngIf="!loading && !rows.length" data-ap-empty>
+        <b>{{ emptyTitle() }}</b>
+        <span>{{ emptyHint() }}</span>
+        <span class="ap-other" *ngIf="otherTabs().length">See <button type="button" class="ex-link" *ngFor="let o of otherTabs(); let l = last" (click)="setTab(o.key)">{{ o.label }} ({{ counts[o.key] }}){{ l ? '' : ',' }}</button></span>
+      </div>
     </div>
   </div>
 </div>
@@ -129,6 +135,7 @@ export class AssetQueueComponent implements OnInit {
   f: any = {};
   asset: string | null = null;
   cols: { l: string; v: (x: any) => string; money?: boolean }[] = [];   // v1.16.0: table columns of this list
+  counts: Record<string, number> = {};   // v1.62.0 talent-ops: records per tab
 
   constructor(private api: AssetApiService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef) {}
 
@@ -140,7 +147,49 @@ export class AssetQueueComponent implements OnInit {
     this.tab = qp.get('status') ?? qp.get('ack') ?? this.d.tabs[0].key;
     if (this.asset && !qp.get('status')) this.tab = '';
     try { this.lk = await this.api.lookups(); this.r = this.lk.rights || {}; } catch { /* lists still load */ }
+    await this.countTabs();
+    // v1.62.0 talent-ops: without a tab asked for, open the first tab that has records (Maintenance opened on an empty "Plans due"
+    // while 14 records existed; Disposals on an empty "Pending" next to a done disposal)
+    if (!qp.get('status') && !qp.get('ack') && !this.asset && !this.counts[this.tab]) {
+      const first = this.d.tabs.find(t => t.key && this.counts[t.key]) || this.d.tabs.find(t => !t.key && this.counts[t.key]);
+      if (first) { this.tab = first.key; }
+    }
     await this.load();
+  }
+
+  /** v1.62.0 talent-ops: how many records each tab has (shown on the tab). */
+  async countTabs(): Promise<void> {
+    const res = await Promise.all(this.d.tabs.map(t => this.fetch(t.key).then(r => (r || []).length).catch(() => undefined)));
+    this.d.tabs.forEach((t, i) => { if (res[i] !== undefined) { this.counts[t.key] = res[i] as number; } });
+  }
+  otherTabs(): { key: string; label: string }[] { return this.d.tabs.filter(t => t.key !== this.tab && t.key && this.counts[t.key]); }
+  emptyTitle(): string {
+    const t = this.d.tabs.find(x => x.key === this.tab);
+    return this.tab ? `Nothing under “${t?.label || ''}”.` : `No ${this.d.title.toLowerCase()} yet.`;
+  }
+  emptyHint(): string {
+    return ({
+      transfers: 'Transfers start from an asset: open it in the register and use Transfer.',
+      returns: 'Returns start from the asset (Receive back) or from Exit clearance when an employee leaves.',
+      damages: 'Damage is reported from the asset or by the employee in self service.',
+      losses: 'A loss or theft is reported from the asset or by the employee in self service.',
+      disposals: 'Dispose of an asset from its record in the register (sale, scrap, donation or write-off).',
+      maintenance: 'Add a maintenance plan or record work from the asset record.',
+      allocations: 'Allocate an asset from its record in the register or from an approved asset request.',
+      recoveries: 'Instalments appear when damage or a loss is recovered from the salary.',
+    } as any)[this.kind] || '';
+  }
+  private fetch(tab: string): Promise<any[]> {
+    const q: any = { asset: this.asset };
+    if (this.kind === 'maintenance' && tab === 'due') { return this.api.get('schedules/', { due: 1, asset: this.asset }); }
+    if (this.kind === 'allocations') {
+      if (tab === 'open') q.open = 1;
+      if (tab === 'pending') { q.open = 1; q.ack = 'pending'; q.shared = 0; }
+      if (tab === 'overdue') { q.open = 1; q.overdue = 1; q.shared = 0; }
+      return this.api.get(this.d.endpoint, q);
+    }
+    if (tab) q.status = tab;
+    return this.api.get(this.d.endpoint, q);
   }
 
   setTab(k: string): void { this.tab = k; this.load(); }
@@ -236,7 +285,7 @@ export class AssetQueueComponent implements OnInit {
       const note = prompt('Where was it found? (optional)') ?? null;
       if (note === null) return;
       body = { note };
-    } else if (!confirm(`${action === 'cash-received' ? 'Record that the rest was paid in cash' : action[0].toUpperCase() + action.slice(1)} ${x.number}?`)) {
+    } else if (!(await zConfirm(`${action === 'cash-received' ? 'Record that the rest was paid in cash' : action[0].toUpperCase() + action.slice(1)} ${x.number}?`))) {
       return;
     }
     try {
@@ -252,20 +301,21 @@ export class AssetQueueComponent implements OnInit {
   async investigate(x: any): Promise<void> {
     const notes = prompt('Investigation update (what happened so far):');
     if (notes === null) return;
-    const closed = confirm('Close the investigation as “not found”? (Cancel = keep it open)');
+    const closed = (await zConfirm('Close the investigation as “not found”? (Cancel = keep it open)'));
     try {
       await this.api.post(`losses/${x.id}/investigation/`, { investigation_status: closed ? 'closed_not_found' : 'investigating', notes });
       this.ok('Investigation updated.');
     } catch (e: any) { this.msg = AssetApiService.error(e); this.msgErr = true; this.cd.markForCheck(); }
   }
 
-  ok(m: string): void { this.msg = m; this.msgErr = false; this.load(); }
+  ok(m: string): void { this.msg = m; this.msgErr = false; this.countTabs(); this.load(); }
   open(id: number): void { this.router.navigate([ASSET_BASE, 'register', id]); }
   m(v: any): string { return money(v); }
   abs(v: any): number { return Math.abs(+v || 0); }
   statusText(x: any): string {
     if (this.kind === 'maintenance' && x.title) return x.due === 'overdue' ? 'Overdue' : 'Due soon';
-    if (this.kind === 'allocations') return x.open ? (x.overdue ? 'Overdue' : (STATUS_LABEL[x.ack_status] || 'Shared')) : 'Returned';
+    // v1.62.0 talent-ops: the receipt state in words ("Waiting for approval" read as if the allocation needed an approval)
+    if (this.kind === 'allocations') return x.open ? (x.overdue ? 'Overdue' : (({ pending: 'Receipt not confirmed', accepted: 'Receipt confirmed', disputed: 'Confirmed with remarks', not_required: 'Issued' } as any)[x.ack_status] || 'Shared')) : 'Returned';
     return x.status_label || STATUS_LABEL[x.status] || x.status;
   }
   cls(x: any): string {

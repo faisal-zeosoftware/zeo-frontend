@@ -1,0 +1,27 @@
+/* v1.62.0 talent-ops – the payroll extra pages (provisions, loans, what-if, cost allocation, pay calendars, off-cycle, arrears)
+   get the card header of the newer screens: the title and its one-line description in a white card, the actions at the right,
+   instead of a giant bare H1 on the grey page. Component-scoped (each page lists this file), the shared leave-policy.css is
+   untouched. */
+.lp-page { max-width: 100%; }
+.lp-page > .lp-head { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(16, 24, 40, .08); border: 1px solid #eceef4;
+  padding: 18px 22px; margin: 0 0 16px; align-items: center; }
+.lp-page > .lp-head h1 { font-size: 22px; font-weight: 600; color: #1b1640; margin: 0; line-height: 1.25; }
+.lp-page > .lp-head h2 { font-size: 15px; }
+.lp-page > .lp-head .lp-desc { margin-top: 6px; font-size: 13px; line-height: 1.45; color: #6b7185; }
+.lp-page > .lp-head .lp-actions select, .lp-page > .lp-head .lp-actions input { height: 34px; border: 1px solid #dfe1ea; border-radius: 8px; padding: 0 10px; font-size: 13px; background: #fff; }
+.pp-seg { display: inline-flex; border: 1px solid #dfe1ea; border-radius: 8px; overflow: hidden; }
+.pp-seg button { border: 0; background: #fff; padding: 0 12px; height: 32px; font-size: 13px; color: #2b2f42; cursor: pointer; font-family: inherit; }
+.pp-seg button + button { border-inline-start: 1px solid #dfe1ea; }
+.pp-seg button.on { background: #5b4ff5; color: #fff; }
+.pp-chip { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; background: #efedff; color: #4338ca; white-space: nowrap; }
+.pp-chip.ok { background: #e8f7ef; color: #1f7a4d; } .pp-chip.warn { background: #fff4e5; color: #9a5b00; } .pp-chip.bad { background: #fff0f0; color: #b42318; }
+.pp-chip.muted { background: #f1f2f6; color: #5b6075; } .pp-chip.info { background: #e6f4fb; color: #0b6a93; }
+.pp-pick { border: 1px solid #cfd5dc; border-radius: 8px; width: 300px; max-width: 100%; background: #fff; }
+.pp-pick input.pp-q { width: 100%; border: 0; border-bottom: 1px solid #eef0f2; padding: 7px 9px; font-size: 13px; border-radius: 8px 8px 0 0; max-width: none; }
+.pp-pick .pp-list { max-height: 150px; overflow: auto; padding: 4px 0; }
+.pp-pick label.pp-opt { display: flex !important; flex-direction: row !important; align-items: center; gap: 8px; padding: 3px 10px; font-size: 13px !important; color: #2b2f42 !important; cursor: pointer; }
+.pp-pick label.pp-opt:hover { background: #f6f5ff; }
+.pp-pick .pp-sum { font-size: 12px; color: #5d6670; padding: 5px 10px; border-top: 1px solid #eef0f2; display: flex; justify-content: space-between; }
+.pp-pick .pp-sum button { border: 0; background: none; color: #4338ca; cursor: pointer; font-size: 12px; padding: 0; }
+.nw { white-space: nowrap; }
+.pp-field { display: flex; flex-direction: column; font-size: 12px; color: #5d6670; gap: 3px; }

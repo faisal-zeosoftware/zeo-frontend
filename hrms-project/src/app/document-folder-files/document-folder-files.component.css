@@ -403,3 +403,13 @@
 /*-------------Document ----x------- */
 
 /*------------- text  ----------- */
+
+/* v1.62.10 (item 168) */
+.ff-sub { margin: 2px 0 0; color: #6b7185; font-size: 13px; }
+.ff-link { color: #4b3fbf; font-weight: 600; text-decoration: none; }
+.ff-link:hover { text-decoration: underline; }
+.ff-act { white-space: nowrap; }
+.ff-act > * { vertical-align: middle; margin-inline-end: 4px; }
+a.z-row-btn.ff-open { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 1px solid #dfe1ea; border-radius: 7px; color: #3b3f55; text-decoration: none; }
+a.z-row-btn.ff-open mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.ff-empty { color: #6b7185; padding: 24px 0; }

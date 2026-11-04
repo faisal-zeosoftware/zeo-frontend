@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TPipe } from '../shared-ui/i18n.service';
 import { FLOW_CSS } from '../zeo-flow/flow.service';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.35.0 – Payroll → Accounting: payroll runs, month-end provisions, final settlements and expense claims as journals
@@ -512,7 +513,7 @@ export class AccountingComponent implements OnInit {
     this.cd.markForCheck();
   }
   async act(a: string) {
-    if (a === 'reverse' && !confirm('Make a reversing journal (debits and credits swapped)?')) { return; }
+    if (a === 'reverse' && !(await zConfirm('Make a reversing journal (debits and credits swapped)?'))) { return; }
     this.busy = true;
     try { const r = await firstValueFrom(this.http.post<any>(API + `journals/${this.cur.id}/${a}/`, {}, this.p())); this.ok(`${r.number}: ${r.status_name}`); await this.open(r.id); }
     catch (e) { this.fail(e); await this.open(this.cur.id); }
@@ -637,7 +638,7 @@ export class AccountingComponent implements OnInit {
     try { this.newSecret = await firstValueFrom(this.http.post<any>(API + 'clients/', { name: this.clientName }, this.p())); this.clientName = ''; this.loadClients(); }
     catch (e) { this.fail(e); }
   }
-  async delClient(id: number) { if (!confirm('Remove this application? Its tokens stop working.')) { return; } await firstValueFrom(this.http.delete(API + `clients/${id}/`, this.p())); this.loadClients(); }
+  async delClient(id: number) { if (!(await zConfirm('Remove this application? Its tokens stop working.'))) { return; } await firstValueFrom(this.http.delete(API + `clients/${id}/`, this.p())); this.loadClients(); }
   async addHook() {
     try { const r = await firstValueFrom(this.http.post<any>(API + 'hooks/', { url: this.hookUrl }, this.p())); this.ok(`Webhook added – signing secret ${r.secret}`); this.hookUrl = ''; this.loadClients(); }
     catch (e) { this.fail(e); }

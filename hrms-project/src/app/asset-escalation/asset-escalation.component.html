@@ -1,3 +1,4 @@
+<!-- v1.62.0 talent-ops: escalation per asset type in words; types approved automatically on one line (no rows of zeros) -->
 <!-- v1.62.0 ui: wording (Escalate to / Escalate after (minutes)) -->
 
 <div class="container" *ngIf="hasViewPermission">
@@ -5,75 +6,17 @@
 
 
         <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1> Asset escalation</h1>
-                </div>
-
-                           <div class="col-md-3">
-                    
-<div class="search-container">
-<input
-  type="text"
-  class="search-input"
-  placeholder="Search..."
-  [(ngModel)]="searchQuery"
-  [ngModelOptions]="{standalone: true}"
-  (ngModelChange)="onSearchChange()"
->
-
-    <button class="search-btn" type="button">
-        <i class="fa fa-search"></i>
-    </button>
-</div>
-
-  </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
-                      <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                    <button type="button" class="btn-Delete btn btn-warning" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                    <span class="header-btn-icon">
-                    <mat-icon>settings_backup_restore</mat-icon>
-                     </span>
-                   {{ Delete ? 'Cancel' : 'Reset' }}
-                   </button>
-
-                           <span *ngIf="!hasDeletePermission"></span>
-                    </div>
-                </div>
-            </div>
-           
-           
-
+      <div class="at-head">
+        <div>
+          <h1 class="page-title">Asset request escalation</h1>
+          <p class="at-desc">When an asset request waits too long at a level, it moves to the person named here. Asset types approved automatically have nothing to escalate.</p>
         </div>
-
- <div class="row">
-    <div class="col-md-2">
-        <button class="mt-3 btn-warning btn" style="width: 100%;" *ngIf="Delete" (click)="toggleSelectAllEmployees()">
-            Select all
-        </button>
+        <div class="at-actions">
+          <button type="button" class="at-btn" (click)="lnGo('asset-approval-level')">{{ ln.t('Approval levels') }}</button>
+          <button type="button" class="at-btn primary" *ngIf="hasAddPermission" (click)="openPopus()">+ {{ ln.t('Set escalation') }}</button>
+        </div>
+      </div>
     </div>
-
-    <div class="col-md-3">
-        <button class="mt-3 btn-warning btn" *ngIf="Delete" (click)="resetSelectedGeneralReq()">
-            Reset selected
-        </button>
-    </div>
- </div>
-
-      
-
-      
-
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
               <div class="row">
@@ -298,97 +241,26 @@
 
 
 
-  <div class="com_list mt-4" *ngIf="hasViewPermission">
-    <div style="overflow-x: auto; width: 100%;">
-    <table width="100%">
-    <thead class="thead-dark">
-      <tr>
-        <th class="sticky-left">No</th>
-        <th>Approval level</th>
-        <th>Approver</th>
-        <th>Escalate to</th>
-        <th>Escalate after days</th>
-        <th>Escalate after hour</th>
-        <th>Escalate after (minutes)</th>
+  <div class="com_list mt-4" data-ln-escalation>
+      <p class="at-muted" *ngIf="isLoading">{{ ln.t('Loading…') }}</p>
+      <div class="at-empty" *ngIf="!isLoading && !lnTypes.length && !lnAuto.length"><b>{{ ln.t('No approval level yet') }}</b>{{ ln.t('Set up the asset approval levels first; escalation is set per level.') }}</div>
+      <section class="at-group" *ngFor="let g of lnTypes" [attr.data-type]="g.type">
+        <header><div><b data-no-translate>{{ g.type }}</b><small>{{ g.branches }}</small></div></header>
+        <div class="at-line" *ngFor="let l of g.levels" [attr.data-level]="l.id" data-no-translate>
+          <span class="k">{{ ln.t('Level {0}', [l.level]) }}</span>
+          <span class="v">{{ l.approver_name || (l.role === 'Reporting Manager' ? ln.t("The employee's reporting manager") : l.role) || ln.t('Not set') }}</span>
+          <span class="m">{{ ln.escalation({ days: l.escalate_after_days, hours: l.escalate_after_hours, minutes: l.escalate_after_minutes, escalate_to: l.escalate_to_name }) }}</span>
+          <span class="at-acts">
+            <button type="button" class="at-btn sm" *ngIf="hasEditPermission" (click)="openEditModal(l)">{{ ln.t(l.escalate_after_days || l.escalate_after_hours || l.escalate_after_minutes || l.escalate_to ? 'Edit' : 'Set escalation') }}</button>
+            <button type="button" class="at-btn sm danger" *ngIf="hasDeletePermission && (l.escalate_after_days || l.escalate_after_hours || l.escalate_after_minutes || l.escalate_to)" (click)="resetSingleReq(l.id)">{{ ln.t('Turn off') }}</button>
+          </span>
+        </div>
+      </section>
+      <section class="at-group" *ngIf="lnAuto.length" data-auto>
+        <header><div><b>{{ ln.t('Approved automatically') }}</b><small>{{ ln.t('No approver, so nothing to escalate') }}</small></div></header>
+        <div class="at-line"><span class="k">{{ ln.t('{0} asset types', [lnAuto.length]) }}</span><span class="v" data-no-translate>{{ lnAuto.join(', ') }}</span><span class="m"></span><span></span></div>
+      </section>
 
-
-        <th class="sticky-right">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-     <tr *ngFor="let docs of filteredGeneralReq; let i = index">
-        <td class="sticky-left" data-label="No">
-          {{ (currentPage - 1) * pageSize + i + 1 }}
-        </td> 
-        
-        <td data-label="Approval level">{{ docs.level }}</td>
-
-        <td data-label="Approver">{{ docs.approver_name }}</td>
-
-        <td data-label="Escalate to">{{ docs.escalate_to_name }}</td>
-
-        <td data-label="Escalate After Days">{{ docs.escalate_after_days }}</td>
-
-        <td data-label="Escalate After Hour">{{ docs.escalate_after_hours }}</td>
-
-        <td data-label="Escalate after (minutes)">{{ docs.escalate_after_minutes }}</td>
-
-       
-         <td class="sticky-right" data-label="Actions">
-          <button
-            mat-fab
-            color="primary"
-            aria-label="Edit"
-            *ngIf="showEditBtn"
-            (click)="openEditModal(docs)"
-            style="transform: scale(0.7); margin-right: 6px;"
-          >
-            <mat-icon style="color: white;">draw</mat-icon>
-          </button>
-
-<button
-    mat-fab
-    color="warn"
-    aria-label="Reset"
-    *ngIf="Delete"
-    (click)="resetSingleReq(docs.id)"
-    style="transform: scale(0.7); margin-right: 6px;"
->
-    <mat-icon>settings_backup_restore</mat-icon>
-</button>
-
-<mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-                  <div class="pagination-container">
-
-  <button
-    type="button"
-    class="page-btn"
-    (click)="previousPage()"
-    [disabled]="currentPage === 1">
-    Previous
-  </button>
-
-  <!-- Current Page Only -->
-  <button
-    type="button"
-    class="page-number active">
-    {{ currentPage }}
-  </button>
-
-<button
-  type="button"
-  class="page-btn"
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages">
-  Next
-</button>
-</div>
 
 </div>
 

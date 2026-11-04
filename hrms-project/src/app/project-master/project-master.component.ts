@@ -14,6 +14,7 @@ import { MatSelect } from '@angular/material/select';
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { statusLabel } from '../shared-ui/status-label';   // v1.15.1
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
   selector: 'app-project-master',
@@ -720,7 +721,7 @@ openEditModal(project: any): void {
 
 
 
-  deleteSelectedProject() {
+  async deleteSelectedProject() {
     const selectedEmployeeIds = this.LoanTypes
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -730,7 +731,7 @@ openEditModal(project: any): void {
       return;
     }
 
-    if (confirm('Are you sure you want to delete the selected Project ?')) {
+    if ((await zConfirm('Are you sure you want to delete the selected Project ?'))) {
 
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -838,5 +839,10 @@ filterMembers(): any[] {
   );
 }
 
-
+  /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
+  zDeleteRow(row: any): void {
+    for (const v of Object.values(this as any)) { if (Array.isArray(v)) { for (const r of v) { if (r && typeof r === 'object' && r !== row && (r as any).selected) { (r as any).selected = false; } } } }
+    row.selected = true;
+    (this as any).deleteSelectedProject();
+  }
 }

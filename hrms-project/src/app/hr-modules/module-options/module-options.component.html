@@ -28,6 +28,8 @@
       <button type="button" class="mobile-submenu-fab" *ngIf="isMobile && !isMenuOpen" (click)="toggleSidebarMenu()" aria-label="Open submenu">
         <mat-icon>menu</mat-icon>
       </button>
+      <!-- v1.62.1 a new company still being set up: the friendly notice on the employee's self service -->
+      <z-setup-gate-notice *ngIf="base === '/main-sidebar/self-service'" mode="employee"></z-setup-gate-notice>
       <router-outlet></router-outlet>
     </main>
   </mat-sidenav-container>

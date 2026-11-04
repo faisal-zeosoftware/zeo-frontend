@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.16.0
 import { ASSET_BASE, AssetApiService, STATUS_CLASS, STATUS_LABEL, money } from './asset-api.service';
 import { AssetFormComponent } from './asset-form.component';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /** Asset register (v1.12.0): every asset with code, status (incl. lost), holder, branch and book value; filters; new asset. */
 @Component({
@@ -132,7 +133,7 @@ export class AssetRegisterComponent implements OnInit {
     catch (e: any) { this.msg = AssetApiService.error(e, 'The asset could not be opened.'); this.msgErr = true; this.cd.markForCheck(); }
   }
   async remove(a: any): Promise<void> {
-    if (!confirm(`Delete ${a.code} – ${a.name}? Only an asset without allocations, requests or maintenance can be deleted.`)) return;
+    if (!(await zConfirm(`Delete ${a.code} – ${a.name}? Only an asset without allocations, requests or maintenance can be deleted.`))) return;
     try { await this.api.delete(`assets/${a.id}/`); this.note('Asset deleted.'); await this.load(); }
     catch (e: any) { this.msg = AssetApiService.error(e, 'The asset could not be deleted.'); this.msgErr = true; this.cd.markForCheck(); }
   }

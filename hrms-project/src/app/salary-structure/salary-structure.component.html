@@ -1,3 +1,4 @@
+<!-- v1.62.0 ui legacy rows: "+ New salary structure" top right; Edit / Delete on each row -->
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
   
@@ -9,25 +10,18 @@
             <div class="col-md-7">
                 <h1>Salary structures</h1>
                 <!-- v1.62.0 payroll: one-line description -->
-                <p class="lp-desc" style="margin:6px 0 0;color:#6b7185;font-size:13px">The set of salary components each kind of employee gets; the amounts stay those of each employee (Employee salary).</p>
+                <p class="lp-desc" style="margin:6px 0 0;color:#6b7185;font-size:13px;text-align:left">The set of salary components each kind of employee gets; the amounts stay those of each employee (Employee salary).</p>
             </div>
   
             <div class="col-md-5">
                 <div class="button-group pull-right">
-                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                    </mat-icon></span> Create</button>
+                    <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New salary structure</button>
                   <span *ngIf="!hasAddPermission"></span>
   
-                    <button type="button" class="btn-Edit btn-info btn" disabled  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                        <span class="header-btn-icon">
-                         <mat-icon>draw
-                    </mat-icon></span> Edit</button>
+                    
                     <span *ngIf="hasEditPermission"></span>
                     
-                    <button type="button" class="btn-Delete btn btn-danger" disabled (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                        <span class="header-btn-icon">
-                            <mat-icon> delete
-                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                    
   
                        <span *ngIf="!hasDeletePermission"></span>
                 </div>
@@ -344,24 +338,33 @@
     
         </table>
     
-<div class="pagination-container" *ngIf="totalPages > 1">
+<!-- v1.62.1 (tester 30-10 item 202): employee cards paged in the Create and the Edit form – 10 a page (was 50, so the
+     pager only showed in a company with more than 50 employees), rows per page, "x–y of N" -->
+<div class="pagination-container ss-emp-pager" *ngIf="empTotal > 0" data-ss-emp-pager>
+
+    <span class="ss-emp-range">{{ empRangeText() }}</span>
+    <label class="ss-emp-per">{{ 'Rows per page' | t }}
+      <select [ngModel]="itemsPerPage" (ngModelChange)="setEmpPageSize($event)" [ngModelOptions]="{standalone: true}">
+        <option [ngValue]="10">10</option><option [ngValue]="25">25</option><option [ngValue]="50">50</option>
+      </select>
+    </label>
 
     <button
         class="page-btn"
         (click)="previousPage()"
         [disabled]="currentPage === 1">
-        Previous
+        {{ 'Previous' | t }}
     </button>
 
     <button class="page-number active">
-        {{ currentPage }} / {{ totalPages }}
+        {{ currentPage }} / {{ totalPages || 1 }}
     </button>
 
     <button
         class="page-btn"
         (click)="nextPage()"
         [disabled]="currentPage === totalPages">
-        Next
+        {{ 'Next' | t }}
     </button>
 
 </div>
@@ -491,23 +494,24 @@
       </table>
   
       <!-- Pagination -->
-<div class="pagination-container" *ngIf="totalPages > 0">
+<!-- v1.62.1: the list of structures pages with its own page (it used the employee pager of the form) -->
+<div class="pagination-container" *ngIf="totalDocPages > 1">
 
     <button
         class="page-btn"
-        (click)="previousPage()"
-        [disabled]="currentPage === 1">
+        (click)="previousDocPage()"
+        [disabled]="currentDocPage === 1">
         Previous
     </button>
 
     <button class="page-number active">
-        {{ currentPage }}
+        {{ currentDocPage }}
     </button>
 
     <button
         class="page-btn"
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages">
+        (click)="nextDocPage()"
+        [disabled]="currentDocPage === totalDocPages">
         Next
     </button>
 

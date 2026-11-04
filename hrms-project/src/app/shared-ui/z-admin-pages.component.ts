@@ -10,6 +10,7 @@ import { BrowserQRCodeSvgWriter } from '@zxing/browser';
 import { ZRecordService } from './z-record.service';
 import { httpErrorText } from './z-http-error.interceptor';
 import { TPipe, ZDatePipe, i18nT } from './i18n.service';   // v1.53.1 Arabic
+import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 /**
  * v1.52.0 – administration pages:
@@ -48,7 +49,9 @@ export const ZAD_STYLES = `.zad { padding: 16px 20px; max-width: 1150px; } .zad 
   .zad-h.ok { border-inline-start-color: #2e9a57; } .zad-h.warn { border-inline-start-color: #d9a400; } .zad-h.bad { border-inline-start-color: #c63c2f; }
   .zad-h b { display: block; font-size: 13.5px; margin-bottom: 2px; } .zad-h .t { font-size: 13px; } .zad-h .d { font-size: 12px; color: #5d6670; margin-top: 3px; word-break: break-word; }
   .zad-tabs { display: flex; gap: 4px; border-bottom: 1px solid #e3e6ea; margin: 10px 0 14px; } .zad-tabs button { border: 0; background: none; padding: 8px 12px; cursor: pointer; font-size: 13.5px; color: #5d6670; border-bottom: 2px solid transparent; }
-  .zad-tabs button.on { color: #1f2433; border-bottom-color: #5b4fe0; font-weight: 600; }`;
+  .zad-tabs button.on { color: #1f2433; border-bottom-color: #5b4fe0; font-weight: 600; }
+  .zad-rules { margin: 4px 0 10px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+  .zad-rule { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }`;   // v1.62.11 (item 95)
 
 function schemaQ(): string { return `schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`; }
 
@@ -153,9 +156,12 @@ export abstract class ZAdminBase {
     <ng-template #noA><p class="zad-muted">No alerts.</p></ng-template>
   </section>
 
-  <section class="zad-card" data-ooo>
+  <section class="zad-card" data-ooo>   <!-- v1.62.11 (item 95): colleagues per approval type, automatic rows, give back -->
     <h3><mat-icon>beach_access</mat-icon>Out of office</h3>
     <p class="zad-muted">{{ 'While you are away, your approvals ({0}) go to a colleague. Approvals already waiting for you move too.' | t:[kindsText()] }}</p>
+    <p class="zad-warn" [class.info]="ooo?.auto?.on" *ngIf="ooo" data-ooo-auto-note style="background:#eef4fb;color:#1f4e79">{{ (ooo.auto?.on
+      ? 'Your company sets out of office for you when your leave is approved – you can still set it here for other absences, or to choose the colleagues.'
+      : 'Your company does not set out of office by itself when your leave is approved: mark it here before you go.') | t }}</p>
     <div class="zad-grid">
       <label>Colleague who approves for you<select [(ngModel)]="nf.delegate_id" data-ooo-delegate><option [ngValue]="null">Choose…</option>
         <option *ngFor="let u of ooo?.users || []" [ngValue]="u.id">{{ u.name }}</option></select></label>
@@ -163,13 +169,36 @@ export abstract class ZAdminBase {
       <label>To<input type="date" [(ngModel)]="nf.end_date" data-ooo-to></label>
       <label>Note<input [(ngModel)]="nf.note" maxlength="255" placeholder="Annual leave"></label>
     </div>
+    <div class="zad-rules" data-ooo-rules>
+      <div class="zad-rule" *ngFor="let r of nf.rules; let i = index" [attr.data-ooo-rule]="i">
+        <span class="zad-muted">{{ 'For' | t }}</span>
+        <select [(ngModel)]="r.kind" (ngModelChange)="r.leave_type_id = null" data-ooo-rule-kind><option [ngValue]="null">{{ 'Approval type…' | t }}</option>
+          <option *ngFor="let k of ooo?.kind_list || []" [ngValue]="k.key">{{ k.label | t }}</option></select>
+        <select *ngIf="r.kind === 'leave'" [(ngModel)]="r.leave_type_id" data-ooo-rule-lt><option [ngValue]="null">{{ 'Every leave type' | t }}</option>
+          <option *ngFor="let t of ooo?.leave_types || []" [ngValue]="t.id">{{ t.name }}</option></select>
+        <span class="zad-muted">→</span>
+        <select [(ngModel)]="r.delegate_id" data-ooo-rule-user><option [ngValue]="null">{{ 'Colleague…' | t }}</option>
+          <option *ngFor="let u of ooo?.users || []" [ngValue]="u.id">{{ u.name }}</option></select>
+        <button type="button" class="zad-btn sm danger" (click)="nf.rules.splice(i, 1)" [attr.aria-label]="'Remove' | t">×</button>
+      </div>
+      <button type="button" class="zad-btn sm" (click)="nf.rules.push({ kind: null, leave_type_id: null, delegate_id: null })" data-ooo-add-rule>{{ '+ Add a different colleague for …' | t }}</button>
+      <p class="zad-muted" style="margin:4px 0 0">{{ 'The most specific wins: a leave type, then an approval type, then the stand-in HR set on the workflow level, then the colleague above.' | t }}</p>
+    </div>
     <label class="zad-chk"><input type="checkbox" [(ngModel)]="nf.include_pending"> Also move the approvals waiting for me now</label>
+    <label class="zad-chk"><input type="checkbox" [(ngModel)]="nf.give_back" data-ooo-give-back> Give the waiting approvals back to me when I'm back</label>
+    <label class="zad-chk"><input type="checkbox" [(ngModel)]="nf.keep" data-ooo-keep> Keep these colleagues for next time (My stand-ins – also used when my leave is approved)</label>
+    <p class="zad-msg err" *ngIf="ruleErr" data-ooo-rule-error>{{ ruleErr }}</p>
+    <p class="zad-warn" *ngFor="let w of warns" data-ooo-warning>{{ 'Saved – but {0} may not have the right to approve {1}.' | t:[w.name, (w.label | t)] }}</p>
     <div class="zad-act"><button type="button" class="zad-btn primary" (click)="addOoo()" [disabled]="busy || !nf.delegate_id || !nf.start_date || !nf.end_date" data-ooo-save>Save</button></div>
-    <table class="zad-t" *ngIf="ooo?.mine?.length" style="margin-top:10px">
-      <tr><th>From</th><th>To</th><th>Colleague</th><th>Moved</th><th>State</th><th></th></tr>
-      <tr *ngFor="let o of ooo.mine"><td>{{ o.start_date | date:'dd/MM/yyyy' }}</td><td>{{ o.end_date | date:'dd/MM/yyyy' }}</td><td>{{ o.delegate }}</td><td>{{ o.moved }}</td>
-        <td><span class="zad-pill" [class.ok]="o.state === 'now'">{{ o.state }}</span></td>
-        <td><button type="button" class="zad-btn sm" *ngIf="o.state !== 'ended'" (click)="endOoo(o)">{{ o.state === 'planned' ? 'Cancel' : 'I am back' }}</button></td></tr>
+    <table class="zad-t" *ngIf="ooo?.mine?.length" style="margin-top:10px" data-ooo-rows>
+      <tr><th>From</th><th>To</th><th>Colleague</th><th>Set by</th><th>Moved</th><th>Back on</th><th>State</th><th></th></tr>
+      <tr *ngFor="let o of ooo.mine" [attr.data-ooo-row]="o.id"><td>{{ o.start_date | date:'dd/MM/yyyy' }}</td><td>{{ o.end_date | date:'dd/MM/yyyy' }}</td>
+        <td>{{ o.delegate }}<div class="zad-muted" *ngFor="let r of o.rules">{{ ruleText(r) }}</div></td>
+        <td><span class="zad-pill" [class.ok]="o.automatic" data-ooo-source>{{ (o.automatic ? 'Leave {0}' : 'Me') | t:[o.leave_number] }}</span></td>
+        <td>{{ o.moved }}<span class="zad-muted" *ngIf="o.returned"> · {{ '{0} back' | t:[o.returned] }}</span></td>
+        <td>{{ o.back_on ? (o.back_on | date:'dd/MM/yyyy') : (o.give_back ? '' : ('Stay with the colleague' | t)) }}</td>
+        <td><span class="zad-pill" [class.ok]="o.state === 'now'">{{ stateText(o.state) | t }}</span></td>
+        <td><button type="button" class="zad-btn sm" *ngIf="o.state === 'now' || o.state === 'planned'" (click)="endOoo(o)">{{ o.state === 'planned' ? 'Cancel' : 'I am back' }}</button></td></tr>
     </table>
     <p *ngIf="ooo?.for_me?.length" class="zad-muted" style="margin-top:10px" data-ooo-forme>You approve for:
       <span *ngFor="let o of ooo.for_me; let l = last">{{ o.user }} ({{ o.start_date | date:'d MMM' }} – {{ o.end_date | date:'d MMM' }}){{ l ? '' : ', ' }}</span></p>
@@ -180,8 +209,21 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   @ViewChild('qr') qr?: ElementRef<HTMLDivElement>;
   tf: any = null; setup: any = null; code = ''; codes: string[] = []; sessions: any[] = []; ooo: any = null; ask: string[] = [];
   alerts: any[] = []; alertsOpen = 0;   // v1.61.0
-  nf: any = { delegate_id: null, start_date: '', end_date: '', note: '', include_pending: true };
+  nf: any = this.blank();
+  ruleErr = ''; warns: any[] = [];   // v1.62.11 (item 95)
   constructor(http: HttpClient, rec: ZRecordService, cd: ChangeDetectorRef) { super(http, rec, cd); }
+  // v1.62.11 (item 95): the form starts from My stand-ins; give back follows the company's rule
+  blank(): any {
+    const st = this.ooo?.standins;
+    return { delegate_id: st?.delegate_id || null, start_date: '', end_date: '', note: '', include_pending: true, give_back: this.ooo?.auto?.give_back !== false, keep: false,
+      rules: (st?.rules || []).map((r: any) => ({ kind: r.kind, leave_type_id: r.leave_type_id || null, delegate_id: r.delegate_id })) };
+  }
+  ruleText(r: any): string {
+    const k = (this.ooo?.kind_list || []).find((x: any) => x.key === r.kind)?.label || r.kind;
+    const lt = r.leave_type_id ? (this.ooo?.leave_types || []).find((x: any) => x.id === r.leave_type_id)?.name : '';
+    return `${i18nT(k)}${lt ? ' – ' + lt : ''} → ${r.delegate || ''}`;
+  }
+  stateText(s: string): string { return ({ now: 'Now', planned: 'Planned', ended: 'Ended', cancelled: 'Cancelled' } as any)[s] || s; }
   async ngOnInit(): Promise<void> {
     try { this.ask = (sessionStorage.getItem('zeo_security_ask') || '').split(',').filter(x => x); } catch { this.ask = []; }
     await Promise.all([this.loadTf(), this.loadSessions(), this.loadOoo(), this.loadAlerts()]);
@@ -191,7 +233,7 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
     this.cd.markForCheck();
   }
   async answer(a: any, ans: 'was_me' | 'not_me'): Promise<void> {
-    if (ans === 'not_me' && !confirm('Sign out of ZEO everywhere (also here) and change your password at the next sign-in?')) { return; }
+    if (ans === 'not_me' && !(await zConfirm('Sign out of ZEO everywhere (also here) and change your password at the next sign-in?'))) { return; }
     if (await this.act(async () => { await this.post('/users/security/alerts/', { id: a.id, answer: ans }); }, ans === 'was_me' ? 'Thank you – noted.' : 'Every sign-in is ended. Sign in again and choose a new password.')) {
       if (ans === 'not_me') { setTimeout(() => { try { localStorage.removeItem('auth_token'); } catch { /* storage */ } window.location.href = '/login'; }, 1500); return; }
       await this.loadAlerts();
@@ -200,7 +242,11 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   async loadTf(): Promise<void> { try { this.tf = await this.get('/users/2fa/'); } catch (e) { this.say(httpErrorText(e), true); } this.cd.markForCheck(); }
   async loadSessions(): Promise<void> { try { this.sessions = (await this.get('/users/sessions/')).active || []; } catch { this.sessions = []; } this.cd.markForCheck(); }
   kindsText(): string { return (this.ooo?.kinds || []).map((k: string) => i18nT(k)).join(', '); }
-  async loadOoo(): Promise<void> { try { this.ooo = await this.get('/zeo-admin/api/out-of-office/'); } catch { this.ooo = null; } this.cd.markForCheck(); }
+  async loadOoo(): Promise<void> {
+    try { this.ooo = await this.get('/zeo-admin/api/out-of-office/'); } catch { this.ooo = null; }
+    if (!this.nf.start_date && !this.nf.rules?.length) { this.nf = this.blank(); }   // v1.62.11 (item 95)
+    this.cd.markForCheck();
+  }
   async startSetup(): Promise<void> {
     await this.act(async () => {
       this.setup = await this.post('/users/2fa/', { action: 'setup' }); this.code = ''; this.cd.detectChanges();
@@ -217,11 +263,11 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   }
   async newCodes(): Promise<void> { if (await this.act(async () => { this.codes = (await this.post('/users/2fa/', { action: 'recovery', code: this.code.trim() })).recovery_codes || []; }, 'New recovery codes made – the old ones no longer work.')) { this.code = ''; await this.loadTf(); } }
   async disable(): Promise<void> {
-    if (!confirm('Switch off the authenticator app? Signing in needs only your password (and the e-mail code) again.')) { return; }
+    if (!(await zConfirm('Switch off the authenticator app? Signing in needs only your password (and the e-mail code) again.'))) { return; }
     if (await this.act(() => this.post('/users/2fa/', { action: 'disable', code: this.code.trim() }), 'The authenticator app is off.')) { this.code = ''; await this.loadTf(); }
   }
   async clearHistory(): Promise<void> {
-    if (!confirm('Clear your recently viewed records and your searches?')) { return; }
+    if (!(await zConfirm('Clear your recently viewed records and your searches?'))) { return; }
     await this.act(async () => {
       const r = await this.post('/zeo-admin/api/history/mine/', {});
       try { Object.keys(localStorage).filter(k => /search|recent|zl-q|zlist.*q/i.test(k)).forEach(k => localStorage.removeItem(k)); } catch { /* storage */ }
@@ -232,15 +278,27 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   copyCodes(): void { try { navigator.clipboard.writeText(this.codes.join('\n')); this.say('Copied.'); } catch { this.say('Select the codes and copy them.', true); } }
   async endOne(s: any): Promise<void> { if (await this.act(() => this.post('/users/sessions/', { action: 'end', id: s.id }), 'Signed out there.')) { await this.loadSessions(); } }
   async endOthers(): Promise<void> {
-    if (!confirm('Sign out of ZEO on every other browser and phone?')) { return; }
+    if (!(await zConfirm('Sign out of ZEO on every other browser and phone?'))) { return; }
     if (await this.act(async () => { const r = await this.post('/users/sessions/', { action: 'end_others' }); this.say(`${r.ended} sign-in(s) ended.`); })) { await this.loadSessions(); }
   }
   async addOoo(): Promise<void> {
-    if (await this.act(async () => { const r = await this.post('/zeo-admin/api/out-of-office/', this.nf); this.say(`Saved. ${r.moved_now} waiting approval(s) moved to ${r.delegate}.`); })) {
-      this.nf = { delegate_id: null, start_date: '', end_date: '', note: '', include_pending: true }; await this.loadOoo();
+    this.ruleErr = ''; this.warns = [];
+    const rules = (this.nf.rules || []).filter((r: any) => r.kind || r.delegate_id);   // v1.62.11 (item 95)
+    if (rules.some((r: any) => !r.kind || !r.delegate_id)) { this.ruleErr = i18nT('Choose the approval type and the colleague of each line, or remove the line.'); this.cd.markForCheck(); return; }
+    if (await this.act(async () => {
+      const r = await this.post('/zeo-admin/api/out-of-office/', { ...this.nf, rules });
+      this.warns = r.warnings || [];
+      this.say(i18nT('Saved. {0} waiting approval(s) moved.', [r.moved_now]));
+    })) {
+      this.nf = { ...this.blank(), delegate_id: null, rules: [] }; await this.loadOoo(); this.nf = this.blank();
     }
   }
-  async endOoo(o: any): Promise<void> { if (await this.act(() => this.del(`/zeo-admin/api/out-of-office/${o.id}/`), 'Ended.')) { await this.loadOoo(); } }
+  async endOoo(o: any): Promise<void> {
+    if (await this.act(async () => {
+      const r: any = await this.del(`/zeo-admin/api/out-of-office/${o.id}/`);
+      this.say(r && r.returned !== undefined ? i18nT('Welcome back. {0} approval(s) that were still waiting came back to you.', [r.returned]) : i18nT('Ended.'));
+    })) { await this.loadOoo(); }
+  }
 }
 
 /* ------------------------------------------------------------------------------------------------ sign-in security */
@@ -416,14 +474,14 @@ export class ZSignInSecurityComponent extends ZAdminBase implements OnInit {
   async save(): Promise<void> { await this.act(async () => { this.p = await this.put('/users/security/policy/', this.p); }, 'The sign-in rules are saved.'); }
   async userAct(u: any, action: string): Promise<void> {
     const ask: any = { end_sessions: `Sign ${u.name} out everywhere?`, reset_2fa: `Reset the authenticator app of ${u.name}? They set it up again at the next sign-in.` };
-    if (ask[action] && !confirm(ask[action])) { return; }
+    if (ask[action] && !(await zConfirm(ask[action]))) { return; }
     if (await this.act(async () => { const r = await this.post('/users/security/users/', { user_id: u.id, action }); this.say(r.detail); })) { await this.load(); }
   }
   async viewAs(u: any): Promise<void> {
-    const ro = confirm(`View ZEO as ${u.name}?\n\nOK = read only (nothing can be changed)\nCancel = choose whether changes are allowed`);
+    const ro = (await zConfirm(`View ZEO as ${u.name}?\n\nOK = read only (nothing can be changed)\nCancel = choose whether changes are allowed`));
     let readOnly = true;
     if (!ro) {
-      if (!confirm(`Allow changes while viewing as ${u.name}? Every change is recorded as made by you as this user.\n\nOK = allow changes, Cancel = stop`)) { return; }
+      if (!(await zConfirm(`Allow changes while viewing as ${u.name}? Every change is recorded as made by you as this user.\n\nOK = allow changes, Cancel = stop`))) { return; }
       readOnly = false;
     }
     await this.act(async () => {
@@ -601,7 +659,7 @@ export class ZIntegrationsComponent extends ZAdminBase implements OnInit {
     }
   }
   async toggleKey(k: any): Promise<void> { if (await this.act(() => this.patch(`/zeo-admin/api/api-keys/${k.id}/`, { active: !k.active }))) { await this.loadKeys(); } }
-  async delKey(k: any): Promise<void> { if (!confirm(`Delete the key "${k.name}"? Systems using it stop at once.`)) { return; } if (await this.act(() => this.del(`/zeo-admin/api/api-keys/${k.id}/`), 'Deleted.')) { await this.loadKeys(); } }
+  async delKey(k: any): Promise<void> { if (!(await zConfirm(`Delete the key "${k.name}"? Systems using it stop at once.`))) { return; } if (await this.act(() => this.del(`/zeo-admin/api/api-keys/${k.id}/`), 'Deleted.')) { await this.loadKeys(); } }
   resetHook(): void { this.hf = { name: '', url: '', models_list: [], events: ['created', 'updated'] }; }
   editHook(h: any): void { this.hf = { id: h.id, name: h.name, url: h.url, models_list: [...h.models_list], events: [...h.events], new_secret: false }; this.cd.markForCheck(); }
   async saveHook(): Promise<void> {
@@ -609,7 +667,7 @@ export class ZIntegrationsComponent extends ZAdminBase implements OnInit {
   }
   async testHook(h: any): Promise<void> { await this.act(async () => { const r = await this.post(`/zeo-admin/api/webhooks/${h.id}/test/`); this.say(`Test: ${r.status} ${r.code || ''} ${r.response || ''}`.trim(), r.status !== 'sent'); }); await this.loadHooks(); }
   async toggleHook(h: any): Promise<void> { if (await this.act(() => this.post('/zeo-admin/api/webhooks/', { id: h.id, active: !h.active }))) { await this.loadHooks(); } }
-  async delHook(h: any): Promise<void> { if (!confirm(`Delete the webhook "${h.name}"?`)) { return; } if (await this.act(() => this.del(`/zeo-admin/api/webhooks/${h.id}/`), 'Deleted.')) { this.log = null; await this.loadHooks(); } }
+  async delHook(h: any): Promise<void> { if (!(await zConfirm(`Delete the webhook "${h.name}"?`))) { return; } if (await this.act(() => this.del(`/zeo-admin/api/webhooks/${h.id}/`), 'Deleted.')) { this.log = null; await this.loadHooks(); } }
   async openLog(h: any): Promise<void> { if (this.log?.webhook.id === h.id) { this.log = null; return; } await this.act(async () => { this.log = await this.get(`/zeo-admin/api/webhooks/${h.id}/`); }); }
   async retry(h: any, d: any): Promise<void> { await this.act(async () => { const r = await this.post(`/zeo-admin/api/webhooks/${h.id}/retry/`, { delivery: d.id }); this.say(`Delivery ${r.status}.`, r.status !== 'sent'); }); this.log = await this.get(`/zeo-admin/api/webhooks/${h.id}/`); await this.loadHooks(); }
 }
@@ -685,7 +743,7 @@ export class ZScheduledReportsComponent extends ZAdminBase implements OnInit {
   async save(): Promise<void> { if (await this.act(() => this.post('/zeo-admin/api/schedules/', this.f), 'Saved.')) { this.reset(); await this.load(); } }
   async sendNow(s: any): Promise<void> { await this.act(async () => { const r = await this.post(`/zeo-admin/api/schedules/${s.id}/send/`); this.say(`${s.name}: ${r.result}.`); }); await this.load(); }
   async toggle(s: any): Promise<void> { if (await this.act(() => this.post('/zeo-admin/api/schedules/', { id: s.id, report: s.report, recipients: s.recipients, active: !s.active }))) { await this.load(); } }
-  async remove(s: any): Promise<void> { if (!confirm(`Delete the schedule "${s.name}"?`)) { return; } if (await this.act(() => this.del(`/zeo-admin/api/schedules/${s.id}/`), 'Deleted.')) { await this.load(); } }
+  async remove(s: any): Promise<void> { if (!(await zConfirm(`Delete the schedule "${s.name}"?`))) { return; } if (await this.act(() => this.del(`/zeo-admin/api/schedules/${s.id}/`), 'Deleted.')) { await this.load(); } }
 }
 
 /* ------------------------------------------------------------------------------------------------ import history */
@@ -715,7 +773,7 @@ export class ZImportHistoryComponent extends ZAdminBase implements OnInit {
   async ngOnInit(): Promise<void> { await this.load(); }
   async load(): Promise<void> { try { this.rows = await this.get('/zeo-admin/api/imports/'); } catch (e) { this.say(httpErrorText(e), true); } this.cd.markForCheck(); }
   async undo(b: any): Promise<void> {
-    if (!confirm(`Undo the import of ${b.file_name || b.label}? The ${b.records} record(s) it created are deleted.`)) { return; }
+    if (!(await zConfirm(`Undo the import of ${b.file_name || b.label}? The ${b.records} record(s) it created are deleted.`))) { return; }
     await this.act(async () => { const r = await this.post(`/zeo-admin/api/imports/${b.id}/undo/`); this.say(`${r.deleted} record(s) deleted${r.kept?.length ? `, ${r.kept.length} kept (in use)` : ''}.`); });
     await this.load();
   }
@@ -866,7 +924,7 @@ export class ZPrivacyComponent extends ZAdminBase implements OnInit {
   tog(id: number): void { if (this.sel.has(id)) { this.sel.delete(id); } else { this.sel.add(id); } }
   all(ev: Event): void { this.sel = (ev.target as HTMLInputElement).checked ? new Set(this.due.map(d => d.id)) : new Set(); }
   async anonymise(): Promise<void> {
-    if (!confirm(`Remove the personal data of ${this.sel.size} employee(s)? This cannot be undone.`)) { return; }
+    if (!(await zConfirm(`Remove the personal data of ${this.sel.size} employee(s)? This cannot be undone.`))) { return; }
     await this.act(async () => { const r = await this.post('/zeo-admin/api/retention/anonymise/', { employee_ids: [...this.sel] });
       this.say(`${r.anonymised.length} anonymised.` + (r.failed.length ? ' Not done: ' + r.failed.join('; ') : ''), !!r.failed.length); this.sel.clear(); });
     await this.load();
@@ -924,7 +982,7 @@ export class ZTestCompanyComponent extends ZAdminBase implements OnInit {
     window.location.href = '/main-sidebar/home';
   }
   async remove(t: any): Promise<void> {
-    if (!confirm(`Delete the test company "${t.name}" and everything in it?`)) { return; }
+    if (!(await zConfirm(`Delete the test company "${t.name}" and everything in it?`))) { return; }
     if (await this.act(() => this.del(`/zeo-admin/api/test-company/${t.id}/`), 'Deleted.')) { await this.load(); }
   }
 }

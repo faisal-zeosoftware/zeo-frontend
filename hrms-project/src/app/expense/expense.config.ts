@@ -134,8 +134,7 @@ export const TRIP_PAGE: PageConfig = {
     { key: 'estimated_cost', label: 'Estimate', type: 'money' },
     { key: 'advance_requested', label: 'Advance', type: 'money' },
     { key: 'status', label: 'Status', type: 'tag', tagColors: STATUS_COLORS },
-    { key: 'booking_label', label: 'Booking', value: (r: any) => r.booking_status ? r.booking_label + (r.booking_ref ? ' ' + r.booking_ref : '') : '' },   // v1.50.0
-    { key: 'waiting_for', label: 'Waiting for' },
+    { key: 'booking_label', label: 'Stage', value: (r: any) => tripStage(r) },   // v1.62.0 ui: one stage word per trip (a past trip is never "To book")
   ],
   filters: [
     { key: 'status', label: 'Status', options: opt([['draft', 'Draft'], ['submitted', 'Submitted'], ['approved', 'Approved'], ['rejected', 'Rejected'], ['closed', 'Closed']]) },
@@ -222,3 +221,20 @@ export const ADVANCE_PAGE: PageConfig = {
     { label: 'Reject', action: 'reject', color: 'red', showIf: r => r.status === 'requested' || r.status === 'approved', confirm: 'Reject this advance?' },
   ],
 };
+
+/** v1.62.0 ui – where a trip stands: in approval (and with whom), to book, booked, travelled (settle the expenses), settled. */
+export function tripStage(r: any): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const past = !!r.end_date && String(r.end_date).slice(0, 10) < today;
+  switch (r.status) {
+    case 'draft': return 'Draft';
+    case 'submitted': return r.waiting_for ? `In approval – ${r.waiting_for}` : 'In approval';
+    case 'rejected': return 'Rejected';
+    case 'closed': return 'Settled';
+    case 'approved':
+      if (r.booking_status === 'booked') { return past ? 'Travelled – settle the expenses' : 'Booked' + (r.booking_ref ? ' ' + r.booking_ref : ''); }
+      if (r.booking_status === 'to_book') { return past ? 'Travelled – not booked by the travel desk' : 'To book'; }
+      return past ? 'Travelled – settle the expenses' : 'Approved';
+    default: return r.status_label || r.status || '';
+  }
+}
