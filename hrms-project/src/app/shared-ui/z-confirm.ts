@@ -16,6 +16,11 @@ export interface ZConfirmOptions {
   ok?: string;         // default "OK" (or "Delete" when danger)
   cancel?: string;     // default "Cancel"
   danger?: boolean;    // red action button (deletes, cancellations)
+  // v1.67.1 (companies) a destructive action: what it removes (label + count) and a text to type before the button opens
+  items?: { label: string; count?: number | string }[];
+  typed?: string;      // the exact text (e.g. the company name) to type; OK stays off until it matches
+  typedLabel?: string; // default 'Type "{0}" to confirm'
+  note?: string;       // a small line under the list
 }
 
 const CSS = `
@@ -31,6 +36,16 @@ const CSS = `
 .zcf-btn.primary { background: #5b4fe0; border-color: #5b4fe0; color: #fff; }
 .zcf-btn.danger { background: #c4314b; border-color: #c4314b; color: #fff; }
 .zcf-btn:focus-visible { outline: 2px solid #5b4fe0; outline-offset: 2px; }
+.zcf-btn:disabled { opacity: .45; cursor: not-allowed; }
+.zcf-items { margin: -8px 22px 14px; padding: 8px 12px; list-style: none; border: 1px solid #f1d5da; background: #fff7f8; border-radius: 10px; max-height: 32vh; overflow: auto; }
+.zcf-items li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px dashed #f1d5da; }
+.zcf-items li:last-child { border-bottom: 0; }
+.zcf-items b { font-variant-numeric: tabular-nums; color: #8b1d33; }
+.zcf-note { margin: -6px 22px 12px; color: #6b6f85; font-size: 12.5px; line-height: 1.45; }
+.zcf-typed { display: grid; gap: 6px; padding: 0 22px 16px; }
+.zcf-typed span { color: #3b3f55; font-size: 12.5px; }
+.zcf-typed input { height: 36px; border: 1px solid #dfe1ea; border-radius: 8px; padding: 0 10px; font: inherit; }
+.zcf-typed input:focus { outline: 2px solid #c4314b33; border-color: #c4314b; }
 `;
 
 let queue: Promise<any> = Promise.resolve();
@@ -51,17 +66,32 @@ function show(message: any, o: ZConfirmOptions): Promise<boolean> {
     host.className = 'zcf-host'; host.setAttribute('data-zconfirm', '');
     if (rtl) { host.dir = 'rtl'; }
     const okText = i18nT(o.ok || (o.danger ? 'Delete' : 'OK'));
+    // v1.67.1 (companies): the list of what is removed and the text to type
+    const items = (o.items || []).length ? `<ul class="zcf-items" data-zconfirm-items>${(o.items || []).map(it =>
+      `<li><span>${esc(i18nT(it.label))}</span>${it.count !== undefined && it.count !== null ? `<b>${esc(it.count)}</b>` : ''}</li>`).join('')}</ul>` : '';
+    const note = o.note ? `<p class="zcf-note">${esc(i18nMessage(o.note))}</p>` : '';
+    const typed = o.typed ? `<label class="zcf-typed"><span>${esc(i18nT(o.typedLabel || 'Type "{0}" to confirm', [o.typed]))}</span>
+      <input type="text" autocomplete="off" spellcheck="false" data-zconfirm-typed dir="auto"></label>` : '';
     host.innerHTML = `<div class="zcf-veil"></div>
 <div class="zcf-box" role="alertdialog" aria-modal="true" aria-labelledby="zcf-t" aria-describedby="zcf-m" tabindex="-1">
   <div class="zcf-head"><h2 class="zcf-title" id="zcf-t">${esc(i18nT(o.title || 'Please confirm'))}</h2></div>
   <p class="zcf-msg" id="zcf-m">${esc(i18nMessage(String(message ?? '')))}</p>
+  ${items}${note}${typed}
   <div class="zcf-foot">
     <button type="button" class="zcf-btn" data-zconfirm-cancel>${esc(i18nT(o.cancel || 'Cancel'))}</button>
     <button type="button" class="zcf-btn ${o.danger ? 'danger' : 'primary'}" data-zconfirm-ok>${esc(okText)}</button>
   </div>
 </div>`;
     let done = false;
+    const okBtn = host.querySelector('[data-zconfirm-ok]') as HTMLButtonElement;
+    const typedIn = host.querySelector('[data-zconfirm-typed]') as HTMLInputElement | null;
+    const matches = () => !typedIn || typedIn.value.trim() === String(o.typed || '').trim();
+    if (typedIn) {
+      okBtn.disabled = true;
+      typedIn.addEventListener('input', () => { okBtn.disabled = !matches(); });
+    }
     const finish = (v: boolean) => {
+      if (v && !matches()) { return; }   // v1.67.1 (companies) the typed text must match
       if (done) { return; } done = true;
       document.removeEventListener('keydown', onKey, true);
       host.remove();
@@ -72,7 +102,7 @@ function show(message: any, o: ZConfirmOptions): Promise<boolean> {
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finish(false); }
       else if (e.key === 'Enter' && !(e.target as HTMLElement)?.matches?.('[data-zconfirm-cancel]')) { e.preventDefault(); e.stopPropagation(); finish(true); }
       else if (e.key === 'Tab') {   // keep the focus inside the window
-        const b = Array.from(host.querySelectorAll('button')) as HTMLElement[];
+        const b = Array.from(host.querySelectorAll('input, button:not(:disabled)')) as HTMLElement[];
         const i = b.indexOf(document.activeElement as HTMLElement);
         e.preventDefault(); b[(i + (e.shiftKey ? b.length - 1 : 1)) % b.length]?.focus();
       }
@@ -82,7 +112,7 @@ function show(message: any, o: ZConfirmOptions): Promise<boolean> {
     host.querySelector('[data-zconfirm-ok]')!.addEventListener('click', () => finish(true));
     document.addEventListener('keydown', onKey, true);
     document.body.appendChild(host);
-    setTimeout(() => (host.querySelector('[data-zconfirm-ok]') as HTMLElement | null)?.focus(), 0);
+    setTimeout(() => ((typedIn || host.querySelector('[data-zconfirm-ok]')) as HTMLElement | null)?.focus(), 0);
   });
 }
 

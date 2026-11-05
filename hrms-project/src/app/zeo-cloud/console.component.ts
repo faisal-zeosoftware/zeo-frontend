@@ -39,6 +39,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
       <a routerLink="/control/unlinked" [class.on]="view === 'unlinked'">{{ 'Companies without an account' | t }}</a>
       <a routerLink="/control/databases" [class.on]="view === 'databases'">{{ 'Databases' | t }}</a>
       <a routerLink="/control/enterprise" [class.on]="view === 'enterprise'">{{ 'Enterprise' | t }}</a>   <!-- v1.28.0 -->
+      <a routerLink="/control/deleted" [class.on]="view === 'deleted'" data-console-deleted>{{ 'Deleted companies' | t }}</a>   <!-- v1.67.1 (companies) -->
     </nav>
     <main class="cc-main">
       <div class="lp-msg" *ngIf="msg" [class.err]="bad" role="status">{{ msg }}</div>
@@ -276,6 +277,26 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <div class="zk-card zk-note">{{ 'Policies: trial 14 days · grace period 15 days, then read-only · data kept 90 days after cancellation · employees counted = active employees · employees using self service only are not users · HR is free with any app.' | t }}</div>
       </ng-container>
 
+      <!-- ===== v1.67.1 (companies) deleted companies and databases: restore within 30 days (Adept only) ===== -->
+      <ng-container *ngIf="view === 'deleted' && !denied">
+        <h1 class="cc-h1">{{ 'Deleted companies' | t }}</h1>
+        <p class="zk-note">{{ 'A deleted company or database is hidden from everyone and its users are unlinked. It can be restored here until its date; after that the daily job removes it for good. The backup made before the deletion stays on the server.' | t }}</p>
+        <div class="zk-card"><div class="zk-scroll"><table class="zk-table" data-deleted-companies>
+          <tr><th>{{ 'Company' | t }}</th><th>{{ 'Schema' | t }}</th><th>{{ 'Deleted' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Restore until' | t }}</th><th></th></tr>
+          <tr *ngFor="let x of deleted.companies || []"><td><b>{{ x.name }}</b><small *ngIf="x.db_key">{{ 'with the database {0}' | t:x.db_key }}</small></td>
+            <td data-no-translate>{{ x.schema_name }}</td><td>{{ x.deleted_at | date:'d MMM y, HH:mm' }}</td><td>{{ x.by }}</td><td>{{ x.users }}</td><td>{{ x.restore_until | date:'d MMM y' }}</td>
+            <td><button type="button" class="lp-btn primary" *ngIf="!x.db_key" (click)="restore({ company: x.schema_name }, x.name)" [disabled]="busy" data-restore-company>{{ 'Restore' | t }}</button></td></tr>
+          <tr *ngIf="loaded && !deleted.companies?.length"><td colspan="7" class="zk-note">{{ 'No deleted company.' | t }}</td></tr>
+        </table></div></div>
+        <div class="zk-card" *ngIf="deleted.databases?.length"><div class="zk-scroll"><table class="zk-table">
+          <tr><th>{{ 'Database' | t }}</th><th>{{ 'Customer' | t }}</th><th>{{ 'Removed' | t }}</th><th>{{ 'Dropped on' | t }}</th><th>{{ 'Companies' | t }}</th><th></th></tr>
+          <tr *ngFor="let d of deleted.databases"><td><b>{{ d.label }}</b><small data-no-translate>{{ d.key }}</small></td><td>{{ d.account }}</td><td>{{ d.retired_on | date:'d MMM y' }}</td>
+            <td>{{ d.delete_on | date:'d MMM y' }}</td><td>{{ d.companies.join(', ') || '–' }}</td>
+            <td><button type="button" class="lp-btn primary" (click)="restore({ database: d.key }, d.label)" [disabled]="busy" data-restore-db>{{ 'Restore' | t }}</button></td></tr>
+        </table></div></div>
+        <div class="zk-card zk-note">{{ 'On the server: python manage.py restore_company --list, then restore_company SCHEMA or restore_database KEY.' | t }}</div>
+      </ng-container>
+
       <!-- ===== unlinked ===== -->
       <ng-container *ngIf="view === 'unlinked' && !denied">
         <h1 class="cc-h1">{{ 'Companies without an account' | t }}</h1>
@@ -309,6 +330,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
       if (v === 'customer') { this.loadOne(+(p.get('id') || 0)); }
       if (v === 'unlinked') { this.loadUnlinked(); }
       if (v === 'databases') { this.loadDbs(); }
+      if (v === 'deleted') { this.loadDeleted(); }   // v1.67.1 (companies)
     });
   }
   ngOnDestroy(): void { this.sub?.unsubscribe(); if (this.poll) { clearInterval(this.poll); } if (this.mpoll) { clearInterval(this.mpoll); } }
@@ -528,6 +550,20 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
     this.busy = false;
   }
   private say(m: string, b: boolean): void { this.msg = m; this.bad = b; }
+
+  // v1.67.1 (companies) deleted companies / databases – restore within 30 days
+  deleted: any = {};
+  async loadDeleted(): Promise<void> {
+    try { this.deleted = await firstValueFrom(this.http.get(`${API()}/deleted/`)); this.loaded = true; }
+    catch (e: any) { if (e?.status === 403) { this.denied = true; } else { this.say(err(e, T('Not loaded.')), true); } }
+  }
+  async restore(body: any, name: string): Promise<void> {
+    if (!(await zConfirm(T('Restore {0}? It becomes active again and its users are linked again.', name), { title: T('Restore {0}?', name), ok: 'Restore' }))) { return; }
+    this.busy = true;
+    try { const r: any = await firstValueFrom(this.http.post(`${API()}/deleted/`, body)); this.deleted = r; this.say(r.detail || T('Restored.'), false); }
+    catch (e) { this.say(err(e, T('Not restored.')), true); }
+    this.busy = false;
+  }
 }
 
 export const CONTROL_ROUTES: Routes = [
@@ -538,4 +574,5 @@ export const CONTROL_ROUTES: Routes = [
   { path: 'unlinked', component: CloudConsoleComponent, data: { view: 'unlinked', title: 'Companies without an account' } },
   { path: 'databases', component: CloudConsoleComponent, data: { view: 'databases', title: 'Databases' } },   // v1.24.0
   { path: 'enterprise', component: CloudConsoleComponent, data: { view: 'enterprise', title: 'Enterprise' } },   // v1.28.0
+  { path: 'deleted', component: CloudConsoleComponent, data: { view: 'deleted', title: 'Deleted companies' } },   // v1.67.1 (companies)
 ];

@@ -46,7 +46,12 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
       <button type="button" class="lp-btn" (click)="d._ren = !d._ren; d._label = d.title" [disabled]="busy">{{ 'Rename' | t }}</button>
       <button type="button" class="lp-btn" *ngIf="d.state === 'ready' && d.company_list.length" (click)="openDup(d)" data-act="duplicate" [disabled]="busy || !info?.can_add || !!job">{{ 'Duplicate' | t }}</button>
       <button type="button" class="lp-btn danger" *ngIf="!d.default && !d.company_list.length" (click)="remove(d)" [disabled]="busy">{{ 'Remove' | t }}</button>
+      <!-- v1.67.1 (companies) make inactive / active and delete a database with its companies (not the default one) -->
+      <button type="button" class="lp-btn" *ngIf="!d.default && d.state === 'ready' && !d.inactive" (click)="setActive(d, false)" [disabled]="busy" data-db-inactive>{{ 'Make inactive' | t }}</button>
+      <button type="button" class="lp-btn primary" *ngIf="d.inactive" (click)="setActive(d, true)" [disabled]="busy" data-db-active>{{ 'Make active' | t }}</button>
+      <button type="button" class="lp-btn danger" *ngIf="!d.default && d.company_list.length" (click)="del(d)" [disabled]="busy || !!job" data-db-delete>{{ 'Delete…' | t }}</button>
     </div>
+    <small class="zk-note zdb-off" *ngIf="d.inactive" data-db-inactive-note><b class="zk-st suspended">{{ 'Inactive' | t }}</b> {{ 'Its companies are closed and hidden from their users until the database is made active again.' | t }}</small>
     <small class="cc-err" *ngIf="d.note && d.state === 'failed'">{{ d.note }}</small>
     <small class="cc-err" *ngIf="d.sub?.read_only">{{ 'Its companies are read-only (view, export, print) until the database is paid. Use Request upgrade, or move the companies to a paid database.' | t }}</small>
     <!-- Adept: the subscription of an extra database -->
@@ -61,7 +66,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
 
     <div class="zk-scroll" *ngIf="d.company_list.length"><table class="zk-table">
       <tr><th>{{ 'Company' | t }}</th><th>{{ 'Move to' | t }}</th></tr>
-      <tr *ngFor="let c of d.company_list"><td>{{ c.name }}<small *ngIf="c.archived">{{ 'archived' | t }}</small><small *ngIf="c.moving || moving(c.id)">{{ 'Moving' | t }}: {{ moving(c.id)?.percent || 0 }}%</small></td>
+      <tr *ngFor="let c of d.company_list"><td>{{ c.name }}<small *ngIf="c.archived">{{ 'archived' | t }}</small><small *ngIf="c.inactive && !d.inactive">{{ 'Inactive' | t }}</small><small *ngIf="c.moving || moving(c.id)">{{ 'Moving' | t }}: {{ moving(c.id)?.percent || 0 }}%</small></td>
         <td><ng-container *ngIf="dbs.length > 1 && !c.moving && !moving(c.id)">
           <select class="zk-in" [(ngModel)]="c._to" [attr.aria-label]="'Move to' | t"><option [ngValue]="undefined">–</option>
             <option *ngFor="let o of others(d)" [ngValue]="o.key">{{ o.title }}</option></select>
@@ -249,8 +254,43 @@ export class ZCloudDatabasesComponent implements OnChanges, OnDestroy {
     this.busy = false;
   }
   async remove(d: any): Promise<void> {
-    if (!(await zConfirm(T('Remove the empty database {0}? It is deleted after 7 days.', d.title)))) { return; }
+    if (!(await zConfirm(T('Remove the empty database {0}? It is deleted after 30 days.', d.title)))) { return; }   // v1.67.1 (companies) was 7 days
     this.act(d, 'remove');
+  }
+  // ---- v1.67.1 (companies) ----
+  async setActive(d: any, active: boolean): Promise<void> {
+    const ok = active
+      ? await zConfirm(T('The companies of {0} open again for their users.', d.title), { title: T('Make {0} active?', d.title), ok: 'Make active' })
+      : await zConfirm(T('Nobody can sign in to the {0} companies of {1} or use them while it is inactive, and they are hidden from their users. Nothing is deleted.', d.company_list.length, d.title),
+          { title: T('Make {0} inactive?', d.title), ok: 'Make inactive', danger: true, items: d.company_list.map((c: any) => ({ label: c.name })) });
+    if (!ok) { return; }
+    this.act(d, active ? 'active' : 'inactive');
+  }
+  async del(d: any): Promise<void> {
+    const ok = await zConfirm(T('The database {0} is deleted with these {1} companies and everything in them. A backup of the whole database is made first and downloaded to this computer; the server keeps a copy too.', d.title, d.company_list.length), {
+      title: T('Delete {0}?', d.title), ok: 'Delete database', danger: true, typed: d.title,
+      items: d.company_list.map((c: any) => ({ label: c.name })), typedLabel: T('Type the database name "{0}" to confirm', d.title),
+      note: T('Every user loses access to these companies at once (their logins stay). The names are free again straight away. Only the ZEO server administrator can bring the database back within {0} days.', 30) });
+    if (!ok) { return; }
+    this.busy = true; this.say(T('Making the backup and deleting the database…'), false);
+    try {
+      const r: any = await firstValueFrom(this.http.post(`${API()}/accounts/${this.accountId}/databases/${d.key}/`, { action: 'delete', confirm: d.title }));
+      this.dbs = r.databases || this.dbs; this.say(r.detail || T('Deleted.'), false);
+      if (r.download) { this.download(r.download, r.file_name); }
+      await this.load();
+    } catch (e) { this.say(err(e, T('The database could not be deleted. Nothing was changed.')), true); }
+    this.busy = false;
+  }
+  /** the backup goes to the browser at once (the server keeps a copy) */
+  download(url: string, name: string): void {
+    this.http.get(`${environment.apiBaseUrl}${url}`, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = name || 'zeo-backup.zip'; a.setAttribute('data-backup-download', '');
+        document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      },
+      error: () => this.say(T('The backup could not be downloaded. The server keeps its copy – ask your ZEO administrator.'), true),
+    });
   }
   openDup(d: any): void { this.dup = { key: d.key, label: T('Copy of {0}', d.title), suffix: 'Test', neutralize: true }; }
   async runDup(): Promise<void> {

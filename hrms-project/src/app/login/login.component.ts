@@ -304,10 +304,12 @@ togglePassword() {
           this.notice = i18nT('We sent the code to your registered e-mail or phone.');
           this.step = 3;
         },
-        () =>
-          { 
+        (e: any) =>
+          {
             this.isLoading = false;
-
+            // v1.67.1 (sign-in code fix): show the server's reason (no e-mail address, mail server refused, too many tries)
+            const m = e?.error?.error || e?.error?.detail;
+            if (m) { this.error = i18nT(String(m)); return; }
             this.say('The code could not be sent. Try again in a minute.');
           }
       );

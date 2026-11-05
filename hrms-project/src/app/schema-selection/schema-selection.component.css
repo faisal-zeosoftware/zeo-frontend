@@ -193,3 +193,15 @@
 .zc-more-btn:hover, .zc-more-btn[aria-expanded=true] { background: var(--canvas, #f4f1f5); }
 .zc-more-menu { position: absolute; inset-inline-end: 0; top: calc(100% + 4px); z-index: 20; background: #fff; border: 1px solid #e6e0e8; border-radius: 10px; box-shadow: 0 10px 28px rgba(40,20,50,.14); padding: 4px; min-width: 150px; }
 .zc-more-menu .zc-dup { display: block; width: 100%; margin: 0; text-align: start; }
+
+/* v1.67.1 (companies) inactive companies, the delete action, the backup wait */
+.zc-item.zc-off .zc-row-off { cursor: default; opacity: 1; background: #f7f7fa; border-style: dashed; }
+.zc-item.zc-off .zc-mark { filter: grayscale(1); opacity: .6; }
+.zc-item.zc-off .zc-name { color: #5d6075; }
+.zc-inactive { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #8a5a00;
+  background: #fff3d6; border: 1px solid #f1d38f; border-radius: 999px; padding: 1px 8px; margin-inline-start: 8px; }
+.zc-open.zc-act, .zc-row:hover .zc-open.zc-act { display: flex !important; align-items: center; border: 0; padding: 0; height: auto; background: none; }
+.zc-row.zc-row-off::after { display: none; }
+.zc-more-menu .zc-del { color: #c4314b; }
+.zc-dialog.zc-busy { text-align: center; }
+.zc-spin.big { display: inline-block; width: 28px; height: 28px; border-width: 3px; margin: 8px auto 4px; }

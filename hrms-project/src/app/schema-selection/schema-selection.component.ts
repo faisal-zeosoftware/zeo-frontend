@@ -6,11 +6,15 @@ import { SchemaCreationComponent } from '../schema-creation/schema-creation.comp
 import { environment } from '../../environments/environment';
 import { APP_VERSION } from '../shared-ui/version';
 import { i18nT } from '../shared-ui/i18n-core';
+import { zConfirm } from '../shared-ui/z-confirm';   // v1.67.1 (companies)
 
 interface MyCompany {
   id: number; name: string; schema_name: string; country: string; city: string; industry: string;
   state_label: string; logo: string; apps: string[]; neutralized?: boolean; copy_of?: string;
   account?: number | null; extra?: boolean; where?: string; read_only?: boolean; moving?: boolean;   // v1.23.0 ZEO Cloud (moving: v1.24.0)
+  // v1.67.1 (companies): inactive companies are listed only for their owner / administrators; can_manage = may make
+  // inactive / active and delete
+  state?: 'active' | 'inactive'; can_manage?: boolean; inactive_by?: string; inactive_at?: string; inactive_db?: boolean;
 }
 
 /** v1.23.0 ZEO Cloud account of the companies in the list */
@@ -67,6 +71,10 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
   industries: { code: string; label: string }[] = [];
   invites: Invite[] = [];   // v1.26.0
   invitedMsg = '';
+  // v1.67.1 (companies) make inactive / active, delete
+  busyLife = '';
+  lifeMsg = '';
+  lifeErr = '';
 
   constructor(private http: HttpClient, private authService: AuthenticationService, private dialog: MatDialog) {}
 
@@ -94,7 +102,7 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
         this.loading = false;
         // v1.62.1: "open this company next time" – straight into the last company (the top-bar menu still switches)
         if (this.autoOpen && this.last && !new URLSearchParams(location.search).has('choose')) {
-          const c = this.companies.find(x => x.schema_name === this.last && !x.moving);
+          const c = this.companies.find(x => x.schema_name === this.last && !x.moving && x.state !== 'inactive');   // v1.67.1 (companies)
           if (c) { this.open(c); }
         }
       },
@@ -322,6 +330,71 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
         if (action === 'accept') { this.invitedMsg = r.detail || i18nT('{0} was added to your companies.', [i.company]); this.fresh = r.schema_name || ''; this.load(true); }
       },
       error: (e: HttpErrorResponse) => { i.busy = false; i.error = e.error?.detail || i18nT('Not done. Try again.'); },
+    });
+  }
+
+  // ---- v1.67.1 (companies) Make inactive / Make active / Delete company ----
+  private lifeUrl(c: MyCompany, what = 'life'): string { return `${environment.apiBaseUrl}/cloud/api/companies/${c.id}/${what}/`; }
+
+  async makeInactive(c: MyCompany): Promise<void> {
+    this.lifeMsg = ''; this.lifeErr = '';
+    const ok = await zConfirm(i18nT('Nobody can sign in to {0} or use it while it is inactive, and it is hidden from its users. Nothing is deleted – you can make it active again here at any time.', [c.name]),
+      { title: i18nT('Make {0} inactive?', [c.name]), ok: 'Make inactive', danger: true });
+    if (!ok) { return; }
+    this.http.post<any>(this.lifeUrl(c), { action: 'inactive' }).subscribe({
+      next: () => { this.lifeMsg = i18nT('{0} is inactive.', [c.name]); if (this.last === c.schema_name) { this.last = ''; } this.load(true); },
+      error: (e: HttpErrorResponse) => { this.lifeErr = i18nT(e.error?.detail || 'Not done. Try again.'); },
+    });
+  }
+
+  async makeActive(c: MyCompany): Promise<void> {
+    this.lifeMsg = ''; this.lifeErr = '';
+    const ok = await zConfirm(i18nT('Its users can sign in to {0} again.', [c.name]), { title: i18nT('Make {0} active?', [c.name]), ok: 'Make active' });
+    if (!ok) { return; }
+    this.http.post<any>(this.lifeUrl(c), { action: 'active' }).subscribe({
+      next: () => { this.lifeMsg = i18nT('{0} is active again.', [c.name]); this.load(true); },
+      error: (e: HttpErrorResponse) => { this.lifeErr = i18nT(e.error?.detail || 'Not done. Try again.'); },
+    });
+  }
+
+  deleteCompany(c: MyCompany): void {
+    this.lifeMsg = ''; this.lifeErr = '';
+    this.http.get<any>(this.lifeUrl(c) + '?counts=1').subscribe({
+      next: async r => {
+        const items = (r.counts || []).map((x: any) => ({ label: x.label, count: x.count }));
+        const ok = await zConfirm(i18nT('{0} is deleted with everything in it. A backup is made first and downloaded to this computer; the server keeps a copy too.', [c.name]), {
+          title: i18nT('Delete {0}?', [c.name]), ok: 'Delete company', danger: true, items, typed: c.name,
+          typedLabel: i18nT('Type the company name "{0}" to confirm', [c.name]),
+          note: i18nT('Every user loses access to it at once (their logins stay). The name is free again straight away. Only the ZEO server administrator can bring it back within {0} days.', [r.keep_days || 30]),
+        });
+        if (!ok) { return; }
+        this.busyLife = 'Making the backup and deleting the company…';
+        this.http.post<any>(this.lifeUrl(c, 'delete'), { confirm: c.name }).subscribe({
+          next: d => {
+            this.busyLife = '';
+            this.lifeMsg = d.detail || i18nT('{0} was deleted.', [c.name]);
+            if (this.last === c.schema_name) { this.last = ''; try { localStorage.removeItem('zeo:lastCompany'); } catch { /* */ } }
+            this.download(d.download, d.file_name);
+            this.load(true);
+          },
+          error: (e: HttpErrorResponse) => { this.busyLife = ''; this.lifeErr = i18nT(e.error?.detail || 'The company could not be deleted. Nothing was changed.'); },
+        });
+      },
+      error: (e: HttpErrorResponse) => { this.lifeErr = i18nT(e.error?.detail || 'Not done. Try again.'); },
+    });
+  }
+
+  /** v1.67.1 (companies): the backup of a deleted company / database goes to the browser at once (the server keeps a copy). */
+  download(url: string, name: string): void {
+    if (!url) { return; }
+    this.http.get(`${environment.apiBaseUrl}${url}`, { responseType: 'blob' }).subscribe({
+      next: blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = name || 'zeo-backup.zip'; a.setAttribute('data-backup-download', '');
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      },
+      error: () => { this.lifeErr = i18nT('The backup could not be downloaded. The server keeps its copy – ask your ZEO administrator.'); },
     });
   }
 

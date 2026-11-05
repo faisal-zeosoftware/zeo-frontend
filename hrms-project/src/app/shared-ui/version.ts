@@ -1,3 +1,3 @@
 /** ZEO HRMS update version. Change it with every update package (see README-UPDATE.md, "Version history"). */
-export const APP_VERSION = '1.67.0';
+export const APP_VERSION = '1.67.1';
 export const APP_VERSION_DATE = '2026-11-02';

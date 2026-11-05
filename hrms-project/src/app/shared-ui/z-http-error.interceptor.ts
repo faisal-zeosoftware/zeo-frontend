@@ -34,6 +34,14 @@ export class ZHttpErrorInterceptor implements HttpInterceptor {
       // v1.62.1 a new company that has not finished the required setup steps: the notice with "Continue the setup"
       // (employees: the friendly notice) instead of the screen's own error message
       if (isSetupRequired(e)) { showSetupGate(b); rememberHttpError('', 0); return throwError(() => e); }
+      // v1.67.1 (companies) the open company was made inactive or deleted: back to Choose a company (once)
+      if (e?.status === 403 && b && typeof b === 'object' && b.company_state && typeof location !== 'undefined'
+          && !location.pathname.startsWith('/schema-selection') && !(window as any).__zeoCompanyClosed) {
+        (window as any).__zeoCompanyClosed = true;
+        try { localStorage.removeItem('selectedSchema'); localStorage.removeItem('zeo:lastCompany'); } catch { /* storage blocked */ }
+        location.href = '/schema-selection?choose=1';
+        return throwError(() => e);
+      }
       if (req.method !== 'GET' || said) { rememberHttpError(httpErrorText(e), e?.status || 0); }
       return throwError(() => e);
     }));

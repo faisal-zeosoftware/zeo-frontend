@@ -34,6 +34,10 @@
       <h2 class="zc-all-h">{{ 'All companies' | t }}</h2>
     </section>
     <div class="zc-msg" *ngIf="error" role="alert">{{ error }}</div>
+    <!-- v1.67.1 (companies) result of Make inactive / active / Delete -->
+    <div class="zc-notice ok" *ngIf="lifeMsg" role="status" data-life-msg>{{ lifeMsg }}
+      <button type="button" class="zc-x" (click)="lifeMsg = ''" [attr.aria-label]="'Close' | t">×</button></div>
+    <div class="zc-msg" *ngIf="lifeErr" role="alert" data-life-err>{{ lifeErr }}</div>
     <!-- v1.23.0 ZEO Cloud: an account removed this person's access -->
     <div class="zc-notice" *ngFor="let n of notices" role="status">{{ n.text }}
       <button type="button" class="zc-x" (click)="seenNotices()" [attr.aria-label]="'Close' | t">×</button></div>
@@ -89,8 +93,20 @@
       </section>
     </ng-container>
     <ng-template #rows let-list>
-      <li *ngFor="let c of list; trackBy: trackC" class="zc-item" [class.fresh]="c.schema_name === fresh">
-        <button type="button" class="zc-row" (click)="open(c)" [disabled]="opening || c.moving" [attr.aria-label]="('Open company' | t) + ' ' + c.name">
+      <li *ngFor="let c of list; trackBy: trackC" class="zc-item" [class.fresh]="c.schema_name === fresh" [class.zc-off]="c.state === 'inactive'"
+          [attr.data-company]="c.schema_name">
+        <!-- v1.67.1 (companies): an inactive company – only its owner / administrators see it, marked, with Make active -->
+        <div class="zc-row zc-row-off" *ngIf="c.state === 'inactive'" data-inactive-row>
+          <span class="zc-mark" [ngClass]="'t' + tint(c.name)">{{ initials(c.name) }}</span>
+          <span class="zc-info">
+            <span class="zc-name">{{ c.name }}<em class="zc-inactive" data-inactive-mark>{{ 'Inactive' | t }}</em></span>
+            <span class="zc-meta">{{ c.inactive_db ? ('Its database was made inactive – nobody can open it.' | t)
+              : ('Nobody can open it until it is made active again.' | t) }}<ng-container *ngIf="c.inactive_by"> {{ 'Made inactive by {0} on {1}.' | t:c.inactive_by:(c.inactive_at | date:'d MMM y, HH:mm') }}</ng-container></span>
+          </span>
+          <span class="zc-open zc-act" *ngIf="!c.inactive_db">
+            <button type="button" class="zc-dbtn" (click)="makeActive(c)" [disabled]="!!busyLife" data-make-active>{{ 'Make active' | t }}</button></span>
+        </div>
+        <button type="button" class="zc-row" *ngIf="c.state !== 'inactive'" (click)="open(c)" [disabled]="opening || c.moving" [attr.aria-label]="('Open company' | t) + ' ' + c.name">
           <span class="zc-mark" [ngClass]="'t' + tint(c.name)">
             <img *ngIf="c.logo" [src]="c.logo" alt="">
             <ng-container *ngIf="!c.logo">{{ initials(c.name) }}</ng-container>
@@ -111,14 +127,19 @@
           </span>
         </button>
         <!-- v1.62.1: star = favourite; Duplicate moved into the ⋯ menu (it asks in its own dialog before anything is copied) -->
-        <button type="button" class="zc-star" [class.on]="isFav(c)" (click)="toggleFav(c, $event)" [attr.aria-pressed]="isFav(c)"
+        <button type="button" class="zc-star" *ngIf="c.state !== 'inactive'" [class.on]="isFav(c)" (click)="toggleFav(c, $event)" [attr.aria-pressed]="isFav(c)"
                 [attr.aria-label]="(isFav(c) ? 'Remove from favourites' : 'Add to favourites') | t" [title]="(isFav(c) ? 'Remove from favourites' : 'Add to favourites') | t" data-fav>{{ isFav(c) ? '★' : '☆' }}</button>
-        <span class="zc-more" *ngIf="canCreate || ownsAcc(c)">
+        <span class="zc-more" *ngIf="(canCreate || ownsAcc(c) || c.can_manage) && c.state !== 'inactive'">
           <button type="button" class="zc-more-btn" (click)="menuFor = menuFor === c.schema_name ? '' : c.schema_name" [attr.aria-expanded]="menuFor === c.schema_name"
                   [attr.aria-label]="('More actions' | t) + ' ' + c.name" data-more>⋯</button>
           <span class="zc-more-menu" *ngIf="menuFor === c.schema_name" role="menu">
-            <button type="button" role="menuitem" class="zc-dup" (click)="menuFor = ''; askDuplicate(c)" [disabled]="!!opening || !!dup"
+            <button type="button" role="menuitem" class="zc-dup" *ngIf="canCreate || ownsAcc(c)" (click)="menuFor = ''; askDuplicate(c)" [disabled]="!!opening || !!dup"
                     [title]="'Make a copy of this company with all its data' | t">{{ 'Duplicate…' | t }}</button>
+            <!-- v1.67.1 (companies) owner / company administrator -->
+            <button type="button" role="menuitem" class="zc-dup" *ngIf="c.can_manage" (click)="menuFor = ''; makeInactive(c)" [disabled]="!!busyLife"
+                    data-make-inactive>{{ 'Make inactive…' | t }}</button>
+            <button type="button" role="menuitem" class="zc-dup zc-del" *ngIf="c.can_manage" (click)="menuFor = ''; deleteCompany(c)" [disabled]="!!busyLife"
+                    data-delete-company>{{ 'Delete company…' | t }}</button>
           </span>
         </span>
       </li>
@@ -213,6 +234,14 @@
       <p class="zc-dsub">{{ 'Nothing was created. Try again, or ask your ZEO administrator.' | t }}</p>
       <div class="zc-dact"><button type="button" class="zc-dbtn" (click)="closeDuplicate()">{{ 'Close' | t }}</button></div>
     </ng-container>
+  </div>
+
+  <!-- v1.67.1 (companies) the backup is made before a deletion -->
+  <div class="zc-veil" *ngIf="busyLife"></div>
+  <div class="zc-dialog zc-busy" *ngIf="busyLife" role="status" aria-live="polite" data-life-busy>
+    <h2>{{ busyLife | t }}</h2>
+    <p class="zc-dsub">{{ 'Please keep this page open.' | t }}</p>
+    <span class="zc-spin big" aria-hidden="true"></span>
   </div>
 
   <footer class="zc-foot">ZEO · {{ 'Version' | t }} {{ version }}</footer>
