@@ -129,6 +129,7 @@ import { ProjectOptionsComponent } from './project-options/project-options.compo
 import { HR_MODULE_ROUTES } from './hr-modules/hr-modules.routes';
 import { SETTINGS_HOME_ROUTES } from './settings-home/settings-home.routes';   // v1.15.1
 import { SETTINGS_APPS_ROUTES } from './settings-apps/settings-apps.component';
+import { SETTINGS_DIRECTORY_ROUTES } from './settings-apps/settings-directory.component';   // v1.67.3 (apps)
 import { CLOUD_SETTINGS_ROUTES } from './zeo-cloud/cloud-settings.component';
 import { CONTROL_ROUTES } from './zeo-cloud/console.component';
 import { CloudSignupComponent } from './zeo-cloud/signup.component';   // v1.23.0   // v1.21.0 Settings → Apps
@@ -350,6 +351,7 @@ const routes: Routes = [
         children: [
           ...SETTINGS_HOME_ROUTES,   // v1.15.1: Settings home (the Settings gear opens it)
           ...SETTINGS_APPS_ROUTES,   // v1.21.0: Settings → Apps (activate apps, industry per app)
+          ...SETTINGS_DIRECTORY_ROUTES,   // v1.67.3 (apps): Settings › Company › Employee directory (company core)
           ...CLOUD_SETTINGS_ROUTES,   // v1.23.0 ZEO Cloud: Subscription and Security (account owner)
           { path: 'licence', loadComponent: () => import('./zeo-licence/licence.component').then(m => m.LicenceComponent), data: { title: 'Licence' } },   // v1.28.0 Enterprise licence
           ...AI_SETTINGS_ROUTES,   // v1.16.0: Settings → AI settings

@@ -55,3 +55,18 @@
 .sa-lic.trial { background: #e9eef6; color: #2f4a73; }
 .sa-lic.none { background: #f3f1f5; color: #6b6577; }
 .sa-lic.expired { background: #fdeceb; color: #b3261e; }
+
+/* v1.67.3 (apps) dependencies */
+.sa-core { display: flex; gap: 10px; align-items: center; padding: 10px 14px; margin: 0 0 14px; border: 1px solid #d9d6fb; background: #f5f4ff; border-radius: 10px; font-size: 13px; color: #2b2560; }
+.sa-core mat-icon { color: #5b4ff5; }
+.sa-dep { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0 0; font-size: 12.5px; color: #3d3a5c; }
+.sa-dep mat-icon { font-size: 16px; width: 16px; height: 16px; color: #5b4ff5; }
+.sa-dep small { color: #6b7185; }
+.sa-dep.used mat-icon { color: #b26a00; }
+.sa-brings { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: #eeedfd; color: #2b2560; font-size: 13px; font-weight: 600; }
+.sa-brings mat-icon, .sa-needed mat-icon { font-size: 18px; width: 18px; height: 18px; flex: none; }
+.sa-needed { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: #fdecec; color: #8a1c1c; font-size: 13px; font-weight: 600; }
+
+/* v1.67.3 (apps) employee directory */
+.sa-dir-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sa-dir-card { margin: 14px 24px 0; overflow-x: auto; }

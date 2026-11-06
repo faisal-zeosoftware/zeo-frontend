@@ -490,11 +490,24 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
         .catch(e => zToast(ErService.error(e), 'err'));
     }
   }
+  // v1.67.5 (bugs) E1: the chosen picture is shown at once (preview), checked (image, up to 5 MB) and saved; the answer's
+  // photo address is shown after the save; an image that does not load says so instead of an empty circle
+  photoPreview = ''; photoBusy = false; photoBroken = false;
   async photo(ev: any): Promise<void> {
-    const f = ev.target.files?.[0]; if (!f) { return; }
-    const fd = new FormData(); fd.append('emp_profile_pic', f);
-    try { await this.api.patch(`employee/api/Employee/${this.id}/`, fd); zToast('Photo updated', 'ok'); await this.load(); }
+    const f: File | undefined = ev.target.files?.[0]; if (ev?.target) { ev.target.value = ''; } if (!f) { return; }
+    if (!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type || '')) { zToast(i18nT('Choose a JPG, PNG or WebP picture.'), 'err'); return; }
+    if (f.size > 5 * 1024 * 1024) { zToast(i18nT('The picture is larger than 5 MB.'), 'err'); return; }
+    if (this.photoPreview) { URL.revokeObjectURL(this.photoPreview); }
+    this.photoPreview = URL.createObjectURL(f); this.photoBusy = true; this.photoBroken = false;
+    const fd = new FormData(); fd.append('emp_profile_pic', f, f.name);
+    try { await this.api.patch(`employee/api/Employee/${this.id}/`, fd); zToast(i18nT('Photo updated'), 'ok'); await this.load(); }
     catch (e) { zToast(ErService.error(e, 'The photo could not be saved.'), 'err'); }
+    finally { this.photoBusy = false; if (this.photoPreview) { URL.revokeObjectURL(this.photoPreview); } this.photoPreview = ''; }
+  }
+  async removePhoto(): Promise<void> {
+    if (!(await zConfirm(i18nT('Remove the photo?')))) { return; }
+    try { await this.api.patch(`employee/api/Employee/${this.id}/`, { emp_profile_pic: null }); zToast(i18nT('Photo removed'), 'ok'); this.photoBroken = false; await this.load(); }
+    catch (e) { zToast(ErService.error(e, 'The photo could not be removed.'), 'err'); }
   }
   colour(s: string): string { return avatarColour(s); }
   ringDash(p: number): string { return `${(p * 1.5708).toFixed(1)} 157.08`; }

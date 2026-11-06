@@ -1,4 +1,4 @@
-import { ZEO_FLAGS } from './zeo-flags';
+import { ZEO_FLAGS, flagsVisible as flagsOk } from './zeo-flags';
 /**
  * One menu for the whole application.
  * - MAIN_GROUPS: the main (left) menu, apps grouped under short headings.
@@ -82,12 +82,12 @@ export const MAIN_GROUPS: MenuGroup[] = [
         { title: 'Calendar', items: [
           { label: 'Calendar', hint: 'Leave, holidays, shifts, birthdays, activities', link: M + 'unified-calendar', icon: 'calendar_month' },
         ] },
-        { title: 'Calendars', items: [
-          { label: 'Weekend calendar', link: M + 'settings/weekcalendar', icon: 'weekend', perms: ['view_weekend_calendar'] },
-          { label: 'Assign weekends', link: M + 'settings/assign-weekcalendar', icon: 'event_repeat', perms: ['view_assign_weekend'] },
-          { label: 'Weekend change from a date', link: M + 'settings/weekend-change', icon: 'date_range', perms: ['change_assign_weekend', 'add_assign_weekend'] },   // v1.62.6 (item 22)
-          { label: 'Holiday calendar', link: M + 'settings/holiday-calendar', icon: 'celebration', perms: ['view_holiday_calendar'] },
-          { label: 'Assign holidays', link: M + 'settings/assign-holiday-calendar', icon: 'event_available', perms: ['view_assign_holiday'] },
+        { title: 'Calendars', items: [   // v1.67.3 (apps) the HR calendars only with HR
+          { label: 'Weekend calendar', link: M + 'settings/weekcalendar', icon: 'weekend', perms: ['view_weekend_calendar'], country: 'app:hrms' },
+          { label: 'Assign weekends', link: M + 'settings/assign-weekcalendar', icon: 'event_repeat', perms: ['view_assign_weekend'], country: 'app:hrms' },
+          { label: 'Weekend change from a date', link: M + 'settings/weekend-change', icon: 'date_range', perms: ['change_assign_weekend', 'add_assign_weekend'], country: 'app:hrms' },   // v1.62.6 (item 22)
+          { label: 'Holiday calendar', link: M + 'settings/holiday-calendar', icon: 'celebration', perms: ['view_holiday_calendar'], country: 'app:hrms' },
+          { label: 'Assign holidays', link: M + 'settings/assign-holiday-calendar', icon: 'event_available', perms: ['view_assign_holiday'], country: 'app:hrms' },
         ] },
       ] },
       { key: 'todo', label: 'My To-do', icon: 'task_alt', link: M + 'todo', parents: ['todo'] },
@@ -965,6 +965,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { label: 'Locations', link: MN + 'r/location', icon: 'place', perms: MNT_ALL },
           { label: 'Vendors', link: MN + 'r/vendor', icon: 'local_shipping', perms: MNT_ALL },
           { label: 'Business partners', hint: 'Customers, suppliers and contractors shared by every app', link: MS + 'r/partner', icon: 'diversity_2', perms: [...MNT_ALL, 'mst_manager', 'mst_viewer'] },   // v1.42.0
+          { label: 'Stores and locations (shared)', hint: 'One list of sites, rooms and stores for every app – Inventory will use it too', link: MS + 'r/location', icon: 'warehouse', perms: [...MNT_ALL, 'mst_manager', 'mst_viewer'] },   // v1.67.4 (masters)
         ] },
       ] },
       { key: 'mn-reports', label: 'Reports', icon: 'summarize', sections: [
@@ -1023,6 +1024,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
           { label: 'Spare parts', hint: 'Parts and consumables, minimum stock', link: AM + 'r/part', icon: 'inventory', perms: AST_STORE },
           { label: 'Item master', hint: 'Goods, services, spare parts, consumables, charges – one list for every app', link: MS + 'r/item', icon: 'category', perms: [...AST_ALL, 'mst_manager', 'mst_viewer'] },   // v1.43.0
           { label: 'Units of measure', link: MS + 'r/uom', icon: 'straighten', perms: [...AST_ALL, 'mst_manager'] },   // v1.43.0
+          { label: 'Stores and locations (shared)', hint: 'One list of sites, rooms and stores for every app – Inventory will use it too', link: MS + 'r/location', icon: 'warehouse', perms: [...AST_ALL, 'mst_manager', 'mst_viewer'] },   // v1.67.4 (masters)
           { label: 'Stock valuation', hint: 'Value of the stock by item – average, FIFO or standard cost', link: MS + 'valuation', icon: 'price_check', perms: ['ast_manager', 'mst_manager', 'mst_viewer'] },   // v1.44.0
           { label: 'Business partners', hint: 'Customers, suppliers and contractors shared by every app', link: MS + 'r/partner', icon: 'diversity_2', perms: [...AST_ALL, 'mst_manager', 'mst_viewer'] },   // v1.42.0
           { label: 'Stock movements', hint: 'Receipts, issues, transfers', link: AM + 'r/stock_move', icon: 'sync_alt', perms: AST_STORE },
@@ -1163,6 +1165,10 @@ export const MAIN_GROUPS: MenuGroup[] = [
         { title: 'Company', items: [
             { label: 'Company', link: M + 'settings/location-master', icon: 'domain', perms: ['view_company'] },
             { label: 'Branches', link: M + 'settings/branch-master', icon: 'store', perms: ['view_brnch_mstr'] },
+            // v1.67.3 (apps) the company core without HR: departments, designations and the employee directory (with HR they are in HR › Employees)
+            { label: 'Departments', link: M + 'sub-sidebar/department-master', icon: 'business', perms: ['view_dept_master'], country: '!app:hrms' },
+            { label: 'Designations', link: M + 'sub-sidebar/designation-master', icon: 'badge', perms: ['view_desgntn_master'], country: '!app:hrms' },
+            { label: 'Employee directory', hint: 'Name, code, branch, department, designation, contact and status of every employee', link: M + 'settings/employee-directory', icon: 'contacts', perms: ['view_emp_master', 'add_emp_master', 'change_emp_master'], country: '!app:hrms' },
             { label: 'Country settings', hint: 'Captions, features and rules of the company country', link: M + 'settings/country-settings', icon: 'public', perms: ['change_countrypacksettings'] },   // v1.14.0
             { label: 'Languages', hint: 'Languages of the company and translations of the screens', link: M + 'settings/languages', icon: 'translate', perms: ['change_term'] },   // v1.15.0
             { label: 'States / emirates', link: M + 'settings/state-master', icon: 'map', perms: ['view_state_mstr'], country: 'states' },   // v1.14.0 (caption follows the country)
@@ -1191,7 +1197,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
       // v1.21.0: which apps the company uses, with the industry of each
       { key: 'st-apps', label: 'Apps', icon: 'apps', sections: [
         { title: 'Apps', items: [
-            { label: 'Apps', hint: 'Activate HR, Payroll, Projects, CRM, Property, Maintenance, Asset Management and HSE, with the industry of each', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
+            { label: 'Apps', hint: 'Activate HR, Payroll, Projects, CRM, Property, Maintenance, Asset Management and HSE, with the industry of each and what each needs', link: M + 'settings/apps', icon: 'apps', perms: ['*admin', 'manage_apps'] },
           ] },
       ] },
       // v1.23.0 ZEO Cloud: the account owner's subscription and sign-in rules
@@ -1219,10 +1225,10 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Single sign-on', hint: 'Sign in with Microsoft (Office 365), Google Workspace or SAML', link: M + 'settings/single-sign-on', icon: 'key', perms: ['zeo_company_admin'] },   // v1.54.0
             { label: 'Security dashboard', hint: 'Users without the authenticator, wrong passwords, sign-ins, API keys, exports, security events', link: M + 'settings/security-dashboard', icon: 'security', perms: ['zeo_company_admin'] },   // v1.62.0
             { label: 'Give access', hint: 'Logins for employees with and without e-mail: link, WhatsApp code, slip, generated password, kiosk', link: M + 'settings/give-access', icon: 'how_to_reg', perms: ['give_access', 'change_emp_master'] },   // v1.62.0
-            { label: 'Bank-detail changes', hint: 'Changes of bank accounts waiting for a second person', link: M + 'settings/bank-changes', icon: 'account_balance', perms: ['approve_bank_change', 'change_employeebankdetail'] },   // v1.62.0
+            { label: 'Bank-detail changes', hint: 'Changes of bank accounts waiting for a second person', link: M + 'settings/bank-changes', icon: 'account_balance', perms: ['approve_bank_change', 'change_employeebankdetail'], country: 'app:hrms' },   // v1.67.3 (apps)   // v1.62.0
           ] },
         { title: 'Administration', items: [   // v1.52.0
-            { label: 'Setup guide', hint: 'A new company step by step to the first payroll – readiness check', link: M + 'settings/setup-guide', icon: 'checklist', perms: ['zeo_company_admin'] },   // v1.56.0
+            { label: 'Setup guide', hint: 'A new company step by step to the first payroll – readiness check', link: M + 'settings/setup-guide', icon: 'checklist', perms: ['zeo_company_admin'], country: 'app:hrms' },   // v1.67.3 (apps) the HR setup   // v1.56.0
             { label: 'API keys and webhooks', hint: 'Let other systems read ZEO and hear about changes', link: M + 'settings/api-keys-webhooks', icon: 'webhook', perms: ['zeo_company_admin'] },
             { label: 'Data workbook', hint: 'Load a company from one Excel workbook – template, check, load in the background, history', link: M + 'settings/data-workbook', icon: 'upload_file', perms: ['zeo_company_admin'] },   // v1.62.0 workbook
             { label: 'Import history', hint: 'Every import from a file – undo an import', link: M + 'settings/import-history', icon: 'history', perms: ['zeo_company_admin'] },
@@ -1265,9 +1271,21 @@ let preferKey = '';
 export function preferApp(key: string | null | undefined): void { preferKey = key || ''; }
 
 /** The app a URL belongs to: exact menu item first, then longest item prefix, then the module part of the URL. */
+/** v1.67.3 (apps): is the app's suite active (Settings and the shared apps always)? A page listed in an inactive app and in an
+ *  active one (Departments: HR › Employees and, without HR, Settings › Company) belongs to the active one. */
+function suiteOn(app: MenuApp): boolean {
+  const a = ZEO_FLAGS.apps; if (!a) { return true; }
+  const g = MAIN_GROUPS.find(x => x.apps.includes(app)); const s = (g?.suite || 'hrms') as string;
+  return s === 'common' || s === 'settings' || a.includes(s);
+}
 export function appForUrl(url: string): MenuApp | null {
   const u = clean(url);
   if (dashKeepKey && isReportUrl(u)) { const k = ALL_APPS.find(a => a.key === dashKeepKey); if (k) { return k; } }   // v1.40.1
+  if (ZEO_FLAGS.apps) {   // v1.67.3 (apps)
+    const on = ALL_APPS.find(a => suiteOn(a) && (a.sections || []).some(x => x.items.some(i => !i.alias && i.link === u && flagsOk(i.country))));
+    const off = ALL_APPS.find(a => !suiteOn(a) && (a.sections || []).some(x => x.items.some(i => !i.alias && i.link === u)));
+    if (on && off) { return on; }
+  }
   let best: { app: MenuApp; len: number } | null = null;
   for (const app of ALL_APPS) {
     for (const s of app.sections || []) {

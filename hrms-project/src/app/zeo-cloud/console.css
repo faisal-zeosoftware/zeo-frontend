@@ -37,3 +37,6 @@
 
 /* v1.62.1 progress cards of the moves */
 .cc-moveprog z-job-progress + z-job-progress { margin-top: 10px; }
+
+/* v1.67.3 (apps) what an app needs */
+.cc-needs { margin-inline-start: 4px; font-size: 11.5px; color: #5b4ff5; font-weight: 600; }

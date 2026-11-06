@@ -15,17 +15,19 @@ import { i18nT } from './i18n-core';
   imports: [CommonModule, ...I18N_UI],
   changeDetection: ChangeDetectionStrategy.Default,
   template: `
-<div class="jp" [class.ok]="job?.state === 'done'" [class.bad]="job?.state === 'failed'" [class.compact]="compact" role="status" aria-live="polite">
+<div class="jp" [class.ok]="job?.state === 'done'" [class.bad]="isBad()" [class.compact]="compact" role="status" aria-live="polite">
   <div class="jp-top">
     <div class="jp-ic" aria-hidden="true">
-      <span *ngIf="job?.state === 'done'">✓</span><span *ngIf="job?.state === 'failed'">!</span>
-      <span *ngIf="job?.state !== 'done' && job?.state !== 'failed'" class="jp-spin"></span>
+      <span *ngIf="job?.state === 'done'">✓</span><span *ngIf="isBad()">!</span>
+      <span *ngIf="job?.state !== 'done' && !isBad()" class="jp-spin"></span>
     </div>
     <div class="jp-head">
       <h3 class="jp-title">{{ heading() }}</h3>
-      <p class="jp-now" *ngIf="job?.state !== 'done' && job?.state !== 'failed'">{{ stepText() }}<span *ngIf="job?.detail"> – {{ detailText() }}</span></p>
+      <p class="jp-now" *ngIf="job?.state !== 'done' && !isBad()">{{ stepText() }}<span *ngIf="job?.detail"> – {{ detailText() }}</span></p>
       <p class="jp-now" *ngIf="job?.state === 'done'">{{ doneText | t }}</p>
       <p class="jp-err" *ngIf="job?.state === 'failed'">{{ job?.error || ('Unknown error.' | t) }}</p>
+      <!-- v1.67.2 (signup) the job's process stopped (no beat for 90 s) -->
+      <p class="jp-err" *ngIf="job?.state !== 'failed' && job?.stalled">{{ 'The job has stopped responding (the server may have been restarted). It is not moving any more.' | t }}</p>
     </div>
     <div class="jp-pct" *ngIf="job?.state !== 'failed'">{{ pct() }}%</div>
   </div>
@@ -35,7 +37,8 @@ import { i18nT } from './i18n-core';
   </div>
   <div class="jp-times">
     <span *ngIf="job?.elapsed !== undefined && job?.elapsed !== null">{{ 'Time taken' | t }}: {{ dur(job.elapsed) }}</span>
-    <span *ngIf="job?.state === 'running' && job?.remaining">{{ 'About {0} left' | t: [dur(job.remaining)] }}</span>
+    <span *ngIf="job?.state === 'running' && job?.remaining && !job?.stalled">{{ 'About {0} left' | t: [dur(job.remaining)] }}</span>
+    <span *ngIf="job?.state === 'running' && !job?.remaining && !job?.stalled && (job?.slow || job?.overdue)">{{ 'Still working – no estimate of the time left' | t }}</span>
   </div>
 
   <ol class="jp-steps" *ngIf="job?.stages?.length">
@@ -43,12 +46,13 @@ import { i18nT } from './i18n-core';
       <span class="jp-dot" aria-hidden="true">{{ s.state === 'done' ? '✓' : (s.state === 'failed' ? '!' : '') }}</span>
       <span class="jp-l">{{ stageLabel(s) }}</span>
       <span class="jp-s" *ngIf="s.state === 'done' && s.seconds !== null">{{ dur(s.seconds) }}</span>
-      <span class="jp-s" *ngIf="s.state === 'running'">{{ 'In progress' | t }}</span>
+      <span class="jp-s" *ngIf="s.state === 'running' && !job?.stalled">{{ 'In progress' | t }}</span>
+      <span class="jp-s" *ngIf="s.state === 'running' && job?.stalled">{{ 'Stopped' | t }}</span>
     </li>
   </ol>
 
-  <p class="jp-note" *ngIf="job?.state !== 'done' && job?.state !== 'failed' && note">{{ note | t }}</p>
-  <div class="jp-foot" *ngIf="job?.state === 'done' || job?.state === 'failed'">
+  <p class="jp-note" *ngIf="job?.state !== 'done' && !isBad() && noteText()">{{ noteText() }}</p>
+  <div class="jp-foot" *ngIf="job?.state === 'done' || isBad()">
     <ng-content></ng-content>
   </div>
 </div>`,
@@ -117,10 +121,36 @@ export class ZJobProgressComponent {
     return i18nT(s?.label || '');
   }
 
+  /** v1.67.2 (signup) the highest % shown for this job – the bar never goes back (a new job, e.g. a retry, starts again) */
+  private hi = 0; private hiKey: any = null;
   pct(): number {
     const p = Number(this.job?.percent);
     if (this.job?.state === 'done') { return 100; }
-    return isFinite(p) ? Math.max(0, Math.min(100, Math.round(p))) : 0;
+    const key = this.job?.started ?? this.job?.schema ?? null;
+    if (key !== this.hiKey) { this.hiKey = key; this.hi = 0; }
+    const v = isFinite(p) ? Math.max(0, Math.min(100, Math.round(p))) : 0;
+    this.hi = Math.max(this.hi, v);
+    return this.hi;
+  }
+  /** v1.67.2 (signup) failed, or stopped responding */
+  isBad(): boolean { return this.job?.state === 'failed' || !!this.job?.stalled; }
+  /** v1.67.2 (signup) the note under the steps: the usual time measured on this server (no fixed "about a minute"),
+   *  "taking longer than usual" once that time has clearly passed, else the caller's note. */
+  noteText(): string {
+    const j = this.job || {};
+    const exp = Number(j.expected) || 0;
+    const el = Number(j.elapsed) || 0;
+    if (exp > 0 && el > Math.max(exp * 1.5, exp + 20)) {
+      return i18nT('This is taking longer than usual. You can leave this window open – the work goes on.');
+    }
+    if (exp > 0) { return i18nT('This usually takes about {0} on this server.', [this.about(exp)]); }
+    return this.note ? i18nT(this.note) : '';
+  }
+  /** a rounded duration for the note: "10 s", "1 min", "3 min" */
+  about(sec: number): string {
+    const s = Math.max(1, Math.round(sec));
+    if (s < 60) { return i18nT('{0} s', [Math.max(5, Math.ceil(s / 5) * 5)]); }
+    return i18nT('{0} min', [Math.ceil(s / 60)]);
   }
   /** detail_t / detail_p from the server: the template and its values, both translated here */
   detailText(): string {
@@ -130,6 +160,7 @@ export class ZJobProgressComponent {
   }
   heading(): string {
     if (this.job?.state === 'failed') { return i18nT('It could not be completed'); }
+    if (this.job?.stalled) { return i18nT('It has stopped'); }   // v1.67.2 (signup)
     return this.title || i18nT('Working…');
   }
   dur(sec: any): string {

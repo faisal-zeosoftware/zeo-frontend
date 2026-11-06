@@ -520,7 +520,7 @@ label{
 
 .leave-types-table tbody tr:hover {
   background-color: #f0f7ff;
-  transform: translateY(-1px);
+  /* v1.67.5 (bugs) L1: no transform on the row – it moved the sticky Action cell while the list scrolled */
   box-shadow: 0 2px 8px rgba(0, 73, 118, 0.1);
 }
 

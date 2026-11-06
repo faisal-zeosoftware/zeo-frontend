@@ -31,6 +31,13 @@
 .t62-x { border: 0; background: transparent; font-size: 22px; line-height: 1; color: #6b7185; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
 .t62-x:hover { background: #f3f4f8; }
 .t62-dbody { padding: 8px 22px 16px; overflow: auto; }
+/* v1.67.5 (bugs) S1: the editor scrolls on its own – the wheel at its top / end (or over the dark veil) no longer moves the list
+   behind it, the body takes the free height (flex) and the window fits the visible height on phones (dvh; 100vh is taller
+   than the visible area there, so Save sat below the screen) */
+.t62-dbody { flex: 1 1 auto; min-height: 0; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.t62-box { max-height: calc(100dvh - 32px); }
+.t62-head, .t62-foot { flex: none; }
+.t62-veil { overscroll-behavior: contain; touch-action: none; }
 .t62-sec h3 { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: #6b7185; margin: 14px 0 8px; }
 :host-context([dir=rtl]) .t62-sec h3 { letter-spacing: 0; }
 .t62-fgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }

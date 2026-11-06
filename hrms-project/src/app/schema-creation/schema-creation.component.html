@@ -138,9 +138,13 @@
         <div class="sc-apps-grid">
             <label class="sc-app" *ngFor="let a of appChoices" [class.on]="a.on">
                 <input type="checkbox" [(ngModel)]="a.on" [ngModelOptions]="{standalone: true}">
-                <span><b>{{ a.label }}</b><small>{{ a.hint }}</small></span>
+                <span><b>{{ a.label }}</b><small>{{ a.hint }}</small>
+                    <small class="sc-needs" *ngIf="needsOf(a.key).length" data-app-needs>{{ 'Needs {0} – comes with it' | t:[needsOf(a.key).join(', ')] }}</small></span>
             </label>
         </div>
+        <!-- v1.67.3 (apps): what the chosen apps bring with them, and the core every company has -->
+        <p class="sc-apps-hint sc-brings" *ngIf="broughtIn().length" data-app-brings>{{ 'Also switched on because a chosen app needs it: {0}.' | t:[broughtIn().join(', ')] }}</p>
+        <p class="sc-apps-hint" data-app-core>{{ 'Always on, not an app: company, branches, departments, designations, users and rights, business partners, items, locations and the employee directory.' | t }}</p>
         <p class="sc-apps-err" *ngIf="registerButtonClicked && !chosenApps().length">Choose at least one app.</p>
     </fieldset>
 </div>

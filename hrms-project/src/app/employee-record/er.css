@@ -426,3 +426,11 @@ button { font: inherit; }
 .er-wrow { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
 .er-wrow .grow { flex: 1 1 200px; }
 .er-err { color: #D64550; font-size: 12.5px; margin: 0; }
+
+/* v1.67.5 (bugs) E1: the photo in Personal details (view and edit) */
+.er-av.xl { width: 72px; height: 72px; font-size: 24px; }
+.er-photo { display: flex; align-items: center; gap: 14px; padding: 4px 0 12px; margin-bottom: 8px; border-bottom: 1px solid var(--z-line, #E3E5EE); }
+.er-photo-t { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.er-photo-t small { color: var(--z-muted, #6B7085); font-size: 12px; }
+.er-photo-a { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.er-photo-a label.er-btn { cursor: pointer; margin: 0; }

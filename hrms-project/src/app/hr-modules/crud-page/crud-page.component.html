@@ -166,10 +166,22 @@
             <ng-container [ngSwitch]="f.type">
               <textarea *ngSwitchCase="'textarea'" class="form-control" rows="3" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''"></textarea>
               <textarea *ngSwitchCase="'json'" class="form-control mono" rows="3" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''"></textarea>
-              <select *ngSwitchCase="'select'" class="form-control" [(ngModel)]="formModel[f.key]">
-                <option [ngValue]="null">Select</option>
-                <option *ngFor="let o of options[f.key]" [ngValue]="o.value">{{ o.label }}</option>
-              </select>
+              <ng-container *ngSwitchCase="'select'">
+                <select *ngIf="!f.search" class="form-control" [(ngModel)]="formModel[f.key]">
+                  <option [ngValue]="null">Select</option>
+                  <option *ngFor="let o of options[f.key]" [ngValue]="o.value">{{ o.label }}</option>
+                </select>
+                <!-- v1.67.5 (bugs) L3: search + a list that stays open after the pick (change it or search again) -->
+                <div *ngIf="f.search" class="hr-pick" [attr.data-hr-pick]="f.key">
+                  <input type="search" class="form-control hr-pick-q" [(ngModel)]="pickQ[f.key]" [placeholder]="'Search by name or code' | t" autocomplete="off" data-hr-pick-q>
+                  <div class="hr-pick-list" role="listbox" [attr.aria-label]="f.label | t">
+                    <button type="button" role="option" *ngFor="let o of pickOptions(f); trackBy: trackOpt" class="hr-pick-o" [class.on]="sameVal(formModel[f.key], o.value)"
+                            [attr.aria-selected]="sameVal(formModel[f.key], o.value)" (click)="formModel[f.key] = o.value" [attr.data-hr-pick-o]="o.value">{{ o.label }}</button>
+                    <p class="hr-pick-none" *ngIf="!pickOptions(f).length">{{ 'Nothing found' | t }}</p>
+                  </div>
+                  <small class="hr-pick-sel" *ngIf="formModel[f.key] !== null && formModel[f.key] !== undefined && formModel[f.key] !== ''" data-hr-pick-sel>{{ 'Chosen:' | t }} <b>{{ pickLabel(f) }}</b></small>
+                </div>
+              </ng-container>
               <div *ngSwitchCase="'multiselect'" class="hr-multi form-control">
                 <label *ngFor="let o of options[f.key]" class="hr-check">
                   <input type="checkbox" [checked]="(formModel[f.key] || []).includes(o.value)" (change)="toggleMulti(formModel, f.key, o.value)"> {{ o.label }}

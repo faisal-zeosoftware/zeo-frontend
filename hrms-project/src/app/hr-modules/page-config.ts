@@ -42,6 +42,9 @@ export interface FieldConfig {
   chipOptions?: string[];
   /** v1.14.0: country condition (CountryPackService.allows), e.g. 'national_id' or '!wps_sif' – the field is left out when it does not hold */
   country?: string;
+  /** v1.67.5 (bugs) L3: a 'select' shown as a search box over a list that stays open – after a pick the list is still there
+   *  (the chosen one highlighted), so the user can change the pick or search again */
+  search?: boolean;
 }
 
 export type ColumnType = 'text' | 'date' | 'datetime' | 'money' | 'number' | 'tag' | 'stars' | 'progress' | 'bool' | 'list' | 'percent';

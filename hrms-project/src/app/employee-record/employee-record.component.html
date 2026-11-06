@@ -70,6 +70,19 @@
           <section class="er-card er-sec" [id]="'card-' + key" [class.editing]="editing === key">
             <div class="er-sec-h"><h2>{{ title }}</h2>
               <button type="button" class="er-icon pen" *ngIf="r.can_edit && editing !== key" (click)="edit(key)" [attr.aria-label]="'Edit ' + title">✎</button></div>
+            <!-- v1.67.5 (bugs) E1: the photo is shown and changed here too (before: only by clicking the round picture in the header, with no hint) -->
+            <div class="er-photo" *ngIf="key === 'personal'" data-er-photo>
+              <span class="er-av xl" [style.background]="(photoPreview || r.header.photo) ? 'transparent' : colour(r.header.code)">
+                <img *ngIf="photoPreview || r.header.photo" [src]="photoPreview || r.header.photo" alt="" data-er-photo-img (error)="photoBroken = true">
+                <ng-container *ngIf="!(photoPreview || r.header.photo)">{{ r.header.initials }}</ng-container>
+              </span>
+              <div class="er-photo-t"><b>{{ t('Photo') }}</b>
+                <small>{{ photoBusy ? t('Saving…') : (photoBroken ? t('The saved photo could not be loaded – upload it again.') : t('JPG, PNG or WebP, up to 5 MB.')) }}</small>
+                <span class="er-photo-a" *ngIf="r.can_edit">
+                  <label class="er-btn sm">{{ t(r.header.photo ? 'Change photo' : 'Upload photo') }}<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" (change)="photo($event)" hidden data-er-photo-input></label>
+                  <button type="button" class="er-btn sm" *ngIf="r.header.photo" (click)="removePhoto()" data-er-photo-remove>{{ t('Remove photo') }}</button>
+                </span></div>
+            </div>
             <dl class="er-kv" *ngIf="editing !== key">
               <div *ngFor="let f of fields"><dt>{{ f.label }}</dt><dd [attr.dir]="cardValues(key)?.[f.key] ? (f.dir || null) : null">{{ show(f, cardValues(key)) }}</dd></div>
             </dl>

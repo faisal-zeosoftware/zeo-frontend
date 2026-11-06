@@ -277,8 +277,10 @@ export class ZFormComponent implements OnInit {
     return r;
   }
   req(f: ZFormField): boolean { return f.required ?? !!(this.meta[f.key]?.required); }
-  has(k: string, val: any): boolean { return (this.v[k] || []).some((x: any) => String(x) === String(val)); }
-  toggle(k: string, val: any): void { const a = [...(this.v[k] || [])]; const i = a.findIndex((x: any) => String(x) === String(val)); i >= 0 ? a.splice(i, 1) : a.push(val); this.v[k] = a; }
+  // v1.67.5 (bugs) L4: a single value (an id, or a name from an old API) in a list field no longer breaks the whole form
+  private arr(k: string): any[] { const x = this.v[k]; return Array.isArray(x) ? x : (x === null || x === undefined || x === '' ? [] : [x]); }
+  has(k: string, val: any): boolean { return this.arr(k).some((x: any) => String(x) === String(val)); }
+  toggle(k: string, val: any): void { const a = [...this.arr(k)]; const i = a.findIndex((x: any) => String(x) === String(val)); i >= 0 ? a.splice(i, 1) : a.push(val); this.v[k] = a; }
   allOn(k: string): boolean { return (this.opts[k] || []).length > 0 && (this.opts[k] || []).every(o => this.has(k, o.value)); }
   all(k: string): void { this.v[k] = this.allOn(k) ? [] : (this.opts[k] || []).map(o => o.value); }
 

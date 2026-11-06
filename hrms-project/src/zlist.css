@@ -22,6 +22,14 @@ tr.zl-off { display: none !important; }
 
 /* ---------- table ---------- */
 table.zl-table { width: 100%; background: #fff; border-collapse: separate !important; border-spacing: 0; border: 1px solid var(--zl-line) !important; border-radius: 10px; overflow: hidden; margin-bottom: 0 !important; }
+/* v1.67.5 (bugs) L1: "overflow: hidden" (for the rounded corners) made the table its own scroll box, so a sticky first / last
+   column (No, Action) never stuck: on a wide list (Leave types) the Edit button sat off-screen on the right and the only
+   horizontal scrollbar was at the bottom of the whole table. "clip" keeps the corners without a scroll box. */
+table.zl-table { overflow: clip; }
+table.zl-table td.sticky-right, table.zl-table th.sticky-right { position: sticky; right: auto; inset-inline-end: 0; z-index: 2; background: #fff; box-shadow: -6px 0 8px -6px rgba(27,22,64,.18); }
+table.zl-table td.sticky-left, table.zl-table th.sticky-left { position: sticky; left: auto; inset-inline-start: 0; z-index: 2; background: #fff; }
+table.zl-table thead th.sticky-right, table.zl-table thead th.sticky-left { z-index: 3; }
+[dir=rtl] table.zl-table td.sticky-right, [dir=rtl] table.zl-table th.sticky-right { box-shadow: 6px 0 8px -6px rgba(27,22,64,.18); }
 table.zl-table > thead > tr > th {
   background: var(--zl-primary) !important; color: #fff !important; font-size: 12px !important; font-weight: 500 !important;
   text-transform: uppercase; letter-spacing: .3px; white-space: nowrap; padding: 10px 12px !important; border: none !important; vertical-align: middle;
@@ -372,3 +380,5 @@ button.z-row-btn.zl-inact { width: auto; padding: 0 9px; font-size: 12px; font-w
 /* v1.62.1 ui: the "+ New" column of a legacy header sits at the right edge also when the old search column is hidden */
 .header_section.z-card-head .row { display: flex; flex-wrap: wrap; align-items: flex-start; }
 .header_section.z-card-head .row > [class*="col-"]:has(.z-new-btn) { margin-inline-start: auto; }
+/* v1.67.5 (bugs) S1: while an editor window of the shift / calendar screens is open the page behind it does not scroll */
+body:has(> .t62-dlg) main.sub-content-area, body:has(> .t62-dlg) main.content-area, main.sub-content-area:has(.t62-dlg) { overflow: hidden !important; }

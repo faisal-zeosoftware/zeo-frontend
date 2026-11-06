@@ -97,7 +97,7 @@ export const LEAVE_REQUEST_PAGE: PageConfig = {
     { key: 'employee', label: 'Employee', lookup: LOOKUPS.employees },
   ],
   fields: [
-    { key: 'employee', label: 'Employee', type: 'select', lookup: LOOKUPS.employees, required: true, width: 6 },
+    { key: 'employee', label: 'Employee', type: 'select', lookup: LOOKUPS.employees, required: true, width: 6, search: true },   // v1.67.5 (bugs) L3
     { key: 'leave_type', label: 'Leave type', type: 'select', lookup: { endpoint: '/calendars/api/leave-type/', label: lvTypeLabel2 }, required: true, width: 6 },   // v1.65.0 (item 82)
     { key: 'start_date', label: 'From', type: 'date', required: true, width: 3 },
     { key: 'end_date', label: 'To', type: 'date', required: true, width: 3 },

@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { EssApiService } from './ess-api.service';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { EssPunchSettingsComponent } from './ess-punch.component';   // v1.67.5 (bugs) ESS1
 
 /**
  * v1.13.0 – Self-service settings (HR):
@@ -16,7 +17,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
 @Component({
   selector: 'app-ess-settings',
   standalone: true,
-  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule],
+  imports: [...COUNTRY_PACK_UI, CommonModule, FormsModule, EssPunchSettingsComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -34,7 +35,9 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
         <button type="button" class="es-tab" [class.on]="tab === 'fields'" (click)="tab = 'fields'">Profile fields</button>
         <button type="button" class="es-tab" [class.on]="tab === 'templates'" (click)="tab = 'templates'; loadTemplates()">Letter templates</button>
         <button type="button" class="es-tab" [class.on]="tab === 'complaints'" (click)="tab = 'complaints'; loadComplaints()">Complaints</button>
+        <button type="button" class="es-tab" [class.on]="tab === 'punch'" (click)="tab = 'punch'" data-ess-tab-punch>Punch from My profile</button><!-- v1.67.5 (bugs) ESS1 -->
       </div>
+      <z-ess-punch-settings *ngIf="tab === 'punch'"></z-ess-punch-settings>
       <p class="es-msg" *ngIf="ok">{{ ok }}</p>
       <p class="es-msg err" *ngIf="msg">{{ msg }}</p>
 

@@ -7,6 +7,7 @@ import { ZListService } from './z-list.service';
 import { MAIN_GROUPS, MenuApp, MenuGroup, MenuSection, Suite, appForUrl, itemVisible, countryVisible } from './menu-config';
 import { CountryPackService } from './country-pack.service';
 import { flagsVisible } from './zeo-flags';
+import { ZSuiteService } from './z-suite.service';   // v1.67.3 (apps)
 import { I18N_UI, I18nService, i18nT } from './i18n.service';   // v1.15.0
 
 type Access = { admin: boolean; codes: Set<string> } | null;
@@ -123,7 +124,8 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
   private opened = new Set<string>();
   private subs: Subscription[] = [];
 
-  constructor(private router: Router, private zlist: ZListService, private cd: ChangeDetectorRef, private cp: CountryPackService, private i18n: I18nService) {}
+  constructor(private router: Router, private zlist: ZListService, private cd: ChangeDetectorRef, private cp: CountryPackService, private i18n: I18nService,
+              private suites: ZSuiteService) {}
 
   ngOnInit(): void {
     this.refresh();
@@ -131,6 +133,7 @@ export class ZModuleMenuComponent implements OnInit, OnDestroy {
     this.subs.push(this.i18n.lang$.subscribe(() => this.refresh()));   // v1.15.0
     this.subs.push(this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => this.refresh()));
     this.subs.push(this.zlist.permissions().subscribe(a => { this.access = a; this.loaded = true; this.refresh(); }));
+    this.subs.push(this.suites.active$.subscribe(() => this.refresh()));   // v1.67.3 (apps) items shown with / without an app (e.g. !app:hrms)
   }
 
   ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }

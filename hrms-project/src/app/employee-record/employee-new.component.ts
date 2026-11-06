@@ -35,6 +35,18 @@ type Opt = { value: any; label: string };
   <div class="en-body" *ngIf="!loading; else wait">
     <section class="en-sec">
       <h3>{{ t('Personal information') }}</h3>
+      <!-- v1.67.5 (bugs) E1: the photo on the New employee form (before: none – it could be added only on the employee page) -->
+      <div class="en-photo" data-en-photo>
+        <span class="en-av" [class.has]="!!photoUrl">
+          <img *ngIf="photoUrl" [src]="photoUrl" alt="" data-en-photo-img>
+          <span *ngIf="!photoUrl" aria-hidden="true">{{ initials() }}</span>
+        </span>
+        <div class="en-photo-t"><b>{{ t('Photo') }}</b><small>{{ photoErr || t('JPG, PNG or WebP, up to 5 MB.') }}</small>
+          <span class="en-photo-a">
+            <label class="er-btn sm">{{ t(photoUrl ? 'Change photo' : 'Upload photo') }}<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" (change)="pickPhoto($event)" hidden data-en-photo-input></label>
+            <button type="button" class="er-btn sm" *ngIf="photoUrl" (click)="clearPhoto()">{{ t('Remove photo') }}</button>
+          </span></div>
+      </div>
       <div class="en-grid">
         <label class="en-f"><span class="en-l">{{ t('First name') }} <span class="en-req" aria-hidden="true">*</span></span>
           <input [(ngModel)]="f.emp_first_name" maxlength="100" autocomplete="off" [class.bad]="err['emp_first_name']" id="en-first">
@@ -129,6 +141,15 @@ type Opt = { value: any; label: string };
     .en-check { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13.5px; }
     .en-dup { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: #FFF6E5; border: 1px solid #F3D9A4; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
     .en-foot { display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-top: 1px solid var(--z-line, #E3E5EE); }
+    /* v1.67.5 (bugs) E1 */
+    .en-photo { display: flex; align-items: center; gap: 14px; margin: 0 0 12px; }
+    .en-av { flex: none; width: 64px; height: 64px; border-radius: 50%; overflow: hidden; display: inline-flex; align-items: center; justify-content: center;
+      background: #E9E7FB; color: #3F35B5; font-weight: 600; font-size: 20px; }
+    .en-av img { width: 100%; height: 100%; object-fit: cover; }
+    .en-photo-t { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 13px; }
+    .en-photo-t small { color: var(--z-muted, #6B7085); font-size: 12px; }
+    .en-photo-a { display: flex; flex-wrap: wrap; gap: 8px; }
+    .en-photo-a label { cursor: pointer; margin: 0; }
   `]
 })
 export class EmployeeNewComponent implements OnInit {
@@ -213,6 +234,7 @@ export class EmployeeNewComponent implements OnInit {
     body.emp_status = 1; body.is_active = true; body.emp_ot_applicable = false;
     try {
       const r: any = await this.api.post('employee/api/Employee/', body);
+      await this.savePhoto(r?.id);   // v1.67.5 (bugs) E1
       this.created++;
       const name = [this.f.emp_first_name, this.f.emp_last_name].filter(Boolean).join(' ');
       zToast(i18nT('{0} added as {1}', [name, r?.emp_code || this.f.emp_code || '']), 'ok');
@@ -236,5 +258,24 @@ export class EmployeeNewComponent implements OnInit {
     this.busy = false; this.cd.detectChanges();
   }
 
-  close(): void { this.ref?.close({ created: this.created }); }
+  close(): void { this.clearPhoto(); this.ref?.close({ created: this.created }); }
+
+  // v1.67.5 (bugs) E1: the chosen photo is previewed at once and saved on the new employee right after it is created
+  photo: File | null = null; photoUrl = ''; photoErr = '';
+  initials(): string { return ((this.f?.emp_first_name || '').trim()[0] || '') + ((this.f?.emp_last_name || '').trim()[0] || '') || '?'; }
+  pickPhoto(ev: any): void {
+    const f: File | undefined = ev?.target?.files?.[0]; if (ev?.target) { ev.target.value = ''; } if (!f) { return; }
+    this.photoErr = '';
+    if (!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type || '')) { this.photoErr = i18nT('Choose a JPG, PNG or WebP picture.'); this.cd.detectChanges(); return; }
+    if (f.size > 5 * 1024 * 1024) { this.photoErr = i18nT('The picture is larger than 5 MB.'); this.cd.detectChanges(); return; }
+    this.clearPhoto(); this.photo = f; this.photoUrl = URL.createObjectURL(f); this.cd.detectChanges();
+  }
+  clearPhoto(): void { if (this.photoUrl) { URL.revokeObjectURL(this.photoUrl); } this.photo = null; this.photoUrl = ''; }
+  private async savePhoto(id: number): Promise<void> {
+    if (!this.photo || !id) { return; }
+    const fd = new FormData(); fd.append('emp_profile_pic', this.photo, this.photo.name);
+    try { await this.api.patch(`employee/api/Employee/${id}/`, fd); }
+    catch (e) { zToast(ErService.error(e, 'The employee was added, but the photo could not be saved – add it on the employee page.'), 'err'); }
+    this.clearPhoto();
+  }
 }

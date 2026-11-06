@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZListDirective } from '../shared-ui/z-list.directive';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.5 (bugs) S1
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { zToast } from '../shared-ui/z-toast';
 import { SessionService } from '../login/session.service';
@@ -24,7 +25,7 @@ const DAY_NO = Array.from({ length: 31 }, (_, i) => i + 1);
   selector: 'app-t62-shift-patterns',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZPortalDirective],
   styleUrls: ['../hr-modules/hr-shared.css', './t62.css'],
   template: `
 <div class="container hr-page" data-t62="patterns">
@@ -63,7 +64,7 @@ const DAY_NO = Array.from({ length: 31 }, (_, i) => i + 1);
   </div>
 </div>
 
-<div class="t62-dlg" *ngIf="f" data-t62-dialog data-zform>
+<div class="t62-dlg" zPortal *ngIf="f" data-t62-dialog data-zform>
   <div class="t62-veil" (click)="close()"></div>
   <div class="t62-box" role="dialog" aria-modal="true" (keydown.escape)="close()">
     <div class="t62-head">
@@ -152,6 +153,8 @@ export class T62ShiftPatternsComponent extends T62Base {
     try { this.shifts = await this.list('/calendars/api/shifts/'); } catch { this.shifts = []; }
     await super.load();
   }
+  // v1.67.5 (bugs) S2: a steady order (by name) – the API gave the rows in storage order, so an edited pattern moved
+  override shape(rows: any[]): any[] { return [...rows].sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { numeric: true, sensitivity: 'base' }) || (a.id - b.id)); }
   shiftName(id: any): string { return this.shifts.find(s => String(s.id) === String(id))?.name || ''; }
   kindLabel(k: string): string { return T(({ weekly: 'Weekly', monthly: 'Monthly', rotating: 'Rotating' } as any)[k] || k || '–'); }
   repeats(r: any): string {
@@ -167,6 +170,8 @@ export class T62ShiftPatternsComponent extends T62Base {
     (c.weeks || []).forEach((w: any) => (w.rules || []).forEach((x: any) => ids.add(x.shift_id)));
     (c.months || []).forEach((m: any) => (m.rules || []).forEach((x: any) => ids.add(x.shift_id)));
     (c.rotating?.shift_sequence || []).forEach((x: any) => ids.add(x));
+    if (c.rotating?.shift_id) { ids.add(c.rotating.shift_id); }
+    if (r.pattern_type === 'rotating' && !ids.size && r.rotating_shift) { ids.add(r.rotating_shift); }   // v1.67.5 (bugs) S2: saved in the rotation fields
     const names = [...ids].map(i => this.shiftName(i)).filter(Boolean);
     if (!names.length) { DAYS.forEach(d => { const v = r[d.toLowerCase() + '_shift']; if (v && !names.includes(v)) { names.push(v); } }); }
     return names;
@@ -185,7 +190,10 @@ export class T62ShiftPatternsComponent extends T62Base {
     } else {
       const x = c.rotating || {};
       f.work = +(x.work_days ?? r?.work_days ?? 1); f.off = +(x.off_days ?? r?.off_days ?? 0);
-      f.seq = x.shift_sequence ? [...x.shift_sequence] : [];
+      // v1.67.5 (bugs) S2: a pattern kept in the rotation fields (one shift on every working day, no shift_sequence) opened with
+      // empty days – saving it then failed or lost the shift; its shift is now filled in on each working day
+      const one = x.shift_id ?? r?.rotating_shift ?? null;
+      f.seq = x.shift_sequence ? [...x.shift_sequence] : (one ? Array.from({ length: f.work }, () => one) : []);
     }
     this.f = f; this.resize();
   }

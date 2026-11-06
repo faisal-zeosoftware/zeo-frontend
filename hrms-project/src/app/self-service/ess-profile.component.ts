@@ -10,6 +10,7 @@ import { I18N_UI } from '../shared-ui/i18n.service';   // v1.15.0
 import { EssCustomFieldsComponent } from './ess-custom-fields.component';   // v1.16.0
 import { ZFieldHelpToggleComponent } from '../field-help/field-help-settings.component';   // v1.16.0
 import { ZNoEmployeeComponent } from '../people62/z-no-employee.component';   // v1.62.0 people
+import { EssPunchComponent } from './ess-punch.component';   // v1.67.5 (bugs) ESS1
 
 interface FormField { key: string; label: string; type: string; policy: string; value: any; options?: any[]; source?: string; readonly?: boolean; }
 interface FormState { title: string; intro: string; group: string; action: 'create' | 'update' | 'delete'; recordId: number | null;
@@ -19,7 +20,7 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
 @Component({
   selector: 'app-ess-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ...I18N_UI, EssCustomFieldsComponent, ZFieldHelpToggleComponent, ZNoEmployeeComponent, ZDateFieldComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, ...I18N_UI, EssCustomFieldsComponent, ZFieldHelpToggleComponent, ZNoEmployeeComponent, ZDateFieldComponent, EssPunchComponent],
   styleUrls: ['./ess.css'],
   template: `
 <div class="container">
@@ -56,6 +57,9 @@ interface FormState { title: string; intro: string; group: string; action: 'crea
           <z-field-help-toggle></z-field-help-toggle><!-- v1.16.0 -->
         </div>
       </div>
+
+      <!-- v1.67.5 (bugs) ESS1: punch in / out with the attendance card / QR code or the face -->
+      <z-ess-punch></z-ess-punch>
 
       <ng-container *ngIf="p">
         <div class="es-panel" *ngFor="let g of p.groups" [attr.id]="'g-' + g.key">

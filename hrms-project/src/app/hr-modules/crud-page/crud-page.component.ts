@@ -14,7 +14,7 @@ import { ActionConfig, ChildConfig, ColumnConfig, FieldConfig, PageConfig } from
 import { HrPermissionService } from '../hr-permission.service';
 import { CountryPackService, cpLocalize } from '../../shared-ui/country-pack.service';
 import { ZTranslateComponent } from '../../shared-ui/z-translate.component';
-import { I18nService, i18nLocalize } from '../../shared-ui/i18n.service';   // v1.15.0
+import { I18nService, i18nLocalize, TPipe } from '../../shared-ui/i18n.service';   // v1.15.0; v1.67.5 (bugs) TPipe
 import { zConfirm } from '../../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 type Opt = { value: any; label: string };
@@ -22,7 +22,7 @@ type Opt = { value: any; label: string };
 @Component({
   selector: 'app-hr-crud-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent, ZMoneyPipe, ZDateFieldComponent],   // v1.62.0 ui zmoney
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZOrgPickDirective, ZTranslateComponent, ZMoneyPipe, ZDateFieldComponent, TPipe],   // v1.62.0 ui zmoney
   templateUrl: './crud-page.component.html',
   styleUrls: ['../hr-shared.css'],
 })
@@ -45,6 +45,18 @@ export class CrudPageComponent implements OnInit {
   formOpen = false;
   formFields: FieldConfig[] = [];
   formModel: any = {};
+  // v1.67.5 (bugs) L3: the search text of a 'select' with search – the list stays shown after a pick
+  pickQ: Record<string, string> = {};
+  sameVal(a: any, b: any): boolean { return a !== null && a !== undefined && a !== '' && String(a) === String(b); }
+  trackOpt(_i: number, o: Opt): any { return o.value; }
+  pickOptions(f: FieldConfig): Opt[] {
+    const all = this.options[f.key] || [];
+    const q = (this.pickQ[f.key] || '').trim().toLowerCase();
+    if (!q) { return all.slice(0, 200); }
+    const hit = all.filter(o => o.label.toLowerCase().includes(q) || this.sameVal(this.formModel[f.key], o.value));
+    return hit.slice(0, 200);
+  }
+  pickLabel(f: FieldConfig): string { return (this.options[f.key] || []).find(o => this.sameVal(this.formModel[f.key], o.value))?.label || String(this.formModel[f.key] ?? ''); }
   formFiles: Record<string, File | null> = {};
   formTitle = '';
   formEndpoint = '';
@@ -247,6 +259,7 @@ export class CrudPageComponent implements OnInit {
     this.formFixed = fixed;
     this.formFields = fields.filter(f => (id ? !f.createOnly : !f.editOnly));
     this.formModel = {};
+    this.pickQ = {};   // v1.67.5 (bugs) L3
     this.formFiles = {};
     this.formFields.forEach(f => {
       const v = row?.[f.key];

@@ -127,7 +127,7 @@ export class PayslipApprovalsComponent implements OnInit {
     this.busy = true;
     try {
       const r: any = await firstValueFrom(this.http.post(apiUrl('payroll/api/approval-payroll/bulk_approve/'), { approval_ids: ids, note: '' }));
-      this.msg = r?.status || 'Approved.'; this.msgErr = false; await this.load();
+      this.msg = r?.status || 'Approved.'; this.msgErr = !!r?.email?.failed; await this.load();   // v1.67.5 (bugs) P1: a failed payslip e-mail is shown as an error
     } catch (e) { this.msg = errText(e); this.msgErr = true; }
     this.busy = false; this.cd.markForCheck();
   }

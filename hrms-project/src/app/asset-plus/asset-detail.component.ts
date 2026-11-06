@@ -2,6 +2,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZPartnerSuggestDirective } from '../shared-ui/z-partner-suggest.directive';   // v1.67.4 (masters) business partner names on typed supplier fields
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ASSET_BASE, AssetApiService, CONDITIONS, EVENT_ICON, STATUS_CLASS, STATUS_LABEL, isImage, money, today } from './asset-api.service';
@@ -16,7 +17,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
 @Component({
   selector: 'app-asset-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, AssetFormComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, AssetFormComponent, ZPartnerSuggestDirective],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="container">
@@ -242,7 +243,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
       <div class="ex-form" *ngIf="act === 'maintenance'">
         <label>Type<select [(ngModel)]="x.kind" name="k"><option value="breakdown">Breakdown / repair</option><option value="preventive">Preventive (scheduled)</option><option value="inspection">Inspection</option></select></label>
         <label>Plan<select [(ngModel)]="x.schedule" name="s"><option [ngValue]="null">–</option><option *ngFor="let s of schedules" [ngValue]="s.id">{{ s.title }}</option></select></label>
-        <label>Vendor / workshop<input [(ngModel)]="x.vendor" name="v"></label>
+        <label>Vendor / workshop<input [(ngModel)]="x.vendor" name="v" zPartnerSuggest="supplier"></label>
         <label>Start date<input type="date" [(ngModel)]="x.start_date" name="sd"></label>
         <label>Estimated cost<input type="number" min="0" step="0.01" [(ngModel)]="x.cost" name="c"></label>
         <label>Meter reading<input type="number" min="0" step="0.1" [(ngModel)]="x.reading" name="rd"></label>
@@ -267,7 +268,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
         <label *ngIf="x.interval_type === 'days'">Last done<input type="date" [(ngModel)]="x.last_done_date" name="ld"></label>
         <label *ngIf="x.interval_type !== 'days'">Last done at reading<input type="number" min="0" [(ngModel)]="x.last_done_reading" name="lr"></label>
         <label>Remind days before<input type="number" min="0" max="365" [(ngModel)]="x.remind_days_before" name="rb"></label>
-        <label>Vendor<input [(ngModel)]="x.vendor" name="v"></label>
+        <label>Vendor<input [(ngModel)]="x.vendor" name="v" zPartnerSuggest="supplier"></label>
         <label>Estimated cost<input type="number" min="0" step="0.01" [(ngModel)]="x.estimated_cost" name="ec"></label>
       </div>
       <div class="ex-form" *ngIf="act === 'damage'">
@@ -295,7 +296,7 @@ type Act = '' | 'allocate' | 'return' | 'transfer' | 'maintenance' | 'close' | '
         <label>Method<select [(ngModel)]="x.method" name="m"><option value="sale">Sale</option><option value="scrap">Scrap</option><option value="donate">Donation</option><option value="write_off">Write-off</option></select></label>
         <label>Date<input type="date" [(ngModel)]="x.disposal_date" name="dd"></label>
         <label *ngIf="x.method === 'sale' || x.method === 'scrap'">{{ x.method === 'sale' ? 'Sale price *' : 'Scrap value' }}<input type="number" min="0" step="0.01" [(ngModel)]="x.value" name="v"></label>
-        <label *ngIf="x.method === 'sale' || x.method === 'donate'">{{ x.method === 'sale' ? 'Buyer *' : 'Given to' }}<input [(ngModel)]="x.buyer" name="b"></label>
+        <label *ngIf="x.method === 'sale' || x.method === 'donate'">{{ x.method === 'sale' ? 'Buyer *' : 'Given to' }}<input [(ngModel)]="x.buyer" name="b" zPartnerSuggest="customer"></label>
         <label class="wide">Reason *<textarea [(ngModel)]="x.reason" name="r"></textarea></label>
         <div class="ex-calc" *ngIf="a?.book_value !== undefined">Book value today {{ m(a.book_value) }} →
           <span class="ap-gl" [class.gain]="(+x.value || 0) - +a.book_value > 0" [class.loss]="(+x.value || 0) - +a.book_value < 0">

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZPartnerSuggestDirective } from '../shared-ui/z-partner-suggest.directive';   // v1.67.4 (masters) business partner names on typed supplier fields
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list
 import { ActivatedRoute, Router } from '@angular/router';
 import { exportExcel, exportPdf } from '../shared-ui/z-export';
@@ -167,7 +168,7 @@ export class ZpProjectsComponent implements OnInit {
 @Component({
   selector: 'app-zp-project',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZPartnerSuggestDirective],
   styleUrls: ['../expense/expense.css', './zp.css'],
   template: `
 <div class="container">
@@ -438,7 +439,7 @@ export class ZpProjectsComponent implements OnInit {
               <div class="ex-form" style="margin-top:10px" *ngIf="p.can_manage || p.can_edit_finance">
                 <label>Description<input [(ngModel)]="ex.description"></label><label>Amount<input type="number" min="0" [(ngModel)]="ex.amount"></label>
                 <label>Category<select [(ngModel)]="ex.category"><option *ngFor="let x of lk.expense_categories" [value]="x.value">{{ x.label }}</option></select></label>
-                <label>Vendor<input [(ngModel)]="ex.vendor"></label>
+                <label>Vendor<input [(ngModel)]="ex.vendor" zPartnerSuggest="supplier"></label>
                 <div class="wide"><button type="button" class="ex-btn" (click)="addExp()">+ Add cost</button></div>
               </div>
             </div>

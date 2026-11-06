@@ -15,9 +15,9 @@ import { environment } from '../../environments/environment';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { ZListService } from '../shared-ui/z-list.service';
 
-import { visibleGroups, suiteForUrl } from '../shared-ui/z-module-menu.component';
+import { visibleGroups, suiteForUrl, appLanding } from '../shared-ui/z-module-menu.component';
 import { AppSuite, ZSuiteService } from '../shared-ui/z-suite.service';   // v1.20.0
-import { SUITES } from '../shared-ui/menu-config';
+import { SUITES, MAIN_GROUPS } from '../shared-ui/menu-config';   // v1.67.3 (apps) MAIN_GROUPS
 import { appForUrl, dashKeep, isReportUrl, menuPicked, preferApp, takeMenuPicked } from '../shared-ui/menu-config';
 import { APP_VERSION } from '../shared-ui/version';
 import { ZRecordService } from '../shared-ui/z-record.service';
@@ -119,7 +119,11 @@ export class MainSidebarComponent implements OnDestroy {
       : (SUITES.find(x => x.key !== 'settings' && this.suites.isActive(x.key))?.key || 'settings');
     this.suites.set(next);
     const g = visibleGroups(this.menuAccess, false, next)[0];
-    const link = next === 'settings' ? '/main-sidebar/settings/home' : (g?.apps[0]?.link || '/main-sidebar/home');
+    // v1.67.3 (apps): before the rights are loaded the app's own first page (not the shared Calendar) – a company without HR
+    // opened Home and was sent to the Calendar instead of its app
+    const own = MAIN_GROUPS.find(x => x.suite === next)?.apps[0];
+    const ownLink = own && !this.menuAccess ? appLanding(own, { admin: true, codes: new Set<string>() }) : null;
+    const link = next === 'settings' ? '/main-sidebar/settings/home' : (ownLink || g?.apps[0]?.link || '/main-sidebar/home');
     if (link && suiteForUrl(this.router.url) !== next) { this.router.navigateByUrl(link); }
   }
   suite: AppSuite = 'hrms';

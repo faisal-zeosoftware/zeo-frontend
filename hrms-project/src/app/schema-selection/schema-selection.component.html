@@ -180,7 +180,7 @@
       <h2 id="zc-mk-title">{{ 'Creating the company…' | t }}</h2>
       <p class="zc-dsub">{{ mk.name }}<ng-container *ngIf="dbLabel(mk)"> · {{ dbLabel(mk) }}</ng-container></p>
       <!-- v1.62.1: %, what is being done now, steps with times -->
-      <z-job-progress [job]="mk.st || { state: 'running', percent: 0, step: 'Sending the form' }" [title]="mk.name" [note]="'This takes about a minute.'"></z-job-progress>
+      <z-job-progress [job]="mk.st || { state: 'running', percent: 0, step: 'Sending the form' }" [title]="mk.name"></z-job-progress><!-- v1.67.2 (signup) no fixed "about a minute": the card gives the usual time of this server -->
     </ng-container>
     <ng-container *ngIf="mk.state === 'done'">
       <h2 id="zc-mk-title">{{ 'The company is ready' | t }}</h2>

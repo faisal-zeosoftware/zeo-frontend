@@ -109,3 +109,7 @@
   background: #eeedfd; color: #2d2580; font-size: 12.5px; line-height: 1.45; }
 .sc-job-copied mat-icon { font-size: 16px; width: 16px; height: 16px; flex: none; margin-top: 1px; color: #5b4ff5; }
 .sc-job-copied.bad { background: #fff4e5; color: #8a5a00; }
+
+/* v1.67.3 (apps) what an app brings with it */
+.sc-app small.sc-needs { color: #5b4ff5; font-weight: 600; margin-top: 2px; }
+.sc-brings { color: #3c2fd0; font-weight: 600; }

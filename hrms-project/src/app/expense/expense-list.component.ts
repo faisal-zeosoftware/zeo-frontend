@@ -2,6 +2,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZPartnerSuggestDirective } from '../shared-ui/z-partner-suggest.directive';   // v1.67.4 (masters) business partner names on typed supplier fields
 import { ActivatedRoute, Router } from '@angular/router';
 import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from './expense-api.service';
 
@@ -14,7 +15,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
 @Component({
   selector: 'app-expense-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZListDirective],
+  imports: [CommonModule, FormsModule, ZListDirective, ZPartnerSuggestDirective],
   styleUrls: ['./expense.css'],
   template: `
 <div class="container">
@@ -92,7 +93,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
           <label>Currency
             <select [(ngModel)]="form.currency" (ngModelChange)="changed()" name="currency"><option *ngFor="let c of currencies" [value]="c">{{ c }}</option></select></label>
           <label *ngIf="form.currency !== 'AED'">Rate to AED<input type="number" min="0" step="0.0001" [(ngModel)]="form.exchange_rate" (ngModelChange)="changed()" name="rate" placeholder="empty = standard rate (USD, SAR, QAR, OMR, BHD)"></label>
-          <label>Merchant<input [(ngModel)]="form.merchant" name="merchant" placeholder="Shop / hotel / airline"></label>
+          <label>Merchant<input [(ngModel)]="form.merchant" name="merchant" placeholder="Shop / hotel / airline" zPartnerSuggest="supplier"></label>
         </ng-container>
         <div class="ex-calc" *ngIf="check?.amount_aed !== null && check?.amount_aed !== undefined">
           Amount: <b>{{ m(check.amount_aed) }}</b>

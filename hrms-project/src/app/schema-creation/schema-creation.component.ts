@@ -29,7 +29,7 @@ export class SchemaCreationComponent {
   industry_type : string = '';
   // v1.21.0: apps the company uses (Settings › Apps can change them later)
   appChoices = [
-    { key: 'hrms', label: 'HR', hint: 'People, time, leave, documents – comes with any app', on: true },
+    { key: 'hrms', label: 'HR', hint: 'People, time, leave, documents, self service', on: true },   // v1.67.3 (apps) an app of its own
     { key: 'payroll', label: 'Payroll', hint: 'Salaries, payslips, WPS, gratuity', on: true },   // v1.23.0 own app
     { key: 'projects', label: 'Projects', hint: 'Tickets, AMC, delivery', on: false },
     { key: 'crm', label: 'CRM', hint: 'Contacts, pipelines, deals', on: false },
@@ -39,9 +39,19 @@ export class SchemaCreationComponent {
     { key: 'people', label: 'People', hint: 'Benefits, e-signature, forms, surveys, recognition, chat, 360°', on: false },   // v1.36.0
     { key: 'hse', label: 'HSE', hint: 'Risk, permits, incidents', on: false },
   ];
-  chosenApps(): string[] {   // v1.23.0: HR comes with any app
+  // v1.67.3 (apps): apps work on their own – HR only when ticked or needed (Payroll and People need HR, as in Settings › Apps)
+  static NEEDS: Record<string, string[]> = { payroll: ['hrms'], people: ['hrms'] };
+  chosenApps(): string[] {
     const k = this.appChoices.filter(a => a.on).map(a => a.key);
-    return k.length && !k.includes('hrms') ? ['hrms', ...k] : k;
+    const out: string[] = [];
+    for (const a of k) { for (const d of [...(SchemaCreationComponent.NEEDS[a] || []), a]) { if (!out.includes(d)) { out.push(d); } } }
+    return out;
+  }
+  /** what an app brings with it (shown under the app and before Create) */
+  needsOf(key: string): string[] { return (SchemaCreationComponent.NEEDS[key] || []).map(d => this.appChoices.find(x => x.key === d)?.label || d); }
+  broughtIn(): string[] {   // ticked apps' needs that were not ticked themselves
+    const on = this.appChoices.filter(a => a.on).map(a => a.key);
+    return this.chosenApps().filter(k => !on.includes(k)).map(k => this.appChoices.find(x => x.key === k)?.label || k);
   }
   // v1.62.1 (user request 2 Nov): "Starting setup" – standard defaults (as before) or the setup of a branch of another company
   setupMode: 'standard' | 'copy' = 'standard';

@@ -115,7 +115,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
   <!-- v1.62.1 progress of a new database -->
   <div class="zdb-prog" *ngIf="cjob && cs">
     <z-job-progress class="zdb-addjob" [job]="cs" [title]="'Creating the database {0}' | t:(cs.label || '')"
-      [doneText]="'The database is ready. New companies can be made in it, or companies moved to it.'" [note]="'This takes about a minute.'">
+      [doneText]="'The database is ready. New companies can be made in it, or companies moved to it.'" [note]="'This can take a few minutes. You can leave this window open.'"><!-- v1.67.2 (signup) not a fixed "about a minute" -->
       <button type="button" class="lp-btn" (click)="closeCreate()">{{ 'Close' | t }}</button>
     </z-job-progress>
   </div>

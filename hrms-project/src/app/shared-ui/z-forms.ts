@@ -86,7 +86,11 @@ export const LEAVE_TYPE_FORM: ZFormConfig = {
     { title: 'Leave type', fields: [
       { key: 'name', label: 'Name', max: 100 }, { key: 'code', label: 'Code', max: 30 },
       { key: 'type', label: 'Paid or unpaid', type: 'select' }, { key: 'unit', label: 'Counted in', type: 'select' },
-      { key: 'leave_category', label: 'Category', type: 'select' }, branchMulti,
+      // v1.67.5 (bugs) L4: a leave type has ONE branch (or none = every branch). The multi-branch field got the branch name
+      // from the API ("Dubai Head Office"), failed on it ((…).some is not a function) and the Edit window stopped after
+      // "Branches" – no other field, Save never finished.
+      { key: 'leave_category', label: 'Category', type: 'select' },
+      { key: 'branch', label: 'Branch', type: 'select', source: { endpoint: '/organisation/api/Branch/', label: 'branch_name' }, hint: 'Empty (–) = every branch.' },
       { key: 'valid_from', label: 'Valid from', type: 'date' }, { key: 'valid_to', label: 'Valid to', type: 'date' },
       { key: 'description', label: 'Description', type: 'textarea' }] },
     { title: 'Rules', fields: [
@@ -94,6 +98,7 @@ export const LEAVE_TYPE_FORM: ZFormConfig = {
       { key: 'include_weekend', label: 'Weekends inside the leave count', type: 'check' }, { key: 'include_holiday', label: 'Holidays inside the leave count', type: 'check' },
       { key: 'is_compensatory', label: 'Compensatory leave', type: 'check' }, { key: 'use_common_workflow', label: 'Use the common approval workflow', type: 'check' },
       { key: 'include_dashboard', label: 'Show on the dashboard', type: 'check' }] }],
+  fromRecord: (r: any) => ({ ...r, branch: r?.branch_id ?? (typeof r?.branch === 'number' ? r.branch : null) }),   // v1.67.5 (bugs) L4
 };
 export const USER_FORM: ZFormConfig = {
   thing: 'user', endpoint: '/users/api/user/', subtitle: 'A sign-in to ZEO for this company. Link it to the employee on the employee page; rights come from the permission groups.',

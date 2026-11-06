@@ -55,6 +55,8 @@ import { i18nT } from '../shared-ui/i18n.service';   // v1.62.11 (item 230)
             <option value="en">English</option>
             <option value="en_ar">English and Arabic on the same payslip</option></select>
           <span><b>Payslip language</b><p><i>The reader's language:</i> English, or the language the user chose in ZEO (Arabic right to left). <i>English and Arabic:</i> every payslip PDF has each label in both languages on the same page – the usual request of the labour office. Employees can also download the English + Arabic payslip from My payslips.</p></span></div>   <!-- v1.50.0 -->
+        <label class="pc-row" data-payslip-email-approval><input type="checkbox" [(ngModel)]="s.payslip_email_on_approval" [disabled]="!s.can_edit" data-pp-mail-approval>   <!-- v1.67.5 (bugs) P1 -->
+          <span><b>E-mail the payslip to the employee when it is approved</b><p>Sent with the company's e-mail settings once the last approval step is done, to the personal e-mail (else the company e-mail). The approver sees how many were sent, skipped (no e-mail address) or failed, and each result is kept in the payslip's log.</p></span></label>
         <div class="pc-freq" data-payslip-password>   <!-- v1.62.11 (item 230) -->
           <b>Payslip password</b>
           <p>Off by default. When it is on, the payslip PDF e-mailed to the employee and the one the employee downloads in self service open only with a password. HR's payroll screens are not protected. A rule never uses a full ID number – only the last 4 characters, together with the employee code.</p>

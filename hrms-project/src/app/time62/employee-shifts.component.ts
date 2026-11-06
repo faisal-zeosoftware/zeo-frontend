@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZListDirective } from '../shared-ui/z-list.directive';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.5 (bugs) S1
 import { ZFormConfig, openZForm } from '../shared-ui/z-form.component';
 import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { zToast } from '../shared-ui/z-toast';
@@ -22,7 +23,7 @@ import { T, T62Base, empName } from './t62';
   selector: 'app-t62-employee-shifts',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective, ZPortalDirective],
   styleUrls: ['../hr-modules/hr-shared.css', './t62.css'],
   template: `
 <div class="container hr-page" data-t62="employee-shifts">
@@ -46,13 +47,13 @@ import { T, T62Base, empName } from './t62';
             <tr *ngIf="!loading && !rows.length"><td colspan="6" class="hr-empty">No employee shift yet. Use + New employee shift.</td></tr>
             <tr *ngFor="let r of rows" [attr.data-t62-row]="r.id" [attr.data-z-id]="r.id">
               <td>{{ r.schedule_name || '–' }}</td>
-              <td>{{ patternName(r.shift_pattern) || '–' }}</td>
+              <td>{{ patternName(r.shift_pattern, r) || '–' }}</td>
               <td>{{ dmy(r.start_date) }}</td><td>{{ r.end_date ? dmy(r.end_date) : t('Open-ended') }}</td>
               <td><span class="t62-chips"><span class="t62-chip" *ngFor="let w of who(r)">{{ w }}</span></span></td>
               <td class="t62-actions" *ngIf="can.change || can.delete">
                 <button type="button" class="t62-link" *ngIf="can.change && isRotating(r)" (click)="offsets(r)" data-t62-offsets>Start days</button>
                 <button type="button" class="z-row-btn" *ngIf="can.change" (click)="edit(r)" title="Edit" aria-label="Edit" data-z-row-edit><mat-icon>edit</mat-icon></button>
-                <button type="button" class="z-row-btn danger" *ngIf="can.delete" (click)="del(r, r.schedule_name || patternName(r.shift_pattern))" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
+                <button type="button" class="z-row-btn danger" *ngIf="can.delete" (click)="del(r, r.schedule_name || patternName(r.shift_pattern, r))" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
               </td>
             </tr>
           </tbody>
@@ -62,7 +63,7 @@ import { T, T62Base, empName } from './t62';
   </div>
 </div>
 
-<div class="t62-dlg" *ngIf="off" data-t62-dialog>
+<div class="t62-dlg" zPortal *ngIf="off" data-t62-dialog>
   <div class="t62-veil" (click)="off = null"></div>
   <div class="t62-box narrow" role="dialog" aria-modal="true">
     <div class="t62-head"><div><h2 class="t62-title">Start days</h2>
@@ -92,10 +93,16 @@ export class T62EmployeeShiftsComponent extends T62Base {
     try { this.patterns = await this.list('/calendars/api/shiftpattern/'); } catch { this.patterns = []; }
     await super.load();
   }
-  override shape(rows: any[]): any[] { return [...rows].sort((a, b) => String(b.start_date || '').localeCompare(String(a.start_date || ''))); }
+  // v1.67.5 (bugs) S3: newest start first, then by name (equal start dates came in storage order and moved after an edit)
+  override shape(rows: any[]): any[] {
+    return [...rows].sort((a, b) => String(b.start_date || '').localeCompare(String(a.start_date || ''))
+      || String(a.schedule_name || '').localeCompare(String(b.schedule_name || ''), undefined, { numeric: true, sensitivity: 'base' }) || (a.id - b.id));
+  }
   pattern(id: any): any { return this.patterns.find(p => String(p.id) === String(id)) || null; }
-  patternName(id: any): string { return this.pattern(id)?.name || ''; }
-  isRotating(r: any): boolean { return this.pattern(r.shift_pattern)?.pattern_type === 'rotating'; }
+  // v1.67.5 (bugs) S3: the pattern's name and type come with each row (shift_pattern_name / shift_pattern_type) – before, they
+  // were looked up in a second list, so the column showed "–" when that list could not be read (no right on shift patterns)
+  patternName(id: any, r?: any): string { return this.pattern(id)?.name || r?.shift_pattern_name || ''; }
+  isRotating(r: any): boolean { return (this.pattern(r.shift_pattern)?.pattern_type || r.shift_pattern_type) === 'rotating'; }
   who(r: any): string[] {
     const out: string[] = [];
     (r.branch_names || []).forEach((x: any) => out.push(x.branch_name));
@@ -141,7 +148,7 @@ export class T62EmployeeShiftsComponent extends T62Base {
   async edit(r: any): Promise<void> { if (await openZForm(this.form(), r || undefined)) { await this.load(); } }
 
   offsets(r: any): void {
-    const p = this.pattern(r.shift_pattern); const x = p?.pattern_config?.rotating || {};
+    const p = this.pattern(r.shift_pattern) || { pattern_config: r.shift_pattern_config, work_days: r.shift_pattern_work_days, off_days: r.shift_pattern_off_days }; const x = p?.pattern_config?.rotating || {};
     const len = Math.max(1, Number(x.work_days ?? p?.work_days ?? 1) + Number(x.off_days ?? p?.off_days ?? 0));
     const list = (r.employee_names || []).map((e: any) => ({ id: e.id, name: empName(e) }));
     const v: Record<number, number> = {};

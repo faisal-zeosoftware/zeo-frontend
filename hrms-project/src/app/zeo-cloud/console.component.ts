@@ -51,7 +51,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
           <p class="zk-note">{{ summary() }}</p></div><span class="zk-sp"></span>
           <a class="lp-btn primary" routerLink="/control/new">{{ 'New customer' | t }}</a></div>
         <div class="zk-row cc-filters">
-          <input class="zk-in cc-q" type="search" [(ngModel)]="q" (keyup.enter)="loadList()" [placeholder]="'Search customer, owner e-mail, company' | t" [attr.aria-label]="'Search customers' | t">
+          <input class="zk-in cc-q" type="search" [(ngModel)]="q" (keyup.enter)="loadList()" [placeholder]="'Search customer, owner e-mail, company, contact' | t" [attr.aria-label]="'Search customers' | t">
           <select class="zk-in" [(ngModel)]="fPlan" (change)="loadList()" [attr.aria-label]="'Plan' | t"><option value="">{{ 'Plan: all' | t }}</option><option *ngFor="let p of plans" [value]="p.code" data-no-translate>{{ p.name }}</option></select>
           <select class="zk-in" [(ngModel)]="fStatus" (change)="loadList()" [attr.aria-label]="'Status' | t"><option value="">{{ 'Status: all' | t }}</option>
             <option value="trial">{{ 'Trial' | t }}</option><option value="active">{{ 'Active' | t }}</option><option value="grace">{{ 'Grace period' | t }}</option><option value="suspended">{{ 'Suspended' | t }}</option><option value="cancelled">{{ 'Cancelled' | t }}</option></select>
@@ -60,7 +60,8 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <div class="zk-card cc-tablecard"><div class="zk-scroll"><table class="zk-table">
           <tr><th>{{ 'Customer' | t }}</th><th>{{ 'Plan' | t }}</th><th>{{ 'Companies' | t }}</th><th>{{ 'Employees' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Storage' | t }}</th><th>{{ 'Renewal' | t }}</th><th>{{ 'Status' | t }}</th></tr>
           <tr class="click" *ngFor="let c of list" (click)="go(c.id)" (keydown.enter)="go(c.id)" tabindex="0">
-            <td><b>{{ c.name }}</b><small>{{ c.owner_email }}</small></td><td data-no-translate>{{ c.plan.name }}</td>
+            <td><b>{{ c.name }}</b><small>{{ c.owner_email }}</small>
+              <small *ngIf="c.contact_name || c.contact_phone" class="cc-contact">{{ 'Contact' | t }}: {{ c.contact_name }} <span dir="ltr">{{ c.contact_phone }}</span><ng-container *ngIf="c.country"> · {{ c.country | t }}</ng-container></small></td><!-- v1.67.2 (signup) --><td data-no-translate>{{ c.plan.name }}</td>
             <td>{{ c.usage.companies }}<small *ngIf="c.usage.extra_companies">{{ '{0} extra' | t:c.usage.extra_companies }}</small></td>
             <td>{{ c.usage.employees }}<ng-container *ngIf="c.limits.employees"> / {{ c.limits.employees }}</ng-container></td>
             <td>{{ c.usage.users }}<ng-container *ngIf="c.limits.users"> / {{ c.limits.users }}</ng-container></td>
@@ -89,8 +90,9 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
             <label>{{ 'Employees' | t }}<input type="number" min="0" [(ngModel)]="nw.max_employees"></label>
             <label>{{ 'Users' | t }}<input type="number" min="0" [(ngModel)]="nw.max_users"></label>
             <label>{{ 'Storage (GB)' | t }}<input type="number" min="0" [(ngModel)]="nw.storage_gb"></label>
-            <div class="wide"><span class="cc-lbl">{{ 'Apps (HR and Settings are included)' | t }}</span>
-              <div class="lp-catpick"><label *ngFor="let k of paidApps" [class.on]="nw.apps.includes(k)"><input type="checkbox" [checked]="nw.apps.includes(k)" (change)="toggle(nw.apps, k)"> {{ title(k) | t }}</label></div></div>
+            <div class="wide"><span class="cc-lbl">{{ 'Apps (HR is included in every plan; Settings and the company core always)' | t }}</span>
+              <div class="lp-catpick"><label *ngFor="let k of coApps" [class.on]="nw.apps.includes(k)"><input type="checkbox" [checked]="nw.apps.includes(k)" (change)="toggle(nw.apps, k, $event)"> {{ title(k) | t }}<small class="cc-needs" *ngIf="needs(k)" data-app-needs>{{ 'needs {0}' | t:[needs(k)] }}</small></label></div>
+              <p class="zk-note" *ngIf="appNote" data-app-note>{{ appNote }}</p></div>
           </div></div>
         </div>
         <div class="zk-card"><h2>{{ 'First company' | t }}</h2><div class="lp-form">
@@ -139,8 +141,12 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
             <label>{{ 'Users (empty = plan)' | t }}<input type="number" min="0" [(ngModel)]="ed.max_users"></label>
             <label>{{ 'Storage GB (empty = plan)' | t }}<input type="number" min="0" [(ngModel)]="ed.storage_gb"></label>
             <label>{{ 'Only company e-mails' | t }}<input [(ngModel)]="ed.allowed_email_domain" placeholder="company.ae"></label>
+            <!-- v1.67.2 (signup) contact person and number from the sign-up form (Adept can correct them) -->
+            <label>{{ 'Contact person name' | t }}<input [(ngModel)]="ed.contact_name" maxlength="150"></label>
+            <label>{{ 'Contact number' | t }}<input type="tel" dir="ltr" [(ngModel)]="ed.contact_phone" maxlength="30" placeholder="+971 50 123 4567"></label>
             <label class="wide">{{ 'Notes (Adept only)' | t }}<textarea [(ngModel)]="ed.notes"></textarea></label></div>
-            <div class="zk-row"><span class="zk-note">{{ 'Owner' | t }}: {{ c.owner_name || '' }} {{ c.owner_email }} · TRN {{ c.trn || '–' }} · {{ c.country }}</span><span class="zk-sp"></span>
+            <div class="zk-row"><span class="zk-note">{{ 'Owner' | t }}: {{ c.owner_name || '' }} {{ c.owner_email }} · TRN {{ c.trn || '–' }} · {{ c.country | t }}
+              <ng-container *ngIf="c.contact_name || c.contact_phone"><br>{{ 'Contact' | t }}: {{ c.contact_name }} <span dir="ltr">{{ c.contact_phone }}</span></ng-container></span><span class="zk-sp"></span>
               <button type="button" class="lp-btn primary" (click)="save()" [disabled]="busy">{{ 'Save' | t }}</button></div></div>
         </ng-container>
 
@@ -178,7 +184,8 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
             <label class="wide">{{ 'Company name' | t }}<input [(ngModel)]="nc.name" maxlength="100"></label>
             <label>{{ 'Industry' | t }}<select [(ngModel)]="nc.industry"><option *ngFor="let i of industries" [value]="i.code">{{ i.label | t }}</option></select></label>
             <label *ngIf="(c.databases?.length || 0) > 1">{{ 'Database' | t }}<select [(ngModel)]="nc.db"><option value="">{{ 'Default' | t }}</option><option *ngFor="let d of c.databases" [value]="d.key">{{ d.title }}</option></select></label>
-            <div class="wide"><span class="cc-lbl">{{ 'Apps' | t }}</span><div class="lp-catpick"><label *ngFor="let k of paidApps" [class.on]="nc.apps.includes(k)"><input type="checkbox" [checked]="nc.apps.includes(k)" (change)="toggle(nc.apps, k)"> {{ title(k) | t }}</label></div></div></div>
+            <div class="wide"><span class="cc-lbl">{{ 'Apps' | t }}</span><div class="lp-catpick"><label *ngFor="let k of coApps" [class.on]="nc.apps.includes(k)"><input type="checkbox" [checked]="nc.apps.includes(k)" (change)="toggle(nc.apps, k, $event)"> {{ title(k) | t }}<small class="cc-needs" *ngIf="needs(k)" data-app-needs>{{ 'needs {0}' | t:[needs(k)] }}</small></label></div>
+              <p class="zk-note" *ngIf="appNote" data-app-note>{{ appNote }}</p></div></div>
             <div class="zk-row"><span class="zk-note" *ngIf="job">{{ jobText }}</span><span class="zk-sp"></span>
               <button type="button" class="lp-btn primary" (click)="makeCompany()" [disabled]="busy || !!job || !nc.name.trim() || !nc.apps.length">{{ 'Create company' | t }}</button></div></div>
           <div class="zk-card" *ngIf="unlinked.length"><h2>{{ 'Link an existing company' | t }}</h2>
@@ -195,7 +202,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
           <div class="zk-card"><div class="zk-scroll"><table class="zk-table cc-apps">
             <tr><th>{{ 'App' | t }}</th><th>{{ 'Licensed' | t }}</th><th>{{ 'Trial' | t }}</th><th>{{ 'Companies (empty = all)' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Valid until' | t }}</th><th>{{ 'Price' | t }}</th><th></th></tr>
             <tr><td>{{ 'Settings + employee master' | t }}</td><td colspan="7"><span class="zk-st included">{{ 'Always' | t }}</span></td></tr>
-            <tr><td>HR</td><td colspan="7"><span class="zk-st included">{{ 'Included – free with any app' | t }}</span></td></tr>
+            <tr><td>HR</td><td colspan="7"><span class="zk-st included">{{ 'Included in every plan – free; a company can be made without it' | t }}</span></td></tr>
             <tr *ngFor="let a of appRows">
               <td>{{ title(a.app) | t }}<small>{{ usedText(a) }}</small></td>
               <td><input type="checkbox" [(ngModel)]="a.licensed" [attr.aria-label]="('Licensed' | t) + ' ' + title(a.app)"></td>
@@ -274,7 +281,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
             <td><input type="number" min="0" [(ngModel)]="p.price_year"></td><td><input type="number" min="0" [(ngModel)]="p.extra_company_price"></td><td><input type="number" min="0" [(ngModel)]="p.app_price"></td>
             <td><input type="checkbox" [(ngModel)]="p.active"></td><td><button type="button" class="lp-btn" (click)="savePlan(p)" [disabled]="busy">{{ 'Save' | t }}</button></td></tr>
         </table></div></div>
-        <div class="zk-card zk-note">{{ 'Policies: trial 14 days · grace period 15 days, then read-only · data kept 90 days after cancellation · employees counted = active employees · employees using self service only are not users · HR is free with any app.' | t }}</div>
+        <div class="zk-card zk-note">{{ 'Policies: trial 14 days · grace period 15 days, then read-only · data kept 90 days after cancellation · employees counted = active employees · employees using self service only are not users · HR is included free in every plan (an app of its own – a company can be made without it).' | t }}</div>
       </ng-container>
 
       <!-- ===== v1.67.1 (companies) deleted companies and databases: restore within 30 days (Adept only) ===== -->
@@ -315,7 +322,11 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   q = ''; fPlan = ''; fStatus = ''; fSoon = false;
   c: any = null; ed: any = {}; tab = 'Overview'; tabs = ['Overview', 'Companies', 'Databases', 'Apps', 'Invoices', 'History'];
   appRows: any[] = []; paidApps = PAID;
-  nw: any = this.blank(); nc: any = { name: '', industry: 'OTH', apps: [], db: '' }; inv: any = this.blankInv(); linkId = 0;
+  // v1.67.3 (apps): the apps of a new company – HR is an app of its own (free); an app brings what it needs
+  coApps = ['hrms', ...PAID]; appNote = '';
+  static NEEDS: Record<string, string[]> = { payroll: ['hrms'], people: ['hrms'] };
+  needs(k: string): string { return (CloudConsoleComponent.NEEDS[k] || []).map(d => T(this.title(d))).join(', '); }
+  nw: any = this.blank(); nc: any = { name: '', industry: 'OTH', apps: ['hrms'], db: '' }; inv: any = this.blankInv(); linkId = 0;
   job = ''; jobText = ''; private poll: any = null; private sub: any;
   moves: any[] = []; dbs: any = {}; cp: any = { open: false, plan: '' }; private mpoll: any = null;   // v1.24.0
 
@@ -335,7 +346,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void { this.sub?.unsubscribe(); if (this.poll) { clearInterval(this.poll); } if (this.mpoll) { clearInterval(this.mpoll); } }
 
-  private blank(): any { return { name: '', owner_name: '', owner_email: '', trn: '', country: 'United Arab Emirates', plan: 'advance', start_mode: 'trial', start: '', max_employees: null, max_users: null, storage_gb: null, apps: [] as string[], company: '', industry: 'OTH' }; }
+  private blank(): any { return { name: '', owner_name: '', owner_email: '', trn: '', country: 'United Arab Emirates', plan: 'advance', start_mode: 'trial', start: '', max_employees: null, max_users: null, storage_gb: null, apps: ['hrms'] as string[], company: '', industry: 'OTH' }; }
   private blankInv(): any { return { number: '', amount: null, currency: 'AED', period_from: '', period_to: '', odoo_ref: '', paid: false, to_odoo: false }; }
 
   async common(): Promise<void> {
@@ -427,6 +438,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
     this.c = c;
     this.ed = { plan: c.plan.code, trial_ends: c.trial_ends, renews_on: c.renews_on, grace_days: c.grace_days, extra_companies: c.extra_companies,
       max_employees: c.max_employees, max_users: c.max_users, storage_gb: c.storage_gb, allowed_email_domain: c.allowed_email_domain, notes: c.notes,
+      contact_name: c.contact_name || '', contact_phone: c.contact_phone || '',   // v1.67.2 (signup)
     };
     this.appRows = PAID.map(k => {
       const l = c.apps[k] || {}; const st = l.state || 'none';
@@ -448,7 +460,18 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
   title(k: string): string { return TITLES[k] || k; }
   appsOf(keys: string[]): string { return (keys || []).map(k => T(TITLES[k] || k)).join(', '); }
   usedText(a: any): string { return a.licensed && a.companies ? T('{0} of {1} companies used', a.used ?? 0, a.companies) : ''; }
-  toggle(arr: string[], k: string): void { const i = arr.indexOf(k); if (i >= 0) { arr.splice(i, 1); } else { arr.push(k); } }
+  toggle(arr: string[], k: string, ev?: any): void {   // v1.67.3 (apps) Payroll / People bring HR; HR stays while they are ticked
+    this.appNote = '';
+    const i = arr.indexOf(k);
+    if (i >= 0) {
+      const users = arr.filter(a => (CloudConsoleComponent.NEEDS[a] || []).includes(k));
+      if (users.length) { this.appNote = T('{0} needs {1} – untick {0} first.', users.map(u => T(this.title(u))).join(', '), T(this.title(k))); if (ev?.target) { ev.target.checked = true; } return; }
+      arr.splice(i, 1); return;
+    }
+    const add = (CloudConsoleComponent.NEEDS[k] || []).filter(d => !arr.includes(d));
+    arr.push(...add, k);
+    if (add.length) { this.appNote = T('{0} needs {1}: {1} is ticked too.', T(this.title(k)), add.map(d => T(this.title(d))).join(', ')); }
+  }
   planDefaults(): void {
     const p = this.plans.find(x => x.code === this.nw.plan); if (!p) { return; }
     this.nw.max_employees = p.max_employees; this.nw.max_users = p.max_users; this.nw.storage_gb = p.storage_gb;
@@ -535,7 +558,7 @@ export class CloudConsoleComponent implements OnInit, OnDestroy {
           this.jobText = T('Creating {0}: {1}', this.nc.name, T(s.step || ''));
           if (s.state !== 'running') {
             clearInterval(this.poll); this.poll = null; this.job = '';
-            if (s.state === 'done') { this.say(T('{0} is ready.', this.nc.name), false); this.nc = { name: '', industry: 'OTH', apps: [], db: '' }; this.loadOne(this.c.id); }
+            if (s.state === 'done') { this.say(T('{0} is ready.', this.nc.name), false); this.nc = { name: '', industry: 'OTH', apps: ['hrms'], db: '' }; this.loadOne(this.c.id); }
             else { this.say(s.error || T('The company could not be created.'), true); }
           }
         } catch { /* keep trying */ }

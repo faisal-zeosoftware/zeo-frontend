@@ -17,6 +17,8 @@ interface AppRow {
   installed: boolean; active: boolean; industry: string; industry_label: string; industry_source: string;
   activated_at: string | null; activated_by: string; industries?: { code: string; label: string }[];
   suggested?: string; suggested_label?: string; previous?: string; roles?: string[]; links?: AppLink[];
+  // v1.67.3 (apps): what the app needs, what activating it brings now, the active apps that need it
+  depends?: { key: string; title: string }[]; brings?: { key: string; title: string }[]; needed_by?: { key: string; title: string }[]; needed_message?: string;
 }
 
 /**
@@ -36,8 +38,13 @@ interface AppRow {
   <div class="lp-head">
     <div>
       <h1 class="page-title">{{ 'Apps' | t }}</h1>
-      <p class="lp-desc">{{ 'HR comes with every app; with Payroll the menu is the same as ZEO HRMS.' | t }} {{ 'Each app works on its own. Activate the apps this company uses; when two of them are active they link up by themselves. Switching an app off hides it from the menu – its records are kept and come back when you activate it again.' | t }}</p>
+      <p class="lp-desc">{{ 'Each app works on its own. Activate the apps this company uses; when two of them are active they link up by themselves. Switching an app off hides it from the menu – its records are kept and come back when you activate it again.' | t }} {{ 'An app that needs another app brings it with it (Payroll needs HR); an app cannot be switched off while an active app needs it.' | t }}</p>
     </div>
+  </div>
+  <!-- v1.67.3 (apps): the company core, always on -->
+  <div class="sa-core" *ngIf="core" data-core>
+    <mat-icon aria-hidden="true">verified_user</mat-icon>
+    <span>{{ core }}</span>
   </div>
 
   <div class="lp-msg" *ngIf="msg" [class.err]="err" role="status">{{ msg }}</div>
@@ -61,6 +68,15 @@ interface AppRow {
         </div>
         <span class="sa-state" [class.on]="a.active">{{ (!a.installed ? 'Not installed' : a.active ? 'Active' : 'Not active') | t }}</span>
       </header>
+      <!-- v1.67.3 (apps): what the app needs and which active apps need it -->
+      <p class="sa-dep" *ngIf="a.depends?.length" data-needs>
+        <mat-icon aria-hidden="true">account_tree</mat-icon>{{ 'Needs {0}' | t:[titles(a.depends)] }}
+        <small *ngIf="!a.active && a.brings?.length">{{ '– activating {0} also activates {1}' | t:[(a.title | t), titles(a.brings)] }}</small>
+        <small *ngIf="a.active || !a.brings?.length">{{ '– active' | t }}</small></p>
+      <p class="sa-dep" *ngIf="!a.depends?.length" data-needs>
+        <mat-icon aria-hidden="true">check_circle</mat-icon>{{ 'Needs only the company core' | t }}</p>
+      <p class="sa-dep used" *ngIf="a.needed_by?.length" data-needed-by>
+        <mat-icon aria-hidden="true">lock</mat-icon>{{ 'Needed by {0}' | t:[titles(a.needed_by)] }}</p>
       <!-- v1.23.0 ZEO Cloud: the account's licence for this app -->
       <p class="sa-lic" *ngIf="lic(a.key) as l" [ngClass]="l.state">{{ licText(a.key) }}</p>
 
@@ -103,6 +119,8 @@ interface AppRow {
           </select>
         </label>
         <p class="sa-hint" *ngIf="a.kind !== 'core'">The industry pack adds ready-made setup for this industry (it only adds, it never removes your own setup).</p>
+        <p class="sa-brings" *ngIf="a.brings?.length" data-brings>
+          <mat-icon aria-hidden="true">info</mat-icon>{{ '{0} needs {1}: activating {0} also activates {1}.' | t:[(a.title | t), titles(a.brings)] }}</p>
         <div class="sa-actions">
           <button type="button" class="lp-btn" (click)="asking = ''" [disabled]="busy">{{ 'Cancel' | t }}</button>
           <button type="button" class="lp-btn primary" (click)="activate(a)" [disabled]="busy || (change && !industry)">{{ busy ? 'Activating…' : 'Activate ' + a.title }}</button>
@@ -112,9 +130,12 @@ interface AppRow {
       <div class="sa-ask warn" *ngIf="leaving === a.key">
         <p class="sa-q">Deactivate {{ a.title }}?</p>
         <p class="sa-hint">{{ a.title }} leaves the menu and its links to the other apps switch off. Its records are kept and come back when you activate it again.</p>
+        <!-- v1.67.3 (apps): refused while an active app needs it -->
+        <p class="sa-needed" *ngIf="a.needed_by?.length" role="alert" data-needed-msg>
+          <mat-icon aria-hidden="true">block</mat-icon><span>{{ a.needed_message }} {{ 'Switch off {0} first.' | t:[titles(a.needed_by)] }}</span></p>
         <div class="sa-actions">
           <button type="button" class="lp-btn" (click)="leaving = ''" [disabled]="busy">{{ 'Keep it active' | t }}</button>
-          <button type="button" class="lp-btn danger" (click)="deactivate(a)" [disabled]="busy">{{ busy ? 'Deactivating…' : 'Deactivate ' + a.title }}</button>
+          <button type="button" class="lp-btn danger" (click)="deactivate(a)" [disabled]="busy || !!a.needed_by?.length">{{ busy ? 'Deactivating…' : 'Deactivate ' + a.title }}</button>
         </div>
       </div>
 
@@ -126,7 +147,7 @@ interface AppRow {
         </ng-container>
         <ng-container *ngIf="a.active">
           <button type="button" class="lp-btn" (click)="open(a)">Open {{ a.title }}</button>
-          <button type="button" class="lp-btn" *ngIf="a.key !== 'hrms'" (click)="leaving = a.key; asking = ''">{{ 'Deactivate' | t }}</button>
+          <button type="button" class="lp-btn" (click)="leaving = a.key; asking = ''">{{ 'Deactivate' | t }}</button>
         </ng-container>
       </footer>
     </section>
@@ -135,7 +156,7 @@ interface AppRow {
 })
 export class SettingsAppsComponent implements OnInit {
   apps: AppRow[] = [];
-  companyIndustryLabel = ''; canManage = false;
+  companyIndustryLabel = ''; canManage = false; core = '';   // v1.67.3 (apps)
   msg = ''; err = false; busy = false;
   asking = ''; leaving = ''; change = false; industry = '';
 
@@ -152,7 +173,7 @@ export class SettingsAppsComponent implements OnInit {
   canLicence(key: string): boolean { const l = this.lic(key); return !l || l.state === 'included' || l.state === 'licensed' || l.state === 'trial'; }
   licText(key: string): string {
     const l = this.lic(key); if (!l) { return ''; }
-    if (l.state === 'included') { return i18nT('Included – HR comes free with any app.'); }
+    if (l.state === 'included') { return i18nT('Included in every plan.'); }   // v1.67.3 (apps): HR no longer comes with every app
     if (l.state === 'none') { return i18nT('Not in your plan.'); }
     if (l.state === 'expired') { return i18nT('Licence ended {0} – read-only.', [l.valid_until]); }
     const parts = [l.state === 'trial' ? i18nT('Trial – {0} days left', [l.days_left ?? 0]) : i18nT('Licensed')];
@@ -180,12 +201,13 @@ export class SettingsAppsComponent implements OnInit {
   async load(): Promise<void> {
     try {
       const r: any = await firstValueFrom(this.http.get(this.url('apps/')));
-      this.apps = r.apps || []; this.companyIndustryLabel = r.company_industry_label || ''; this.canManage = !!r.can_manage;
+      this.apps = r.apps || []; this.companyIndustryLabel = r.company_industry_label || ''; this.canManage = !!r.can_manage; this.core = r.core || '';
     } catch (e: any) { this.say(this.error(e, 'The apps could not be loaded.'), true); }
     this.cd.markForCheck();
   }
 
   label(a: AppRow, code: string): string { return a.industries?.find(i => i.code === code)?.label || code; }
+  titles(l: { title: string }[] | undefined): string { return (l || []).map(x => i18nT(x.title)).join(', '); }   // v1.67.3 (apps)
 
   ask(a: AppRow): void { this.asking = a.key; this.leaving = ''; this.change = false; this.industry = a.previous || a.suggested || ''; this.msg = ''; }
 
@@ -196,7 +218,9 @@ export class SettingsAppsComponent implements OnInit {
       const body = { industry: this.change ? this.industry : '' };
       const r: any = await firstValueFrom(this.http.post(this.url(`apps/${a.key}/activate/`), body));
       const added = Object.values(r.added || {}).reduce((n: number, v: any) => n + (typeof v === 'number' ? v : 0), 0);
-      this.say(`${a.title} is active with the industry ${r.industry_label || r.industry}.` + (added ? ` ${added} setup records were added from the industry pack.` : ''), false);
+      const withs: string[] = (r.added && Array.isArray(r.added.with)) ? r.added.with : [];   // v1.67.3 (apps) what came with it
+      this.say(`${a.title} is active with the industry ${r.industry_label || r.industry}.` + (added ? ` ${added} setup records were added from the industry pack.` : '')
+        + (withs.length ? ' ' + i18nT('{0} was activated with it.', [withs.map(w => i18nT(w)).join(', ')]) : ''), false);
       this.asking = '';
       this.suites.loadActive(true);
       this.zc.load(true);

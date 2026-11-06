@@ -301,3 +301,13 @@ margin-right: 10px;
 .hr-modal.hr-side { justify-content: flex-end; align-items: stretch; }
 .hr-modal.hr-side .hr-modal-box { width: min(560px, 100vw); max-width: none; height: 100vh; max-height: none; border-radius: 0; margin: 0; display: flex; flex-direction: column; }
 .hr-modal.hr-side .hr-doc-body { flex: 1; overflow: auto; }
+
+/* v1.67.5 (bugs) L3: a choice with search – the list stays shown after a pick (change it or search again) */
+.hr-pick { display: flex; flex-direction: column; gap: 6px; }
+.hr-pick-list { max-height: 196px; overflow-y: auto; border: 1px solid #dcdde8; border-radius: 8px; background: #fff; padding: 4px; overscroll-behavior: contain; }
+.hr-pick-o { display: block; width: 100%; text-align: start; border: 0; background: none; padding: 7px 10px; border-radius: 6px; font-size: 13.5px; color: #1F2433; cursor: pointer; }
+.hr-pick-o:hover, .hr-pick-o:focus-visible { background: #F1F3F9; outline: none; }
+.hr-pick-o.on { background: #EEEDFD; color: #3F35B5; font-weight: 600; box-shadow: inset 3px 0 0 #5B4FE0; }
+[dir=rtl] .hr-pick-o.on { box-shadow: inset -3px 0 0 #5B4FE0; }
+.hr-pick-none { margin: 8px 10px; color: #6B7185; font-size: 13px; }
+.hr-pick-sel { color: #4a4766; font-size: 12.5px; }

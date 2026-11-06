@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZPartnerSuggestDirective } from '../shared-ui/z-partner-suggest.directive';   // v1.67.4 (masters) business partner names on typed supplier fields
 import { AssetApiService, CONDITIONS, today } from './asset-api.service';
 import { cpPack } from '../shared-ui/country-pack.service';   // v1.14.0
 import { ZFieldInputComponent } from '../shared-ui/z-field-input.component';   // v1.16.0
@@ -12,7 +13,7 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
 @Component({
   selector: 'app-asset-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZFieldInputComponent],
+  imports: [CommonModule, FormsModule, ZFieldInputComponent, ZPartnerSuggestDirective],
   styleUrls: ['../expense/expense.css', './asset-plus.css'],
   template: `
 <div class="ex-back" (click)="closed.emit()">
@@ -42,7 +43,7 @@ const CURRENCIES = ['AED', 'USD', 'EUR', 'GBP', 'SAR', 'QAR', 'OMR', 'BHD', 'KWD
 
         <div class="ap-section">Purchase</div>
         <label>Purchase date *<input type="date" [(ngModel)]="f.purchase_date" name="pd" [max]="maxDate"></label>
-        <label>Vendor<input [(ngModel)]="f.vendor" name="v"></label>
+        <label>Vendor<input [(ngModel)]="f.vendor" name="v" zPartnerSuggest="supplier"></label>
         <label>Purchase cost<input type="number" min="0" step="0.01" [(ngModel)]="f.purchase_cost" name="pc"></label>
         <label>Currency<select [(ngModel)]="f.currency" name="cur"><option *ngFor="let c of currencies" [value]="c">{{ c }}</option></select></label>
         <label>Invoice no.<input [(ngModel)]="f.invoice_no" name="inv"></label>

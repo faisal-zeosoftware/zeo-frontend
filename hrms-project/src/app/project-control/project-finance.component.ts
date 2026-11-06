@@ -1,13 +1,15 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ZPartnerSuggestDirective } from '../shared-ui/z-partner-suggest.directive';   // v1.67.4 (masters) business partner names on typed supplier fields
 import { ProjectControlApiService, hrs, money } from './project-control-api.service';
+import { I18N_UI } from '../shared-ui/i18n.service';   // v1.67.3 (apps)
 
 /** Project finance: billing settings, member rates, task plans and the cost / profit KPIs of one project. */
 @Component({
   selector: 'app-project-finance',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ZPartnerSuggestDirective, ...I18N_UI],
   styleUrls: ['./project-control.css'],
   template: `
 <div class="container">
@@ -98,7 +100,7 @@ import { ProjectControlApiService, hrs, money } from './project-control-api.serv
           <div class="pc-h">Billing and budget
             <button type="button" class="pc-btn primary sm" *ngIf="d.can_edit" (click)="saveAll()" [disabled]="busy">Save</button></div>
           <div class="pc-form">
-            <label class="pc-field">Customer<input [(ngModel)]="d.finance.customer_name" [readonly]="!d.can_edit"></label>
+            <label class="pc-field">Customer<input [(ngModel)]="d.finance.customer_name" [readonly]="!d.can_edit" zPartnerSuggest="customer"></label>
             <label class="pc-field">Billing type
               <select [(ngModel)]="d.finance.billing_type" [disabled]="!d.can_edit">
                 <option *ngFor="let b of d.billing_types" [value]="b.value">{{ b.label }}</option>
@@ -121,11 +123,13 @@ import { ProjectControlApiService, hrs, money } from './project-control-api.serv
                 <td data-label="Role"><input [(ngModel)]="r.role" [readonly]="!d.can_edit" placeholder="e.g. Consultant"></td>
                 <td class="num" data-label="Bill rate / h"><input type="number" min="0" step="0.01" [(ngModel)]="r.bill_rate" [readonly]="!d.can_edit" [placeholder]="'default ' + d.finance.default_bill_rate"></td>
                 <td class="num" data-label="Cost rate override"><input type="number" min="0" step="0.01" [(ngModel)]="r.cost_rate_override" [readonly]="!d.can_edit" placeholder="from salary"></td>
-                <td class="num" data-label="Salary cost / h">{{ m(r.salary_cost_rate) }}</td>
+                <td class="num" data-label="Salary cost / h">{{ r.salary_cost_rate === null && d.salary_cost_available === false ? ('Not available' | t) : m(r.salary_cost_rate) }}</td>
               </tr>
               <tr *ngIf="!d.members.length"><td colspan="5" class="pc-muted">No members on this project.</td></tr>
             </tbody>
           </table>
+          <!-- v1.67.3 (apps): Projects without HR – no salary cost -->
+          <p class="pc-muted" *ngIf="d.salary_cost_available === false" data-salary-na>{{ d.salary_cost_note }}</p>
         </div>
 
         <div class="pc-panel">

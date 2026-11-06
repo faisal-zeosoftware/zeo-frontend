@@ -114,16 +114,31 @@ const TILE_ICON: Record<string, string> = {
   .zal-rh mat-icon { font-size: 16px; width: 16px; height: 16px; color: #E0A100; }
   .zal-rc button { border: 1px solid #E3E5EE; background: #fff; border-radius: 8px; padding: 3px 9px; font-size: 12.5px; cursor: pointer; color: #1B1640;
     max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .zal-rc button small { color: #6B7185; margin-left: 5px; font-size: 11px; }
+  .zal-rc button small { color: #6B7185; margin-inline-start: 5px; font-size: 11px; }   /* v1.67.5 (bugs) Z1: right side in Arabic too */
   .zal-rc button:hover { background: #F1F3F9; }
   :host-context([dir=rtl]) .zal-panel { left: auto; right: 0; }
   :host-context([dir=rtl]) .zal-suites button, :host-context([dir=rtl]) .zal-hits button { text-align: right; }
   @media (max-width: 900px) { .zal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  /* v1.67.5 (bugs) Z1: below 980 px the panel was placed under the button with its desktop width and ran off the right edge
+     (820 px wide: 12 of 26 tiles off-screen) – it is now held inside the window with a 12 px gutter on both sides (also in
+     Arabic, where a right-to-left rule had removed the gutters), and its height follows the visible height (dvh) */
+  @media (max-width: 980px) {
+    .zal-panel, :host-context([dir=rtl]) .zal-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto;
+      max-height: calc(100vh - 76px); max-height: calc(100dvh - 76px); }
+  }
   @media (max-width: 600px) {
     .zal-btn-t { display: none; }
-    .zal-panel { position: fixed; top: 64px; left: 12px; right: 12px; width: auto; max-height: calc(100vh - 80px); overflow: auto; }
-    .zal-suites { grid-template-columns: 1fr; }
-    .zal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .zal-panel, :host-context([dir=rtl]) .zal-panel { top: 52px; left: 8px; right: 8px; padding: 12px; max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px); overflow: auto; }
+    /* the apps as compact two-column buttons, so the modules are on the first screen (before: seven tall cards first) */
+    .zal-suites { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+    .zal-suites button { padding: 8px 10px; gap: 8px; min-width: 0; }
+    .zal-suites button small { display: none; }
+    .zal-suites button b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .zal-suites button span { min-width: 0; }
+    .zal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .zal-tile { min-height: 62px; font-size: 13px; padding: 8px 4px; }
+    .zal-recs { grid-template-columns: 1fr; }
+    .zal-recent { font-size: 13px; }
   }`],
 })
 export class ZAppLauncherComponent implements OnInit, OnDestroy {

@@ -29,10 +29,17 @@ import { environment } from '../../environments/environment';
         <button type="button" class="zr-btn" (click)="template()">Download the template</button>
         <span class="zr-muted">also accepts Reports To, IBAN, routing code, salary card, Emirates ID, passport, visa, labour card, salary columns and Exit date</span>
       </div>
+      <!-- v1.67.5 (bugs) I1 -->
+      <p class="zr-muted zi-new" data-zi-new-cols>New columns: Title, Name in Arabic, Preferred Name, Attendance Card / Barcode, Mother Name, Father Name, Visa Location, Work Location, City and Profile Picture (the picture's file name – add the pictures as a .zip below).</p>
       <label class="zi-drop" [class.has]="file">
         <input type="file" accept=".xlsx,.xls,.csv" (change)="pick($event)">
         <span *ngIf="!file">Choose a file or drop it here</span>
         <span *ngIf="file"><b>{{ file.name }}</b> · {{ (file.size / 1024) | number:'1.0-0' }} KB</span>
+      </label>
+      <label class="zi-drop zi-pics" [class.has]="pics" data-zi-pics>
+        <input type="file" accept=".zip,application/zip" (change)="pickPics($event)">
+        <span *ngIf="!pics">Profile pictures (.zip, optional) – the file names as in the "Profile Picture" column</span>
+        <span *ngIf="pics"><b>{{ pics.name }}</b> · {{ (pics.size / 1024) | number:'1.0-0' }} KB</span>
       </label>
       <fieldset class="zi-mode">
         <label><input type="radio" name="zimode" [checked]="mode === 'partial'" (change)="mode = 'partial'"> Import the good rows and list the rows with errors</label>
@@ -90,6 +97,8 @@ import { environment } from '../../environments/environment';
   .zi-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0}
   .zi-drop{display:block;border:2px dashed #c9c6ef;border-radius:10px;padding:22px;text-align:center;cursor:pointer;margin:12px 0;color:#4a4766}
   .zi-drop.has{border-style:solid;background:#f6f5ff}
+  .zi-pics{padding:12px;font-size:13px}
+  .zi-new{margin:4px 0 0;font-size:12.5px}
   .zi-drop input{display:none}
   .zi-mode{border:0;padding:0;margin:8px 0;display:grid;gap:6px}
   .zi-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
@@ -124,6 +133,13 @@ export class ZEmployeeImportComponent implements OnDestroy {
   private q(): string { return `schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`; }
 
   pick(ev: any): void { this.file = ev?.target?.files?.[0] || null; this.error = ''; }
+  // v1.67.5 (bugs) I1: the profile pictures, one .zip; the "Profile Picture" column names the file of each employee
+  pics: File | null = null;
+  pickPics(ev: any): void {
+    const f: File | null = ev?.target?.files?.[0] || null; this.error = '';
+    if (f && !/\.zip$/i.test(f.name)) { this.error = 'Choose the profile pictures as one .zip file.'; this.pics = null; return; }
+    this.pics = f;
+  }
 
   pct(): number {
     const tot = this.st?.valid ?? this.st?.total ?? 0;
@@ -136,6 +152,7 @@ export class ZEmployeeImportComponent implements OnDestroy {
     this.busy = true; this.error = '';
     const fd = new FormData();
     fd.append('file', this.file);
+    if (this.pics) { fd.append('pictures', this.pics); }   // v1.67.5 (bugs) I1
     fd.append('mode', this.mode);
     if (dry) fd.append('dry_run', '1');
     this.dryRunDone = dry;
@@ -167,7 +184,7 @@ export class ZEmployeeImportComponent implements OnDestroy {
   template(): void { this.download(`${this.api}/import-template/?${this.q()}`, 'employee_upload_template.xlsx'); }
   errorsFile(): void { this.download(`${this.api}/import-errors/?job=${this.job}&${this.q()}`, 'employee_upload_errors.csv'); }
 
-  reset(): void { this.job = ''; this.st = null; this.file = null; this.busy = false; }
+  reset(): void { this.job = ''; this.st = null; this.file = null; this.pics = null; this.busy = false; }
   close(done = false): void { clearTimeout(this.timer); if (this.ref) this.ref.close(done ? 'imported' : undefined); }
   ngOnDestroy(): void { clearTimeout(this.timer); }
 }
