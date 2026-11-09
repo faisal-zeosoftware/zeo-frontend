@@ -52,6 +52,8 @@ export class AdvanceSalaryApprovalsComponent {
     this.lnBusy = true;
     try {
       const body: any = a.what === 'approve' ? { note: a.text || '', status: 'Approved' } : { note: a.text || '', status: 'Rejected', rejection_reason: a.text };
+      if (a.what === 'approve' && a.amount !== undefined && a.amount !== null && a.amount !== '') { body.approved_amount = a.amount; }   // v1.67.11 (loans, item 114)
+      if (a.what === 'approve' && a.months) { body.approved_months = a.months; }
       await this.ln.post(`approval-salaryrequest/${a.r.approval_id}/${a.what}`, body);
       this.lnDone = this.ln.t(a.what === 'approve' ? '{0} approved.' : '{0} rejected.', [a.r.number]);
       this.lnAsk = null; await this.lnLoad();

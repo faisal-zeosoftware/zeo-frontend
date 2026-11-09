@@ -5,7 +5,7 @@
       <div class="at-head">
         <div>
           <h1 class="page-title">Advance salary requests</h1>
-          <p class="at-desc">Salary paid in advance and taken back in one payroll deduction. Each request shows where it stands: in approval, approved for the next payroll, deducted or rejected.</p>
+          <p class="at-desc">Salary paid in advance and taken back by payroll – at once or in monthly instalments. Each request shows where it stands: in approval, approved for the next payroll, deducted or rejected.</p>
         </div>
         <div class="at-actions">
           <button type="button" class="at-btn" (click)="lnGo('/main-sidebar/salary-options/advance-salary-approvals')">{{ ln.t('Approvals') }}<span class="n" *ngIf="lnSum.waiting_me">({{ lnSum.waiting_me }})</span></button>
@@ -39,7 +39,7 @@
             <td class="nw"><span class="at-code">{{ r.number }}</span><span class="at-sub">{{ ln.dmy(r.applied) }}</span></td>
             <td class="at-who"><b>{{ r.employee }}</b><small>{{ r.code }}<ng-container *ngIf="r.branch"> · {{ r.branch }}</ng-container></small></td>
             <td class="ln-note" [title]="r.note || ''">{{ r.note || '–' }}<span class="at-sub" *ngIf="r.reason" [title]="r.reason">{{ r.reason }}</span></td>
-            <td class="num">{{ ln.money(r.amount) }}</td>
+            <td class="num">{{ ln.money(r.amount) }}<div class="at-sub" *ngIf="+r.months > 1" data-adv-plan>{{ ln.plan(r) }}</div><div class="at-sub" *ngIf="r.asked">{{ ln.t('Amount asked') }} {{ ln.money(r.asked) }}</div></td>   <!-- v1.67.11 (loans): instalments, amount asked -->
             <td><span class="at-st" [ngClass]="ln.stageClass(r.stage)">{{ ln.stage(r.stage, 'advance') }}</span><span class="at-sub" *ngIf="ln.progress(r)">{{ ln.progress(r) }}</span></td>
             <td class="at-acts">
               <button type="button" class="at-btn sm" *ngIf="hasEditPermission && r.stage === 'approved'" (click)="lnAct('pause', r)">{{ ln.t('Pause') }}</button>

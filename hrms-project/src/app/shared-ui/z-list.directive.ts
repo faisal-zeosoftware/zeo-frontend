@@ -8,9 +8,10 @@ import { SavedViewItem, ViewData, ZSavedViewsService } from './z-saved-views';  
 import { ZRecordService } from './z-record.service';
 import { showValue } from './field-types';
 import { VCol, VIEW_LABEL, ViewKind, ViewState, availableViews, calendarHtml, defaults, graphHtml, kanbanHtml, pivotData, pivotHtml } from './z-views';
-import { i18nOriginal, i18nT as T } from './i18n-core';   // v1.15.0: list texts in the user's language
+import { i18nOriginal, i18nOriginalAttr, i18nT as T } from './i18n-core';   // v1.15.0: list texts in the user's language
 import { paintColumns, personCell, presentEl, rawText, setUserNames } from './z-present';   // v1.62.0 ui
 import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { singleBranch } from './z-single-branch';   // v1.67.6 (setup) item 11
 
 /**
  * Same list experience on every screen (attaches itself to every data table):
@@ -457,7 +458,9 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   /** Branch / Department / Designation / Category first, then status-like columns. */
   private facetKeys(): string[] {
     const keys: string[] = [];
+    const one = singleBranch();   // v1.67.6 (setup) item 11: one branch – no Branch filter / group that offers one value
     for (const o of orgKeys()) {
+      if (one && o.key === 'branch') { continue; }
       const col = this.cols.find(c => c.org === o.key && !c.skip);
       if (col || this.hasEmp) { keys.push('o:' + o.key); }
     }
@@ -1595,7 +1598,22 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
 
   /** the user may delete here: a row Delete control is shown (the screens show it only with the delete right) */
   private canDelete(): boolean {
-    return this.table.hasAttribute('data-zl-can-delete') || this.rows.some(r => !!r.el.querySelector(ZListDirective.DEL_SEL));
+    return this.table.hasAttribute('data-zl-can-delete') || this.rows.some(r => !!ZListDirective.rowDel(r.el));
+  }
+
+  /** v1.67.9 (screens): the row's Delete control in any language – the translator changes title / aria-label in Arabic, so
+   *  the English original of the attribute (or the icon name) is what counts */
+  static rowDel(tr: HTMLElement): HTMLElement | null {
+    const d = tr.querySelector(ZListDirective.DEL_SEL) as HTMLElement | null;
+    if (d) { return d; }
+    for (const b of Array.from(tr.querySelectorAll('button, a[role=button]')) as HTMLElement[]) {
+      if (b.closest('[data-zl]')) { continue; }
+      const t = (i18nOriginalAttr(b, 'title') || i18nOriginalAttr(b, 'aria-label') || b.getAttribute('mattooltip') || '').trim();
+      if (/^delete\b/i.test(t)) { return b; }
+      const ic = b.querySelector('mat-icon');
+      if (ic && /^(delete|delete_outline|delete_forever)$/.test((ic.textContent || '').trim()) && !/restore|undo/i.test(t)) { return b; }
+    }
+    return null;
   }
 
   private paintSelBar(): void {
@@ -1615,7 +1633,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       }
       if (del) { parts.push(`<button type="button" class="zl-btn danger" data-act="bulkdel" data-zl-bulkdel>${T('Delete selected')}</button>`); }
       parts.push(`<button type="button" class="zl-link" data-act="exportsel">${T('Export selected')}</button>`);
-      parts.push(`<button type="button" class="zl-link" data-act="unselect">${T('Clear')}</button>`);
+      parts.push(`<button type="button" class="zl-link" data-act="unselect">${T('Clear (button)')}</button>`);
     }
     const res = this.result ? `<div class="zl-selres" data-zl-result>${this.result}<button type="button" class="zl-link" data-act="closeres" aria-label="${T('Close')}">✕</button></div>` : '';
     this.quiet(() => {
@@ -1625,6 +1643,10 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   }
 
   private listEndpoint(): string | null {
+    // v1.67.9 (screens): a screen may name its list API (<table data-zl-endpoint="/x/api/y/">) where matching rows to the
+    // loaded lists is not reliable (rows drawn from several lists, translated cells)
+    const own = this.table.getAttribute('data-zl-endpoint');
+    if (own) { return own.endsWith('/') ? own : own + '/'; }
     const ep = this.endpoint || this.z.endpointFor(this.rows.slice(0, 40).map(r => r.raw));
     return ep ? (ep.endsWith('/') ? ep : ep + '/') : null;
   }
@@ -1689,10 +1711,11 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private async applyUsage(): Promise<void> {
     const ep = this.listEndpoint();
     if (!ep) { return; }
+    if (this.table.dataset['zlEp'] !== ep) { this.quiet(() => { this.table.dataset['zlEp'] = ep; }); }   // v1.67.9 (screens): the list's API (tests, crawl)
     const want: { id: string; tr: HTMLTableRowElement; del: HTMLElement | null }[] = [];
     for (const r of this.rows) {
       const hit = this.rec.rowRecord(r.el);
-      if (hit?.id) { want.push({ id: String(hit.id), tr: r.el, del: r.el.querySelector(ZListDirective.DEL_SEL) as HTMLElement | null }); }
+      if (hit?.id) { want.push({ id: String(hit.id), tr: r.el, del: ZListDirective.rowDel(r.el) }); }   // v1.67.9 (screens): any language
     }
     if (!want.length) { return; }
     // 1) the active flags of every row (Active / Inactive filter) – one fast call; rows drawn again keep their id mark
@@ -1762,7 +1785,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (!this.foot) { return; }
     const n = this.selCount();
     const info = this.foot.querySelector('.zl-selinfo') as HTMLElement;
-    info.innerHTML = n ? `${T('{0} selected', [`<b>${n}</b>`])} <button type="button" class="zl-btn primary zl-massbtn" data-act="mass">${T('Action')} ▾</button><button type="button" class="zl-link" data-act="exportsel">${T('Export')}</button><button type="button" class="zl-link" data-act="unselect">${T('Clear')}</button>` : '';
+    info.innerHTML = n ? `${T('{0} selected', [`<b>${n}</b>`])} <button type="button" class="zl-btn primary zl-massbtn" data-act="mass">${T('Action')} ▾</button><button type="button" class="zl-link" data-act="exportsel">${T('Export')}</button><button type="button" class="zl-link" data-act="unselect">${T('Clear (button)')}</button>` : '';
     const all = this.foot.querySelector('[data-selall]') as HTMLInputElement;
     all.checked = n > 0 && n >= this.visible.length;
     all.indeterminate = n > 0 && n < this.visible.length;

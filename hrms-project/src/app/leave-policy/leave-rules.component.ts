@@ -130,6 +130,9 @@ export class LeaveRulesComponent implements OnInit {
           { key: 'sandwich', label: 'Sandwich rule: weekends / public holidays between two leave days count as leave', type: 'check', full: true },
           { key: 'allow_projected', label: 'Use the balance projected to the leave start (accrual up to then)', type: 'check', full: true },
           { key: 'document_above_days', label: 'Supporting document only above (days)', type: 'number', hint: 'Empty = as the policy line says.' },
+          // v1.67.12 (effective, item 62): a limit for a negative balance
+          { key: 'negative_limit', label: 'Negative balance: at most (days below zero)', type: 'number',
+            hint: t.negative_allowed ? 'Empty = no limit. Used when the leave type or the policy line allows a negative balance.' : 'Empty = no limit. Used when the leave type or the policy line allows a negative balance (this leave type does not allow it now).' },
         ] },
         { title: 'Pay', fields: [
           { key: 'advance_salary', label: 'Pay the leave salary before the leave', type: 'check', full: true, hint: 'The payroll of the leave days then takes it back, so the days are not paid twice.' },

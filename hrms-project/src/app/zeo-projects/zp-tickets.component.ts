@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
+import { inject, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list
@@ -141,7 +142,7 @@ export class ZpTicketFormComponent implements OnInit {
       <p class="ex-muted" *ngIf="loading">Loading…</p>
       <div class="zp-scroll" *ngIf="!loading">
         <table class="zp-table zl-zp">
-          <tr><th>Ticket</th><th>Customer</th><th>Branch</th><th>Priority</th><th>Stage</th><th>SLA</th><th>Assigned</th><th>Billing</th><th>Created</th></tr>
+          <tr><th>Ticket</th><th>Customer</th><th>Branch</th><th>Priority</th><th>Stage</th><th>SLA</th><th>Assigned</th><th>Billing</th><th>Created</th><th></th></tr>
           <tr class="click" *ngFor="let t of rows" (click)="open(t.id)">
             <td><span class="zp-code">{{ t.number }}</span><div style="font-weight:600;color:#1b1640;margin-top:2px">{{ t.subject }}</div>
               <div class="zp-muted">{{ t.product_name }}{{ t.category_name ? ' · ' + t.category_name : '' }}</div></td>
@@ -154,6 +155,7 @@ export class ZpTicketFormComponent implements OnInit {
             <td>{{ t.assigned_to?.name || '–' }}<div class="zp-muted">{{ t.team_name }}</div></td>
             <td><span class="zp-b" [ngClass]="t.billable_status">{{ t.billable_label }}</span><div class="zp-muted">{{ t.contract_number }}</div></td>
             <td class="zp-muted">{{ w(t.created_at) }}</td>
+            <td><button type="button" class="ex-btn sm" *ngIf="canPrint.has('support_ticket')" (click)="zprint.open('support_ticket', t.id, $event)" data-print-row>Print</button></td>   <!-- v1.67.7 (admin) -->
           </tr>
         </table>
         <p class="zp-empty" *ngIf="!rows.length">No tickets match.</p>
@@ -167,6 +169,9 @@ export class ZpTicketFormComponent implements OnInit {
 <app-zp-ticket-form *ngIf="creating" (closed)="creating = false" (saved)="created($event)"></app-zp-ticket-form>`,
 })
 export class ZpTicketsComponent implements OnInit {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   lk: any = { stages: [], priorities: [], customers: [], teams: [], billable: [], rights: {} };
   rows: any[] = [];
   count = 0;
@@ -192,6 +197,7 @@ export class ZpTicketsComponent implements OnInit {
     if (qp.get('priority')) this.f.priority = qp.get('priority');
     if (qp.get('assigned')) this.assigned = qp.get('assigned')!;   // from a report row (engineer id or "none")
     if (qp.get('new')) this.creating = true;
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     try { this.lk = await this.api.lookups(); } catch { /* list still loads */ }
     await this.load();
   }

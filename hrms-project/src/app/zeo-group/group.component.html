@@ -1,3 +1,4 @@
+<!-- v1.67.9 (screens) item 19: the Open buttons use the action word ('Open (button)' → فتح) -->
 <div class="zg-page">
   <header class="zg-top">
     <a routerLink="/schema-selection" class="zg-logo-l"><img src="assets/zeo_logo_new.png" class="zg-logo" alt="ZEO"></a>
@@ -38,7 +39,7 @@
               <td class="n">{{ c.employees }}</td><td class="n">{{ c.joiners }}</td><td class="n">{{ c.leavers }}</td><td class="n">{{ c.on_leave }}</td>
               <td>{{ c.payroll_month || '–' }}</td><td class="n">{{ c.payroll_month ? money(c.payroll_gross) + (c.currency ? ' ' + c.currency : '') : '–' }}</td>
               <td class="n">{{ c.documents_30 }}</td><td class="n">{{ c.approvals }}</td>
-              <td class="r"><button type="button" class="zg-link" *ngIf="group.role !== 'viewer'" (click)="openCompany(c.schema_name)">{{ 'Open' | t }}</button></td>
+              <td class="r"><button type="button" class="zg-link" *ngIf="group.role !== 'viewer'" (click)="openCompany(c.schema_name)">{{ 'Open (button)' | t }}</button></td>
             </tr>
           </tbody>
           <tfoot><tr><td>{{ 'Group total' | t }}</td><td class="n">{{ dash.total.employees }}</td><td class="n">{{ dash.total.joiners }}</td><td class="n">{{ dash.total.leavers }}</td>
@@ -61,7 +62,7 @@
         <tbody><tr *ngFor="let i of inbox.items">
           <td>{{ i.company }}</td><td>{{ i.module_label || i.module }}</td><td>{{ i.employee }}<div class="zg-muted s">{{ i.employee_code }}</div></td>
           <td>{{ i.summary }}<div class="zg-muted s" *ngIf="i.document_number">{{ i.document_number }}</div></td><td>{{ age(i.date) }}</td>
-          <td class="r"><button type="button" class="zg-btn pri sm" (click)="openApproval(i)">{{ 'Open' | t }}</button></td>
+          <td class="r"><button type="button" class="zg-btn pri sm" (click)="openApproval(i)">{{ 'Open (button)' | t }}</button></td>
         </tr></tbody>
       </table></div>
     </section>

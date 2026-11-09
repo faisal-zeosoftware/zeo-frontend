@@ -382,3 +382,13 @@ button.z-row-btn.zl-inact { width: auto; padding: 0 9px; font-size: 12px; font-w
 .header_section.z-card-head .row > [class*="col-"]:has(.z-new-btn) { margin-inline-start: auto; }
 /* v1.67.5 (bugs) S1: while an editor window of the shift / calendar screens is open the page behind it does not scroll */
 body:has(> .t62-dlg) main.sub-content-area, body:has(> .t62-dlg) main.content-area, main.sub-content-area:has(.t62-dlg) { overflow: hidden !important; }
+/* v1.67.9 (screens) item 19: row actions stay on one line (Edit · Translate · Delete / Make inactive side by side) */
+table.zl-table td:has(> button, > a.z-row-btn, > span > button.z-row-btn, > z-translate) { white-space: nowrap; }
+table.zl-table td:has(> button, > span > button.z-row-btn) > button, table.zl-table td:has(> button) > z-translate { vertical-align: middle; }
+/* v1.67.9 (screens) item 19: middle-length texts stay on one line too (end with …, the full text on hover) */
+table.zl-table td.zl-k-mid { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+table.zl-table td.zl-k-mid:has(button, input, select, textarea, ul, ol, table) { max-width: none; overflow: visible; white-space: normal; }
+/* v1.67.9 (screens): a name followed by its code / note in the same cell ("Annual Leave AL-ZEO") – Angular drops the space between the tags */
+table.zl-table td > b + small, table.zl-table td > strong + small, table.zl-table td > b + span.hs-code { margin-inline-start: 6px; }
+/* v1.67.9 (screens): column headings never wrap (some app screens' own table styles let them) */
+table.zl-table th { white-space: nowrap !important; }   /* also tables whose headings are not in a <thead> (HSE registers) */

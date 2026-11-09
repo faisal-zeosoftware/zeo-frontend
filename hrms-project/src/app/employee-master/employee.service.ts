@@ -1747,9 +1747,11 @@ updatelovertimeRule(id: number, data: any): Observable<any> {
 }
 
 
-updatelPayStructure(id: number, data: any): Observable<any> {
+updatelPayStructure(id: number, data: any, effectiveFrom?: string): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/payroll/api/payroll-structure/${id}/?schema=${selectedSchema}`;
+  // v1.67.12 (effective, item 64): ?effective_from= – the change applies from that day
+  const eff = /^\d{4}-\d{2}-\d{2}$/.test(String(effectiveFrom || '')) ? `&effective_from=${effectiveFrom}` : '';
+  const apiUrl = `${this.apiUrl}/payroll/api/payroll-structure/${id}/?schema=${selectedSchema}${eff}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -6164,9 +6166,11 @@ getairticketpolicy(selectedSchema: string): Observable<any> {
   
 
 
-updateAirpolicy(id: number, data: any): Observable<any> {
+updateAirpolicy(id: number, data: any, effectiveFrom?: string): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/payroll/api/airticket-policy/${id}/?schema=${selectedSchema}`;
+  // v1.67.12 (effective, item 64): ?effective_from= – the change applies from that day
+  const eff = /^\d{4}-\d{2}-\d{2}$/.test(String(effectiveFrom || '')) ? `&effective_from=${effectiveFrom}` : '';
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-policy/${id}/?schema=${selectedSchema}${eff}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(

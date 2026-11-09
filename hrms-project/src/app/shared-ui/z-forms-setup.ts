@@ -1,3 +1,4 @@
+import { i18nT } from './i18n-core';   // v1.67.6 (setup)
 /**
  * v1.62.10 (item 175) – the create / edit forms of the old setup screens (policies, types, states, numbering, expiry alerts,
  * e-mail configuration) on the shared form shell (z-form.component.ts), instead of their old in-template pop-ups.
@@ -76,7 +77,7 @@ export const LATE_COMING_FORM = lateEarlyForm(false);
 export const EARLY_EXIT_FORM = lateEarlyForm(true);
 
 export const OVERTIME_POLICY_FORM: ZFormConfig = {
-  thing: 'overtime policy', endpoint: '/calendars/api/overtime_policy/',
+  thing: 'overtime policy', endpoint: '/calendars/api/overtime_policy/', effective: 'overtime_policy',   // v1.67.12 (effective)
   subtitle: 'The overtime rate for a kind of overtime and the employees it applies to.',
   sections: [
     { title: 'Policy', fields: [
@@ -94,7 +95,7 @@ function toDuration(x: any): any {
   return s;
 }
 export const OVERTIME_RULE_FORM: ZFormConfig = {
-  thing: 'overtime rule', endpoint: '/calendars/api/overtime_rule/',
+  thing: 'overtime rule', endpoint: '/calendars/api/overtime_rule/', effective: 'overtime_policy', effectiveId: (r: any) => r.policy,   // v1.67.12 (effective): a rule is part of its policy
   subtitle: 'When overtime starts to count under an overtime policy.',
   sections: [{ title: 'Rule', fields: [
     { key: 'policy', label: 'Overtime policy', type: 'select', source: { endpoint: '/calendars/api/overtime_policy/', label: 'name' } },
@@ -108,7 +109,7 @@ export const OVERTIME_RULE_FORM: ZFormConfig = {
 
 // ---------- Employees › Setup ----------
 export const GRATUITY_FORM: ZFormConfig = {
-  thing: 'gratuity band', endpoint: '/organisation/api/gratuity/',
+  thing: 'gratuity band', endpoint: '/organisation/api/gratuity/', effective: 'gratuity',   // v1.67.12 (effective): the whole table is dated
   subtitle: 'Days of basic pay for each year of service, by years of service (resignation and termination).',
   sections: [{ title: 'Years of service', fields: [
     { key: 'minimum_value', label: 'From (years)', type: 'number' }, { key: 'maximum_value', label: 'To (years)', type: 'number' },
@@ -129,10 +130,24 @@ export const REQUEST_TYPE_FORM: ZFormConfig = {
 export const LOAN_TYPE_FORM: ZFormConfig = {
   thing: 'loan type', endpoint: '/payroll/api/loan-type/',
   subtitle: 'A kind of loan, its highest amount and repayment period.',
+  // v1.67.11 (loans, items 110–112): the highest amount and months are checked on every request; who may ask, profit and guarantor
+  initial: { no_leavers: true, open_loans: 'type', interest: 'none', guarantor: 'none', min_service_months: 0 },
   sections: [{ title: 'Loan type', fields: [
-    { key: 'loan_type', label: 'Name', max: 255 }, { key: 'max_amount', label: 'Highest amount (AED)', type: 'number' },
-    { key: 'repayment_period', label: 'Repayment period (months)', type: 'number' }, branchMulti(),
-    { key: 'use_common_workflow', label: 'Use the common approval workflow', type: 'check' }] }],
+    { key: 'loan_type', label: 'Name', max: 255 }, { key: 'max_amount', label: 'Highest amount (AED)', type: 'number', hint: 'A request above it is refused.' },
+    { key: 'repayment_period', label: 'Repayment period (months)', type: 'number', hint: 'The longest repayment period; a request over more months is refused.' }, branchMulti(),
+    { key: 'use_common_workflow', label: 'Use the common approval workflow', type: 'check' }] },
+  { title: 'Who may ask', fields: [   // v1.67.11 (loans, item 111)
+    { key: 'min_service_months', label: 'Months of service needed', type: 'number', hint: '0 = from the first day.' },
+    { key: 'max_times_basic', label: 'At most × monthly basic', type: 'number', hint: 'Empty = no limit. E.g. 3: at most 3 times the basic salary.' },
+    { key: 'max_instalment_pct', label: 'Instalment at most % of the wage', type: 'number', hint: 'Empty = no limit. The wage is basic + fixed allowances.' },
+    { key: 'open_loans', label: 'Open loans', type: 'select', options: [{ value: 'type', label: 'One open loan of this type' }, { value: 'any', label: 'No other open loan of any type' }] },
+    { key: 'not_in_probation', label: 'Not during probation', type: 'check' },
+    { key: 'no_leavers', label: 'Not for leavers (resigned, on notice)', type: 'check' }] },
+  { title: 'Profit and guarantor', fields: [   // v1.67.11 (loans, item 112)
+    { key: 'interest', label: 'Profit', type: 'select', options: [{ value: 'none', label: 'None' }, { value: 'flat', label: 'Flat profit' }],
+      hint: 'UAE: loans repaid from the wage are without interest (Decree-Law 33/2021 Art. 25(1)(a)) – only None is accepted.' },
+    { key: 'interest_rate', label: 'Profit rate (% a year)', type: 'number', showIf: (v: any) => v.interest === 'flat', hint: 'Flat on the amount: amount × rate × months ÷ 12.' },
+    { key: 'guarantor', label: 'Guarantor', type: 'select', options: [{ value: 'none', label: 'Not asked' }, { value: 'optional', label: 'Optional' }, { value: 'required', label: 'Required' }] }] }],
   toBody: withCreator,
 };
 export const ASSET_TYPE_FORM: ZFormConfig = {
@@ -157,7 +172,10 @@ export const DOC_NUMBERING_FORM: ZFormConfig = {
   subtitle: 'How the numbers of one kind of request are made in a branch. Editing changes only what you change here.',
   sections: [
     { title: 'Numbering', fields: [
-      { key: 'type', label: 'Document', type: 'select' }, { key: 'branch_id', label: 'Branch', type: 'select', source: BRANCHES },
+      // v1.67.6 (setup) item 4: the documents of the active apps only (Projects, CRM, Property … company-wide on the head office)
+      { key: 'type', label: 'Document', type: 'select', search: true, source: { endpoint: '/zeo-apps/api/numbering/?list=1', value: 'value',
+        label: (r: any) => `${r.app_title} · ${r.label}${r.company_wide ? ' (' + i18nT('company-wide') + ')' : ''}` } },
+      { key: 'branch_id', label: 'Branch', type: 'select', source: BRANCHES },
       { key: 'prefix', label: 'Prefix', max: 50 }, { key: 'suffix', label: 'Suffix', max: 50 },
       { key: 'current_number', label: 'Current number', type: 'number', hint: 'The last number used; the next one is one higher.' },
       { key: 'total_length', label: 'Total length', type: 'number' },

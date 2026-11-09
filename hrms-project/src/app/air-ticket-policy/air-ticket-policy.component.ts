@@ -1,4 +1,5 @@
 import { inject as atInject } from '@angular/core';   // v1.62.0 air ticket
+import { EFFECTIVE_HINT, openRuleHistory } from '../shared-ui/z-rule-history';   // v1.67.12 (effective)
 import { Router as AtRouter, ActivatedRoute as AtRoute } from '@angular/router';
 import { AtUiService } from '../air-ticket-ui/at-ui.service';
 import { HttpClient } from '@angular/common/http';
@@ -1010,7 +1011,11 @@ toggleAllDesignationsEdit(): void {
 closeEditModal(): void {
   this.isEditModalOpen = false;
   this.editAsset = {};
+  this.editEffFrom = '';   // v1.67.12 (effective)
 }
+editEffFrom = '';             // v1.67.12 (effective): the day the change applies from ('' = a correction)
+effHint = EFFECTIVE_HINT;
+atHistory(): void { if (this.editAsset?.id) { openRuleHistory('air_ticket_policy', this.editAsset.id, this.editAsset.name); } }   // v1.67.12 (effective)
 
 
 updateAssetType(): void {
@@ -1020,7 +1025,7 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset, this.editEffFrom).subscribe(   // v1.67.12 (effective)
     (response) => {
       alert('Airticket updated successfully!');
       this.closeEditModal();

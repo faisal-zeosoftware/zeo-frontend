@@ -9,6 +9,7 @@
  */
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { ZListDirective } from '../shared-ui/z-list.directive';
@@ -20,7 +21,7 @@ import { WEEKEND_FORM } from './t62-forms';
   selector: 'app-t62-weekend-calendars',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, RouterModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, ZPortalDirective, RouterModule, MatIconModule, ZListDirective],
   styleUrls: ['../hr-modules/hr-shared.css', './t62.css'],
   styles: [`.t62-year { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .t62-month { border: 1px solid #eceef5; border-radius: 10px; padding: 8px 10px; } .t62-month h4 { font-size: 13px; margin: 0 0 6px; font-weight: 600; }
@@ -66,7 +67,7 @@ import { WEEKEND_FORM } from './t62-forms';
   </div>
 </div>
 
-<div class="t62-dlg" *ngIf="yr" data-t62-dialog>
+<div class="t62-dlg" zPortal *ngIf="yr" data-t62-dialog>
   <div class="t62-veil" (click)="yr = null"></div>
   <div class="t62-box" role="dialog" aria-modal="true" style="width:min(1040px, calc(100vw - 32px))">
     <div class="t62-head"><div><h2 class="t62-title">{{ yr.r.calendar_code }} – {{ yr.r.year }}</h2>

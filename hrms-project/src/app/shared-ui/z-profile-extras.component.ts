@@ -1,3 +1,4 @@
+import { appOn } from './zeo-flags';   // v1.67.6 (setup) item 1
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -68,8 +69,9 @@ const BANK = () => ({ bank: '', account_name: '', account_no: '', iban: '', swif
       <label>{{ d.labels.licence_no }}<input [(ngModel)]="d.licence_no" maxlength="60" [disabled]="!d.can_change"></label>
       <label>{{ 'Issued on' | t }}<input type="date" [(ngModel)]="d.licence_issue" [disabled]="!d.can_change"></label>
       <label>{{ 'Expires on' | t }}<input type="date" [(ngModel)]="d.licence_expiry" [disabled]="!d.can_change"></label>
+      <ng-container *ngIf="appOn('hrms')"><!-- v1.67.6 (setup) item 1: labour / establishment only with HR -->
       <label>{{ d.labels.establishment_no }}<input [(ngModel)]="d.establishment_no" maxlength="60" [disabled]="!d.can_change"></label>
-      <label>{{ 'Establishment expiry' | t }}<input type="date" [(ngModel)]="d.establishment_expiry" [disabled]="!d.can_change"></label>
+      <label>{{ 'Establishment expiry' | t }}<input type="date" [(ngModel)]="d.establishment_expiry" [disabled]="!d.can_change"></label></ng-container>
       <label>{{ d.labels.chamber_no }}<input [(ngModel)]="d.chamber_no" maxlength="60" [disabled]="!d.can_change"></label>
     </div>
     <div class="zp-sec">{{ 'Tax and social security' | t }}</div>
@@ -77,8 +79,9 @@ const BANK = () => ({ bank: '', account_name: '', account_no: '', iban: '', swif
       <label>{{ d.labels.tax_id }}<input [(ngModel)]="d.tax_id" maxlength="40" [disabled]="!d.can_change"></label>
       <label>{{ 'Tax registration date' | t }}<input type="date" [(ngModel)]="d.tax_reg_date" [disabled]="!d.can_change"></label>
       <label>{{ d.labels.corporate_tax_no }}<input [(ngModel)]="d.corporate_tax_no" maxlength="40" [disabled]="!d.can_change"></label>
-      <label>{{ d.labels.pension_reg_no }}<input [(ngModel)]="d.pension_reg_no" maxlength="60" [disabled]="!d.can_change"></label>
-      <label>{{ d.labels.insurance_reg_no }}<input [(ngModel)]="d.insurance_reg_no" maxlength="60" [disabled]="!d.can_change"></label>
+      <ng-container *ngIf="appOn('payroll')"><!-- v1.67.6 (setup) item 1: pension (GPSSA …) and insurance only with Payroll -->
+      <label data-pension>{{ d.labels.pension_reg_no }}<input [(ngModel)]="d.pension_reg_no" maxlength="60" [disabled]="!d.can_change"></label>
+      <label>{{ d.labels.insurance_reg_no }}<input [(ngModel)]="d.insurance_reg_no" maxlength="60" [disabled]="!d.can_change"></label></ng-container>
       <label *ngFor="let x of d.labels.extra">{{ x.label }}<input [(ngModel)]="d.extra_regs[x.key]" maxlength="80" [disabled]="!d.can_change"></label>
     </div>
     <div class="zp-sec">{{ 'Contact and signatory' | t }}</div>
@@ -97,12 +100,12 @@ const BANK = () => ({ bank: '', account_name: '', account_no: '', iban: '', swif
       <label class="wide">{{ 'Letterhead header (letters and certificates)' | t }}<textarea [(ngModel)]="d.letterhead_header" [disabled]="!d.can_change"></textarea></label>
       <label class="wide">{{ 'Letterhead footer' | t }}<textarea [(ngModel)]="d.letterhead_footer" [disabled]="!d.can_change"></textarea></label>
     </div>
-    <div class="zp-sec">{{ 'Bank accounts' | t }} <small style="font-weight:400;text-transform:none">({{ 'tick the one used for the salary / WPS file' | t }})</small></div>
-    <div class="zp-bank zp-hd"><span class="zp-hd">{{ 'Bank' | t }}</span><span class="zp-hd">{{ 'Account name' | t }}</span><span class="zp-hd">{{ 'Account no.' | t }}</span><span class="zp-hd">IBAN</span><span class="zp-hd">SWIFT</span><span class="zp-hd">{{ 'Currency' | t }}</span><span class="zp-hd">WPS</span><span></span></div>
+    <div class="zp-sec">{{ 'Bank accounts' | t }} <small style="font-weight:400;text-transform:none" *ngIf="appOn('payroll')">({{ 'tick the one used for the salary / WPS file' | t }})</small></div>
+    <div class="zp-bank zp-hd"><span class="zp-hd">{{ 'Bank' | t }}</span><span class="zp-hd">{{ 'Account name' | t }}</span><span class="zp-hd">{{ 'Account no.' | t }}</span><span class="zp-hd">IBAN</span><span class="zp-hd">SWIFT</span><span class="zp-hd">{{ 'Currency' | t }}</span><span class="zp-hd">{{ appOn('payroll') ? 'WPS' : '' }}</span><span></span></div>
     <div class="zp-bank" *ngFor="let b of d.bank_accounts; let i = index">
       <input [(ngModel)]="b.bank" [disabled]="!d.can_change"><input [(ngModel)]="b.account_name" [disabled]="!d.can_change"><input [(ngModel)]="b.account_no" [disabled]="!d.can_change">
       <input [(ngModel)]="b.iban" [disabled]="!d.can_change"><input [(ngModel)]="b.swift" [disabled]="!d.can_change"><input [(ngModel)]="b.currency" maxlength="3" [disabled]="!d.can_change">
-      <input type="checkbox" [(ngModel)]="b.wps" [disabled]="!d.can_change"><button type="button" class="zp-btn" (click)="d.bank_accounts.splice(i, 1)" [disabled]="!d.can_change">×</button>
+      <input type="checkbox" [(ngModel)]="b.wps" [disabled]="!d.can_change" [style.visibility]="appOn('payroll') ? 'visible' : 'hidden'"><button type="button" class="zp-btn" (click)="d.bank_accounts.splice(i, 1)" [disabled]="!d.can_change">×</button>
     </div>
     <button type="button" class="zp-btn" (click)="d.bank_accounts.push(bank())" [disabled]="!d.can_change">+ {{ 'Bank account' | t }}</button>
     <div class="zp-foot">
@@ -113,6 +116,7 @@ const BANK = () => ({ bank: '', account_name: '', account_no: '', iban: '', swif
 </div>`,
 })
 export class ZCompanyProfileComponent implements OnInit, OnChanges {
+  appOn = appOn;   // v1.67.6 (setup) item 1
   @Input() schema: string | null = null;
   @Input() open = false;
   d: any = null; busy = false; msg = ''; bad = false;
@@ -164,14 +168,15 @@ export class ZCompanyProfileComponent implements OnInit, OnChanges {
       <label>{{ 'Name in local language' | t }}<input [(ngModel)]="d.name_local" maxlength="200" [disabled]="!d.can_change" dir="auto"></label>
       <label>{{ 'Own' | t }} {{ d.labels.licence_no }}<input [(ngModel)]="d.licence_no" maxlength="60" [disabled]="!d.can_change"></label>
       <label>{{ 'Licence expiry' | t }}<input type="date" [(ngModel)]="d.licence_expiry" [disabled]="!d.can_change"></label>
+      <ng-container *ngIf="appOn('hrms')"><!-- v1.67.6 (setup) item 1 -->
       <label>{{ 'Own' | t }} {{ d.labels.establishment_no }}<input [(ngModel)]="d.establishment_no" maxlength="60" [disabled]="!d.can_change"></label>
-      <label>{{ 'Establishment expiry' | t }}<input type="date" [(ngModel)]="d.establishment_expiry" [disabled]="!d.can_change"></label>
+      <label>{{ 'Establishment expiry' | t }}<input type="date" [(ngModel)]="d.establishment_expiry" [disabled]="!d.can_change"></label></ng-container>
       <label>{{ 'Own' | t }} {{ d.labels.tax_id }}<input [(ngModel)]="d.tax_id" maxlength="40" [disabled]="!d.can_change"></label>
       <label>{{ 'Timezone' | t }}<input [(ngModel)]="d.timezone" maxlength="50" placeholder="Asia/Dubai" [disabled]="!d.can_change"></label>
       <label>{{ 'PO box' | t }}<input [(ngModel)]="d.po_box" maxlength="40" [disabled]="!d.can_change"></label>
       <label>{{ 'Latitude' | t }}<input type="number" step="0.000001" [(ngModel)]="d.latitude" [disabled]="!d.can_change"></label>
       <label>{{ 'Longitude' | t }}<input type="number" step="0.000001" [(ngModel)]="d.longitude" [disabled]="!d.can_change"></label>
-      <label class="chk"><input type="checkbox" [(ngModel)]="d.is_default" [disabled]="!d.can_change">{{ 'Default branch for new employees' | t }}</label>
+      <label class="chk"><input type="checkbox" [(ngModel)]="d.is_default" [disabled]="!d.can_change">{{ (appOn('hrms') ? 'Default branch for new employees' : 'Default branch') | t }}</label>
       <label *ngFor="let x of d.labels.extra">{{ x.label }}<input [(ngModel)]="d.extra_regs[x.key]" maxlength="80" [disabled]="!d.can_change"></label>
     </div>
     <div class="zp-foot">
@@ -182,6 +187,7 @@ export class ZCompanyProfileComponent implements OnInit, OnChanges {
 </div>`,
 })
 export class ZBranchProfileComponent implements OnInit, OnChanges {
+  appOn = appOn;   // v1.67.6 (setup) item 1
   @Input() branchId: number | string | null = null;
   @Input() open = false;
   d: any = null; busy = false; msg = ''; bad = false;

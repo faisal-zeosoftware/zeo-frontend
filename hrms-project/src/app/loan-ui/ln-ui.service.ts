@@ -65,7 +65,7 @@ export class LnUiService {
   }
   months(n: any): string { const k = +n || 0; return k === 1 ? T('1 month') : T('{0} months', [k]); }
   /** "AED 1,000.00 × 8 months" */
-  plan(r: any): string { return r.kind === 'advance' ? T('One deduction') : `${this.money(r.instalment)} × ${this.months(r.months)}`; }
+  plan(r: any): string { return r.kind === 'advance' && !(+r.months > 1) ? T('One deduction') : `${this.money(r.instalment)} × ${this.months(r.months)}`; }   // v1.67.11 (loans): advances in instalments
   pct(r: any): number { const a = +r.amount || 0; return a > 0 ? Math.min(100, Math.round((+r.paid || 0) * 100 / a)) : 0; }
 
   stage(st: string, kind = 'loan'): string {
@@ -122,7 +122,8 @@ export class LnUiService {
       { label: 'Branch', value: r.branch },
       ...(kind === 'loan' ? [{ label: 'Loan type', value: r.type }, { label: 'Amount', value: this.money(r.amount) },
         { label: 'Instalments', value: `${this.money(r.instalment)} × ${this.months(r.months)}` }] : []),
-      ...(kind === 'advance' ? [{ label: 'Amount', value: this.money(r.amount) }, { label: 'Reason', value: r.note || r.reason }] : []),
+      ...(kind === 'advance' ? [{ label: 'Amount', value: this.money(r.amount) }, { label: 'Instalments', value: this.plan(r) }, { label: 'Reason', value: r.note || r.reason }] : []),
+      ...(r.asked ? [{ label: 'Amount asked', value: this.money(r.asked) }] : []),   // v1.67.11 (loans, item 114)
       ...(kind === 'asset' ? [{ label: 'Asset type', value: r.type }, { label: 'Asset', value: r.asset?.name ? (r.asset.code ? `${r.asset.name} (${r.asset.code})` : r.asset.name) : '' },
         { label: 'Reason', value: r.note }] : []),
       { label: 'Requested on', value: this.dmy(r.applied) },

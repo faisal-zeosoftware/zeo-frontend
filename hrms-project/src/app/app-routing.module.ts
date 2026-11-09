@@ -130,6 +130,8 @@ import { HR_MODULE_ROUTES } from './hr-modules/hr-modules.routes';
 import { SETTINGS_HOME_ROUTES } from './settings-home/settings-home.routes';   // v1.15.1
 import { SETTINGS_APPS_ROUTES } from './settings-apps/settings-apps.component';
 import { SETTINGS_DIRECTORY_ROUTES } from './settings-apps/settings-directory.component';   // v1.67.3 (apps)
+import { PERMISSION_GROUPS_ROUTES } from './settings-apps/permission-groups.component';   // v1.67.6 (setup) item 10
+import { APP_SETUP_ROUTES } from './settings-apps/app-setup.component';   // v1.67.6 (setup) item 5
 import { CLOUD_SETTINGS_ROUTES } from './zeo-cloud/cloud-settings.component';
 import { CONTROL_ROUTES } from './zeo-cloud/console.component';
 import { CloudSignupComponent } from './zeo-cloud/signup.component';   // v1.23.0   // v1.21.0 Settings → Apps
@@ -369,10 +371,8 @@ const routes: Routes = [
             component: UserMasterComponent
           },
           { path: 'company-details/:id/details', redirectTo: '/main-sidebar/settings/location-master' },   // v1.62.10 (item 179) old company page → Company (was CompanyDetailsComponent)
-          {
-            path: 'user-grouping-master',
-            component: UserGroupingMasterComponent
-          },
+          ...PERMISSION_GROUPS_ROUTES,   // v1.67.6 (setup) item 10: Permission groups in the new design (was UserGroupingMasterComponent)
+          ...APP_SETUP_ROUTES,   // v1.67.6 (setup) item 5: the setup wizard of every app
           {
             path: 'branch-permissions',   // v1.62.10 (item 178) new design (was BranchPermissionsComponent)
             loadComponent: () => import('./settings-rights/z-rights-pages.component').then(m => m.ZBranchPermissionsComponent)
@@ -662,6 +662,7 @@ const routes: Routes = [
           { path: 'legal-rates', loadComponent: () => import('./payroll-plus/legal-rates.component').then(m => m.LegalRatesComponent) },   // v1.59.0
           { path: 'branch-pension-schemes', loadComponent: () => import('./payroll-plus/branch-schemes.component').then(m => m.BranchSchemesComponent) },   // v1.62.11 (item 229)
           { path: 'eos-settings', loadComponent: () => import('./leavers/eos-settings.component').then(m => m.EosSettingsComponent) },   // v1.62.11 (EOS settings)
+          { path: 'loan-settings', loadComponent: () => import('./payroll-plus/loan-settings.component').then(m => m.LoanSettingsComponent) },   // v1.67.11 (loans)
           { path: 'accrue-pay-later', loadComponent: () => import('./payroll-plus/accrue-pay-later.component').then(m => m.AccruePayLaterComponent) },   // v1.62.7 (item 18)
           { path: 'monthly-inputs', loadComponent: () => import('./payroll-plus/monthly-inputs.component').then(m => m.MonthlyInputsComponent) },   // v1.62.11 (item 18b)
           { path: 'bank-files', loadComponent: () => import('./payroll-plus/bank-files.component').then(m => m.BankFilesComponent) },   // v1.62.11 (item 227)

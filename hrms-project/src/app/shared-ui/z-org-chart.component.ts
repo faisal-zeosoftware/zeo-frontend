@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
 import { HttpClient } from '@angular/common/http';   // v1.45.0 transfer request by drag and drop
+import { I18N_UI } from './i18n.service';   // v1.67.9 (screens)
 
 interface Node { id: number; code: string; name: string; designation: string; department: string; branch: string; email: string; photo: string | null; manager: number | null; kids: Node[]; open: boolean; hit: boolean; size: number;
   dotted?: { manager: number; area: string } | null; assignments?: { kind: string; where: string; percent: string }[]; }   // v1.58.0
@@ -14,16 +15,16 @@ interface Node { id: number; code: string; name: string; designation: string; de
 @Component({
   selector: 'z-org-chart',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, ...I18N_UI],   // v1.67.9 (screens)
   encapsulation: ViewEncapsulation.None,
   template: `
   <div class="zo-page">
     <header class="zo-h">
-      <div><h2>Organisation chart</h2><p class="zr-muted">{{ total }} employees · built from each employee's reporting manager · drag a card onto another person to ask HR for a move</p></div>
+      <div><h2>Organisation chart</h2><p class="zr-muted">{{ "{0} employees · built from each employee's reporting manager · drag a card onto another person to ask HR for a move" | t:[total] }}</p><!-- v1.67.9 (screens) --></div>
       <span class="zr-grow"></span>
       <div class="zo-tools">
         <label class="zo-search"><mat-icon>search</mat-icon><input [value]="q" (input)="search($any($event.target).value)" placeholder="Find an employee" aria-label="Find an employee"></label>
-        <select class="zr-in" (change)="branch = $any($event.target).value; build()" aria-label="Branch"><option value="">All branches</option><option *ngFor="let b of branches" [value]="b">{{ b }}</option></select>
+        <select class="zr-in" *ngIf="branches.length > 1" (change)="branch = $any($event.target).value; build()" aria-label="Branch"><!-- v1.67.9 (screens): one branch – no choice --><option value="">All branches</option><option *ngFor="let b of branches" [value]="b">{{ b }}</option></select>
         <select class="zr-in" (change)="dept = $any($event.target).value; build()" aria-label="Department"><option value="">All departments</option><option *ngFor="let d of depts" [value]="d">{{ d }}</option></select>
         <select class="zr-in" *ngIf="units.length" (change)="unit = $any($event.target).value; build()" aria-label="Organisation unit"><option value="">All units</option><option *ngFor="let u of units" [value]="u.key">{{ u.label }}</option></select>
         <button type="button" class="zr-btn" (click)="all(true)">Expand all</button>

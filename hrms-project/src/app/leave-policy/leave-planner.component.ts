@@ -112,8 +112,10 @@ export class LeavePlannerComponent implements OnInit, OnDestroy {
   private iso(d: Date): string { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
   get title(): string {
     const end = new Date(this.start.getFullYear(), this.start.getMonth() + this.span - 1, 1);
-    const f = (d: Date) => d.toLocaleString('en-GB', { month: 'long', year: 'numeric' });
-    return this.span === 1 ? f(this.start) : `${this.start.toLocaleString('en-GB', { month: 'short' })} – ${f(end)}`;
+    // v1.67.9 (screens) item 19: the month in the reader's language (Arabic month names, Latin digits)
+    let loc = 'en-GB'; try { if (/^ar/.test(localStorage.getItem('zeoLang') || '')) { loc = 'ar-u-nu-latn'; } } catch { /* storage off */ }
+    const f = (d: Date) => d.toLocaleString(loc, { month: 'long', year: 'numeric' });
+    return this.span === 1 ? f(this.start) : `${this.start.toLocaleString(loc, { month: 'short' })} – ${f(end)}`;
   }
   get hot(): number { return Math.max(3, Math.ceil((this.data?.headcount || 0) * 0.2)); }
 
@@ -143,7 +145,7 @@ export class LeavePlannerComponent implements OnInit, OnDestroy {
     const names = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     for (let d = new Date(this.start); d <= end; d.setDate(d.getDate() + 1)) {
       const iso = this.iso(d);
-      this.days.push({ iso, n: d.getDate(), dow: d.toLocaleString('en-GB', { weekday: 'short' }).slice(0, 2), we: we.has(names[d.getDay()]), hol: hol.has(iso), today: iso === todayIso,
+      this.days.push({ iso, n: d.getDate(), dow: (/^ar/.test(localStorage.getItem('zeoLang') || '') ? d.toLocaleString('ar', { weekday: 'short' }) : d.toLocaleString('en-GB', { weekday: 'short' }).slice(0, 2)),   // v1.67.9 (screens) we: we.has(names[d.getDay()]), hol: hol.has(iso), today: iso === todayIso,
                        first: d.getDate() === 1, last: d.getDate() === new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate() });
     }
     const cats = new Set<string>();

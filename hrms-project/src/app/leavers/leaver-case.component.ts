@@ -117,6 +117,23 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
 @media (max-width:700px){.lv .ent .row{grid-template-columns:1fr}.lv .ent .row > b{padding-top:0}}
 .lv .wf{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
 .lv .nocalc p{color:var(--mut);max-width:520px;margin:6px auto 16px;line-height:1.5}
+/* v1.67.8 (fixes) item 2: phone – the header wraps (name, then the amount and buttons), facts two a row, the steps stay readable */
+@media (max-width:700px){
+  .lv .hero{flex-wrap:wrap;padding:16px;gap:12px}
+  .lv .hero .id{flex:1 1 calc(100% - 90px)}
+  .lv .hero .id .meta{word-break:normal;overflow-wrap:anywhere}
+  .lv .hero .pay{flex:1 1 100%;text-align:start;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+  .lv .hero .pay b{margin:0}
+  .lv h1{font-size:20px}
+  .lv .tools{margin-top:0;justify-content:flex-start}
+  .lv .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lv .stepper{grid-template-columns:repeat(5,minmax(0,1fr));padding:12px 6px;gap:2px}
+  .lv .stepper .st .t{font-size:11px;overflow-wrap:anywhere}
+  .lv .stepper .st .w{font-size:10.5px;overflow-wrap:anywhere}
+  .lv .netbox{flex-wrap:wrap;margin:12px}
+  .lv .netbox b{font-size:22px}
+  .lv .stmt .ln{padding:10px 12px}
+}
 `],
   template: `
 <div class="lv" *ngIf="c">

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -57,7 +58,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
             <div style="min-width:0">
               <div style="font-size:16px">{{ cur.title }}</div>
               <div class="ex-muted">{{ cur.number }} · {{ cur.employee_name }}<span *ngIf="cur.trip_number"> · Trip {{ cur.trip_number }}</span>
-                <span *ngIf="cur.from_date"> · {{ cur.from_date | date:'dd MMM' }} – {{ cur.to_date | date:'dd/MM/yyyy' }}</span></div>
+                <span *ngIf="cur.from_date"> · {{ cur.from_date | date:'dd/MM/yyyy' }} – {{ cur.to_date | date:'dd/MM/yyyy' }}</span></div>
             </div>
             <span class="ex-tag" [ngClass]="cur.status">{{ cur.status_label }}</span>
           </div>

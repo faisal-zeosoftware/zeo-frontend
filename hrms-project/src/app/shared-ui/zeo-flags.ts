@@ -10,7 +10,8 @@ export const ZEO_FLAGS: { apps: string[] | null; cloudOwner: boolean; cloudLinke
 
 /** true / false for app: and cloud: expressions, null for anything else (country features). */
 export function flagAllows(k: string): boolean | null {
-  if (k.startsWith('app:')) { const a = ZEO_FLAGS.apps; return !a || a.includes(k.slice(4)); }
+  // v1.67.8 (fixes) item 4: "app:payroll|property" – any of the apps is active
+  if (k.startsWith('app:')) { const a = ZEO_FLAGS.apps; return !a || k.slice(4).split('|').some(x => a.includes(x)); }
   if (k === 'cloud:owner') { return ZEO_FLAGS.cloudOwner; }
   if (k === 'cloud:linked') { return ZEO_FLAGS.cloudLinked; }
   if (k === 'licence:admin') { return ZEO_FLAGS.licenceAdmin; }   // v1.28.0 Enterprise server, server administrator
@@ -28,3 +29,8 @@ export function flagsVisible(expr: string | undefined): boolean {
     return f === null ? true : (neg ? !f : f);
   });
 }
+
+/** v1.67.6 (setup) item 1: is the app active in the selected company? (true while not known, so nothing flickers away).
+ *  The masters show the fields of an app only when it is active (HR: labour / establishment, probation, self service;
+ *  Payroll: WPS, pension and insurance registrations). Hidden fields keep their values. */
+export function appOn(key: string): boolean { const a = ZEO_FLAGS.apps; return !a || a.includes(key); }

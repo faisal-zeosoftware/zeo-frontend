@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.55.0 – pay calendars (weekly, every two weeks, twice a month), off-cycle runs (bonus, commission, correction, final
  * settlement, advance, arrears) and arrears after a salary change with an earlier effective date.
@@ -79,7 +80,7 @@ const STYLES = `.pc-card { background: #fff; border: 1px solid #e3e6ea; border-r
     <table class="pc">
       <tr><th>Period</th><th>Pay date</th><th></th><th>Payroll run</th><th class="r">Payslips</th><th class="r">Net pay</th><th></th></tr>
       <tr *ngFor="let p of c.periods" [class.pc-now]="isNow(p)" [attr.data-period]="p.start">
-        <td>{{ p.start | date:'d MMM' }} – {{ p.end | date:'d MMM y' }}</td><td>{{ p.pay_date | date:'d MMM' }}</td>
+        <td>{{ p.start | date:'dd/MM/yyyy' }} – {{ p.end | date:'dd/MM/yyyy' }}</td><td>{{ p.pay_date | date:'dd/MM/yyyy' }}</td>
         <td><span class="pc-tag warn" *ngIf="p.closes_month">Loans and advances</span></td>
         <td><a *ngIf="p.run" routerLink="/main-sidebar/salary-options/pay-roll">{{ p.run.name }}</a> <span class="pc-tag" *ngIf="p.run" [class.ok]="p.run.status === 'paid'">{{ p.run.status | titlecase }}</span></td>
         <td class="r">{{ p.run?.payslips ?? '' }}</td><td class="r">{{ p.run ? n2(p.run.net) : '' }}</td>

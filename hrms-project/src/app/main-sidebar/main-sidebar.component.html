@@ -662,7 +662,7 @@
           </div>
           <mat-icon class="zcm-arrow" *ngIf="data.branches?.length > 1">{{ expandedSchemaIndex === userDetailss.indexOf(data) ? "expand_less" : "expand_more" }}</mat-icon>
         </div>
-        <div class="branch-wrapper zcm-branches" *ngIf="expandedSchemaIndex === userDetailss.indexOf(data) && data.branches?.length">
+        <div class="branch-wrapper zcm-branches" *ngIf="expandedSchemaIndex === userDetailss.indexOf(data) && data.branches?.length > 1">
           <div class="zcm-count">
             <span>{{ '{0} of {1} branches' | t: branchesOn(data) : data.branches.length }}</span>
             <button type="button" class="zcm-all" *ngIf="data.schema_name === selectedSchema && branchesOn(data) < data.branches.length" (click)="allBranches(data, $event)">{{ 'All branches' | t }}</button>

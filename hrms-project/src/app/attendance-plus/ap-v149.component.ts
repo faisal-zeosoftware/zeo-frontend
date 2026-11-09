@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
 import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { CommonModule } from '@angular/common';
@@ -153,7 +154,7 @@ export class ApPhotosComponent implements OnInit {
   <ng-container *ngIf="d.rows.length">
     <div class="ap-scroll"><table class="ap-table">
       <tr><th>Day</th><th>On</th><th class="r">Hours</th><th class="r">Rate</th><th class="r">Paid as hours</th><th>Approved</th></tr>
-      <tr *ngFor="let r of d.rows"><td>{{ r.date | date:'EEE d MMM' }}</td><td>{{ r.type }}{{ r.night ? ' · night' : '' }}</td><td class="r">{{ r.hours }}</td>
+      <tr *ngFor="let r of d.rows"><td>{{ r.date | date:'dd/MM/yyyy' }}</td><td>{{ r.type }}{{ r.night ? ' · night' : '' }}</td><td class="r">{{ r.hours }}</td>
         <td class="r">× {{ r.rate }}</td><td class="r">{{ r.weighted }}</td><td>{{ r.approved ? 'Yes' : 'Waiting' }}</td></tr>
       <tr class="tot"><td colspan="4"><b>Approved overtime, paid as hours</b></td><td class="r"><b>{{ d.weighted_hours }}</b></td><td></td></tr>
     </table></div>

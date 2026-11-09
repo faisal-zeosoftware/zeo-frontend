@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -91,7 +92,7 @@ const API = '/tools/api/workbooks/';
     <section class="zad-card" data-wb-current>
       <div class="zwb-file">
         <span class="name"><mat-icon>description</mat-icon>{{ cur.file_name }}</span>
-        <span class="zad-muted">{{ cur.rows | number }} rows in {{ cur.sheets.length }} sheets · uploaded {{ cur.uploaded_at | date:'d MMM y, HH:mm' }} by {{ cur.uploaded_by }}</span>
+        <span class="zad-muted">{{ cur.rows | number }} rows in {{ cur.sheets.length }} sheets · uploaded {{ cur.uploaded_at | date:'dd/MM/yyyy HH:mm' }} by {{ cur.uploaded_by }}</span>
         <span style="flex:1"></span>
         <button type="button" class="zad-btn sm" (click)="reset()" [disabled]="running">Another workbook</button>
       </div>
@@ -112,7 +113,7 @@ const API = '/tools/api/workbooks/';
             </div>
             <div *ngIf="!running" class="zwb-res" [class.ok]="clean(run)" [class.bad]="!clean(run) && run.state === 'done'" [class.err]="run.state !== 'done'" data-wb-result>
               <mat-icon>{{ clean(run) ? 'task_alt' : (run.state === 'done' ? 'rule' : 'error') }}</mat-icon>
-              <div><b>{{ run.kind_text }} · {{ run.state_text }}</b> – {{ run.finished_at | date:'d MMM, HH:mm' }}<br>{{ run.message }}</div>
+              <div><b>{{ run.kind_text }} · {{ run.state_text }}</b> – {{ run.finished_at | date:'dd/MM/yyyy HH:mm' }}<br>{{ run.message }}</div>
             </div>
             <div class="zwb-kpis">
               <div class="ok"><b>{{ (run.totals?.ok ?? run.progress.ok ?? 0) | number }}</b><span>{{ run.kind === 'load' ? 'rows loaded' : 'rows would load' }}</span></div>
@@ -182,7 +183,7 @@ const API = '/tools/api/workbooks/';
     <table class="zad-t" *ngIf="hist.length; else noH">
       <tr><th>When</th><th>Workbook</th><th>What</th><th>By</th><th>Result</th><th></th></tr>
       <tr *ngFor="let h of hist">
-        <td>{{ h.created_at | date:'d MMM y, HH:mm' }}</td><td><a href="" (click)="$event.preventDefault(); open(h.upload)">{{ h.file_name }}</a></td>
+        <td>{{ h.created_at | date:'dd/MM/yyyy HH:mm' }}</td><td><a href="" (click)="$event.preventDefault(); open(h.upload)">{{ h.file_name }}</a></td>
         <td>{{ h.kind_text }}<span class="zad-muted" *ngIf="h.options?.from_month"> from {{ h.options.from_month }}</span></td><td>{{ h.by }}</td>
         <td><span class="zad-pill" [class.ok]="h.state === 'done' && !h.totals?.failed" [class.warn]="h.state === 'done' && h.totals?.failed" [class.bad]="h.state === 'failed' || h.state === 'interrupted'">{{ h.state_text }}</span>
           <span class="zad-muted" *ngIf="h.totals?.ok !== undefined"> {{ h.totals.ok | number }} ok · {{ h.totals.skipped | number }} skipped · {{ h.totals.failed | number }} failed</span>

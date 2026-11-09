@@ -1,3 +1,4 @@
+<!-- v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm) -->
 <div class="zdash" [class.embedded]="embedded" [class.page]="!embedded">
   <p class="err" *ngIf="error">{{ error }}</p>
   <p class="muted" *ngIf="!d && !error">Loading…</p>
@@ -6,7 +7,7 @@
     <header class="zh" *ngIf="!embedded">
       <div>
         <h1>{{ d.scope === 'company' ? 'Company dashboard' : 'My team' }}</h1>
-        <p class="muted">{{ d.headcount }} people · {{ d.today | date:'EEEE d MMMM y' }}</p>
+        <p class="muted">{{ d.headcount }} people · {{ d.today | date:'dd/MM/yyyy' }}</p>
       </div>
     </header>
 

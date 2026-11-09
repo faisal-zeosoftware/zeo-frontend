@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, NgZone, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -657,7 +658,7 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
           <header><mat-icon>event_available</mat-icon><h3>{{ 'My leave' | t }}</h3><a class="zr-link" routerLink="/main-sidebar/leave-options/leave-request">{{ 'Requests' | t }}</a></header>
           <p class="zr-muted" *ngIf="!me.leave_balances?.length">{{ 'No leave balance yet.' | t }}</p>
           <div class="zdo-row zdo-go" *ngFor="let b of me.leave_balances?.slice(0, 4)" role="link" tabindex="0" (click)="go('/main-sidebar/leave-options/leave-balance')" (keydown.enter)="go('/main-sidebar/leave-options/leave-balance')"><span>{{ b.name }}</span><b>{{ b.balance | number:'1.0-1' }} <small>{{ 'days' | t }}</small></b></div>
-          <p class="zdo-note zdo-go" *ngIf="me.next_leave" role="link" tabindex="0" (click)="open(me.next_leave)" (keydown.enter)="open(me.next_leave)">{{ 'Next' | t }}: {{ me.next_leave.type }} {{ me.next_leave.from | date:'d MMM' }} ({{ me.next_leave.status | t }})</p>
+          <p class="zdo-note zdo-go" *ngIf="me.next_leave" role="link" tabindex="0" (click)="open(me.next_leave)" (keydown.enter)="open(me.next_leave)">{{ 'Next' | t }}: {{ me.next_leave.type }} {{ me.next_leave.from | date:'dd/MM/yyyy' }} ({{ me.next_leave.status | t }})</p>
         </article>
         <article class="zdo-card" data-widget="me-assets" data-widget-title="My assets" data-widget-timed="0" data-widget-now="Assets you hold today.">
           <header><mat-icon>inventory_2</mat-icon><h3>{{ 'My assets' | t }}</h3><span class="zdo-n">{{ me.assets?.length || 0 }}</span></header>

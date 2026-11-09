@@ -114,7 +114,10 @@ export class ProvisionsComponent implements OnInit {
     .ln-facts div { background: #f7f8fa; border-radius: 8px; padding: 8px 10px; } .ln-facts small { display: block; color: #5d6670; font-size: 11px; }
     table.ln { width: 100%; border-collapse: collapse; font-size: 12.5px; } .ln td, .ln th { padding: 5px 6px; border-bottom: 1px solid #eef0f2; text-align: left; }
     .ln tr.planned td { color: #3b4057; } .ln tr.paid td { color: #1d6b37; } .ln-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin: 10px 0; }
-    .ln-act label { display: flex; flex-direction: column; font-size: 12px; color: #5d6670; }`],
+    .ln-act label { display: flex; flex-direction: column; font-size: 12px; color: #5d6670; }
+    .ln-wo { background: #fff8e6; border: 1px solid #f0d58a; border-radius: 8px; padding: 8px 10px; margin: 8px 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    .ln-wo-act { display: inline-flex; gap: 6px; flex-wrap: wrap; } .ln-wo input { padding: 4px 6px; border: 1px solid #cfd5dc; border-radius: 6px; }
+    .ln-undo { margin-inline-start: 6px; border: 0; background: none; color: #2b6cb0; cursor: pointer; font-size: 12px; text-decoration: underline; }`],
   template: `
 <div class="lp-page" style="padding:16px 20px">
   <!-- v1.62.0 talent-ops: stage words, buttons instead of a select used as a menu, chips on the schedule, AED, links to the requests -->
@@ -135,28 +138,51 @@ export class ProvisionsComponent implements OnInit {
       <div class="ln-facts"><div><small>Loan</small><b>{{ aed(d.amount) }}</b></div><div><small>Paid</small><b>{{ aed(d.paid) }}</b></div>
         <div><small>Left to pay</small><b>{{ aed(d.balance) }}</b></div><div><small>Instalment</small><b>{{ aed(d.emi) }}</b></div>
         <div><small>Months left</small><b>{{ months(d.months_left) }}</b></div><div><small>Last deduction</small><b>{{ d.last_month ? (d.last_month | date:'MMM yyyy') : '–' }}</b></div>
-        <div><small>Stage</small><b><span class="pp-chip" [ngClass]="stageClass(d)">{{ stage(d) }}</span></b></div></div>
+        <div><small>Stage</small><b><span class="pp-chip" [ngClass]="stageClass(d)">{{ stage(d) }}</span></b></div>
+        <!-- v1.67.11 (loans): asked / approved, principal and profit, guarantor, written off, paid out -->
+        <div *ngIf="d.terms?.approved_amount" data-ln-asked><small>Asked → approved</small><b>{{ aed(d.terms.requested_amount) }} → {{ aed(d.terms.approved_amount) }}</b></div>
+        <div *ngIf="+d.terms?.profit > 0"><small>Principal + profit</small><b>{{ aed(d.terms.principal) }} + {{ aed(d.terms.profit) }}</b></div>
+        <div *ngIf="d.terms?.guarantor"><small>Guarantor</small><b>{{ d.terms.guarantor.name }} <span class="lp-muted">{{ d.terms.guarantor.code }}</span></b></div>
+        <div *ngIf="+d.terms?.written_off > 0"><small>Written off</small><b>{{ aed(d.terms.written_off) }}</b></div>
+        <div *ngIf="d.terms?.payout?.date"><small>Paid out</small><b>{{ d.terms.payout.date | date:'dd/MM/yyyy' }}</b></div></div>
+      <div class="ln-wo" *ngIf="d.terms?.writeoff?.status === 'pending'" data-ln-writeoff role="status">
+        <b>Write-off waiting for approval:</b> {{ aed(d.terms.writeoff.amount) }} – {{ d.terms.writeoff.reason }} <span class="lp-muted">({{ d.terms.writeoff.by }})</span>
+        <span *ngIf="d.can_edit && !mine" class="ln-wo-act">
+          <input [(ngModel)]="woNote" placeholder="Note" aria-label="Note">
+          <button type="button" class="lp-btn primary" (click)="woDecide(true)" [disabled]="busy" data-wo-approve>Approve write-off</button>
+          <button type="button" class="lp-btn danger" (click)="woDecide(false)" [disabled]="busy" data-wo-reject>Reject</button></span></div>
       <div *ngIf="d.can_edit && !mine && ['Approved','Disbursed','In Progress','Paused'].includes(d.status)">
         <div class="ln-act" data-ln-actions>
           <button type="button" class="lp-btn" [class.primary]="act === 'topup'" (click)="pick('topup')">Top-up</button>
           <button type="button" class="lp-btn" [class.primary]="act === 'reschedule'" (click)="pick('reschedule')">New instalment</button>
           <button type="button" class="lp-btn" [class.primary]="act === 'pause'" *ngIf="d.status !== 'Paused'" (click)="pick('pause')">Pause</button>
           <button type="button" class="lp-btn" [class.primary]="act === 'resume'" *ngIf="d.status === 'Paused'" (click)="pick('resume')">Resume</button>
-          <button type="button" class="lp-btn danger" [class.primary]="act === 'settle'" (click)="pick('settle')">Settle early</button></div>
+          <button type="button" class="lp-btn danger" [class.primary]="act === 'settle'" (click)="pick('settle')">Settle early</button>
+          <!-- v1.67.11 (loans, items 112, 113, 117) -->
+          <button type="button" class="lp-btn" [class.primary]="act === 'payout'" *ngIf="!d.terms?.payout?.date && d.status !== 'Paused'" (click)="pick('payout')" data-ln-payout>Pay out</button>
+          <button type="button" class="lp-btn" [class.primary]="act === 'prepay'" (click)="pick('prepay')" data-ln-prepay>Part prepayment</button>
+          <button type="button" class="lp-btn" [class.primary]="act === 'skip'" (click)="pick('skip')" data-ln-skip>Skip a month</button>
+          <button type="button" class="lp-btn danger" [class.primary]="act === 'writeoff'" *ngIf="d.terms?.writeoff?.status !== 'pending'" (click)="pick('writeoff')" data-ln-wo>Write off</button></div>
         <div class="ln-act" *ngIf="act">
           <label *ngIf="act === 'topup'">Amount (AED)<input type="number" min="0" [(ngModel)]="f.amount"></label>
           <label *ngIf="act === 'topup' || act === 'reschedule'">Months left (optional)<input type="number" min="1" [(ngModel)]="f.months"></label>
           <label *ngIf="act === 'reschedule'">or new instalment (AED)<input type="number" min="0" [(ngModel)]="f.emi"></label>
           <label *ngIf="act === 'pause'">From<input type="date" [(ngModel)]="f.start"></label><label *ngIf="act === 'pause'">Resume on<input type="date" [(ngModel)]="f.resume"></label>
           <label *ngIf="act === 'settle'"><span><input type="checkbox" [(ngModel)]="f.at_exit"> at exit (final settlement)</span></label>
-          <label>Note<input [(ngModel)]="f.note"></label>
-          <button type="button" class="lp-btn primary" (click)="run()" [disabled]="busy" data-run>{{ act === 'settle' ? 'Settle ' + aed(d.balance) : 'Apply' }}</button>
+          <label *ngIf="act === 'payout'">Paid on<input type="date" [(ngModel)]="f.date"></label><label *ngIf="act === 'payout'">Bank reference<input [(ngModel)]="f.ref"></label>
+          <label *ngIf="act === 'prepay' || act === 'writeoff'">Amount (AED)<input type="number" min="0" [(ngModel)]="f.amount" [placeholder]="act === 'writeoff' ? d.balance : ''"></label>
+          <label *ngIf="act === 'prepay'">Then<select [(ngModel)]="f.keep"><option value="months">keep the months – lower instalment</option><option value="instalment">keep the instalment – fewer months</option></select></label>
+          <label *ngIf="act === 'skip'">Month<input type="month" [(ngModel)]="f.month"></label>
+          <label *ngIf="act === 'writeoff'">Reason<input [(ngModel)]="f.reason" required></label>
+          <label *ngIf="act !== 'writeoff' && act !== 'payout'">Note<input [(ngModel)]="f.note"></label>
+          <button type="button" class="lp-btn primary" (click)="run()" [disabled]="busy" data-run>{{ act === 'settle' ? 'Settle ' + aed(d.balance) : act === 'writeoff' ? 'Ask for approval' : 'Apply' }}</button>
           <button type="button" class="lp-btn" (click)="act = ''; f = {}">Cancel</button></div>
       </div>
       <h3>Schedule</h3>
       <div style="overflow-x:auto;max-height:420px"><table class="ln"><tr><th>#</th><th>Payroll month</th><th class="r">Instalment</th><th class="r">Left after</th><th>Status</th></tr>
-        <tr *ngFor="let s of d.schedule" [class]="s.state === 'planned' ? 'planned' : 'paid'"><td>{{ s.n }}</td><td>{{ s.month | date:'MMM yyyy' }}</td><td class="r">{{ aed(s.amount) }}</td><td class="r">{{ aed(s.balance) }}</td>
-          <td><span class="pp-chip" [ngClass]="s.state === 'planned' ? 'muted' : s.state === 'paused' ? 'warn' : 'ok'">{{ schedState(s.state) }}</span></td></tr></table></div>
+        <tr *ngFor="let s of d.schedule" [class]="s.state === 'planned' ? 'planned' : 'paid'" [attr.data-state]="s.state"><td>{{ s.n }}</td><td>{{ s.month | date:'MMM yyyy' }}</td><td class="r">{{ aed(s.amount) }}</td><td class="r">{{ aed(s.balance) }}</td>
+          <td><span class="pp-chip" [ngClass]="s.state === 'planned' ? 'muted' : (s.state === 'paused' || s.state === 'skipped') ? 'warn' : s.state === 'written off' ? 'bad' : 'ok'">{{ schedState(s.state) }}</span>
+            <button type="button" class="ln-undo" *ngIf="s.state === 'skipped' && d.can_edit && !mine && String(s.month).slice(0, 7) >= thisMonth" (click)="unskip(s.month)">Deduct again</button></td></tr></table></div>
       <ng-container *ngIf="d.events.length"><h3>Changes</h3>
         <table class="ln"><tr><th>Date</th><th>Change</th><th class="r">Amount</th><th class="r">New instalment</th><th class="r">Balance</th><th>Note</th><th>By</th></tr>
           <tr *ngFor="let e of d.events"><td>{{ e.date | date:'dd/MM/yyyy' }}</td><td>{{ e.kind }}</td><td class="r">{{ aed(e.amount) }}</td><td class="r">{{ e.new_emi ? aed(e.new_emi) : '' }}</td>
@@ -177,7 +203,7 @@ export class LoansComponent implements OnInit {
     await this.load();
     if (want && this.rows.some(r => r.id === want)) { await this.open(want); } else if (this.rows.length) { await this.open(this.rows[0].id); }
   }
-  pick(a: string): void { this.act = this.act === a ? '' : a; this.f = {}; }
+  pick(a: string): void { this.act = this.act === a ? '' : a; this.f = a === 'prepay' ? { keep: 'months' } : {}; }
   aed(v: any): string { return v === undefined || v === null || v === '' ? '–' : 'AED ' + this.n(v); }
   months(n: any): string { const k = +n || 0; return k === 1 ? '1 month' : `${k} months`; }
   /** v1.62.0 talent-ops: the loan's stage in words (a running loan said "Approved") */
@@ -189,7 +215,24 @@ export class LoansComponent implements OnInit {
     return +l.paid > 0 ? 'Repaying' : 'Approved – not deducted yet';
   }
   stageClass(l: any): string { const s = this.stage(l); return s === 'Closed' ? 'ok' : s === 'Paused' ? 'warn' : s === 'Rejected' ? 'bad' : s === 'Repaying' ? '' : 'info'; }
-  schedState(s: string): string { return ({ paid: 'Paid in payroll', 'paid outside payroll': 'Paid outside payroll', planned: 'Planned', paused: 'Paused' } as any)[s] || s; }
+  schedState(s: string): string { return ({ paid: 'Paid in payroll', 'paid outside payroll': 'Paid outside payroll', planned: 'Planned', paused: 'Paused',
+    skipped: 'Skipped', 'written off': 'Written off' } as any)[s] || s; }   // v1.67.11 (loans)
+  woNote = '';
+  thisMonth = new Date().toISOString().slice(0, 7);   // v1.67.11 (loans): a skip of a past month cannot be undone
+  String = String;
+  /** v1.67.11 (loans, item 112): another person approves or rejects the write-off */
+  async woDecide(yes: boolean): Promise<void> {
+    this.busy = true;
+    try { this.d = await this.api.post(`loans/${this.d.id}/${yes ? 'writeoff-approve' : 'writeoff-reject'}/`, { note: this.woNote }); this.woNote = '';
+      this.say(yes ? 'Write-off approved.' : 'Write-off rejected.'); await this.load(); }
+    catch (e) { this.say(httpErrorText(e), true); }
+    this.busy = false; this.cd.markForCheck();
+  }
+  async unskip(month: string): Promise<void> {
+    try { this.d = await this.api.post(`loans/${this.d.id}/unskip/`, { month: String(month).slice(0, 7) }); this.say('Done.'); }
+    catch (e) { this.say(httpErrorText(e), true); }
+    this.cd.markForCheck();
+  }
   async load(): Promise<void> {
     try { const r: any = await this.api.get('loans/', { mine: this.mine ? 1 : '', status: this.mine ? 'all' : this.status }); this.rows = r.rows; }
     catch (e) { this.say(httpErrorText(e), true); }

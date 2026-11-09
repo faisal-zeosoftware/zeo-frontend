@@ -150,4 +150,6 @@ export interface PageConfig {
   emptyText?: string;
   /** v1.14.0: the server works in this currency for the page (e.g. Expenses: 'AED') – its "AED" captions are kept */
   fixedCurrency?: string;
+  /** v1.67.12 (effective, item 64): a setup record with dated versions – the edit form asks "Effective from" (sent as ?effective_from=) */
+  effective?: string;
 }

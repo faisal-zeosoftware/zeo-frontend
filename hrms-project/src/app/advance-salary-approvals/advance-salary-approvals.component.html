@@ -56,6 +56,11 @@
           <h3>{{ ln.t(lnAsk.what === 'approve' ? 'Approve {0}?' : 'Reject {0}?', [lnAsk.r.number]) }}</h3>
           <p>{{ lnAsk.r.employee }} · {{ ln.money(lnAsk.r.amount) }}<ng-container *ngIf="lnAsk.r.progress?.total > 1"> · {{ ln.t('Level {0} of {1}', [lnAsk.r.level, lnAsk.r.progress.total]) }}</ng-container></p>
           <textarea [(ngModel)]="lnAsk.text" [ngModelOptions]="{ standalone: true }" [placeholder]="ln.t(lnAsk.what === 'approve' ? 'Note (optional)' : 'Why is it rejected? (the employee sees this)')" data-ln-text></textarea>
+          <!-- v1.67.11 (loans, item 114): the approver may approve a lower amount – recorded, the employee is told -->
+          <div class="ln-lower" *ngIf="lnAsk.what === 'approve'">
+            <label>{{ ln.t('Approve a lower amount (optional)') }}<input type="number" min="0" [(ngModel)]="lnAsk.amount" [ngModelOptions]="{ standalone: true }" [placeholder]="lnAsk.r.amount" data-ln-amount></label>
+            <small>{{ ln.t('Empty: the amount asked. A lower amount is recorded and the employee is told.') }}</small>
+          </div>
           <footer>
             <button type="button" class="at-btn" (click)="lnAsk = null">{{ ln.t('Cancel') }}</button>
             <button type="button" class="at-btn" [class.primary]="lnAsk.what === 'approve'" [class.danger]="lnAsk.what === 'reject'" [disabled]="lnBusy || (lnAsk.what === 'reject' && !lnAsk.text?.trim())" (click)="lnConfirm()" data-ln-confirm>{{ ln.t(lnAsk.what === 'approve' ? 'Approve' : 'Reject') }}</button>

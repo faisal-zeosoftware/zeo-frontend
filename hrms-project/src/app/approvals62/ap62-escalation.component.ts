@@ -11,6 +11,7 @@
  */
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,7 +28,7 @@ import { Ap62User, ap62After, ap62Kind, ap62TypeLabel, ap62UserId, ap62UserLabel
   selector: 'app-ap62-escalation',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, ZPortalDirective, FormsModule, RouterModule, MatIconModule, ZListDirective],
   styleUrls: ['../hr-modules/hr-shared.css', '../time62/t62.css', './ap62.css'],
   template: `
 <div class="container hr-page" [attr.data-t62]="'esc-' + k.key" data-ap62="escalation">
@@ -69,7 +70,7 @@ import { Ap62User, ap62After, ap62Kind, ap62TypeLabel, ap62UserId, ap62UserLabel
   </div>
 </div>
 
-<div class="t62-dlg" *ngIf="f" data-t62-dialog data-zform data-ap62-dialog>
+<div class="t62-dlg" zPortal *ngIf="f" data-t62-dialog data-zform data-ap62-dialog>
   <div class="t62-veil" (click)="close()"></div>
   <div class="t62-box narrow" role="dialog" aria-modal="true" (keydown.escape)="close()">
     <div class="t62-head">

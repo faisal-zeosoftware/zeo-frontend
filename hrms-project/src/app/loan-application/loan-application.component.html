@@ -35,7 +35,7 @@
             <td class="nw"><span class="at-code">{{ r.number }}</span><span class="at-sub">{{ ln.dmy(r.applied) }}</span></td>
             <td class="at-who"><b>{{ r.employee }}</b><small>{{ r.code }}<ng-container *ngIf="r.branch"> · {{ r.branch }}</ng-container></small></td>
             <td class="nw">{{ r.type || '–' }}</td>
-            <td class="num ln-amt">{{ ln.money(r.amount) }}<small>{{ ln.money(r.instalment) }} × {{ ln.months(r.months) }}</small></td>
+            <td class="num ln-amt">{{ ln.money(r.amount) }}<small>{{ ln.money(r.instalment) }} × {{ ln.months(r.months) }}</small><small *ngIf="r.asked" data-ln-asked>{{ ln.t('Amount asked') }} {{ ln.money(r.asked) }}</small></td>   <!-- v1.67.11 (loans, item 114) -->
             <td class="num ln-amt">{{ ln.money(r.remaining) }}<small>{{ ln.t('paid {0}', [ln.money(r.paid)]) }}</small><div class="ln-bar" *ngIf="r.stage === 'repaying' || r.stage === 'paused' || r.stage === 'closed'"><i [style.width.%]="ln.pct(r)"></i></div></td>
             <td><span class="at-st" [ngClass]="ln.stageClass(r.stage)">{{ ln.stage(r.stage) }}</span><span class="at-sub" *ngIf="ln.progress(r)" [title]="r.progress?.reason || ''">{{ ln.progress(r) }}</span></td>
             <td class="at-acts">

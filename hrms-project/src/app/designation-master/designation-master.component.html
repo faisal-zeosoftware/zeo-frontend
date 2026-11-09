@@ -67,20 +67,16 @@
       <table class="table table-hover department-table">
         <thead>
           <tr>
-            <th *ngIf="hasDeletePermission" style="width: 50px;"></th>
             <th>Designation code</th>
             <th>Designation name</th>
             <th>Branch</th>
             <th>Description</th>
-            <th *ngIf="hasEditPermission" style="width: 100px;">Action</th>
+            <th *ngIf="hasEditPermission || hasDeletePermission" style="width: 1%; white-space: nowrap">Action</th><!-- v1.67.9 (screens): Edit and Delete together -->
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let designationsec of filteredEmployees"
               [ngClass]="{ 'selected-item': designationsec.selected }">
-            
-            <td *ngIf="hasDeletePermission" class="text-center align-middle"><button type="button" class="z-row-btn danger" (click)="zDeleteRow(designationsec); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
-            </td>
 
             <td data-label="Designation Code" class="align-middle">
               <span class="badge badge-code">{{ designationsec.desgntn_code }}</span>
@@ -98,14 +94,15 @@
               {{ designationsec.desgntn_description }}
             </td>
 
-            <td data-label="Action" *ngIf="hasEditPermission" class="align-middle text-center">
-              <button type="button" 
+            <td data-label="Action" *ngIf="hasEditPermission || hasDeletePermission" class="align-middle text-center" style="white-space: nowrap">
+              <button type="button" *ngIf="hasEditPermission"
                       class="btn btn-sm btn-outline-primary"
                       (click)="openEditPopuss(designationsec.id)">
                 <mat-icon style="font-size: 16px; color: #2980b9; vertical-align: middle;">edit</mat-icon>
                 Edit
               </button>
-              <z-translate endpoint="/organisation/api/Designation/" [recordId]="designationsec.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
+              <z-translate *ngIf="hasEditPermission" endpoint="/organisation/api/Designation/" [recordId]="designationsec.id" [small]="true" style="margin-inline-start: 6px"></z-translate>
+              <span *ngIf="hasDeletePermission" style="margin-inline-start: 6px"><button type="button" class="z-row-btn danger" (click)="zDeleteRow(designationsec); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button></span>
             </td>
           </tr>
 

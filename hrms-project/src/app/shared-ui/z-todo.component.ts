@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -35,8 +36,8 @@ const ICON: Record<string, string> = { todo: 'task_alt', call: 'call', meeting: 
         <span class="zt-ic"><mat-icon>{{ icon(a.activity_type) }}</mat-icon></span>
         <div class="zt-body">
           <div class="zt-title"><b>{{ a.summary }}</b><span class="zt-type">{{ a.type_label }}</span></div>
-          <div class="zr-muted">{{ a.record_label || 'Record' }}{{ screen(a) ? ' · ' + screen(a) : '' }} · due {{ a.due_date | date:'EEE dd MMM yyyy' }}
-            {{ scope === 'created' ? '· for ' + a.assigned_to_name : '· from ' + a.created_by }}{{ a.state === 'done' ? ' · done ' + (a.done_at | date:'dd MMM') : '' }}</div>
+          <div class="zr-muted">{{ a.record_label || 'Record' }}{{ screen(a) ? ' · ' + screen(a) : '' }} · due {{ a.due_date | date:'dd/MM/yyyy' }}
+            {{ scope === 'created' ? '· for ' + a.assigned_to_name : '· from ' + a.created_by }}{{ a.state === 'done' ? ' · done ' + (a.done_at | date:'dd/MM/yyyy') : '' }}</div>
           <div class="zt-note" *ngIf="a.note">{{ a.note }}</div>
           <div class="zt-note" *ngIf="a.feedback"><b>Feedback:</b> {{ a.feedback }}</div>
           <div class="zr-row" *ngIf="doneFor === a.id">

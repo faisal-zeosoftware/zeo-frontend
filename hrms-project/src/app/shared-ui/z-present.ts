@@ -163,7 +163,7 @@ export function rawText(el: Element | null | undefined): string {
 const MONEY_HEAD = /(amount|salary|salaries|\bpay\b|paid|payable|gross|\bnet\b|basic|allowance|deduction|cost|price|\bfees?\b|\brent\b|\bloan\b|advance|\bemi\b|instal+ment|\baed\b|\bsar\b|gratuity|wage|premium|refund|reimburs|expense|\bdebit\b|\bcredit\b)/i;
 // weak words: money only with decimals in the values and not on a leave / time screen (Leave balance is in days)
 const MONEY_WEAK = /(balance|total|value|outstanding|\bdue\b|limit|budget|liability|accrual|provision|earning|encash|recover)/i;
-const TIME_PAGE = /(leave|attendance|shift|overtime|punch|roster|timesheet|late|absence)/i;
+const TIME_PAGE = /(leave|attendance|shift|overtime|punch|roster|timesheet|late|absence|zeo-hse|exposure|meter)/i;   // v1.67.9 (screens): HSE limits (ppm, dB) and meter readings are not money
 const NOT_MONEY_HEAD = /(days?\b|hours?|hrs|count|\bno\.?$|number|\bqty\b|quantity|%|percent|\brate\b|level|months?\b|year|period|date|code|\bid\b|\bref|employees?|headcount|score|rating|age\b|status|type|name|frequency|cycle|method|mode|by\b|account|plan\b|policy|terms?)/i;
 const CODE_HEAD = /(code|\bid\b|\bno\.?$|number|ref)/i;
 const PLAIN_NUM = /^-?\d+(\.\d+)?$/;
@@ -191,7 +191,7 @@ export function paintColumns(heads: HTMLElement[], cols: PCol[], trs: HTMLTableR
     const money = forced === 'money' || !forced && !c.skip && texts.length > 0 && (strong || weak) && !NOT_MONEY_HEAD.test(label) && numeric / texts.length >= 0.8
       && texts.some(x => /\d/.test(x));
     const num = !money && (forced === 'number' || !forced && c.kind === 'number' && !CODE_HEAD.test(label));
-    const kind = money ? 'money' : num ? 'num' : (c.kind === 'date' || forced === 'date') ? 'date' : forced === 'code' ? 'short' : forced === 'text' ? '' : (c.idx === empIdx || /(employee|approver|manager|requested by|owner|assignee|name)/i.test(label)) && max <= 34 ? 'person' : (!c.skip && max > 0 && max <= 16) ? 'short' : (!c.skip && avg > 48) ? 'long' : '';
+    const kind = money ? 'money' : num ? 'num' : (c.kind === 'date' || forced === 'date') ? 'date' : forced === 'code' ? 'short' : forced === 'text' ? '' : (c.idx === empIdx || /(employee|approver|manager|requested by|owner|assignee|name)/i.test(label)) && max <= 34 ? 'person' : (!c.skip && max > 0 && max <= 16) ? 'short' : (!c.skip && avg > 48) ? 'long' : (!c.skip && max > 0) ? 'mid' : '';   // v1.67.9 (screens): 'mid' – one line too
     setKind(th, kind);
     if (money) {
       let tag = th.querySelector(':scope > .zl-cur') as HTMLElement | null;
@@ -201,9 +201,9 @@ export function paintColumns(heads: HTMLElement[], cols: PCol[], trs: HTMLTableR
     for (const td of tds) {
       setKind(td, kind);
       if (money) { moneyCell(td, cur.decimals); }
-      if (kind === 'long' && !td.querySelector('button, input, select, a, img, ul, ol, table')) {
+      if ((kind === 'long' || kind === 'mid') && !td.querySelector('button, input, select, a, img, ul, ol, table')) {
         const full = (td.innerText || '').trim();
-        if (full.length > 40 && td.getAttribute('title') === null) { td.setAttribute('title', full); td.dataset['zlTip'] = '1'; }
+        if (full.length > (kind === 'mid' ? 26 : 40) && td.getAttribute('title') === null) { td.setAttribute('title', full); td.dataset['zlTip'] = '1'; }   // v1.67.9 (screens)
       }
     }
   }

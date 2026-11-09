@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -82,7 +83,7 @@ import { EXPENSE_BASE, ExpenseApiService, STATUS_LABEL, isImage, money } from '.
                 <div class="ex-row click" *ngFor="let a of d.approvals" (click)="a.type === 'report' ? go('reports', { open: a.id }) : go('trips')">
                   <div class="main">
                     <div class="t">{{ a.number }} · {{ a.title }}</div>
-                    <div class="s">{{ a.employee }} · {{ a.type === 'trip' ? 'Trip' : 'Report' }} · {{ a.submitted_at | date:'dd MMM' }}</div>
+                    <div class="s">{{ a.employee }} · {{ a.type === 'trip' ? 'Trip' : 'Report' }} · {{ a.submitted_at | date:'dd/MM/yyyy' }}</div>
                   </div>
                   <div class="r"><div class="money">{{ m(a.total) }}</div></div>
                 </div>

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
+import { inject, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list
@@ -113,7 +114,7 @@ export class ZpContractFormComponent implements OnInit {
     <div class="com_list mt-4">
       <p class="zp-note err" *ngIf="msg">{{ msg }}</p>
       <div class="zp-scroll"><table class="zp-table zl-zp">
-        <tr><th>Contract</th><th>Customer</th><th>Branch</th><th>Period</th><th class="r">Value</th><th>Hours used</th><th>Status</th><th>Renewal</th></tr>
+        <tr><th>Contract</th><th>Customer</th><th>Branch</th><th>Period</th><th class="r">Value</th><th>Hours used</th><th>Status</th><th>Renewal</th><th></th></tr>
         <tr class="click" *ngFor="let c of rows" (click)="open(c.id)">
           <td><span class="zp-code">{{ c.number }}</span><div>{{ c.title }}</div><div class="zp-muted">{{ c.contract_type_label }} · v{{ c.version }}</div></td>
           <td>{{ c.customer_name }}</td><td>{{ c.branch_name }}</td>
@@ -125,6 +126,7 @@ export class ZpContractFormComponent implements OnInit {
             <ng-template #unl><span class="zp-muted">Unlimited · {{ n(c.usage.used_hours) }} h</span></ng-template></ng-container></td>
           <td><span class="ex-tag" [ngClass]="cls[c.status]">{{ c.status_label }}</span></td>
           <td>{{ c.renewal_status_label }}<div class="zp-muted">{{ c.renewal_owner?.name }}</div></td>
+          <td><button type="button" class="ex-btn sm" *ngIf="canPrint.has('amc_contract')" (click)="zprint.open('amc_contract', c.id, $event)" data-print-row>Print</button></td>   <!-- v1.67.7 (admin) -->
         </tr>
       </table></div>
       <p class="zp-empty" *ngIf="!rows.length">No contracts match.</p>
@@ -134,6 +136,9 @@ export class ZpContractFormComponent implements OnInit {
 <app-zp-contract-form *ngIf="creating" [customerId]="newFor" (closed)="creating = false" (saved)="creating = false; open($event.id)"></app-zp-contract-form>`,
 })
 export class ZpContractsComponent implements OnInit {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   rows: any[] = [];
   lk: any = { contract_status: [], customers: [] };
   rights: any = {};
@@ -148,6 +153,7 @@ export class ZpContractsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.renewals = this.route.snapshot.data['view'] === 'renewals';
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     const qp = this.route.snapshot.queryParamMap;
     if (qp.get('customer')) this.f.customer = qp.get('customer');
     if (qp.get('new')) { this.creating = true; this.newFor = qp.get('customer'); }
@@ -192,6 +198,7 @@ export class ZpContractsComponent implements OnInit {
           <p class="ex-desc">{{ c.customer_name }} · {{ d(c.start_date) }} – {{ d(c.end_date) }} · <span class="ex-tag" [ngClass]="cls[c.status]">{{ c.status_label }}</span>
             <span *ngIf="c.previous_number"> · renews {{ c.previous_number }}</span></p></div>
         <div class="ex-actions">
+          <button type="button" class="ex-btn" *ngIf="canPrint.has('amc_contract')" (click)="zprint.open('amc_contract', c.id)" data-print-design>Print</button>   <!-- v1.67.7 (admin) -->
           <button type="button" class="ex-btn green" *ngIf="c.status === 'draft' && rights.amc_edit" (click)="act('activate')">Activate</button>
           <button type="button" class="ex-btn" *ngIf="rights.amc_edit && c.status !== 'cancelled'" (click)="editing = true">Edit</button>
           <button type="button" class="ex-btn primary" *ngIf="rights.amc_renew && !c.renewals?.length && c.status !== 'draft' && c.status !== 'cancelled'" (click)="renewing = true">Renew</button>
@@ -298,6 +305,9 @@ export class ZpContractsComponent implements OnInit {
 <app-zp-contract-form *ngIf="editing" [c]="c" (closed)="editing = false" (saved)="editing = false; load()"></app-zp-contract-form>`,
 })
 export class ZpContractComponent implements OnInit {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   c: any = null;
   lk: any = { renewal_status: [], employees: [] };
   rights: any = {};
@@ -312,6 +322,7 @@ export class ZpContractComponent implements OnInit {
   constructor(private api: ZpApiService, private route: ActivatedRoute, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     this.lk = await this.api.lookups().catch(() => this.lk);
     this.rights = this.lk.rights || {};
     this.route.paramMap.subscribe(() => this.load());

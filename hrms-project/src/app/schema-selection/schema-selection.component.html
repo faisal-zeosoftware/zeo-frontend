@@ -1,3 +1,4 @@
+<!-- v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm) -->
 <!-- v1.22.2: after sign-in every company of the user is listed – open one with a click (was a drop-down) -->
 <div class="zc-page" data-no-help>
   <header class="zc-top">
@@ -101,7 +102,7 @@
           <span class="zc-info">
             <span class="zc-name">{{ c.name }}<em class="zc-inactive" data-inactive-mark>{{ 'Inactive' | t }}</em></span>
             <span class="zc-meta">{{ c.inactive_db ? ('Its database was made inactive – nobody can open it.' | t)
-              : ('Nobody can open it until it is made active again.' | t) }}<ng-container *ngIf="c.inactive_by"> {{ 'Made inactive by {0} on {1}.' | t:c.inactive_by:(c.inactive_at | date:'d MMM y, HH:mm') }}</ng-container></span>
+              : ('Nobody can open it until it is made active again.' | t) }}<ng-container *ngIf="c.inactive_by"> {{ 'Made inactive by {0} on {1}.' | t:c.inactive_by:(c.inactive_at | date:'dd/MM/yyyy HH:mm') }}</ng-container></span>
           </span>
           <span class="zc-open zc-act" *ngIf="!c.inactive_db">
             <button type="button" class="zc-dbtn" (click)="makeActive(c)" [disabled]="!!busyLife" data-make-active>{{ 'Make active' | t }}</button></span>

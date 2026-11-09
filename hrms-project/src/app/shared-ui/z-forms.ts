@@ -1,3 +1,4 @@
+import { appOn } from './zeo-flags';   // v1.67.6 (setup) item 1
 /** v1.62.1 – the forms of the old master screens, on the shared form shell (z-form.component.ts). */
 import { ZFormConfig, openZForm } from './z-form.component';
 
@@ -42,7 +43,7 @@ export const BRANCH_FORM: ZFormConfig = {
   sections: [
     { title: 'Branch', fields: [
       { key: 'branch_name', label: 'Name', max: 100 }, { key: 'branch_code', label: 'Code', max: 50 },
-      { key: 'br_start_date', label: 'Start date', type: 'date' }, { key: 'probation_period_days', label: 'Probation (days)', type: 'number' }] },
+      { key: 'br_start_date', label: 'Start date', type: 'date' }, { key: 'probation_period_days', label: 'Probation (days)', type: 'number', showIf: () => appOn('hrms') }] },   // v1.67.6 (setup) item 1: HR only
     { title: 'Address and contact', fields: [
       { key: 'br_country', label: 'Country', type: 'select', source: { endpoint: '/core/api/Country/', label: 'country_name' } },
       { key: 'br_state_id', label: 'Emirate / state', type: 'select', source: { endpoint: '/core/api/State/', label: 'state_name' },
@@ -51,6 +52,7 @@ export const BRANCH_FORM: ZFormConfig = {
       { key: 'branch_address', label: 'Address', type: 'textarea' },
       { key: 'br_branch_nmbr_1', label: 'Phone' }, { key: 'br_branch_nmbr_2', label: 'Second phone' },
       { key: 'br_branch_mail', label: 'E-mail', type: 'email' },
+      { key: 'br_currency_name', label: 'Currency', editOnly: true, readonly: true, hint: 'The company currency – a branch cannot have another one.' },   // v1.67.6 (setup) item 2
       { key: 'br_is_active', label: 'Active', type: 'check', editOnly: true }] },
     // v1.62.1 (user request 2 Nov): where the new branch takes its setup from
     { title: 'Setup of the new branch', fields: [
@@ -81,7 +83,8 @@ export const DOCUMENT_TYPE_FORM: ZFormConfig = {
     { key: 'is_active', label: 'Active', type: 'check', editOnly: true }] }],
 };
 export const LEAVE_TYPE_FORM: ZFormConfig = {
-  thing: 'leave type', endpoint: '/calendars/api/leave-type/', subtitle: 'A kind of leave. Entitlements, accrual and pay rules are set on Leave policies.',
+  // v1.67.12 (effective): dated versions of the leave type
+  thing: 'leave type', endpoint: '/calendars/api/leave-type/', effective: 'leave_type', subtitle: 'A kind of leave. Entitlements, accrual and pay rules are set on Leave policies.',
   sections: [
     { title: 'Leave type', fields: [
       { key: 'name', label: 'Name', max: 100 }, { key: 'code', label: 'Code', max: 30 },
@@ -107,7 +110,7 @@ export const USER_FORM: ZFormConfig = {
       { key: 'username', label: 'User name', max: 150 }, { key: 'email', label: 'E-mail', type: 'email' },
       { key: 'password', label: 'Password', type: 'password', createOnly: true, required: true, hint: '8 characters or more, letters and digits.' }] },
     { title: 'Access', fields: [
-      { key: 'is_ess', label: 'Self-service only (employee)', type: 'check' }, { key: 'is_superuser', label: 'Company administrator (all rights)', type: 'check' },
+      { key: 'is_ess', label: 'Self-service only (employee)', type: 'check', showIf: () => appOn('hrms') },   // v1.67.6 (setup) item 1: HR only { key: 'is_superuser', label: 'Company administrator (all rights)', type: 'check' },
       { key: 'must_change_password', label: 'Change the password at the next sign-in', type: 'check' },
       { key: 'is_active', label: 'Active', type: 'check', editOnly: true }] }],
   toBody: (v, editing) => {
@@ -129,6 +132,34 @@ export function emailTemplateForm(endpoint: string, thing = 'e-mail template', t
       { key: 'body', label: 'Text', type: 'html', hint: 'Plain text or HTML.' }] }],
   };
 }
+
+/** v1.67.9 (screens) item 18: the company's own details (Settings › Company) in the new-design drawer – the same fields
+ *  and the same save as the old "Edit company" window (PUT/PATCH /users/api/company/<id>/, the logo as multipart). */
+export const COMPANY_FORM: ZFormConfig = {
+  thing: 'company', endpoint: '/users/api/company/', drawer: true,
+  subtitle: 'The legal details of the company: printed on documents, used for payroll files and the financial year.',
+  sections: [
+    { title: 'Company', fields: [
+      { key: 'name', label: 'Company name', max: 100, required: true, full: true },
+      { key: 'industry_type', label: 'Industry type', type: 'select', options: [
+        { value: 'IT', label: 'Information Technology' }, { value: 'HC', label: 'Healthcare' }, { value: 'FIN', label: 'Finance' },
+        { value: 'EDU', label: 'Education' }, { value: 'MFG', label: 'Manufacturing' }, { value: 'CON', label: 'Construction and engineering' },
+        { value: 'OG', label: 'Oil and gas' }, { value: 'RET', label: 'Retail' }, { value: 'PM', label: 'Property management' }, { value: 'OTH', label: 'General' }] },
+      { key: 'financial_year', label: 'Financial year start date', type: 'date', hint: 'The first day of a month, e.g. 01/01/2026.' },
+      { key: 'logo', label: 'Company logo', type: 'file', accept: 'image/*', full: true, hint: 'PNG or JPG. Shown on the top bar, documents and the company list.' }] },
+    { title: 'Address', fields: [
+      { key: 'country', label: 'Country', type: 'select', required: true, source: { endpoint: '/core/api/Country/', label: 'country_name' } },
+      { key: 'state', label: 'Emirate / state', type: 'select', source: { endpoint: '/core/api/State/', label: 'state_name' },
+        optFilter: (raw, v, o) => !v.country || raw?.country === (o['country'] || []).find(c => c.value === v.country)?.label },
+      { key: 'city', label: 'City', max: 100 }, { key: 'pincode', label: 'P.O. box / postcode', max: 20 },
+      { key: 'timezone', label: 'Time zone', max: 64, placeholder: 'e.g. Asia/Dubai' },
+      { key: 'currency', label: 'Currency', type: 'select', source: { endpoint: '/core/api/Currency/', label: (r: any) => `${r.currency_name}${r.currency_code ? ' (' + r.currency_code + ')' : ''}` }, matchKey: 'currency_name' },
+      { key: 'address_line1', label: 'Address line 1', type: 'textarea' }, { key: 'address_line2', label: 'Address line 2', type: 'textarea' }] },
+    { title: 'Payroll files (WPS)', fields: [
+      { key: 'employer_unique_id', label: 'WPS employer ID (MoHRE establishment, 13 digits)', max: 13, showIf: () => appOn('payroll') },
+      { key: 'bank_routing_code', label: "WPS bank routing code (employer's bank, 9 digits)", max: 9, showIf: () => appOn('payroll') }] }],
+  fromRecord: (r: any) => ({ ...r, currency: r?.currency ?? r?.currency_details?.currency_name ?? null, logo: r?.logo || '' }),
+};
 
 /** after a save the screen's page is drawn again (its list reloads) */
 export async function zFormThenReload(cfg: ZFormConfig, record?: any): Promise<boolean> {

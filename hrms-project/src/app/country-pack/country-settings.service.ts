@@ -13,6 +13,7 @@ export interface CpResolved {
   overridden: { labels: string[]; features: string[] };
 }
 export interface CpSettings {
+  locked?: { pack?: string; at?: string } | null;   // v1.67.6 (setup) item 3
   pack_override: string | null;
   label_overrides: Record<string, string>;
   feature_overrides: Record<string, boolean>;

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.12.0 Shift planner – My schedule (ESS / mobile). Every employee sees their published shifts day by day with leave and
  * public holidays, and can ask for a shift change, cancellation or swap, claim open shifts, answer swap requests from
@@ -138,7 +139,7 @@ import { Router } from '@angular/router';   // v1.62.0 people
 
         <div class="sp-h">Shift notices <button type="button" class="lp-btn" style="height:28px;margin-left:8px" *ngIf="unread()" (click)="readAll()">Mark all read</button></div>
         <p class="lp-muted" *ngIf="!data.notices.length">No notices yet.</p>
-        <div class="sp-notice" *ngFor="let n of data.notices" [class.unread]="!n.read"><b>{{ n.title }}</b> · <span class="lp-muted">{{ n.created_at | date:'d MMM, HH:mm' }}</span><div>{{ n.message }}</div></div>
+        <div class="sp-notice" *ngFor="let n of data.notices" [class.unread]="!n.read"><b>{{ n.title }}</b> · <span class="lp-muted">{{ n.created_at | date:'dd/MM/yyyy HH:mm' }}</span><div>{{ n.message }}</div></div>
       </ng-container>
     </div>
   </div>

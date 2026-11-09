@@ -463,6 +463,16 @@
               </div>
             </div>
 
+            <!-- v1.67.12 (effective, item 64): the change applies from a date – payroll of earlier months keeps the old settings -->
+            <div class="col-md-6" data-ps-effective>
+              <label>Effective from</label>
+              <input type="date" class="form-control" [(ngModel)]="editEffFrom" [ngModelOptions]="{ standalone: true }" data-ps-eff-date />
+              <small class="text-muted d-block mt-1">{{ effHint }}</small>
+            </div>
+            <div class="col-md-6" style="display:flex;align-items:flex-end">
+              <button type="button" class="btn btn-light" (click)="payHistory()" data-ps-history>History of changes</button>
+            </div>
+
             <!-- FILTER SECTION -->
             <div class="filter-card mb-4">
               <div class="row g-3">

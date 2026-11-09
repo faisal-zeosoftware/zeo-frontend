@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.51.0 – Self service → Ask HR: the HR helpdesk for the employee. Open a question in a category (payslip, leave,
  * documents …), follow HR's answers, reply, rate the solution or reopen it. Complaints keep their confidential form and
@@ -47,16 +48,16 @@ import { EssApiService } from './ess-api.service';
   <div class="hh-grid">
     <div class="es-rows">
       <div class="es-row click" *ngFor="let t of tickets" [class.on]="sel?.id === t.id" (click)="sel = t" [attr.data-ticket]="t.number">
-        <div class="main"><div class="t">{{ t.subject }}</div><div class="s">{{ t.number }} · {{ t.category }} · {{ t.created_at | date:'d MMM' }}</div></div>
+        <div class="main"><div class="t">{{ t.subject }}</div><div class="s">{{ t.number }} · {{ t.category }} · {{ t.created_at | date:'dd/MM/yyyy' }}</div></div>
         <div class="r"><span class="es-tag" [ngClass]="t.status">{{ t.status_label }}</span></div></div>
       <p class="es-muted" *ngIf="loaded && !tickets.length">No question yet.</p>
     </div>
     <div class="es-panel" *ngIf="sel">
       <div class="es-h">{{ sel.subject }} <span class="es-tag" [ngClass]="sel.status">{{ sel.status_label }}</span></div>
-      <div class="hh-due">{{ sel.number }} · {{ sel.category }}{{ sel.assigned_to ? ' · with ' + sel.assigned_to : '' }}{{ sel.status !== 'resolved' && sel.status !== 'closed' ? ' · solution due ' + (sel.resolve_due | date:'d MMM, HH:mm') : '' }}</div>
-      <div class="hh-msg me"><small>You · {{ sel.created_at | date:'d MMM, HH:mm' }}</small>{{ sel.description }}</div>
+      <div class="hh-due">{{ sel.number }} · {{ sel.category }}{{ sel.assigned_to ? ' · with ' + sel.assigned_to : '' }}{{ sel.status !== 'resolved' && sel.status !== 'closed' ? ' · solution due ' + (sel.resolve_due | date:'dd/MM/yyyy HH:mm') : '' }}</div>
+      <div class="hh-msg me"><small>You · {{ sel.created_at | date:'dd/MM/yyyy HH:mm' }}</small>{{ sel.description }}</div>
       <div class="hh-msg" *ngFor="let m of sel.messages" [class.me]="m.from_employee" [class.hr]="!m.from_employee">
-        <small>{{ m.from_employee ? 'You' : (m.by || 'HR') }}{{ m.kind === 'resolved' ? ' – solution' : '' }} · {{ m.at | date:'d MMM, HH:mm' }}</small>{{ m.text }}</div>
+        <small>{{ m.from_employee ? 'You' : (m.by || 'HR') }}{{ m.kind === 'resolved' ? ' – solution' : '' }} · {{ m.at | date:'dd/MM/yyyy HH:mm' }}</small>{{ m.text }}</div>
       <ng-container *ngIf="sel.can_reply">
         <textarea [(ngModel)]="reply" rows="3" style="width:100%;margin-top:8px" placeholder="Write to HR" aria-label="Reply" data-reply></textarea>
         <div style="text-align:right"><button type="button" class="es-btn primary" (click)="act('reply')" [disabled]="busy || !reply.trim()">Send</button></div></ng-container>

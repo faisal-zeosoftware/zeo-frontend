@@ -108,7 +108,10 @@ export class AuthInterceptor implements HttpInterceptor {
     } catch { /* storage off */ }
     // v1.62.1: a master's own register (and the organisation screens) lists its inactive records too; every other screen
     // gets only active ones for new choices
-    if (token && request.method === 'GET' && /\/(department-master|designation-master|catogary-master|branch-master|org-structure|company-master|location-master)\b/.test(location.pathname)) {
+    // v1.67.9 (screens) item 17: + the registers of the masters made inactive in 1.67.9 (leave types, weekend calendars, request
+    // types, document types, salary components, loan types, asset types, shifts, shift patterns, holiday calendars)
+    if (token && request.method === 'GET' && (/\/(department-master|designation-master|catogary-master|branch-master|org-structure|company-master|location-master)\b/.test(location.pathname)
+        || /\/(leave-options\/leave-master|settings\/weekcalendar|settings\/holiday-calendar|general-sidebar\/request-type|general-sidebar\/document-request-type|settings\/document-type-master|salary-options\/salary|loan-sidebar\/loan-type|asset-options\/asset-type|shift-planner\/shifts|shift-planner\/patterns)(?=$|[/?#])/.test(location.pathname))) {
       h['X-Include-Inactive'] = '1';
     }
     return request.clone({ setHeaders: h });

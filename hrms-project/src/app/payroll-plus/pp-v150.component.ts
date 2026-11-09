@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.50.0 – Payroll what-if (a trial payroll with proposed salary changes compared with the payroll as it is; apply writes
  * the new amounts with the revision history) and cost allocation (an employee's payroll cost split over projects / cost
@@ -115,7 +116,7 @@ const STYLES = `.wf-grid { display: grid; grid-template-columns: 240px minmax(0,
             <button type="button" class="lp-btn" (click)="csv()">CSV</button><span style="flex:1"></span>
             <ng-container *ngIf="!applied && canApply"><label class="lp-desc">From<input type="month" [(ngModel)]="f.effective_from" style="margin-left:6px" aria-label="Effective from"></label>
               <button type="button" class="lp-btn primary" (click)="apply()" [disabled]="busy" data-apply>Apply to salaries</button></ng-container>
-            <span class="lp-desc" *ngIf="applied">Applied {{ sc.applied_at | date:'d MMM yyyy, HH:mm' }} – the amounts are in the employees' salary and the revision history.</span></div>
+            <span class="lp-desc" *ngIf="applied">Applied {{ sc.applied_at | date:'dd/MM/yyyy HH:mm' }} – the amounts are in the employees' salary and the revision history.</span></div>
         </div>
         <div class="wf-two">
           <div class="wf-card"><h2>By department</h2><table class="wf"><tr><th>Department</th><th class="r">Now</th><th class="r">New</th><th class="r">Difference</th></tr>

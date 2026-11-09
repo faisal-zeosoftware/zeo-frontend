@@ -1,3 +1,4 @@
+import { MatIconModule } from '@angular/material/icon';   // v1.67.9 (screens) row actions
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -275,7 +276,7 @@ export class HseActionDialogComponent implements OnInit {
 @Component({
   selector: 'app-hse-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, HseFormComponent, HseActionDialogComponent, ZListDirective],
+  imports: [CommonModule, FormsModule, HseFormComponent, HseActionDialogComponent, ZListDirective, MatIconModule],   // v1.67.9 (screens)
   styleUrls: ['../expense/expense.css', './hse.css'],
   template: `
 <div class="container">
@@ -309,7 +310,7 @@ export class HseActionDialogComponent implements OnInit {
         <div class="hs-scroll" *ngIf="!loading">
           <ng-container *ngFor="let k of [reg.kind]">
           <table class="hs-table zl-hse">
-            <tr><th *ngFor="let c of reg.cols">{{ c.label }}</th></tr>
+            <tr><th *ngFor="let c of reg.cols">{{ c.label }}</th><th>Actions</th></tr><!-- v1.67.9 (screens) item 16: row actions -->
             <tr class="click" *ngFor="let r of rows" (click)="open(r.id)">
               <td *ngFor="let c of reg.cols; let i = index">
                 <ng-container [ngSwitch]="c.name">
@@ -317,6 +318,9 @@ export class HseActionDialogComponent implements OnInit {
                   <span *ngSwitchDefault [class.hs-code]="i === 0 && (c.name === 'number' || c.name === 'code' || c.name === 'ref')">{{ show(r, c) }}</span>
                 </ng-container>
               </td>
+              <!-- v1.67.9 (screens) item 16: Edit on every row (the record opens with its form); HSE records are not deleted – they are
+                   closed / cancelled in their workflow, as before -->
+              <td style="white-space:nowrap"><button type="button" class="z-row-btn" (click)="editRow($event, r.id)" title="Edit" aria-label="Edit" data-z-row-edit><mat-icon>edit</mat-icon></button></td>
             </tr>
           </table>
           </ng-container>
@@ -499,7 +503,7 @@ export class HseRegisterComponent implements OnInit, OnDestroy {
         this.regs = await this.api.registers();
         this.reg = this.regs.find(r => r.kind === this.kind) || null;
         if (!this.reg) { this.msg = 'You have no access to this register.'; return; }
-        if (this.id) await this.reload();
+        if (this.id) { await this.reload(); if (this.route.snapshot.queryParamMap.get('edit') === '1' && this.d?.can_edit) { this.editing = true; } }   // v1.67.9 (screens): opened by the row's Edit
         else {
           if (this.route.snapshot.queryParamMap.get('new')) this.creating = true;
           this.flt = {};
@@ -549,6 +553,7 @@ export class HseRegisterComponent implements OnInit, OnDestroy {
 
   current(): any { return (this.d?.steps || []).find((s: any) => s.status === 'pending'); }
   open(id: number): void { this.router.navigate([HSE_BASE, 'r', this.kind, id]); }
+  editRow(ev: Event, id: number): void { ev.stopPropagation(); this.router.navigate([HSE_BASE, 'r', this.kind, id], { queryParams: { edit: 1 } }); }   // v1.67.9 (screens)
   back(): void { this.router.navigate([HSE_BASE, 'r', this.kind]); }
   go(path: string[], q: any = {}): void { this.router.navigate([HSE_BASE, ...path], { queryParams: q }); }
   created(r: any): void { this.creating = false; this.open(r.id); }

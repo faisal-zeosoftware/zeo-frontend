@@ -91,7 +91,7 @@ export function assignForm(kind: AssignKind): ZFormConfig {
     sections: [
       { title: 'Assignment', fields: [
         { key: calKey, label: weekend ? 'Weekend calendar' : 'Holiday calendar', type: 'select', required: true,
-          source: weekend ? { endpoint: '/calendars/api/weekend/', label: (r: any) => `${r.calendar_code} (${r.year})` } : { endpoint: '/calendars/api/holiday-calendar/', label: (r: any) => `${r.calendar_title} (${r.year})` },
+          source: weekend ? { endpoint: '/calendars/api/weekend/', label: (r: any) => `${r.calendar_code} (${r.year})` } : { endpoint: '/calendars/api/holiday-calendar/', label: (r: any) => `${r.calendar_title} (${r.year})`, filter: (r: any) => r.is_active !== false /* v1.67.8 (fixes) item 1: no inactive calendars */ },
           matchKey: weekend ? 'calendar_code' : 'calendar_title' },
         { key: 'related_to', label: 'Applies to', type: 'select', required: true, options: levels.map(l => ({ value: l, label: LEVEL_LABEL[l] })) }] },
       { title: 'Applies to', fields: lv }],

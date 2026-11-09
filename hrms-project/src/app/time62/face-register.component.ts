@@ -8,6 +8,7 @@
  */
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
@@ -21,7 +22,7 @@ import { T, T62Base } from './t62';
   selector: 'app-t62-face-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Default,
-  imports: [CommonModule, FormsModule, MatIconModule, ZListDirective],
+  imports: [CommonModule, ZPortalDirective, FormsModule, MatIconModule, ZListDirective],
   styleUrls: ['../hr-modules/hr-shared.css', './t62.css'],
   template: `
 <div class="container hr-page" data-t62="face">
@@ -59,7 +60,7 @@ import { T, T62Base } from './t62';
   </div>
 </div>
 
-<div class="t62-dlg" *ngIf="dlg" data-t62-dialog>
+<div class="t62-dlg" zPortal *ngIf="dlg" data-t62-dialog>
   <div class="t62-veil" (click)="close()"></div>
   <div class="t62-box" role="dialog" aria-modal="true" (keydown.escape)="close()">
     <div class="t62-head">

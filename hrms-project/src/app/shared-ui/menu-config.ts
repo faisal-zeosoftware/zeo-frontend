@@ -352,6 +352,7 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Legal rates', hint: 'Legal figures by date – GPSSA rates and limits; law changes from a date', link: M + 'salary-options/legal-rates', icon: 'gavel', perms: ['view_salarycomponent', 'change_payrollplussettings'] },   // v1.59.0
             { label: 'Branch pension schemes', hint: 'GPSSA or ADPF for UAE nationals; DIFC DEWS instead of gratuity – per branch', link: M + 'salary-options/branch-pension-schemes', icon: 'account_tree', perms: ['view_salarycomponent', 'change_payrollplussettings', 'view_payrollrun'] },   // v1.62.11 (item 229)
             { label: 'End of service settings', hint: 'Gratuity daily wage, service days, leave salary, final salary month by month, air ticket', link: M + 'salary-options/eos-settings', icon: 'rule', perms: ['change_payrollplussettings', 'view_payrollplussettings', 'view_exitsettlement', 'change_exitsettlement'] },   // v1.62.11 (EOS settings)
+            { label: 'Loan and advance settings', hint: 'Monthly deduction limit, advance limits, recovery at exit, loan journals', link: M + 'salary-options/loan-settings', icon: 'percent', perms: ['change_payrollplussettings', 'view_payrollplussettings', 'change_payrollrun', 'change_loanapplication'] },   // v1.67.11 (loans)
           ] },
         ],
       },
@@ -1173,6 +1174,9 @@ export const MAIN_GROUPS: MenuGroup[] = [
             { label: 'Languages', hint: 'Languages of the company and translations of the screens', link: M + 'settings/languages', icon: 'translate', perms: ['change_term'] },   // v1.15.0
             { label: 'States / emirates', link: M + 'settings/state-master', icon: 'map', perms: ['view_state_mstr'], country: 'states' },   // v1.14.0 (caption follows the country)
             { label: 'Document numbering', link: M + 'settings/document-numbering', icon: 'pin', perms: ['view_documentnumbering'] },
+            // v1.67.8 (fixes) item 4: the accounting integration for a company without Payroll (Property, HR expense claims, Asset Management
+            // post journals too); with Payroll it stays in Payroll › Accounting
+            { label: 'Accounting integration', hint: 'Accounting app, account mapping and journals of the apps that post to accounting', link: M + 'salary-options/accounting', icon: 'account_balance_wallet', perms: ['view_accounting', 'post_accounting', 'manage_accounting'], country: '!app:payroll,app:hrms|assets|property' },
             { label: 'Print templates', hint: 'Designs of the payslip, letters and every printed document', link: M + 'settings/print-templates', icon: 'print', perms: ['*admin', 'manage_printtemplate'] },   // v1.62.0 print
             { label: 'AI settings', hint: 'Built-in (free) or an external AI for Ask ZEO and documents', link: M + 'settings/ai-settings', icon: 'smart_toy', perms: ['*admin'] },   // v1.16.0
           ] },
@@ -1278,6 +1282,17 @@ function suiteOn(app: MenuApp): boolean {
   const g = MAIN_GROUPS.find(x => x.apps.includes(app)); const s = (g?.suite || 'hrms') as string;
   return s === 'common' || s === 'settings' || a.includes(s);
 }
+/** v1.67.9 (screens): the suites of every app that lists this page (exact item or a record page under it) – a page shared by
+ *  several apps (business partners, items) is "off" only when none of them is active */
+export function urlSuites(url: string): string[] {
+  const u = clean(url); const out = new Set<string>();
+  for (const g of MAIN_GROUPS) {
+    for (const app of g.apps) {
+      if ((app.sections || []).some(x => x.items.some(i => !i.alias && (u === i.link || u.startsWith(i.link + '/'))))) { out.add(g.suite || 'hrms'); }
+    }
+  }
+  return Array.from(out);
+}
 export function appForUrl(url: string): MenuApp | null {
   const u = clean(url);
   if (dashKeepKey && isReportUrl(u)) { const k = ALL_APPS.find(a => a.key === dashKeepKey); if (k) { return k; } }   // v1.40.1
@@ -1287,6 +1302,7 @@ export function appForUrl(url: string): MenuApp | null {
     if (on && off) { return on; }
   }
   let best: { app: MenuApp; len: number } | null = null;
+  const sub: { app: MenuApp; len: number }[] = [];   // v1.67.9 (screens)
   for (const app of ALL_APPS) {
     for (const s of app.sections || []) {
       for (const it of s.items) {
@@ -1296,11 +1312,21 @@ export function appForUrl(url: string): MenuApp | null {
           const mine = ALL_APPS.find(a => a.key === preferKey && (a.sections || []).some(x => x.items.some(i => !i.alias && i.link === u)));
           return mine || app;   // v1.40.1
         }
-        if (u.startsWith(it.link + '/') && (!best || it.link.length > best.len)) { best = { app, len: it.link.length }; }
+        if (u.startsWith(it.link + '/')) { sub.push({ app, len: it.link.length }); if (!best || it.link.length > best.len) { best = { app, len: it.link.length }; } }
       }
     }
   }
-  if (best) { return best.app; }
+  if (best) {
+    // v1.67.9 (screens) item 19: a record page under a shared list (e.g. …/zeo-masters/r/partner/12) belongs to several apps;
+    // the first one found was taken even when the company does not have it (a Property-only company opened a business
+    // partner and the shell moved to Property home, the page "belonged" to Projects) – the app the user came from, else an
+    // app that is on, else the first
+    const same = sub.filter(x => x.len === best!.len);
+    const pref = same.find(x => x.app.key === preferKey);
+    if (pref) { return pref.app; }
+    if (ZEO_FLAGS.apps) { const on = same.find(x => suiteOn(x.app)); if (on) { return on.app; } }
+    return best.app;
+  }
   const seg = u.replace(M, '').split('/')[0];
   return ALL_APPS.find(a => (a.parents || []).includes(seg)) || null;
 }

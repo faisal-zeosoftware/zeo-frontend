@@ -1,3 +1,5 @@
+import { ApplicationRef, EnvironmentInjector, inject } from '@angular/core';   // v1.67.6 (setup)
+import { openUserEmployee } from '../settings-apps/user-employee.component';   // v1.67.6 (setup) item 9
 /**
  * v1.19.0 – the employee page in the new design.
  * - compact header that stays on top: photo / initials, name and Arabic name, code · designation · department · branch, status chips,
@@ -137,6 +139,9 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
 
   constructor(private api: ErService, private route: ActivatedRoute, private router: Router, private cd: ChangeDetectorRef, private cp: CountryPackService,
               private dialog: MatDialog) {}
+  // v1.67.6 (setup) item 9: the login of this employee – link one or make it
+  private zApp = inject(ApplicationRef); private zEnv = inject(EnvironmentInjector);
+  async loginOf(): Promise<void> { const id = this.id; if (id) { await openUserEmployee(this.zApp, this.zEnv, { employeeId: id }); } }
 
   ngOnInit(): void {
     this.api.lookups().then(l => { this.look = l; this.cd.markForCheck(); }).catch(() => {});
@@ -166,6 +171,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
       this.nextId = i >= 0 ? (order[i + 1] ?? null) : this.d.next_id;
       if (this.group === 'time' && !this.att) { this.loadAtt(); }
       if (this.group === 'job' && !this.history) { this.loadHistory(); }
+      if (this.group === 'job') { this.loadPension(); }   // v1.67.12 (effective, item 249)
       if (this.group === 'timeline' && !this.journey) { this.loadJourney(); }
     } catch (e: any) {
       this.err = e?.status === 404 || e?.status === 403 ? 'This employee is not in your branches or does not exist.' : ErService.error(e, 'The employee could not be loaded.');
@@ -180,6 +186,7 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     this.router.navigate([], { queryParams: { tab: g === 'overview' ? null : g }, queryParamsHandling: 'merge', replaceUrl: true });
     if (g === 'time' && !this.att) { this.loadAtt(); }
     if (g === 'job' && !this.history) { this.loadHistory(); }
+    if (g === 'job' && !this.pen) { this.loadPension(); }   // v1.67.12 (effective, item 249)
     if (g === 'timeline' && !this.journey) { this.loadJourney(); }
     if (card) { setTimeout(() => document.getElementById('card-' + card)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }
   }
@@ -451,6 +458,22 @@ export class EmployeeRecordComponent implements OnInit, OnDestroy {
     if (!(await zConfirm(i18nT('Remove {0}?', [this.rowLabel(tk, r) || i18nT(t.noun)])))) { return; }
     try { await this.api.post(`employee-profile/api/change/${this.id}/`, { group: t.group, record_id: r.id, action: 'delete' }); zToast(i18nT('{0} removed', [this.rowLabel(tk, r) || i18nT(t.noun)]), 'ok'); await this.load(); }
     catch (e) { zToast(ErService.error(e, 'It could not be removed.'), 'err'); }
+  }
+
+  // ---------------------------------------------------------------- v1.67.12 (effective, item 249): GPSSA first-insured date
+  pen: any = null;
+  pf: any = { first_insured: '', scheme: 'gpssa' };
+  async loadPension(): Promise<void> {
+    try { this.pen = await this.api.get(`payroll-plus/api/pension/${this.id}/`); this.pf = { first_insured: this.pen.first_insured || '', scheme: this.pen.scheme || 'gpssa' }; }
+    catch { this.pen = null; }
+    this.cd.markForCheck();
+  }
+  async savePension(): Promise<void> {
+    try {
+      this.pen = await this.api.put(`payroll-plus/api/pension/${this.id}/`, { first_insured: this.pf.first_insured || null, scheme: this.pf.scheme, note: this.pen?.note || '' });
+      zToast(this.t('Pension details saved.'), 'ok');
+    } catch (e) { zToast(ErService.error(e), 'err'); }
+    this.cd.markForCheck();
   }
 
   // ---------------------------------------------------------------- employment / probation

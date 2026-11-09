@@ -15,6 +15,8 @@
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
+            <button type="button" (click)="addMissing()" class="z-new-btn" style="margin-inline-end:8px;background:#fff;color:#4b3fd1;border:1px solid #b9b2f3" data-add-missing
+              *ngIf="hasAddPermission && missingCount > 0"><span>Add the missing series</span> ({{ missingCount }})</button>   <!-- v1.67.6 (setup) item 4 -->
             <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New numbering rule</button>
             <span *ngIf="!hasAddPermission"></span>
 

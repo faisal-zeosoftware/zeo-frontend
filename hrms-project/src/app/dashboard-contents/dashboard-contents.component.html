@@ -1,3 +1,4 @@
+<!-- v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm) -->
 <!-- v1.62.0 ui: dates dd/MM/yyyy -->
 
 <!-- <div class="email_div"  >
@@ -278,8 +279,8 @@
         
                     <div class="date-range">
                       <mat-icon>event</mat-icon>
-                      <span>{{ announcement.schedule_at | date: 'MMM d, y, h:mm a' }}</span>
-                      <span> → {{ announcement.expires_at | date: 'MMM d, y, h:mm a' }}</span>
+                      <span>{{ announcement.schedule_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+                      <span> → {{ announcement.expires_at | date: 'dd/MM/yyyy HH:mm' }}</span>
                     </div>
         
                     <div class="options mt-2">

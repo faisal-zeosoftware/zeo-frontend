@@ -41,8 +41,8 @@ export class ModuleApiService {
     return this.http.post<T>(this.base + endpoint, body, { params: this.params() });
   }
 
-  update<T = any>(endpoint: string, id: any, body: any): Observable<T> {
-    return this.http.patch<T>(`${this.base}${endpoint}${id}/`, body, { params: this.params() });
+  update<T = any>(endpoint: string, id: any, body: any, extra?: Record<string, any>): Observable<T> {   // v1.67.12 (effective): extra query
+    return this.http.patch<T>(`${this.base}${endpoint}${id}/`, body, { params: this.params(extra) });
   }
 
   remove(endpoint: string, id: any): Observable<any> {

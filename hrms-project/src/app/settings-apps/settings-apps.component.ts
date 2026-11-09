@@ -18,6 +18,7 @@ interface AppRow {
   activated_at: string | null; activated_by: string; industries?: { code: string; label: string }[];
   suggested?: string; suggested_label?: string; previous?: string; roles?: string[]; links?: AppLink[];
   // v1.67.3 (apps): what the app needs, what activating it brings now, the active apps that need it
+  setup?: { enforced: boolean; open: number; blocked: boolean; allow: boolean; link: string };   // v1.67.6 (setup) item 5
   depends?: { key: string; title: string }[]; brings?: { key: string; title: string }[]; needed_by?: { key: string; title: string }[]; needed_message?: string;
 }
 
@@ -84,9 +85,9 @@ interface AppRow {
         <div><dt>{{ 'Industry' | t }}</dt><dd>{{ a.active || a.industry ? (a.industry_label || a.industry || '–') : '–' }}
           <small *ngIf="a.industry && a.industry_source === 'company'">{{ 'company industry' | t }}</small>
           <small *ngIf="a.industry && a.industry_source === 'chosen'">{{ 'chosen for this app' | t }}</small></dd></div>
-        <div *ngIf="a.activated_at"><dt>{{ 'Activated' | t }}</dt><dd>{{ a.activated_at | date:'dd/MM/yyyy' }}<small *ngIf="a.activated_by">by {{ a.activated_by }}</small></dd></div>
+        <div *ngIf="a.activated_at"><dt>{{ 'Activated' | t }}</dt><dd>{{ a.activated_at | date:'dd/MM/yyyy' }}<small *ngIf="a.activated_by">{{ 'by {0}' | t:[a.activated_by] }}</small></dd></div>
         <div *ngIf="a.roles?.length"><dt>{{ 'Permission groups' | t }}</dt><dd>{{ a.roles!.length }}
-          <small><a routerLink="/main-sidebar/settings/user-grouping-master">Settings › Permission groups</a></small></dd></div>
+          <small><a routerLink="/main-sidebar/settings/user-grouping-master">{{ 'Settings › Permission groups' | t }}</a></small></dd></div>
       </dl>
 
       <div class="sa-links" *ngIf="a.links?.length">
@@ -94,7 +95,7 @@ interface AppRow {
         <ul>
           <li *ngFor="let l of a.links" [class.on]="l.on">
             <mat-icon aria-hidden="true">{{ l.on ? 'link' : 'link_off' }}</mat-icon>
-            <span><b>{{ l.title }}</b> – {{ l.on ? 'linked' : (l.other_active ? 'links when ' + a.title + ' is active' : 'links when ' + l.title + ' is active') }}
+            <span><b>{{ l.title }}</b> – {{ l.on ? ('linked' | t) : ('links when {0} is active' | t:[((l.other_active ? a.title : l.title) | t)]) }}<!-- v1.67.8 (fixes) item 14: one translatable sentence (was glued) -->
               <small>{{ l.what }}</small></span>
           </li>
         </ul>
@@ -102,40 +103,40 @@ interface AppRow {
 
       <!-- activation: the industry question -->
       <div class="sa-ask" *ngIf="asking === a.key">
-        <p class="sa-q">Do you want to change the industry for {{ a.title }}?</p>
+        <p class="sa-q">{{ 'Do you want to change the industry for {0}?' | t:[(a.title | t)] }}</p>
         <label class="sa-opt">
           <input type="radio" [name]="'ind-' + a.key" [value]="false" [(ngModel)]="change">
-          <span *ngIf="a.previous">No – keep <b>{{ label(a, a.previous) }}</b><small>The industry {{ a.title }} had before it was switched off.</small></span>
-          <span *ngIf="!a.previous">No – use <b>{{ a.suggested_label }}</b><small>{{ a.kind === 'core' ? 'The company industry type.' : 'Matches the company industry type (' + (companyIndustryLabel || 'not set') + ').' }}</small></span>
+          <span *ngIf="a.previous">{{ 'No – keep' | t }} <b>{{ label(a, a.previous) }}</b><small>{{ 'The industry {0} had before it was switched off.' | t:[(a.title | t)] }}</small></span>
+          <span *ngIf="!a.previous">{{ 'No – use' | t }} <b>{{ a.suggested_label }}</b><small>{{ a.kind === 'core' ? ('The company industry type.' | t) : ('Matches the company industry type ({0}).' | t:[companyIndustryLabel || ('not set' | t)]) }}</small></span>
         </label>
         <label class="sa-opt">
           <input type="radio" [name]="'ind-' + a.key" [value]="true" [(ngModel)]="change">
           <span>{{ 'Yes – choose the industry for this app' | t }}</span>
         </label>
         <label class="sa-pick" *ngIf="change">
-          <span>Industry for {{ a.title }}</span>
-          <select [(ngModel)]="industry" [attr.aria-label]="'Industry for ' + a.title">
+          <span>{{ 'Industry for {0}' | t:[(a.title | t)] }}</span>
+          <select [(ngModel)]="industry" [attr.aria-label]="'Industry for {0}' | t:[(a.title | t)]">
             <option *ngFor="let i of a.industries" [value]="i.code">{{ i.label }}</option>
           </select>
         </label>
-        <p class="sa-hint" *ngIf="a.kind !== 'core'">The industry pack adds ready-made setup for this industry (it only adds, it never removes your own setup).</p>
+        <p class="sa-hint" *ngIf="a.kind !== 'core'">{{ 'The industry pack adds ready-made setup for this industry (it only adds, it never removes your own setup).' | t }}</p>
         <p class="sa-brings" *ngIf="a.brings?.length" data-brings>
           <mat-icon aria-hidden="true">info</mat-icon>{{ '{0} needs {1}: activating {0} also activates {1}.' | t:[(a.title | t), titles(a.brings)] }}</p>
         <div class="sa-actions">
           <button type="button" class="lp-btn" (click)="asking = ''" [disabled]="busy">{{ 'Cancel' | t }}</button>
-          <button type="button" class="lp-btn primary" (click)="activate(a)" [disabled]="busy || (change && !industry)">{{ busy ? 'Activating…' : 'Activate ' + a.title }}</button>
+          <button type="button" class="lp-btn primary" (click)="activate(a)" [disabled]="busy || (change && !industry)">{{ busy ? ('Activating…' | t) : ('Activate {0}' | t:[(a.title | t)]) }}</button>
         </div>
       </div>
 
       <div class="sa-ask warn" *ngIf="leaving === a.key">
-        <p class="sa-q">Deactivate {{ a.title }}?</p>
-        <p class="sa-hint">{{ a.title }} leaves the menu and its links to the other apps switch off. Its records are kept and come back when you activate it again.</p>
+        <p class="sa-q">{{ 'Deactivate {0}?' | t:[(a.title | t)] }}</p>
+        <p class="sa-hint">{{ '{0} leaves the menu and its links to the other apps switch off. Its records are kept and come back when you activate it again.' | t:[(a.title | t)] }}</p>
         <!-- v1.67.3 (apps): refused while an active app needs it -->
         <p class="sa-needed" *ngIf="a.needed_by?.length" role="alert" data-needed-msg>
           <mat-icon aria-hidden="true">block</mat-icon><span>{{ a.needed_message }} {{ 'Switch off {0} first.' | t:[titles(a.needed_by)] }}</span></p>
         <div class="sa-actions">
           <button type="button" class="lp-btn" (click)="leaving = ''" [disabled]="busy">{{ 'Keep it active' | t }}</button>
-          <button type="button" class="lp-btn danger" (click)="deactivate(a)" [disabled]="busy || !!a.needed_by?.length">{{ busy ? 'Deactivating…' : 'Deactivate ' + a.title }}</button>
+          <button type="button" class="lp-btn danger" (click)="deactivate(a)" [disabled]="busy || !!a.needed_by?.length">{{ busy ? ('Deactivating…' | t) : ('Deactivate {0}' | t:[(a.title | t)]) }}</button>
         </div>
       </div>
 
@@ -146,7 +147,8 @@ interface AppRow {
           <span class="sa-hint" *ngIf="!cloudOwner">{{ 'Ask the account owner.' | t }}</span>
         </ng-container>
         <ng-container *ngIf="a.active">
-          <button type="button" class="lp-btn" (click)="open(a)">Open {{ a.title }}</button>
+          <button type="button" class="lp-btn" (click)="open(a)">{{ 'Open {0}' | t:[(a.title | t)] }}</button>
+          <a class="lp-btn" *ngIf="a.setup" [routerLink]="a.setup.link" [class.primary]="a.setup.open && a.setup.enforced" [attr.data-app-setup]="a.key">{{ 'Setup' | t }}<span *ngIf="a.setup.open"> · {{ '{0} open' | t:[a.setup.open] }}</span></a>   <!-- v1.67.6 (setup) item 5 -->
           <button type="button" class="lp-btn" (click)="leaving = a.key; asking = ''">{{ 'Deactivate' | t }}</button>
         </ng-container>
       </footer>

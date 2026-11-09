@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +31,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
     <div class="ap-punch">
       <div>
         <div class="ap-clock">{{ now | date:'HH:mm' }}</div>
-        <div class="ap-muted">{{ st.work_date | date:'EEEE d MMM' }}
+        <div class="ap-muted">{{ st.work_date | date:'dd/MM/yyyy' }}
           <span *ngIf="st.shift && !st.shift.off"> · Shift {{ st.shift.name }} {{ st.shift.start }}–{{ st.shift.end }}</span>
           <span *ngIf="st.shift?.off"> · Day off</span></div>
         <div style="margin-top:4px">
@@ -102,7 +103,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
   </div>
 
   <div class="ap-card" *ngIf="form" id="ap-correction">
-    <h2>Request a correction for {{ form.date | date:'EEEE d MMM yyyy' }}</h2>
+    <h2>Request a correction for {{ form.date | date:'dd/MM/yyyy' }}</h2>
     <div class="ap-form">
       <!-- v1.49.0 reason list: proof photo / document and the monthly limit of each reason -->
       <label *ngIf="reasons.length">Reason<select class="ap-input" [(ngModel)]="form.reason_code" (ngModelChange)="pickReason()" data-reason>
@@ -142,7 +143,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
       <div class="ap-scroll" *ngIf="corrections.length">
         <table class="ap-table" zPlain><tr><th>Date</th><th>Type</th><th>In / out</th><th>Status</th><th></th></tr>
           <tr *ngFor="let c of corrections">
-            <td>{{ c.date | date:'d MMM' }}</td><td>{{ c.kind_label }}</td>
+            <td>{{ c.date | date:'dd/MM/yyyy' }}</td><td>{{ c.kind_label }}</td>
             <td>{{ c.proposed_in_local | slice:11 }} – {{ c.proposed_out_local | slice:11 }}</td>
             <td><span class="ap-tag" [ngClass]="cColor(c.status)">{{ c.status_label }}</span>
               <div class="ap-muted" *ngIf="c.manager_note || c.hr_note">{{ c.hr_note || c.manager_note }}</div></td>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
+import { inject, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,6 +36,7 @@ const STAGE_ACTION: Record<string, string> = {
           </div>
         </div>
         <div class="ex-actions" *ngIf="t">
+          <button type="button" class="ex-btn" *ngIf="canPrint.has('support_ticket')" (click)="zprint.open('support_ticket', t.id)" data-print-design>Print</button>   <!-- v1.67.7 (admin) -->
           <a class="ex-btn" *ngIf="t.whatsapp_phone" [href]="wa()" target="_blank" rel="noopener" title="Opens WhatsApp with a prepared message (no paid service)">WhatsApp</a>
           <button type="button" class="ex-btn" *ngIf="t.can_work && !t.assigned_to && me && t.approval_status !== 'pending'" (click)="assignMe()">Take it</button>
           <ng-container *ngFor="let s of t.allowed_stages">
@@ -229,6 +231,9 @@ const STAGE_ACTION: Record<string, string> = {
 </div>`,
 })
 export class ZpTicketComponent implements OnInit {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   t: any = null;
   lk: any = { priorities: [], products: [], categories: [], billable: [], teams: [], employees: [], rights: {} };
   msg = '';
@@ -256,6 +261,7 @@ export class ZpTicketComponent implements OnInit {
   constructor(private api: ZpApiService, private route: ActivatedRoute, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     try { this.lk = await this.api.lookups(); this.me = this.lk.rights?.employee_id || null; } catch { /* page still loads */ }
     this.route.paramMap.subscribe(p => this.load(Number(p.get('id'))));
   }

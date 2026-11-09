@@ -11,6 +11,7 @@
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -65,7 +66,7 @@ const TABS = [
 @Component({
   selector: 'app-pay163',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule],
+  imports: [CommonModule, ZPortalDirective, FormsModule, RouterModule, MatIconModule],
   styleUrls: ['../hr-modules/hr-shared.css', '../time62/t62.css'],
   styles: [`
 .pc-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 24px 12px; }
@@ -94,7 +95,7 @@ const TABS = [
 .pc-bad { color: #b3263a; font-size: 12px; }
 .pc-tbc { display: inline-block; margin-inline-start: 6px; padding: 0 6px; border-radius: 6px; background: #fff0d9; color: #a0610a; font-size: 11px; }
 .pc-dlg { padding-top: 56px; }
-.pc-dlg .t62-box { max-height: calc(100vh - 80px); width: min(860px, calc(100vw - 32px)); }
+.pc-dlg .t62-box { max-height: calc(100dvh - 80px);   /* v1.67.8 (fixes) item 13 */ width: min(860px, calc(100vw - 32px)); }
 .pc-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 10px; margin: 0 0 12px; }
 .pc-kpi { border: 1px solid #e6e8f0; border-radius: 10px; padding: 8px 12px; }
 .pc-kpi small { display: block; color: #6b7185; font-size: 11.5px; }
@@ -225,7 +226,7 @@ const TABS = [
 </div>
 
 <!-- new recovery -->
-<div class="t62-dlg pc-dlg" *ngIf="nf" data-p163-form>
+<div class="t62-dlg pc-dlg" zPortal *ngIf="nf" data-p163-form>
   <div class="t62-veil" (click)="nf = null"></div>
   <div class="t62-box" role="dialog">
     <div class="t62-head"><div><h2 class="t62-title">New recovery</h2><p class="t62-sub">Recovered from the salary month by month on the line of a deduction component.</p></div>
@@ -285,7 +286,7 @@ const TABS = [
 </div>
 
 <!-- one recovery -->
-<div class="t62-dlg pc-dlg" *ngIf="cur" data-p163-detail>
+<div class="t62-dlg pc-dlg" zPortal *ngIf="cur" data-p163-detail>
   <div class="t62-veil" (click)="cur = null"></div>
   <div class="t62-box" role="dialog">
     <div class="t62-head"><div><h2 class="t62-title">{{ cur.number }} – {{ cur.component }}</h2><p class="t62-sub">{{ cur.employee }} · {{ cur.reason }}</p></div>

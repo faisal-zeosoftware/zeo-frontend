@@ -35,7 +35,7 @@ const empOf = (v: any, o: Record<string, ZFormOption[]>) => (o['employee'] || []
 export function loanRequestForm(): ZFormConfig {
   return {
     thing: 'loan request', endpoint: '/payroll/api/loan-application/',
-    subtitle: 'A loan for an employee. It goes through the loan approval levels; once approved, payroll deducts the monthly instalment.',
+    subtitle: 'A loan for an employee. It goes through the loan approval levels; once approved, payroll deducts the monthly instalment. The loan type decides the highest amount and months, who may ask and the guarantor.',
     initial: single(),
     sections: [
       { title: 'Employee', fields: [BRANCH, EMPLOYEE, DOC_NO] },
@@ -44,7 +44,13 @@ export function loanRequestForm(): ZFormConfig {
         { key: 'amount_requested', label: 'Amount requested (AED)', type: 'number' },
         { key: 'repayment_period', label: 'Repayment period (months)', type: 'number' },
         { key: 'emi_amount', label: 'Monthly instalment (AED)', type: 'number', hint: 'Empty: the amount divided by the months.' },
-        { key: 'remaining_balance', label: 'Remaining balance (AED)', type: 'number', editOnly: true }] }],
+        { key: 'remaining_balance', label: 'Remaining balance (AED)', type: 'number', editOnly: true }] },
+      // v1.67.11 (loans, item 112): the guarantor and the employee's written consent to the monthly deduction
+      { title: 'Guarantor and consent', fields: [
+        { key: 'guarantor', label: 'Guarantor', type: 'select', search: true, source: { endpoint: '/employee/api/emplist/', label: empLabel, filter: (r: any) => r.is_active !== false },
+          hint: 'Another employee who guarantees the loan (when the loan type asks for one).' },
+        { key: 'consent', label: 'The employee agreed in writing to the monthly deduction', type: 'check', full: true }] }],
+    fromRecord: (r: any) => ({ ...r, guarantor: r?.terms?.guarantor?.id ?? null, consent: !!r?.terms?.consent }),
   };
 }
 
@@ -52,11 +58,14 @@ export function advanceRequestForm(): ZFormConfig {
   return {
     thing: 'advance salary request', endpoint: '/payroll/api/advance-salary-request/',
     subtitle: 'Part of the salary paid in advance. It goes through the advance approval levels; payroll deducts it from the salary.',
-    initial: single(),
+    initial: { ...single(), instalments: 1 },
+    fromRecord: (r: any) => ({ ...r, instalments: r?.terms?.instalments ?? 1 }),   // v1.67.11 (loans)
     sections: [
       { title: 'Employee', fields: [BRANCH, EMPLOYEE, DOC_NO] },
       { title: 'Advance', fields: [
-        { key: 'requested_amount', label: 'Amount requested (AED)', type: 'number' },
+        { key: 'requested_amount', label: 'Amount requested (AED)', type: 'number',
+          hint: 'Payroll › Loan and advance settings decide the limits: % of the wage, one a month, not for leavers.' },
+        { key: 'instalments', label: 'Monthly instalments', type: 'number', hint: '1 = deducted at once; more = the amount divided over the months.' },   // v1.67.11 (loans, item 115)
         { key: 'reason', label: 'Reason', type: 'textarea', full: true },
         { key: 'remarks', label: 'Remarks', type: 'textarea', full: true }] }],
   };

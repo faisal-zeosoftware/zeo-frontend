@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -38,7 +39,7 @@ const ICON: Record<string, string> = { message: 'mail_outline', mention: 'altern
       <span class="zt-ic"><mat-icon>{{ icon(r) }}</mat-icon></span>
       <div class="zt-body" (click)="open(r)" role="link" tabindex="0" (keydown.enter)="open(r)">
         <div class="zt-title"><b>{{ r.title }}</b><span class="zt-type">{{ r.kind_label }}</span><span class="zt-type zi-appt">{{ r.app }}</span></div>
-        <div class="zr-muted">{{ r.from ? 'From ' + r.from + ' · ' : '' }}{{ r.record || '' }} · {{ r.source === 'activity' ? 'due ' + (r.due | date:'EEE dd MMM') : (r.at | date:'dd/MM/yyyy HH:mm') }}</div>
+        <div class="zr-muted">{{ r.from ? 'From ' + r.from + ' · ' : '' }}{{ r.record || '' }} · {{ r.source === 'activity' ? 'due ' + (r.due | date:'dd/MM/yyyy') : (r.at | date:'dd/MM/yyyy HH:mm') }}</div>
         <div class="zt-note" *ngIf="r.body">{{ r.body }}</div>
       </div>
       <div class="zt-do">

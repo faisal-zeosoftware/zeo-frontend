@@ -14,6 +14,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { EFFECTIVE_HINT, openRuleHistory } from '../shared-ui/z-rule-history';   // v1.67.12 (effective)
 
 @Component({
   selector: 'app-pay-structure',
@@ -1061,6 +1062,10 @@ toggleEditDay(dayKey: string): void {
   }
 }
 
+editEffFrom = '';             // v1.67.12 (effective): the day the change applies from ('' = a correction)
+effHint = EFFECTIVE_HINT;
+payHistory(): void { if (this.editAsset?.id) { openRuleHistory('pay_structure', this.editAsset.id, ''); } }   // v1.67.12 (effective)
+
 updatePayStr(): void {
 
   let formattedPayrollDate = '';
@@ -1092,7 +1097,8 @@ updatePayStr(): void {
 
   this.employeeService.updatelPayStructure(
     this.editAsset.id,
-    payload
+    payload,
+    this.editEffFrom   // v1.67.12 (effective)
   ).subscribe(
     (response) => {
       alert('Pay Structure updated successfully!');
@@ -1109,6 +1115,7 @@ updatePayStr(): void {
   closeEditModal(): void {
     this.isEditModalOpen = false;
     this.editAsset = {};
+    this.editEffFrom = '';   // v1.67.12 (effective)
   }
 
 

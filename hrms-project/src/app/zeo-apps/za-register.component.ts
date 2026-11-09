@@ -1,3 +1,4 @@
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +8,9 @@ import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0
 import { ZaApiService, ZaClient, appOf, base, day, money, stClass, today, when } from './za-api.service';
 import { ZaAssetSideComponent } from './za-asset-side.component';   // v1.33.0
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { zToast } from '../shared-ui/z-toast';   // v1.67.9 (screens)
+import { i18nT } from '../shared-ui/i18n-core';   // v1.67.9 (screens)
+import { MatIconModule } from '@angular/material/icon';   // v1.67.9 (screens) row actions
 
 /** One input of a kit form or action: text, number, date, choice, record picker (own app or a linked app), several records, yes/no,
  *  JSON lists (lines or a small table), a checklist to tick, inspection results. v1.18.0 */
@@ -94,7 +98,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
           <input *ngSwitchCase="'date'" type="date" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)">
           <input *ngSwitchCase="'bool'" type="checkbox" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)">
           <select *ngSwitchCase="'choice'" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)"><option [ngValue]="''">–</option>
-            <option *ngFor="let o of colChoices(c)" [ngValue]="o.value">{{ o.label }}</option></select>
+            <option *ngFor="let o of colChoices(c, row[c.key])" [ngValue]="o.value">{{ o.label }}</option></select>
           <select *ngSwitchCase="'opt'" [(ngModel)]="row[c.key]" (ngModelChange)="set(value)" style="min-width:140px"><option [ngValue]="null">–</option>
             <option *ngFor="let o of colOpts[c.options] || []" [ngValue]="o.id">{{ o.label }}</option></select>
           <input *ngSwitchDefault [(ngModel)]="row[c.key]" (ngModelChange)="set(value)" style="min-width:110px">
@@ -217,7 +221,13 @@ export class ZaFieldComponent implements OnChanges {
   }
 
   colOpts: Record<string, any[]> = {};   // v1.40.0 table editor
-  colChoices(c: any): any[] { return (c.options || '').split('|').map((x: string) => { const [v, l] = x.split('='); return { value: v, label: l || v }; }); }
+  colChoices(c: any, cur?: any): any[] {
+    const all = (s: string) => (s || '').split('|').filter(x => x).map((x: string) => { const [v, l] = x.split('='); return { value: v, label: l || v }; });
+    const list = all(c.options);
+    // v1.67.8 (fixes) item 7: a stored value outside the offered choices (a role of an app that is off) stays on its own row
+    if (cur && !list.some(o => o.value === cur)) { const hit = all(c.all_options).find(o => o.value === cur); list.push(hit || { value: cur, label: cur }); }
+    return list;
+  }
   addRow(): void { const row: any = {}; for (const c of this.f.columns) row[c.key] = c.type === 'bool' ? false : c.type === 'opt' ? null : c.type === 'number' ? null : ''; this.set((this.value || []).concat([row])); }
   get htmlType(): string { return ({ int: 'number', decimal: 'number', date: 'date', datetime: 'datetime-local' } as any)[this.kind] || 'text'; }
   set(v: any): void { this.value = v; this.valueChange.emit(v); }
@@ -454,7 +464,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
 @Component({
   selector: 'app-za-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ZaFormComponent, ZaActionComponent, ZListDirective, ZaAssetSideComponent],
+  imports: [CommonModule, FormsModule, ZaFormComponent, ZaActionComponent, ZListDirective, ZaAssetSideComponent, MatIconModule],
   styleUrls: ['../expense/expense.css', './za.css'],
   template: `
 <div class="container">
@@ -500,7 +510,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
           <ng-container *ngFor="let k of [reg.kind]">
           <!-- v1.22.0: the HRMS list – search, filters (Branch…), group by, export, columns, views, saved views -->
           <table class="hs-table za-list">
-            <thead><tr><th *ngFor="let c of reg.cols" [class.r]="c.type === 'decimal'" [attr.data-ztype]="isMoney(c) ? 'money' : null">{{ c.label }}</th></tr></thead><!-- v1.62.0 ui: amounts right-aligned with AED -->
+            <thead><tr><th *ngFor="let c of reg.cols" [class.r]="c.type === 'decimal'" [attr.data-ztype]="isMoney(c) ? 'money' : null">{{ c.label }}</th><th *ngIf="reg.print_doc"></th><th>Actions</th></tr></thead><!-- v1.62.0 ui: amounts right-aligned with AED; v1.67.9 (screens) item 16: row actions -->
             <tbody>
             <tr class="click" *ngFor="let r of rows" (click)="rowClick($event, r.id)">
               <td *ngFor="let c of reg.cols; let i = index" [class.r]="c.type === 'decimal'">
@@ -508,6 +518,14 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
                 <span *ngIf="c.name === 'status' || c.name === 'review_status'" class="hs-b" [ngClass]="cls(r[c.name])" data-translate>{{ show(r, c) }}</span>
                 <span *ngIf="c.name !== 'status' && c.name !== 'review_status'" [class.hs-code]="i === 0 && (c.name === 'number' || c.name === 'code')"
                       [attr.data-translate]="c.type === 'choice' || c.type === 'bool' || c.type === 'bool3' || c.choices ? '' : null">{{ show(r, c) }}</span>
+              </td>
+              <td *ngIf="reg.print_doc"><button type="button" class="ex-btn sm" (click)="zprint.open(reg.print_doc, r.id, $event)" data-print-row>Print</button></td>   <!-- v1.67.7 (admin) the company design -->
+              <!-- v1.67.9 (screens) item 16: Edit on every row (opens the record ready to change); Delete where the register allows it
+                   (set-up records – documents are cancelled / archived instead); a used record answers "in use" and the shared
+                   list offers Make inactive -->
+              <td class="za-acts" style="white-space:nowrap">
+                <button type="button" class="z-row-btn" (click)="editRow($event, r.id)" title="Edit" aria-label="Edit" data-z-row-edit><mat-icon>edit</mat-icon></button>
+                <button type="button" class="z-row-btn danger" *ngIf="reg.deletable" (click)="deleteRow($event, r)" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
               </td>
             </tr>
             </tbody>
@@ -532,6 +550,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
             <button type="button" class="ex-btn" *ngIf="d.can_edit" (click)="editing = true">Edit</button>
             <button type="button" class="ex-btn" *ngIf="reg.can_duplicate" (click)="duplicate()" title="A copy with a new number">Duplicate</button>   <!-- v1.45.0 -->
             <button type="button" class="ex-btn" *ngIf="d.pdf && !d.totals" (click)="pdf()">{{ d.pdf }} PDF</button>   <!-- v1.40.0 -->
+            <button type="button" class="ex-btn" *ngIf="d.print_doc" (click)="router.navigate(['/main-sidebar/print-view', d.print_doc, id])" data-print-design>Print</button>   <!-- v1.67.6 (setup) item 6: the company's design -->
             <button type="button" class="ex-btn" *ngIf="d.partner && app !== 'zeo-masters'" (click)="openPartner(d.partner)" [title]="d.partner_label || ''">Business partner</button>   <!-- v1.41.0 -->
             <button type="button" *ngFor="let a of d.actions" class="ex-btn" [class.primary]="a.style === 'primary'" [class.danger]="a.style === 'danger'" (click)="ok = ''; msg = ''; action = a">{{ a.label }}</button>
           </div>
@@ -682,6 +701,7 @@ const BOARDS: Record<string, string> = { opportunity: 'stage_label', work_order:
 <za-action *ngIf="action" [act]="action" [api]="api" [kind]="kind" [rec]="d" (closed)="action = null" (done)="acted($event)"></za-action>`,
 })
 export class ZaRegisterComponent implements OnInit, OnDestroy {
+  zprint = inject(ZPrintService);   // v1.67.7 (admin) the Print row action (reg.print_doc: the app is active and the user may print it)
   app = '';
   api!: ZaClient;
   info: any = null;
@@ -708,7 +728,7 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
   private timer: any;
 
-  constructor(private za: ZaApiService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private za: ZaApiService, private route: ActivatedRoute, public router: Router) {}
 
   get boardKey(): string { return BOARDS[this.kind] || ''; }
   get hasStatus(): boolean { return this.reg?.cols.some((c: any) => c.name === 'status'); }
@@ -725,7 +745,11 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
         [this.info, this.regs] = await Promise.all([this.api.info(), this.api.registers()]);
         this.reg = this.regs.find(r => r.kind === this.kind) || null;
         if (!this.reg) { this.msg = 'You have no access to this list.'; return; }
-        if (this.id) await this.reload();
+        if (this.id) {
+          await this.reload();
+          // v1.67.9 (screens): opened by the list's Edit – the form at once
+          if (this.route.snapshot.queryParamMap.get('edit') === '1' && this.d?.can_edit) { this.editing = true; }
+        }
         else {
           const qp = this.route.snapshot.queryParamMap;
           this.flt = {};
@@ -887,6 +911,15 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
 
   doneCount(c: any[]): number { return c.filter(x => x.done).length; }
   open(id: number): void { this.router.navigate([base(this.app), 'r', this.kind, id]); }
+  /** v1.67.9 (screens) item 16: the row's Edit – the record opens with its form */
+  editRow(ev: Event, id: number): void { ev.stopPropagation(); this.router.navigate([base(this.app), 'r', this.kind, id], { queryParams: { edit: 1 } }); }
+  /** v1.67.9 (screens) item 16: the row's Delete – asks first; a record in use is refused with the reason (make it inactive instead) */
+  async deleteRow(ev: Event, r: any): Promise<void> {
+    ev.stopPropagation();
+    if (!(await zConfirm(i18nT('Delete "{0}"?', [r._title || r.number || r.code || r.id])))) { return; }
+    try { await this.api.del(`r/${this.kind}/${r.id}/`); zToast(i18nT('Deleted.')); await this.load(); }
+    catch (e) { zToast(ZaApiService.error(e), 'err'); }
+  }
   goRec(kind: string, id: number): void { this.router.navigate([base(this.app), 'r', kind, id]); }
   /** v1.41.0 business partners */
   readonly compareKeys: [string, string][] = [['number', 'Number'], ['name', 'Name'], ['kind', 'Individual / company'], ['mobile', 'Mobile'], ['email', 'E-mail'],
@@ -932,7 +965,7 @@ export class ZaRegisterComponent implements OnInit, OnDestroy {
     if (c.type === 'number') return v === null || v === undefined || v === '' ? '' : money(v);
     if (c.type === 'bool') return v ? 'Yes' : 'No';
     if (c.type === 'date') return v ? this.dd(v) : '';
-    if (c.type === 'choice' && v) { const hit = (c.options || '').split('|').map((x: string) => x.split('=')).find((x: string[]) => x[0] === v); return hit ? (hit[1] || hit[0]) : v; }
+    if (c.type === 'choice' && v) { const hit = ((c.options || '') + '|' + (c.all_options || '')).split('|').map((x: string) => x.split('=')).find((x: string[]) => x[0] === v); return hit ? (hit[1] || hit[0]) : v; }   // v1.67.8 (fixes) item 7: labels of stored values too
     return v === null || v === undefined ? '' : String(v);
   }
 

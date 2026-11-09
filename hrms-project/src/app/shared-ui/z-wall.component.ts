@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.47.0 – the company wall: birthdays, work anniversaries and new joiners of the user's branches and the announcements
  * for the user – with reactions and wishes / comments (the colleague gets a bell notice). The full page is /main-sidebar/wall;
@@ -51,7 +52,7 @@ const KIND_ICON: Record<string, string> = { bday: 'cake', anniv: 'workspace_prem
             {{ (it.comments.length ? '{0} comments' : (it.kind === 'ann' ? 'Comment' : 'Write a wish')) | t:it.comments.length }}</button>
         </div>
         <div class="zw-comments" *ngIf="open[it.item]">
-          <div class="zw-c" *ngFor="let c of it.comments"><b>{{ c.author }}</b> {{ c.body }}<small>{{ c.at | date:'d MMM, HH:mm' }}</small>
+          <div class="zw-c" *ngFor="let c of it.comments"><b>{{ c.author }}</b> {{ c.body }}<small>{{ c.at | date:'dd/MM/yyyy HH:mm' }}</small>
             <button type="button" class="zw-del" *ngIf="c.mine" (click)="delComment(it, c)" [attr.aria-label]="'Delete' | t"><mat-icon>close</mat-icon></button></div>
           <form class="zw-cf" (ngSubmit)="comment(it)"><input class="zr-in" [name]="'c' + it.item" [(ngModel)]="draft[it.item]" maxlength="2000"
             [placeholder]="(it.kind === 'ann' ? 'Write a comment…' : 'Write a wish…') | t" [attr.aria-label]="'Comment' | t">
@@ -158,7 +159,7 @@ export class ZWallComponent implements OnInit {
     <header class="zt-h"><div><h2>{{ 'My 1:1s' | t }}</h2><p class="zr-muted">{{ 'The 1:1 meetings your manager shared with you.' | t }}</p></div></header>
     <p class="zr-muted" *ngIf="loaded && !rows.length">{{ 'No 1:1 has been shared with you yet.' | t }}</p>
     <article class="zt-item" *ngFor="let o of rows" style="display:block">
-      <div class="zt-title"><b>{{ o.date | date:'EEEE d MMM yyyy' }}</b><span class="zt-type">{{ o.manager }}</span></div>
+      <div class="zt-title"><b>{{ o.date | date:'dd/MM/yyyy' }}</b><span class="zt-type">{{ o.manager }}</span></div>
       <p *ngIf="o.agenda"><b>{{ 'Agenda' | t }}:</b> {{ o.agenda }}</p>
       <p *ngIf="o.notes" style="white-space:pre-line">{{ o.notes }}</p>
       <div *ngFor="let a of o.actions; let i = index"><label><input type="checkbox" [checked]="a.done" (change)="tick(o, i, $any($event.target).checked)"> {{ a.text }}</label></div>

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 /**
  * v1.18.0 – Final settlement (spec sections 5 and 7). One statement per end of service: salary due, notice, unused leave,
  * gratuity, outstanding earnings, loans / advances, approved asset recovery – each with its basis. HR calculates and submits,
@@ -70,7 +71,7 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
             <button type="button" *ngFor="let r of rows" [class.on]="cur?.id === r.id" (click)="open(r.id)">
               <div class="nm">{{ r.employee }} <span class="lp-muted">{{ r.employee_code }}</span></div>
               <div class="sub" *ngIf="r.number"><span>{{ r.number }}</span></div>
-              <div class="sub"><span>Last day {{ r.last_working_date | date:'dd MMM yyyy' }}</span>
+              <div class="sub"><span>Last day {{ r.last_working_date | date:'dd/MM/yyyy' }}</span>
                 <span class="fs-st" [attr.data-s]="r.status" [class.late]="r.overdue">{{ r.overdue ? 'Overdue' : r.status_label }}</span></div>
               <div class="sub"><span>{{ r.designation }}</span><span>{{ r.net | number:'1.2-2' }}</span></div>
             </button>
@@ -79,7 +80,7 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
           <div class="fs-elig" *ngIf="canStart && eligible.length">
             <div class="sp-h" style="font-weight:600">Ends of service without a settlement</div>
             <div class="row" *ngFor="let e of eligible">
-              <span>{{ e.employee }} <span class="lp-muted">· last day {{ e.last_working_date | date:'dd MMM yyyy' }}</span></span>
+              <span>{{ e.employee }} <span class="lp-muted">· last day {{ e.last_working_date | date:'dd/MM/yyyy' }}</span></span>
               <button type="button" class="lp-btn primary" [disabled]="busy" (click)="start(e)">Calculate</button>
             </div>
           </div>
@@ -88,7 +89,7 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
           <div class="fs-top">
             <div><h2>{{ cur.employee }}</h2>
               <div class="meta">{{ cur.employee_code }} · {{ cur.designation }} · {{ cur.department }}</div>
-              <div class="meta">{{ cur.exit_type }} · joined {{ cur.joined | date:'dd MMM yyyy' }} · last day {{ cur.last_working_date | date:'dd MMM yyyy' }}</div></div>
+              <div class="meta">{{ cur.exit_type }} · joined {{ cur.joined | date:'dd/MM/yyyy' }} · last day {{ cur.last_working_date | date:'dd/MM/yyyy' }}</div></div>
             <div class="fs-net"><span>Net settlement</span><b>{{ cur.net | number:'1.2-2' }}</b>
               <span class="fs-st" [attr.data-s]="cur.status" [class.late]="cur.overdue">{{ cur.overdue ? 'Overdue' : cur.status_label }}</span></div>
           </div>
@@ -96,9 +97,9 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
             <div><span>Eligible service</span><b>{{ cur.service_years }} years</b></div>
             <div><span>Unpaid days (not service)</span><b>{{ cur.unpaid_days }}</b></div>
             <div><span>Basic / wage a month</span><b>{{ cur.basic | number:'1.2-2' }} / {{ cur.wage | number:'1.2-2' }}</b></div>
-            <div><span>Calculated on</span><b>{{ cur.calc_date | date:'dd MMM yyyy' }}</b></div>
-            <div><span>Pay by</span><b>{{ cur.due_date | date:'dd MMM yyyy' }}</b></div>
-            <div *ngIf="cur.paid_on"><span>Paid on</span><b>{{ cur.paid_on | date:'dd MMM yyyy' }} · {{ cur.payment_ref }}</b></div>
+            <div><span>Calculated on</span><b>{{ cur.calc_date | date:'dd/MM/yyyy' }}</b></div>
+            <div><span>Pay by</span><b>{{ cur.due_date | date:'dd/MM/yyyy' }}</b></div>
+            <div *ngIf="cur.paid_on"><span>Paid on</span><b>{{ cur.paid_on | date:'dd/MM/yyyy' }} · {{ cur.payment_ref }}</b></div>
           </div>
           <table class="fs-lines">
             <thead><tr><th>Component</th><th>Basis</th><th class="amt">Amount</th></tr></thead>
@@ -114,7 +115,7 @@ table.fs-lines{width:100%;border-collapse:collapse;font-size:13px}
             </tfoot>
           </table>
           <div class="fs-trail">
-            <div *ngFor="let t of cur.trail" [class.done]="t.by"><b>{{ t.step }}</b>{{ t.by || '–' }}<br>{{ t.at | date:'dd MMM yyyy, HH:mm' }}</div>
+            <div *ngFor="let t of cur.trail" [class.done]="t.by"><b>{{ t.step }}</b>{{ t.by || '–' }}<br>{{ t.at | date:'dd/MM/yyyy HH:mm' }}</div>
           </div>
           <div class="fs-actions" *ngIf="cur.status !== 'paid' && cur.status !== 'cancelled'">
             <ng-container *ngIf="cur.status === 'draft'">

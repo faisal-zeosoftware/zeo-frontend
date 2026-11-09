@@ -35,7 +35,11 @@ export class PrintViewComponent implements OnInit, OnDestroy {
     const dt = this.route.snapshot.paramMap.get('docType') || '', id = this.route.snapshot.paramMap.get('id') || '';
     this.title = ({ payslip: 'Payslip', final_settlement: 'Final settlement statement', salary_certificate: 'Salary certificate', experience_letter: 'Experience / employment letter',
                     noc: 'No objection certificate (NOC)', salary_transfer: 'Salary transfer letter', offer_letter: 'Offer letter', warning_letter: 'Warning letter',
-                    loan_agreement: 'Loan agreement and schedule', expense_claim: 'Expense claim', leave_approval: 'Leave approval letter', asset_handover: 'Asset handover form' } as any)[dt] || 'Document';
+                    loan_agreement: 'Loan agreement and schedule', expense_claim: 'Expense claim', leave_approval: 'Leave approval letter', asset_handover: 'Asset handover form',
+                    // v1.67.6 (setup) item 6: the other apps' documents
+                    support_ticket: 'Support ticket', amc_contract: 'AMC contract', quotation: 'Quotation', sales_order: 'Sales order', lease_contract: 'Lease contract',
+                    property_bill: 'Tenant invoice', property_receipt: 'Receipt voucher', work_order: 'Work order', asset_work_order: 'Asset work order',
+                    permit_to_work: 'Permit to work', incident_report: 'Incident report', development_plan: 'Development plan' } as any)[dt] || 'Document';
     this.file = `${i18nT(this.title)} ${id}.pdf`;
     this.api.print(dt, id).subscribe({
       next: b => { this.raw = URL.createObjectURL(b); this.url = this.san.bypassSecurityTrustResourceUrl(this.raw); this.cd.markForCheck(); },

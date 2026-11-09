@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -52,7 +53,7 @@ import { LpApi } from './lp-api';
     <h2 style="margin-top:0">{{ current?.course }} <span class="lp-muted">{{ current?.code }} · {{ current?.start | date:'dd/MM/yyyy' }}</span></h2>
     <p class="lp-muted" *ngIf="!sheet.rows.length">No confirmed participants.</p>
     <table class="lp-table lp-att" *ngIf="sheet.rows.length">
-      <thead><tr><th>Participant</th><th *ngFor="let d of sheet.dates" class="c">{{ d | date:'EEE dd/MM' }}</th><th>%</th></tr></thead>
+      <thead><tr><th>Participant</th><th *ngFor="let d of sheet.dates" class="c">{{ d | date:'dd/MM' }}</th><th>%</th></tr></thead>
       <tbody>
         <tr *ngFor="let r of sheet.rows">
           <td style="min-width:140px">{{ r.employee }}</td>

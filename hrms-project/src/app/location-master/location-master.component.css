@@ -234,3 +234,6 @@ margin-right: 10px;
 .lm-logo.none { display: inline-flex; align-items: center; justify-content: center; color: #6b7280; font-weight: 600; background: #f3f4f6; }
 .lm-logo.big { width: 48px; height: 48px; margin-right: 8px; }
 .lm-logo-pick { display: inline-flex; align-items: center; gap: 4px; }
+/* v1.67.9 (screens) new-design header */
+.lm-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.lm-head h1 { margin: 0; }

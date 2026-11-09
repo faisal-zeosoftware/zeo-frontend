@@ -224,9 +224,9 @@ export function buildPdf(title: string, headers: string[], rows: string[][], sub
   doc.setFont(FF, 'normal'); doc.setFontSize(9); doc.setTextColor(107, 113, 133);
   if (rtl) {  // right: the row count (translated); left: filters and time (mixed scripts kept apart so they read correctly)
     doc.text(T('{0} rows', [rows.length]), x0, 56, opt);
-    doc.text(`${subtitle}${subtitle ? '  ·  ' : ''}${new Date().toLocaleString()}`, 36, 56);
+    doc.text(`${subtitle}${subtitle ? '  ·  ' : ''}${zStamp()}`, 36, 56);
   } else {
-    doc.text(`${subtitle}${subtitle ? '  ·  ' : ''}${T('{0} rows', [rows.length])}  ·  ${new Date().toLocaleString()}`, x0, 56, opt);
+    doc.text(`${subtitle}${subtitle ? '  ·  ' : ''}${T('{0} rows', [rows.length])}  ·  ${zStamp()}`, x0, 56, opt);
   }
   const heads = english ? headers : headers.map(h => T(h));
   const head = rtl ? [...heads].reverse() : heads;
@@ -387,4 +387,10 @@ export function readSheet(file: File): Promise<{ headers: string[]; rows: any[] 
     };
     fr.readAsArrayBuffer(file);
   });
+}
+
+/** v1.67.9 (screens) item 19: the "printed on" stamp of the exported PDF – dd/mm/yyyy HH:MM (was the browser's locale, e.g. 11/8/2026) */
+function zStamp(): string {
+  const d = new Date(), p = (x: number) => String(x).padStart(2, '0');
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }

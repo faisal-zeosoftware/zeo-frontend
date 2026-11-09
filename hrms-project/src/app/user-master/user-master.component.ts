@@ -1,6 +1,7 @@
 import { i18nT } from '../shared-ui/i18n-core';   // v1.20.1
 import { zFormThenReload, USER_FORM, LEAVE_TYPE_FORM, DOCUMENT_TYPE_FORM } from '../shared-ui/z-forms';   // v1.62.1
-import { Component,OnInit, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { Component,OnInit, ElementRef, Renderer2, ViewChild, ApplicationRef, EnvironmentInjector, inject } from '@angular/core';
+import { openUserEmployee } from '../settings-apps/user-employee.component';   // v1.67.6 (setup) item 9
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -63,6 +64,9 @@ showSearchOptions = true;
     private renderer: Renderer2,
     private router:Router
     ) {}
+  // v1.67.6 (setup) item 9: the employee of this login – link one or make it
+  private zApp = inject(ApplicationRef); private zEnv = inject(EnvironmentInjector);
+  async employeeOf(u: any): Promise<void> { await openUserEmployee(this.zApp, this.zEnv, { userId: u.id }); }
 
 
 
@@ -238,6 +242,7 @@ if (this.userId !== null) {
           (data: any) => {
             this.Users = Array.isArray(data) ? data : []; // Ensure it's an array
             this.filteredEmployees = [...this.Users];
+            this.loadAdmins();   // v1.67.7 (admin)
             console.log('Users:', this.Users);
           },
           (error: any) => {
@@ -303,7 +308,38 @@ filterEmployees() {
   deleteOne(u: any): void { this.Users.forEach(x => x.selected = x === u); this.deleteSelectedEmployees(); }
 
   userType(u: any): string {
-    return i18nT(u.is_superuser ? 'Administrator' : u.is_staff ? 'Staff' : u.is_ess ? 'Employee (ESS)' : 'User');
+    // v1.67.7 (admin): administrator OF THIS COMPANY (per company), not the shared flag
+    const admin = this.admins[u.id] ? !!this.admins[u.id].admin : (u.company_admin ?? u.is_superuser);
+    return i18nT(admin ? 'Administrator' : u.is_staff ? 'Staff' : u.is_ess ? 'Employee (ESS)' : 'User');
+  }
+
+  // ---- v1.67.7 (admin): "Administrator in this company" on / off (the owner or an administrator), the owner badge
+  admins: { [id: number]: any } = {};
+  adminCanChange = false;
+  adminMsg = '';
+  adminErr = false;
+  adminBusy = 0;
+  /** "Owner" – its own term ("Owner" alone is the owner of a record elsewhere, المسؤول) */
+  ownerLabel(): string { const v = i18nT('Owner of the account'); return v === 'Owner of the account' ? 'Owner' : v; }
+  ownerTitle(): string { return i18nT('The owner of the account – administrator of every company by default'); }
+  loadAdmins(): void {
+    const sch = localStorage.getItem('selectedSchema') || '';
+    if (!sch) { return; }
+    this.http.get<any>(`${environment.apiBaseUrl}/users/company-admins/?schema=${encodeURIComponent(sch)}`).subscribe({
+      next: r => { const m: any = {}; (r?.rows || []).forEach((x: any) => m[x.id] = x); this.admins = m; this.adminCanChange = !!r?.can_change; },
+      error: () => { this.admins = {}; this.adminCanChange = false; } });
+  }
+  async toggleAdmin(u: any, ev: Event): Promise<void> {
+    const box = ev.target as HTMLInputElement;
+    const on = !!box.checked;
+    if (!on && !(await zConfirm(i18nT('Remove the administrator rights of {0} in this company? The other companies do not change.', [u.username])))) {
+      box.checked = true; return;
+    }
+    const sch = localStorage.getItem('selectedSchema') || '';
+    this.adminBusy = u.id; this.adminMsg = '';
+    this.http.post<any>(`${environment.apiBaseUrl}/users/company-admins/?schema=${encodeURIComponent(sch)}`, { user: u.id, admin: on }).subscribe({
+      next: r => { this.adminBusy = 0; this.admins = { ...this.admins, [u.id]: r }; this.adminErr = false; this.adminMsg = r?.detail || ''; },
+      error: e => { this.adminBusy = 0; box.checked = !on; this.adminErr = true; this.adminMsg = e?.error?.detail || i18nT('Not changed.'); } });
   }
 
   never(): string { return i18nT('Never'); }

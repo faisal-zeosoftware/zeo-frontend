@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates in texts dd/mm/yyyy
 /**
  * v1.18.0 – Payroll controls (spec sections 8 and 10): segregation of duties on payroll runs and payslips, the leave encashment
  * approval chain, the Wage Protection System deadline and the final settlement deadline. Company administrator only.
@@ -114,7 +115,7 @@ export class PayrollControlsComponent implements OnInit {
   }
   hint(): string {   // v1.62.11 (item 230)
     const h: Record<string, string> = {
-      dob: 'The password is your date of birth as DDMMYYYY (for example 05031990 for 5 March 1990).',
+      dob: 'The password is your date of birth as DDMMYYYY (for example 05031990 for 05/03/1990).',
       code_passport4: 'The password is your employee code followed by the last 4 characters of your passport number (for example GD-00057K21).',
       code_eid4: 'The password is your employee code followed by the last 4 digits of your Emirates ID (for example GD-00054321).' };
     return i18nT(h[this.s?.payslip_password_rule] || h['dob']);

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
@@ -42,7 +43,7 @@ import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-
       <div class="es-rows">
         <div class="es-row" *ngFor="let r of rows">
           <div class="main">
-            <div class="t">{{ r.leave_type }} · {{ r.start_date | date:'dd MMM' }} – {{ r.end_date | date:'dd/MM/yyyy' }} ({{ r.number_of_days }} {{ isHourlyName(r.leave_type) ? 'h' : 'd' }})</div>
+            <div class="t">{{ r.leave_type }} · {{ r.start_date | date:'dd/MM/yyyy' }} – {{ r.end_date | date:'dd/MM/yyyy' }} ({{ r.number_of_days }} {{ isHourlyName(r.leave_type) ? 'h' : 'd' }})</div>
             <div class="s">{{ r.document_number }} · {{ r.reason }}</div>
           </div>
           <div class="r">

@@ -1,6 +1,7 @@
 import { LOOKUPS } from '../hr-modules/module-api.service';
 import { PageConfig } from '../hr-modules/page-config';
 import { AP_API } from './ap-api';
+import { openRuleHistory } from '../shared-ui/z-rule-history';   // v1.67.12 (effective)
 
 /** Attendance Plus pages (v1.12.0) rendered by the shared CrudPageComponent. */
 const opt = (pairs: [string, string][]) => pairs.map(([value, label]) => ({ value, label }));
@@ -13,6 +14,8 @@ const STATUS_TAGS = { present: 'green', absent: 'red', half_day: 'orange', leave
 
 export const RULE_PAGE: PageConfig = {
   title: 'Attendance rules', itemName: 'Rule', endpoint: AP_API + 'rules/', model: 'attendance',
+  effective: 'attendance_rule',   // v1.67.12 (effective, item 64): dated versions + History
+  rowActions: [{ label: 'History', icon: 'history', color: 'grey', open: (r: any) => { openRuleHistory('attendance_rule', r.id, r.name); return Promise.resolve(false); } }],
   intro: 'Grace period, tolerances, minimum / maximum hours, overtime, night and cross-midnight shifts, breaks, rounding, absence marking, '
     + 'allowed punch methods and corrections. The most specific active rule wins: employee > category > department > branch > whole company '
     + '(priority breaks a tie). Values set on a shift in the shift planner (grace, minimum hours, OT start) win over the rule.',

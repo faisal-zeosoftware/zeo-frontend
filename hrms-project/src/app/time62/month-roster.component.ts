@@ -12,6 +12,7 @@
  */
 import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { SpApiService, SpMeta } from '../shift-planner/sp-api.service';
@@ -24,7 +25,7 @@ type Brush = { kind: 'shift'; id: number; code: string; colour: string } | { kin
 @Component({
   selector: 'app-t62-month-roster',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, ZPortalDirective, FormsModule, MatIconModule],
   styleUrls: ['../hr-modules/hr-shared.css', './t62.css'],
   styles: [`
     .mr-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 10px; }
@@ -161,7 +162,7 @@ type Brush = { kind: 'shift'; id: number; code: string; colour: string } | { kin
   </div>
 
   <!-- apply a pattern -->
-  <div class="t62-dlg" *ngIf="pat" data-mr-pattern-dlg>
+  <div class="t62-dlg" zPortal *ngIf="pat" data-mr-pattern-dlg>
     <div class="t62-veil" (click)="pat = null"></div>
     <div class="t62-box narrow" role="dialog" aria-modal="true">
       <div class="t62-head"><div><h2 class="t62-title">Apply a shift pattern</h2><p class="t62-sub">{{ ticked.size }} {{ t('employee(s) ticked') }}</p></div><button type="button" class="t62-x" (click)="pat = null" aria-label="Close">×</button></div>
@@ -180,7 +181,7 @@ type Brush = { kind: 'shift'; id: number; code: string; colour: string } | { kin
   </div>
 
   <!-- copy last month -->
-  <div class="t62-dlg" *ngIf="cp" data-mr-copy-dlg>
+  <div class="t62-dlg" zPortal *ngIf="cp" data-mr-copy-dlg>
     <div class="t62-veil" (click)="cp = null"></div>
     <div class="t62-box narrow" role="dialog" aria-modal="true">
       <div class="t62-head"><div><h2 class="t62-title">Copy last month</h2><p class="t62-sub">The planned days of the month before are copied onto this month.</p></div><button type="button" class="t62-x" (click)="cp = null" aria-label="Close">×</button></div>
@@ -198,7 +199,7 @@ type Brush = { kind: 'shift'; id: number; code: string; colour: string } | { kin
   </div>
 
   <!-- import preview -->
-  <div class="t62-dlg" *ngIf="imp" data-mr-import-dlg>
+  <div class="t62-dlg" zPortal *ngIf="imp" data-mr-import-dlg>
     <div class="t62-veil" (click)="imp = null"></div>
     <div class="t62-box" role="dialog" aria-modal="true">
       <div class="t62-head"><div><h2 class="t62-title">Import from Excel</h2><p class="t62-sub">{{ imp.file.name }}</p></div><button type="button" class="t62-x" (click)="imp = null" aria-label="Close">×</button></div>
@@ -214,7 +215,7 @@ type Brush = { kind: 'shift'; id: number; code: string; colour: string } | { kin
   </div>
 
   <!-- roster rules -->
-  <div class="t62-dlg" *ngIf="rules" data-mr-rules-dlg>
+  <div class="t62-dlg" zPortal *ngIf="rules" data-mr-rules-dlg>
     <div class="t62-veil" (click)="rules = null"></div>
     <div class="t62-box narrow" role="dialog" aria-modal="true">
       <div class="t62-head"><div><h2 class="t62-title">Roster rules</h2><p class="t62-sub">What the roster grid checks and how it is published.</p></div><button type="button" class="t62-x" (click)="rules = null" aria-label="Close">×</button></div>

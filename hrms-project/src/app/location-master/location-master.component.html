@@ -3,56 +3,17 @@
     <div class="comapny_section">
 
 
-      <div class="header_section">
-
-        <div class="row">
-            <div class="col-md-4">
-                <h1> Company master </h1>
-            </div>
-
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-            </div>
-            <div class="col-md-5">
-                <div class="button-group pull-right">
-                    <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new *ngIf="hasAddPermission">+ New location</button>
-                  <span *ngIf="!hasAddPermission"></span>
-
-                    
-                    <span *ngIf="hasEditPermission"></span>
-                    
-
-                       <span *ngIf="!hasDeletePermission"></span>
-                </div>
-            </div>
+      <!-- v1.67.9 (screens) items 15 / 18: new-design header (title, description, one "+ New company"); the old
+           "Select all" / "Delete selected" buttons are gone – the shared list's selection bar does that -->
+      <div class="header_section z-card-head">
+        <div class="lm-head">
+          <div>
+            <h1>{{ 'Company' | t }}</h1>
+            <p class="z-legacy-desc">{{ 'The companies of this ZEO and their legal details.' | t }}</p>
+          </div>
+          <button type="button" (click)="openPopus()" class="z-new-btn" data-z-new data-z-thing="company" *ngIf="hasAddPermission">{{ '+ New company' | t }}</button>
         </div>
-       
-       
-
-    </div>
-
-    <div class="row">
-        <div class="col-md-2">
-            
-            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select all</button>
-
-        </div>
-        <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLocationmaster()">Delete selected </button>
-
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-     
+      </div>
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
@@ -61,23 +22,23 @@
           <table width="100%">
             <thead>
               <tr>
-                 <th class="sticky-left">No</th>
+                 <th class="sticky-left">{{ 'No.' | t }}</th>
                 <th class="lm-logo-h">{{ 'Logo' | t }}</th>
-                <th> Company</th>
-                <th>Country</th>
+                <th>{{ 'Company' | t }}</th>
+                <th>{{ 'Country' | t }}</th>
                 <!-- <th>State</th> -->
-                <th>Timezone</th>
-                <th>City</th>
-                <th>Pincode</th>
+                <th>{{ 'Timezone' | t }}</th>
+                <th>{{ 'City' | t }}</th>
+                <th>{{ 'Pincode' | t }}</th>
 
-                <th>Industry type</th>
-                <th>Address line 1</th>
-                <th>Address line 2</th>
-                <th>Currency</th>
-                <th>Financial year start date</th>
+                <th>{{ 'Industry type' | t }}</th>
+                <th>{{ 'Address line 1' | t }}</th>
+                <th>{{ 'Address line 2' | t }}</th>
+                <th>{{ 'Currency' | t }}</th>
+                <th>{{ 'Financial year start date' | t }}</th>
                
 
-                <th class="sticky-right">Actions</th>
+                <th class="sticky-right">{{ 'Actions' | t }}</th>
 
               </tr>
             </thead>
@@ -88,7 +49,7 @@
                 <!-- v1.62.1 (tester 30-10 item 183): the company logo is shown (it was only a file name in the edit window) -->
                 <td data-label="Logo" class="lm-logo-c"><img *ngIf="schema.logo" [src]="schema.logo" alt="" class="lm-logo" (error)="schema.logo_broken = true" [hidden]="schema.logo_broken"><span *ngIf="!schema.logo || schema.logo_broken" class="lm-logo none">{{ (schema.name || '?').slice(0, 1) }}</span></td>
                 <td data-label="Company Name">{{ schema.name }}</td>
-                <td data-label="Country">{{ schema.country }}</td>
+                <td data-label="Country">{{ schema.country | t }}</td>
                 <!-- <td data-label="State">
                   {{ schema.states?.length ? schema.states[0].state_name : 'N/A' }}
                 </td> -->
@@ -96,7 +57,7 @@
                 <td data-label="City">{{ schema.city }}</td>
                 <td data-label="Pincode">{{ schema.pincode }}</td>
 
-                <td data-label="Industry Type">{{ schema.industry_type }}</td>
+                <td data-label="Industry Type">{{ industryText(schema.industry_type) | t }}</td>
                 <td data-label="Address Line1">{{ schema.address_line1 }}</td>
                 <td data-label="Address Line2">{{ schema.address_line2 }}</td>
                 <td data-label="Currency">
@@ -104,22 +65,14 @@
                 </td>
            
 
-                <td data-label="Financial Year Start Date">{{ schema.financial_year }}</td>
+                <td data-label="Financial Year Start Date">{{ schema.financial_year | date:'dd/MM/yyyy' }}</td>
               
 
                 
                 <td class="sticky-right" data-label="Actions">
-                  <button
-                    mat-fab
-                    color="primary"
-                    *ngIf="hasEditPermission"
-                    (click)="openEditModal(schema)"
-                    style="transform: scale(0.7); margin-right: 6px;"
-                  >
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-              
-                  <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteRow(schema); $event.stopPropagation()" title="Delete" aria-label="Delete" data-z-row-delete><mat-icon>delete</mat-icon></button>
+                  <!-- v1.67.9 (screens) item 18: Edit opens the new-design drawer (same fields, same save) -->
+                  <button type="button" class="z-row-btn" *ngIf="hasEditPermission" (click)="zEditCompany(schema); $event.stopPropagation()" [title]="'Edit' | t" [attr.aria-label]="'Edit' | t" data-z-row-edit><mat-icon>edit</mat-icon></button>
+                  <button type="button" class="z-row-btn danger" *ngIf="hasDeletePermission" (click)="zDeleteCompany(schema); $event.stopPropagation()" [title]="'Delete' | t" [attr.aria-label]="'Delete' | t" data-z-row-delete><mat-icon>delete</mat-icon></button>
                 </td>
               </tr>
           
@@ -251,13 +204,13 @@
 
 </div>
 
-      <!-- v1.20.2: WPS employer details (SIF file SCR record) -->
-      <div class="col-md-6">
+      <!-- v1.20.2: WPS employer details (SIF file SCR record); v1.67.6 (setup) item 1: only with Payroll -->
+      <div class="col-md-6" *ngIf="appOn('payroll')" data-wps-employer>
         <label>WPS employer ID (MoHRE establishment, 13 digits)</label>
         <input type="text" class="form-control" inputmode="numeric" maxlength="13" [(ngModel)]="editAsset.employer_unique_id"
                [ngModelOptions]="{standalone: true}" placeholder="e.g. 1000000123456">
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" *ngIf="appOn('payroll')">
         <label>WPS bank routing code (employer's bank, 9 digits)</label>
         <input type="text" class="form-control" inputmode="numeric" maxlength="9" [(ngModel)]="editAsset.bank_routing_code"
                [ngModelOptions]="{standalone: true}" placeholder="e.g. 302620122">

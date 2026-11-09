@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -63,7 +64,7 @@ import { ApApi } from './ap-api';
       <div class="ks-tiles"><div *ngFor="let b of ess.balances" class="ks-tile"><b>{{ b.balance }}</b><span>{{ b.type }}</span><small *ngIf="b.pending">{{ b.pending }} waiting for approval</small></div>
         <p class="ap-muted" *ngIf="!ess.balances.length">No leave balance.</p></div>
       <h3>My leave requests</h3>
-      <div class="ks-row" *ngFor="let r of ess.requests"><span>{{ r.type }} · {{ r.from | date:'d MMM' }} – {{ r.to | date:'dd/MM/yyyy' }} ({{ r.days }} d)</span><b>{{ r.status }}</b></div>
+      <div class="ks-row" *ngFor="let r of ess.requests"><span>{{ r.type }} · {{ r.from | date:'dd/MM/yyyy' }} – {{ r.to | date:'dd/MM/yyyy' }} ({{ r.days }} d)</span><b>{{ r.status }}</b></div>
       <p class="ap-muted" *ngIf="!ess.requests.length">No leave request.</p>
     </ng-container>
     <ng-container *ngIf="essTab === 'pay'">

@@ -1,3 +1,5 @@
+// v1.67.10 (regression): the rule line in separate texts (Arabic)
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -17,9 +19,10 @@ import { ZRecordService } from '../shared-ui/z-record.service';
   <div class="lx-grid">
     <div class="lx-card" *ngFor="let t of d.types" [attr.data-type]="t.leave_type_id">
       <div class="lx-top"><b>{{ t.leave_type }}</b><span class="lx-bal"><!-- v1.62.4 (item 81): short leave in hours -->{{ t.balance }} <small>{{ t.unit === 'hours' ? 'hours now' : 'days now' }}</small></span></div>
-      <p class="lx-rule">{{ t.accrual }} · {{ t.days_per_year }} {{ t.unit === 'hours' ? 'hours a year' : 'days a year' }}<ng-container *ngIf="t.carry_forward_max !== null"> · carry forward up to {{ t.carry_forward_max }} days</ng-container>
-        <ng-container *ngIf="t.carry_forward_expiry_months"> (use within {{ t.carry_forward_expiry_months }} months)</ng-container>
-        <ng-container *ngIf="t.encashable"> · encashable{{ t.encash_max_per_year !== null ? ' up to ' + t.encash_max_per_year + ' days a year' : '' }}</ng-container></p>
+      <!-- v1.67.10 (regression): each part its own text so the Arabic terms match (the rule line stayed English in Arabic) -->
+      <p class="lx-rule"><span>{{ t.accrual }}</span> · <span>{{ t.days_per_year }}</span> <span>{{ t.unit === 'hours' ? 'hours a year' : 'days a year' }}</span><ng-container *ngIf="t.carry_forward_max !== null"> · <span>carry forward up to {{ t.carry_forward_max }} days</span></ng-container>
+        <ng-container *ngIf="t.carry_forward_expiry_months"> <span>(use within {{ t.carry_forward_expiry_months }} months)</span></ng-container>
+        <ng-container *ngIf="t.encashable"> · <span>{{ t.encash_max_per_year !== null ? 'encashable up to ' + t.encash_max_per_year + ' days a year' : 'encashable' }}</span></ng-container></p>
       <table>
         <tr><td>Brought forward</td><td>{{ t.brought_forward }}</td></tr>
         <tr *ngIf="t.opening"><td>Opening</td><td>{{ t.opening }}</td></tr>
@@ -28,7 +31,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
         <tr *ngIf="t.encashed"><td>Encashed</td><td>−{{ t.encashed }}</td></tr>
         <tr *ngIf="t.lapsed"><td>Lapsed</td><td>−{{ t.lapsed }}</td></tr>
         <tr *ngIf="t.adjusted"><td>Adjusted</td><td>{{ t.adjusted }}</td></tr>
-        <tr class="sep"><td>Still to earn by {{ t.year.to | date:'d MMM' }}</td><td>{{ t.to_earn_by_year_end != 0 ? '+' : '' }}{{ t.to_earn_by_year_end }}</td></tr>
+        <tr class="sep"><td>Still to earn by {{ t.year.to | date:'dd/MM/yyyy' }}</td><td>{{ t.to_earn_by_year_end != 0 ? '+' : '' }}{{ t.to_earn_by_year_end }}</td></tr>
         <tr><td>Balance at the year end</td><td>{{ t.balance_at_year_end }}</td></tr>
         <tr *ngIf="t.carry_forward_max !== null"><td>Carried to next year (cap)</td><td>{{ t.carry_at_year_end }}</td></tr>
       </table>

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -57,7 +58,7 @@ import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design conf
     <p class="zms-muted">The employee's first mobile number is used. Business-initiated WhatsApp messages need an approved template with one body parameter (Cloud API) or an approved sender (Twilio).</p>
     <details *ngIf="log.length"><summary class="zms-muted">Last messages ({{ log.length }})</summary>
       <table class="zms-t"><tr><th>When</th><th>To</th><th>Kind</th><th>Text</th><th>Result</th></tr>
-        <tr *ngFor="let l of log"><td>{{ l.at | date:'d MMM, HH:mm' }}</td><td>{{ l.to }}</td><td>{{ l.kind }}</td><td>{{ l.text }}</td>
+        <tr *ngFor="let l of log"><td>{{ l.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ l.to }}</td><td>{{ l.kind }}</td><td>{{ l.text }}</td>
           <td [class.zms-ok]="l.status === 'sent'" [class.zms-bad]="l.status === 'failed'">{{ l.status }} {{ l.result }}</td></tr></table></details>
   </section>
 
@@ -75,7 +76,7 @@ import { zConfirm } from './z-confirm';   // v1.62.10 (item 180) new-design conf
       <span class="zms-muted" *ngIf="p.last_test_at">{{ 'Last test {0}: {1}' | t:[(p.last_test_at | zdate:'datetime'), p.last_test_result] }}</span></div>
     <details *ngIf="p.recent?.length"><summary class="zms-muted">Last notifications</summary>
       <table class="zms-t"><tr><th>When</th><th>Kind</th><th>Title</th><th>Phones</th><th>Result</th></tr>
-        <tr *ngFor="let r of p.recent"><td>{{ r.at | date:'d MMM, HH:mm' }}</td><td>{{ r.kind }}</td><td>{{ r.title }}</td><td>{{ r.sent }}/{{ r.devices }}</td><td>{{ r.result }}</td></tr></table></details>
+        <tr *ngFor="let r of p.recent"><td>{{ r.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ r.kind }}</td><td>{{ r.title }}</td><td>{{ r.sent }}/{{ r.devices }}</td><td>{{ r.result }}</td></tr></table></details>
   </section>
 </div>`,
 })

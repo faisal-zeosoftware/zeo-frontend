@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -170,7 +171,7 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
           <div class="zk-card" *ngIf="moves.length"><h2>{{ 'Moves' | t }}</h2><div class="zk-scroll"><table class="zk-table">
             <tr><th>{{ 'When' | t }}</th><th>{{ 'Company' | t }}</th><th>{{ 'From' | t }}</th><th>{{ 'To' | t }}</th><th>{{ 'Checked' | t }}</th><th>{{ 'Status' | t }}</th><th></th></tr>
             <ng-container *ngFor="let m of moves">
-            <tr><td>{{ m.started_at || '' | date:'d MMM, HH:mm' }}</td><td>{{ m.company }}</td><td>{{ m.from | t }}<small *ngIf="m.source" data-no-translate>{{ m.source }}</small></td><td>{{ m.to | t }}<small *ngIf="m.target" data-no-translate>{{ m.target }}</small></td>
+            <tr><td>{{ m.started_at || '' | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ m.company }}</td><td>{{ m.from | t }}<small *ngIf="m.source" data-no-translate>{{ m.source }}</small></td><td>{{ m.to | t }}<small *ngIf="m.target" data-no-translate>{{ m.target }}</small></td>
               <td><ng-container *ngIf="m.tables">{{ '{0} tables, {1} rows' | t:m.tables:(m.rows | number) }}</ng-container></td>
               <td><span class="zk-st" [ngClass]="moveClass(m.state)">{{ moveState(m) }}</span><small *ngIf="m.state === 'running'">{{ m.step | t }}</small>
                 <small *ngIf="m.state === 'done' && m.old_copy">{{ 'Old copy kept until {0}' | t:m.keep_until }}</small><small class="cc-err" *ngIf="m.error">{{ m.error }}</small></td>
@@ -291,14 +292,14 @@ function err(e: any, fb: string): string { const b = e?.error; return b?.detail 
         <div class="zk-card"><div class="zk-scroll"><table class="zk-table" data-deleted-companies>
           <tr><th>{{ 'Company' | t }}</th><th>{{ 'Schema' | t }}</th><th>{{ 'Deleted' | t }}</th><th>{{ 'By' | t }}</th><th>{{ 'Users' | t }}</th><th>{{ 'Restore until' | t }}</th><th></th></tr>
           <tr *ngFor="let x of deleted.companies || []"><td><b>{{ x.name }}</b><small *ngIf="x.db_key">{{ 'with the database {0}' | t:x.db_key }}</small></td>
-            <td data-no-translate>{{ x.schema_name }}</td><td>{{ x.deleted_at | date:'d MMM y, HH:mm' }}</td><td>{{ x.by }}</td><td>{{ x.users }}</td><td>{{ x.restore_until | date:'d MMM y' }}</td>
+            <td data-no-translate>{{ x.schema_name }}</td><td>{{ x.deleted_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ x.by }}</td><td>{{ x.users }}</td><td>{{ x.restore_until | date:'dd/MM/yyyy' }}</td>
             <td><button type="button" class="lp-btn primary" *ngIf="!x.db_key" (click)="restore({ company: x.schema_name }, x.name)" [disabled]="busy" data-restore-company>{{ 'Restore' | t }}</button></td></tr>
           <tr *ngIf="loaded && !deleted.companies?.length"><td colspan="7" class="zk-note">{{ 'No deleted company.' | t }}</td></tr>
         </table></div></div>
         <div class="zk-card" *ngIf="deleted.databases?.length"><div class="zk-scroll"><table class="zk-table">
           <tr><th>{{ 'Database' | t }}</th><th>{{ 'Customer' | t }}</th><th>{{ 'Removed' | t }}</th><th>{{ 'Dropped on' | t }}</th><th>{{ 'Companies' | t }}</th><th></th></tr>
-          <tr *ngFor="let d of deleted.databases"><td><b>{{ d.label }}</b><small data-no-translate>{{ d.key }}</small></td><td>{{ d.account }}</td><td>{{ d.retired_on | date:'d MMM y' }}</td>
-            <td>{{ d.delete_on | date:'d MMM y' }}</td><td>{{ d.companies.join(', ') || '–' }}</td>
+          <tr *ngFor="let d of deleted.databases"><td><b>{{ d.label }}</b><small data-no-translate>{{ d.key }}</small></td><td>{{ d.account }}</td><td>{{ d.retired_on | date:'dd/MM/yyyy' }}</td>
+            <td>{{ d.delete_on | date:'dd/MM/yyyy' }}</td><td>{{ d.companies.join(', ') || '–' }}</td>
             <td><button type="button" class="lp-btn primary" (click)="restore({ database: d.key }, d.label)" [disabled]="busy" data-restore-db>{{ 'Restore' | t }}</button></td></tr>
         </table></div></div>
         <div class="zk-card zk-note">{{ 'On the server: python manage.py restore_company --list, then restore_company SCHEMA or restore_database KEY.' | t }}</div>

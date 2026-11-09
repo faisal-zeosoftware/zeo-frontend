@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -63,7 +64,7 @@ interface Row { project: number; project_title: string; task: number | null; tas
         </div>
         <div class="what" *ngIf="timer?.running" style="grid-template-columns: minmax(0,1fr)">
           <div><b>{{ timer.entry.project_title }}</b><span *ngIf="timer.entry.task_title"> · {{ timer.entry.task_title }}</span></div>
-          <div class="pc-muted">{{ timer.entry.description }} · started {{ timer.start_at | date:'dd MMM, HH:mm' }}
+          <div class="pc-muted">{{ timer.entry.description }} · started {{ timer.start_at | date:'dd/MM/yyyy HH:mm' }}
             · {{ timer.entry.billable ? 'billable' : 'non-billable' }}</div>
         </div>
       </div>
@@ -71,7 +72,7 @@ interface Row { project: number; project_title: string; task: number | null; tas
       <!-- week bar -->
       <div class="pc-weekbar">
         <button type="button" class="pc-btn sm" (click)="go(-7)" aria-label="Previous week">‹ Prev</button>
-        <span class="lbl">{{ week | date:'dd MMM' }} – {{ weekEnd() | date:'dd/MM/yyyy' }}</span>
+        <span class="lbl">{{ week | date:'dd/MM/yyyy' }} – {{ weekEnd() | date:'dd/MM/yyyy' }}</span>
         <button type="button" class="pc-btn sm" (click)="go(7)" aria-label="Next week">Next ›</button>
         <button type="button" class="pc-btn sm" (click)="thisWeek()">This week</button>
         <span class="pc-muted" *ngIf="grid">

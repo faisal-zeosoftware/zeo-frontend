@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -38,7 +39,7 @@ import { EssApiService } from './ess-api.service';
           <div class="es-actions" style="margin-top:10px">
             <button type="button" class="es-btn sm" *ngIf="a.has_attachment" (click)="file(a)">Open attachment</button>
             <button type="button" class="es-btn sm primary" *ngIf="!a.read" (click)="read(a)">Mark as read</button>
-            <span class="es-muted" *ngIf="a.read">Read {{ a.read_at | date:'dd MMM, HH:mm' }}</span>
+            <span class="es-muted" *ngIf="a.read">Read {{ a.read_at | date:'dd/MM/yyyy HH:mm' }}</span>
             <span class="es-muted" *ngIf="a.expires_at">· until {{ a.expires_at | date:'dd/MM/yyyy' }}</span>
           </div>
         </div>
@@ -48,14 +49,14 @@ import { EssApiService } from './ess-api.service';
       <ng-container *ngIf="tab === 'stats'">
         <div class="es-rows">
           <div class="es-row click" *ngFor="let s of stats" (click)="openStats(s)">
-            <div class="main"><div class="t">{{ s.title }}</div><div class="s">{{ s.created_at | date:'dd/MM/yyyy' }}<span *ngIf="s.expires_at"> · until {{ s.expires_at | date:'dd MMM' }}</span></div></div>
+            <div class="main"><div class="t">{{ s.title }}</div><div class="s">{{ s.created_at | date:'dd/MM/yyyy' }}<span *ngIf="s.expires_at"> · until {{ s.expires_at | date:'dd/MM/yyyy' }}</span></div></div>
             <div class="r"><b>{{ s.read }}</b> / {{ s.audience }} read</div>
           </div>
         </div>
         <div class="es-panel" *ngIf="detail" style="margin-top:14px">
           <div class="es-h">{{ detail.title }} – {{ detail.read }} of {{ detail.audience }} read</div>
           <div class="es-rows">
-            <div class="es-row" *ngFor="let r of detail.readers"><div class="main"><div class="t">{{ r.employee }}</div></div><div class="r es-muted">{{ r.read_at | date:'dd MMM, HH:mm' }}</div></div>
+            <div class="es-row" *ngFor="let r of detail.readers"><div class="main"><div class="t">{{ r.employee }}</div></div><div class="r es-muted">{{ r.read_at | date:'dd/MM/yyyy HH:mm' }}</div></div>
             <p class="es-muted" *ngIf="!detail.readers.length">Nobody has read it yet.</p>
           </div>
         </div>

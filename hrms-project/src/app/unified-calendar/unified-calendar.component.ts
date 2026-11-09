@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DashboardService } from '../hr-modules/dashboards/dashboard.service';
+import { I18N_UI } from '../shared-ui/i18n.service';   // v1.67.9 (screens)
 
 interface CalEvent {
   id: string; layer: string; title: string; start: string; end: string; allDay: boolean; color: string;
@@ -24,13 +25,13 @@ const LS = 'zeo.ucal';
 @Component({
   selector: 'app-unified-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ...I18N_UI],   // v1.67.9 (screens)
   template: `
   <div class="uc">
     <header class="uc-h">
       <div>
         <h1>Calendar</h1>
-        <p class="muted">{{ title }}<span *ngIf="data"> · {{ shown.length }} {{ shown.length === 1 ? 'item' : 'items' }}</span></p>
+        <p class="muted">{{ title }}<span *ngIf="data"> · {{ (shown.length === 1 ? '1 item' : '{0} items') | t:[shown.length] }}</span></p><!-- v1.67.9 (screens) -->
       </div>
       <div class="uc-tools">
         <div class="seg" role="group" aria-label="Whose calendar" *ngIf="scopes.length > 1">
@@ -63,7 +64,7 @@ const LS = 'zeo.ucal';
       <section class="month" *ngIf="view === 'month'" aria-label="Month">
         <div class="wd" *ngFor="let w of weekdays">{{ w }}</div>
         <div *ngFor="let day of grid" class="cell" [class.out]="day.getMonth() !== cursor.getMonth()" [class.today]="isToday(day)" [class.wkend]="isWeekend(day)">
-          <button type="button" class="dn" (click)="openDay(day)" [attr.aria-label]="'Show ' + (day | date:'EEEE d MMMM')">{{ day.getDate() }}</button>
+          <button type="button" class="dn" (click)="openDay(day)" [attr.aria-label]="'Show ' + (day | date:'dd/MM/yyyy')">{{ day.getDate() }}</button>
           <button type="button" *ngFor="let e of dayEvents(day).slice(0, 3)" class="ev" [class.tent]="e.tentative" [style.--c]="e.color" (click)="open(e)" [title]="e.title">
             <span class="t" *ngIf="!e.allDay">{{ e.start | date:'HH:mm' }}</span>{{ e.title }}
           </button>
@@ -90,7 +91,7 @@ const LS = 'zeo.ucal';
           <div class="adate"><b>{{ g.day | date:'d' }}</b><span>{{ g.day | date:'EEE' }}</span><small>{{ g.day | date:'MMM' }}</small></div>
           <div class="alist">
             <button type="button" *ngFor="let e of g.events" class="row" [style.--c]="e.color" [class.tent]="e.tentative" (click)="open(e)">
-              <span class="when">{{ e.allDay ? (multi(e) ? 'until ' + (e.end | date:'d MMM') : 'All day') : (e.start | date:'HH:mm') + '–' + (e.end | date:'HH:mm') }}</span>
+              <span class="when">{{ e.allDay ? (multi(e) ? 'until ' + (e.end | date:'dd/MM/yyyy') : 'All day') : (e.start | date:'HH:mm') + '–' + (e.end | date:'HH:mm') }}</span>
               <span class="what">{{ e.title }}<small>{{ layerLabel(e.layer) }}<span *ngIf="e.employee && scope !== 'me'"> · {{ e.employee.name }}</span></small></span>
               <span class="go" *ngIf="e.link" aria-hidden="true">›</span>
             </button>
@@ -105,7 +106,7 @@ const LS = 'zeo.ucal';
         <span class="pl" [style.background]="picked.color"></span>
         <p class="muted small">{{ layerLabel(picked.layer) }}</p>
         <h3>{{ picked.title }}</h3>
-        <p>{{ picked.start | date:(picked.allDay ? 'EEEE d MMMM' : 'EEEE d MMMM, HH:mm') }}<span *ngIf="multi(picked)"> – {{ picked.end | date:'d MMMM' }}</span></p>
+        <p>{{ picked.start | date:(picked.allDay ? 'dd/MM/yyyy' : 'dd/MM/yyyy HH:mm') }}<span *ngIf="multi(picked)"> – {{ picked.end | date:'dd/MM/yyyy' }}</span></p>
         <p class="muted" *ngIf="picked.employee">{{ picked.employee.name }}</p>
         <div class="pop-a">
           <button type="button" class="btn" *ngIf="picked.link" (click)="nav(picked.link)">Open</button>
@@ -237,8 +238,11 @@ export class UnifiedCalendarComponent implements OnInit {
 
   get title(): string {
     const [a, b] = this.range;
-    if (this.view === 'week') { return `${a.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – ${b.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`; }
-    return this.cursor.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    // v1.67.9 (screens) item 19: dates dd/mm/yyyy; the month in the reader's language (Arabic month names, Latin digits)
+    const dmy = (d: Date) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    if (this.view === 'week') { return `${dmy(a)} – ${dmy(b)}`; }
+    let ar = false; try { ar = /^ar/.test(localStorage.getItem('zeoLang') || ''); } catch { ar = false; }
+    return this.cursor.toLocaleDateString(ar ? 'ar-u-nu-latn' : 'en-GB', { month: 'long', year: 'numeric' });
   }
 
   get grid(): Date[] { const [a] = this.range; return Array.from({ length: 42 }, (_, i) => addDays(a, i)); }

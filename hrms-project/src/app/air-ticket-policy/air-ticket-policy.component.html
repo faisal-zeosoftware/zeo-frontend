@@ -417,7 +417,15 @@
     </div>
   </div>
 
-
+  <!-- v1.67.12 (effective, item 64): the change applies from a date – allocations and exits before it keep the old policy -->
+  <div class="col-md-6" data-at-effective>
+    <label>Effective from</label>
+    <input type="date" class="form-control" [(ngModel)]="editEffFrom" [ngModelOptions]="{ standalone: true }" data-at-eff-date />
+    <small class="text-muted d-block mt-1">{{ effHint }}</small>
+  </div>
+  <div class="col-md-6" style="display:flex;align-items:flex-end">
+    <button type="button" class="btn btn-light" (click)="atHistory()" data-at-history>History of changes</button>
+  </div>
 
   <div class="col-md-6" >
     <label>Ticket or cash</label>

@@ -249,6 +249,13 @@ textarea.zf-in { height: auto; padding: 7px 10px; resize: vertical; }
 .zt, .zo-page { padding-top: 88px !important; padding-left: 76px !important; padding-right: 20px !important; }
 .zt { max-width: 1080px; }
 @media (max-width: 991.98px) { .zt, .zo-page { padding-left: 14px !important; padding-top: 74px !important; } }
+/* v1.67.8 (fixes) item 2: the self-service pages routed straight under the main menu (own final settlement, own loans) started at
+   0,0 – under the fixed top bar and the menu rail. They clear both now, in English (rail on the left) and Arabic (rail on the right). */
+app-main-sidebar > app-leaver-case > .lv, app-main-sidebar > app-loans > .lp-page {
+  padding-top: 88px !important; padding-inline-start: 76px !important; padding-inline-end: 20px !important; }
+@media (max-width: 991.98px) {
+  app-main-sidebar > app-leaver-case > .lv, app-main-sidebar > app-loans > .lp-page {
+    padding-top: 74px !important; padding-inline-start: 12px !important; padding-inline-end: 12px !important; } }
 /* dashboard designer: Hide / Show buttons are plain pills, never underlined links */
 .zdd-x, .zdd-x:hover { text-decoration: none !important; }
 .zdd-x::before, .zdd-x::after { display: none !important; content: none !important; }

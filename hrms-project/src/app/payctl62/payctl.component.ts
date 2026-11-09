@@ -11,6 +11,7 @@
  */
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ZPortalDirective } from '../shared-ui/z-portal.directive';   // v1.67.8 (fixes) item 13
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -61,7 +62,7 @@ const TABS = [
 @Component({
   selector: 'app-payctl62',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, ZDateFieldComponent],
+  imports: [CommonModule, ZPortalDirective, FormsModule, RouterModule, MatIconModule, ZDateFieldComponent],
   styleUrls: ['../hr-modules/hr-shared.css', '../time62/t62.css'],
   styles: [`
 .pc-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 24px 12px; }
@@ -92,7 +93,7 @@ const TABS = [
 .pc-bad { color: #b3263a; font-size: 12px; }
 .pc-warn { color: #a0610a; font-size: 12px; }
 .pc-dlg { padding-top: 64px; }
-.pc-dlg .t62-box { max-height: calc(100vh - 96px); }
+.pc-dlg .t62-box { max-height: calc(100dvh - 96px); }   /* v1.67.8 (fixes) item 13: visible height on phones */
 .pc-tbc { display: inline-block; margin-inline-start: 6px; padding: 0 6px; border-radius: 6px; background: #fff0d9; color: #a0610a; font-size: 11px; }
 @media (max-width: 640px) { .pc-tabs { padding: 0 16px 10px; } }
 `],
@@ -265,7 +266,7 @@ const TABS = [
 </div>
 
 <!-- revise salary dialog -->
-<div class="t62-dlg pc-dlg" *ngIf="rv" data-pc-rv>
+<div class="t62-dlg pc-dlg" zPortal *ngIf="rv" data-pc-rv>
   <div class="t62-veil" (click)="rv = null"></div>
   <div class="t62-box" role="dialog">
     <div class="t62-head"><div><h2 class="t62-title">New salary revision</h2><p class="t62-sub">The new amounts apply from the effective date once the revision is approved.</p></div>

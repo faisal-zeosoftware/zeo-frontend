@@ -59,11 +59,12 @@ interface FeatureRow { key: string; title: string; help: string; on: boolean; de
 
         <div class="cp-row">
           <label class="cp-pack">Pack
-            <select [(ngModel)]="pack" aria-label="Country pack">
+            <select [(ngModel)]="pack" aria-label="Country pack" [disabled]="!!s.locked" data-cp-pack>
               <option value="">From the company country ({{ packName(s.auto_pack) }})</option>
               <option *ngFor="let p of s.packs" [value]="p.code">{{ p.code }} – {{ p.name }}</option>
             </select>
           </label>
+          <p class="lp-msg" *ngIf="s.locked" data-cp-locked style="margin:6px 0 0">The pack is fixed: its settings were applied on {{ lockDate(s.locked.at || '') }} (leave types, labour-law rule set, document types, weekend). Leave, payroll and documents of the company follow it, so it cannot be changed. To work under another country, make a company for that country.</p>   <!-- v1.67.6 (setup) item 3 -->
           <p class="lp-muted" *ngIf="pack !== (s.pack_override || '')">Save to switch the pack. Captions and features below then show the new pack’s defaults; your own changes are kept.</p>
         </div>
 
@@ -125,6 +126,7 @@ interface FeatureRow { key: string; title: string; help: string; on: boolean; de
 export class CountrySettingsComponent implements OnInit {
   s: CpSettings | null = null;
   pack = '';
+  lockDate: (iso: string) => string = () => '';   // v1.67.6 (setup) item 3
   labels: LabelRow[] = [];
   features: FeatureRow[] = [];
   result: CpApplyResult | null = null;
@@ -147,6 +149,7 @@ export class CountrySettingsComponent implements OnInit {
   private fill(s: CpSettings): void {
     this.s = s;
     this.pack = s.pack_override || '';
+    this.lockDate = (iso: string) => { const d = String(iso || '').slice(0, 10).split('-'); return d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : ''; };   // v1.67.6 (setup)
     this.labels = s.label_titles.map(t => ({ key: t.key, title: t.title, def: s.defaults.labels[t.key] || '', value: s.resolved.labels[t.key] || '' }));
     this.features = s.feature_titles.map(t => ({ key: t.key, title: t.title, help: t.help || '', def: !!s.defaults.features[t.key], on: !!s.resolved.features[t.key] }));
     this.saved = this.snapshot();

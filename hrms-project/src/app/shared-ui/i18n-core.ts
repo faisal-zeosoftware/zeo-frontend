@@ -176,7 +176,17 @@ function newPhrase(k: string): string | null {
 /** t(): the translated text (English when missing), placeholders filled. */
 export function i18nT(text: any, params?: any[] | Record<string, any> | null): string {
   if (text === null || text === undefined) { return ''; }
-  const s = String(text);
+  let s = String(text);
+  // v1.67.9 (screens) item 19: "Open (button)" – the action word: English shows "Open", other languages the "(button)" term
+  // when there is one, else the plain word's
+  const ctx = / \(button\)$/.exec(s);
+  if (ctx) {
+    const base = s.slice(0, ctx.index);
+    if (PACK.lang === 'en') { return params ? fill(base, params) : base; }
+    const act = MAP.get(s);
+    if (act !== undefined) { return fill(act, params || undefined); }
+    s = base;
+  }
   if (PACK.lang === 'en') { return params ? fill(s, params) : s; }
   if (PACK.lang === 'ar' && (s === 'New {0}' || s === '+ New {0}') && Array.isArray(params) && params.length) {   // v1.62.0 ui
     const n = String(params[0] ?? ''); const tn = /[A-Za-z]/.test(n) ? (lookup(n) ?? lookup(n.charAt(0).toUpperCase() + n.slice(1))) : n;
@@ -459,6 +469,12 @@ export class DomTranslator {
     if (!HAS_LETTER.test(data)) { if (rec) { this.texts.delete(n); } return; }
     let tr = this.tr(data);
     if (tr !== null && data.trim() === 'No' && n.parentElement && n.parentElement.closest('th')) { tr = data.replace('No', PACK.terms['No.'] || 'No.'); }   // v1.15.0 row-number column, not the answer "No"
+    // v1.67.9 (screens) item 19: a word on a button / link is an action ("Open" → "فتح"), the same word elsewhere is a state
+    // ("Open" → "مفتوح") – "<word> (button)" terms win inside buttons and links (not tabs, not choices)
+    if (tr !== null && n.parentElement && n.parentElement.closest('button, a') && !n.parentElement.closest('[role=tab], option')) {
+      const k = data.trim(), act = MAP.get(k + ' (button)');
+      if (act !== undefined) { tr = data.replace(k, act); }
+    }
     if (tr === null) { if (rec) { this.texts.delete(n); } return; }
     this.texts.set(n, { orig: data, tr });
     this.stats.texts++;

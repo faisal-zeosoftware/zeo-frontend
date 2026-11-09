@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ZDateFieldComponent } from '../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
@@ -55,7 +56,7 @@ const NEXT_LABEL: Record<string, string> = {
             <div class="es-row click" *ngFor="let c of rows" [class.on]="sel?.id === c.id" (click)="open(c)">
               <div class="main">
                 <div class="t">{{ c.number }} · {{ c.subject }}</div>
-                <div class="s">{{ c.category_label }}<span *ngIf="handler"> · {{ c.employee }}</span> · {{ c.created_at | date:'dd/MM/yyyy' }} · due {{ c.due_date | date:'dd MMM' }}</div>
+                <div class="s">{{ c.category_label }}<span *ngIf="handler"> · {{ c.employee }}</span> · {{ c.created_at | date:'dd/MM/yyyy' }} · due {{ c.due_date | date:'dd/MM/yyyy' }}</div>
               </div>
               <div class="r">
                 <span class="es-tag overdue" *ngIf="c.overdue">overdue</span>
@@ -82,7 +83,7 @@ const NEXT_LABEL: Record<string, string> = {
 
           <div class="es-thread">
             <div *ngFor="let m of sel.messages" class="es-bubble" [class.me]="m.from_employee !== handler && !m.event" [class.internal]="m.internal" [class.event]="!!m.event">
-              <div class="who" *ngIf="!m.event">{{ m.author }}<span *ngIf="m.internal"> · internal note</span> · {{ m.created_at | date:'dd MMM, HH:mm' }}</div>
+              <div class="who" *ngIf="!m.event">{{ m.author }}<span *ngIf="m.internal"> · internal note</span> · {{ m.created_at | date:'dd/MM/yyyy HH:mm' }}</div>
               {{ m.text }}
               <div *ngIf="m.attachment"><button type="button" class="es-link" (click)="file(m)">{{ m.attachment }}</button></div>
             </div>

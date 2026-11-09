@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -116,7 +117,7 @@ const ACT_TYPES = [
       </div>
       <div class="zr-runs" *ngIf="flow.runs.length">
         <span class="zr-muted">Automation: </span>
-        <span class="zr-run" *ngFor="let r of flow.runs.slice(0, 4)" [class]="'zr-run ' + r.status" [title]="r.error || ''">{{ r.workflow }} · {{ r.status }} · {{ r.started_at | date:'dd MMM HH:mm' }}</span>
+        <span class="zr-run" *ngFor="let r of flow.runs.slice(0, 4)" [class]="'zr-run ' + r.status" [title]="r.error || ''">{{ r.workflow }} · {{ r.status }} · {{ r.started_at | date:'dd/MM/yyyy HH:mm' }}</span>
         <a class="zr-link" routerLink="/main-sidebar/automation/runs" *ngIf="flow.can_manage">Execution log</a>
       </div>
     </div>
@@ -266,7 +267,7 @@ const ACT_TYPES = [
         <div class="zr-sec">Planned activities</div>
         <div class="zr-act" *ngFor="let a of openActs" [class.late]="a.when === 'overdue'" [class.today]="a.when === 'today'">
           <span class="zr-when">{{ a.when === 'overdue' ? (-a.days) + ' day' + (a.days === -1 ? '' : 's') + ' late' : a.when === 'today' ? 'Today' : 'In ' + a.days + ' day' + (a.days === 1 ? '' : 's') }}</span>
-          <div class="zr-act-body"><b>{{ a.type_label }}: {{ a.summary }}</b><span class="zr-muted"> for {{ a.assigned_to_name }} · due {{ a.due_date | date:'dd MMM' }} · by {{ a.created_by }}</span>
+          <div class="zr-act-body"><b>{{ a.type_label }}: {{ a.summary }}</b><span class="zr-muted"> for {{ a.assigned_to_name }} · due {{ a.due_date | date:'dd/MM/yyyy' }} · by {{ a.created_by }}</span>
             <div class="zr-act-note" *ngIf="a.note">{{ a.note }}</div>
             <div class="zr-row" *ngIf="doneFor === a.id">
               <input class="zr-in" [value]="feedback" (input)="feedback = $any($event.target).value" placeholder="Feedback (optional)" aria-label="Feedback">

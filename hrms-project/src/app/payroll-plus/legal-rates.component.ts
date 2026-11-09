@@ -61,6 +61,17 @@ function err(e: any): string {
   <p class="lp-muted" style="margin:-4px 0 12px">{{ 'Statutory scheme rates have their own Rates by date; gratuity, annual leave and overtime are in Country policies › Law changes by date.' | t }}
     <a class="fw-link" routerLink="/main-sidebar/salary-options/statutory-schemes">{{ 'Statutory schemes' | t }}</a></p>
 
+  <!-- v1.67.12 (effective, item 249): old / new GPSSA law by the date first insured -->
+  <div class="fw-card" *ngIf="pen" data-pension-settings>
+    <h2>{{ 'GPSSA: old law or new law' | t }}</h2>
+    <p class="lp-muted" *ngFor="let x of pen.law">{{ x.text }}</p>
+    <p class="lp-muted">{{ "The employee's Employment tab holds the date first insured: an Emirati first insured before 31/10/2023 (at an earlier employer) keeps the old law. Without that date the joining date decides." | t }}</p>
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px">
+      <input type="checkbox" [(ngModel)]="pen.gcc_counts" [disabled]="!pen.can_edit" (change)="savePen()" data-gcc-counts>
+      {{ 'Insurance in another GCC scheme before 31/10/2023 keeps the old law' | t }}
+      <span class="fw-chip warn" data-tbc>{{ 'Legal rule to confirm' | t }}</span></label>
+  </div>
+
   <div class="fw-card lr-wide" *ngIf="d">
     <table class="fw-table" zPlain>
       <!-- v1.62.0 talent-ops: labels and percentages / AED instead of field keys and fractions; dates dd/mm/yyyy (the key stays in a tooltip) -->
@@ -99,7 +110,20 @@ function err(e: any): string {
 export class LegalRatesComponent implements OnInit {
   d: any = null; f: any = null; on = ''; busy = false; msg = ''; bad = false;
   constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
-  ngOnInit(): void { this.load(); }
+  pen: any = null;   // v1.67.12 (effective, item 249)
+  ngOnInit(): void { this.load(); this.loadPen(); }
+  async loadPen(): Promise<void> {   // v1.67.12 (effective)
+    try { this.pen = await firstValueFrom(this.http.get<any>(`${environment.apiBaseUrl}/payroll-plus/api/pension-settings/`, { params: { schema: schema() } })); }
+    catch { this.pen = null; }
+    this.cd.detectChanges();
+  }
+  async savePen(): Promise<void> {   // v1.67.12 (effective)
+    try {
+      this.pen = await firstValueFrom(this.http.put<any>(`${environment.apiBaseUrl}/payroll-plus/api/pension-settings/`, { gcc_counts: !!this.pen.gcc_counts }, { params: { schema: schema() } }));
+      this.msg = 'Saved.'; this.bad = false;
+    } catch (e) { this.msg = err(e); this.bad = true; await this.loadPen(); }
+    this.cd.detectChanges();
+  }
   async load(): Promise<void> {
     const params: any = { schema: schema() };
     if (this.on) { params.date = this.on; }

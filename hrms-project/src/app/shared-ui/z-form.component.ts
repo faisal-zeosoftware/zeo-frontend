@@ -14,6 +14,7 @@ import { ZDateFieldComponent } from './z-date-field.component';
 import { i18nT } from './i18n-core';
 import { zToast } from './z-toast';
 import { environment } from '../../environments/environment';
+import { EFFECTIVE_HINT, ZRuleKind, openRuleHistory, zEffectiveParam } from './z-rule-history';   // v1.67.12 (effective)
 
 export interface ZFormOption { value: any; label: string; raw?: any; }
 export interface ZFormField {
@@ -25,6 +26,7 @@ export interface ZFormField {
   source?: { endpoint: string; value?: string; label: string | ((r: any) => string); filter?: (r: any) => boolean };
   hint?: string; full?: boolean; max?: number; createOnly?: boolean; editOnly?: boolean; placeholder?: string;
   showIf?: (v: any) => boolean;
+  readonly?: boolean;                  // v1.67.6 (setup): shown, never sent (e.g. the branch currency = the company's)
   // v1.62.10 (item 166): `search` (declared below) also puts a search box above a long 'select' (employees)
   matchKey?: string;                  // v1.62.10 (item 166): an edited record's text value is matched to this field of the option's row (e.g. emp_code)
   search?: boolean;                    // v1.62.10 (items 166, 175): a search box above a long 'select' or 'multi' list (a 'multi' shows ticked first, up to 60)
@@ -45,6 +47,13 @@ export interface ZFormConfig {
   initial?: any;                       // v1.62.10 (item 170): values a NEW record starts with (e.g. the row an adjustment is for)
   failIf?: (data: any, t: (s: string, a?: any[]) => string) => string | null;   // v1.62.10 (item 170): a 200 answer that still says "not done" → shown at the top, form stays open
   validate?: (v: any, t: (s: string, a?: any[]) => string) => Record<string, string> | null;   // v1.62.10 (item 168): checks across fields (e.g. expiry after issue) → errors next to the fields
+  // v1.67.9 (screens) item 18: record forms open as a full-height drawer from the inline-end side (full screen on a phone),
+  // like the Permission groups editor; one-off action forms (`action` set) stay a small dialog unless drawer: true
+  drawer?: boolean;
+  // v1.67.12 (effective, item 64): a setup record with dated versions – an edit asks "Effective from" (empty = a correction) and offers
+  // its history; a table kind (gratuity) asks it on a new row too
+  effective?: ZRuleKind;
+  effectiveId?: (r: any) => any;       // v1.67.12 (effective): the record whose history is shown (e.g. the policy of an overtime rule)
 }
 
 let APP: ApplicationRef | null = null;
@@ -64,6 +73,9 @@ export function openZForm(cfg: ZFormConfig, record?: any): Promise<boolean> {
     ref.instance.cfg = cfg;
     ref.instance.record = record || null;
     ref.instance.done = (saved: boolean) => { APP!.detachView(ref.hostView); ref.destroy(); host.remove(); resolve(saved); };
+    // v1.67.9 (screens) item 18: the drawer layout (record forms); the page behind does not scroll while it is open
+    if (cfg.drawer ?? !cfg.action) { host.classList.add('zf-drawer'); host.setAttribute('data-zform-drawer', ''); }
+    try { const l = localStorage.getItem('zeoLang') || ''; if (/^ar/.test(l) || document.documentElement.dir === 'rtl') { host.setAttribute('dir', 'rtl'); } } catch { /* storage off */ }
     APP.attachView(ref.hostView);
     ref.changeDetectorRef.detectChanges();
   });
@@ -112,20 +124,33 @@ export function zTitle(s: string): string { return s ? s.charAt(0).toUpperCase()
                 <input *ngIf="f.search" type="search" class="zf-q" [placeholder]="t('Search')" [(ngModel)]="q[f.key]" autocomplete="off" data-zf-search><!-- v1.62.10 (item 175) -->
                 <label *ngFor="let o of multiOpts(f)" class="zf-chip" [class.on]="has(f.key, o.value)">
                   <input type="checkbox" [checked]="has(f.key, o.value)" (change)="toggle(f.key, o.value)"> {{ o.label }}</label>
-                <button type="button" class="zf-link" *ngIf="(opts[f.key] || []).length > 2" (click)="all(f.key)">{{ t(allOn(f.key) ? 'Clear' : 'Select all') }}</button>
+                <button type="button" class="zf-link" *ngIf="(opts[f.key] || []).length > 2" (click)="all(f.key)">{{ t(allOn(f.key) ? 'Clear (button)' : 'Select all') }}</button>
                 <small class="zf-hint" *ngIf="f.search && hidden(f) > 0">{{ t('{0} more – type to search', [hidden(f)]) }}</small>
               </span>
               <span *ngSwitchCase="'check'" class="zf-ck"><input type="checkbox" [(ngModel)]="v[f.key]"> {{ t(f.label) }}</span>
               <span *ngSwitchCase="'file'" class="zf-file"><!-- v1.62.10 (item 168) -->
-                <input type="file" [attr.accept]="f.accept || null" (change)="pickFile(f.key, $event)" [class.bad]="err[f.key]">
+                <!-- v1.67.9 (screens): the browser's own "Choose File / No file chosen" is English whatever the language – own button -->
+                <label class="zf-btn zf-pick"><input type="file" [attr.accept]="f.accept || null" (change)="pickFile(f.key, $event)" hidden [attr.data-zf-file]="f.key">{{ t('Choose a file') }}</label>
+                <span class="zf-fname" [class.bad]="err[f.key]">{{ fileName(v[f.key]) || t('No file chosen') }}</span>
                 <a *ngIf="isUrl(v[f.key])" [href]="v[f.key]" target="_blank" rel="noopener" class="zf-link">{{ t('Current file') }}</a>
               </span>
-              <input *ngSwitchDefault type="text" [(ngModel)]="v[f.key]" [attr.maxlength]="f.max || meta[f.key]?.max_length || null" [placeholder]="f.placeholder ? t(f.placeholder) : ''" autocomplete="off" [class.bad]="err[f.key]">
+              <input *ngSwitchDefault type="text" [(ngModel)]="v[f.key]" [disabled]="!!f.readonly" [attr.readonly]="f.readonly ? '' : null" [attr.data-zf-readonly]="f.readonly ? '' : null" [style.background]="f.readonly ? '#f4f5f7' : null" [attr.maxlength]="f.max || meta[f.key]?.max_length || null" [placeholder]="f.placeholder ? t(f.placeholder) : ''" autocomplete="off" [class.bad]="err[f.key]">
             </ng-container>
             <small class="zf-hint" *ngIf="f.hint">{{ t(f.hint) }}</small>
             <small class="zf-err" *ngIf="err[f.key]" data-zf-field-error>{{ err[f.key] }}</small>
           </label>
         </ng-container>
+      </div>
+    </section>
+    <!-- v1.67.12 (effective, item 64): when the change applies -->
+    <section class="zf-sec" *ngIf="cfg.effective && (editing || cfg.effective === 'gratuity')" data-zf-effective>
+      <h3>{{ t('When the change applies') }}</h3>
+      <div class="zf-grid">
+        <label class="zf-f" data-zf-field="_effective_from"><span class="zf-l">{{ t('Effective from') }}</span>
+          <z-date-field [label]="t('Effective from')" [(value)]="eff"></z-date-field>
+          <small class="zf-hint">{{ t(effHint) }}</small></label>
+        <div class="zf-f"><span class="zf-l">{{ t('History') }}</span>
+          <button type="button" class="zf-btn" (click)="history()" data-zf-history>{{ t('History of changes') }}</button></div>
       </div>
     </section>
   </div>
@@ -174,6 +199,7 @@ export function zTitle(s: string): string { return s ? s.charAt(0).toUpperCase()
   .zf-dt input[type=time] { width: 120px !important; flex: none; }
   .zf-file { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }   /* v1.62.10 (item 168) */
   .zf-file input[type=file] { flex: 1; min-width: 200px; padding-top: 6px; }
+  .zf-pick { display: inline-flex; align-items: center; } .zf-fname { color: #6b7185; font-size: 12.5px; }
   .zf-link { border: 0; background: none; color: #5b4fe0; font-weight: 600; cursor: pointer; font-size: 12.5px; }
   .zf-foot { display: flex; align-items: center; gap: 8px; padding: 12px 22px; border-top: 1px solid #eceef5; }
   .zf-grow { flex: 1; }
@@ -182,6 +208,18 @@ export function zTitle(s: string): string { return s ? s.charAt(0).toUpperCase()
   .zf-btn[disabled] { opacity: .6; cursor: default; }
   .zf-muted { color: #6b7185; }
   @media (max-width: 640px) { .zf-grid { grid-template-columns: 1fr; } }
+  /* v1.67.9 (screens) item 18: drawer – full height on the inline-end side (right in English, left in Arabic) */
+  :host(.zf-drawer) { place-items: stretch end; }
+  :host(.zf-drawer) .zf-box { width: min(720px, 100vw); max-height: none; height: 100dvh; border-radius: 0; box-shadow: -12px 0 40px rgba(27,22,64,.22);
+    animation: zf-in .18s ease-out; }
+  :host(.zf-drawer[dir=rtl]) .zf-box { box-shadow: 12px 0 40px rgba(27,22,64,.22); animation-name: zf-in-rtl; }
+  :host(.zf-drawer) .zf-head { padding: 20px 24px 14px; background: #f8f9fc; }
+  :host(.zf-drawer) .zf-body { flex: 1; padding: 6px 24px 20px; }
+  :host(.zf-drawer) .zf-sec { border: 1px solid #eceef5; border-radius: 12px; padding: 4px 16px 16px; margin-top: 14px; }
+  :host(.zf-drawer) .zf-foot { padding: 12px 24px; background: #fff; box-shadow: 0 -6px 16px rgba(27,22,64,.05); }
+  @keyframes zf-in { from { transform: translateX(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  @keyframes zf-in-rtl { from { transform: translateX(-40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  @media (max-width: 640px) { :host(.zf-drawer) .zf-box { width: 100vw; } :host(.zf-drawer) .zf-body { padding: 4px 14px 16px; } :host(.zf-drawer) .zf-sec { padding: 2px 12px 12px; } }
   `],
 })
 export class ZFormComponent implements OnInit {
@@ -196,8 +234,16 @@ export class ZFormComponent implements OnInit {
   busy = false;
   saved = false;
   t = (s: string, p?: any[]) => i18nT(s, p);
+  eff = '';                      // v1.67.12 (effective): the "Effective from" day of the change ('' = a correction)
+  effHint = EFFECTIVE_HINT;
 
   constructor(private cd: ChangeDetectorRef) {}
+
+  history(): void {   // v1.67.12 (effective)
+    const id = this.cfg.effective === 'gratuity' ? 0 : (this.record ? (this.cfg.effectiveId ? this.cfg.effectiveId(this.record) : this.cfg.idOf ? this.cfg.idOf(this.record) : this.record.id) : null);
+    const name = this.record ? (this.record.name || this.record.loan_type || '') : '';
+    openRuleHistory(this.cfg.effective!, id, name);
+  }
 
   get editing(): boolean { return !!this.record; }
   get title(): string { if (this.cfg.heading) { return this.t(this.cfg.heading); } return this.editing ? this.t('Edit {0}', [this.t(this.cfg.thing)]) : this.t('New {0}', [this.cfg.thing]); }   // v1.62.10 (item 172): "Edit {0}" with the thing in the user's language (Arabic showed "تعديل company policy")
@@ -241,12 +287,21 @@ export class ZFormComponent implements OnInit {
     for (const s of this.cfg.sections) {   // choices that came with the metadata
       for (const f of s.fields) { if (!this.opts[f.key] && this.meta[f.key]?.choices) { this.opts[f.key] = this.meta[f.key].choices.map((c: any) => ({ value: c.value, label: c.display_name })); } }
     }
+    if (!this.editing) {   // v1.67.6 (setup) item 11: a company with one branch – its branch picker takes it
+      for (const s of this.cfg.sections) {
+        for (const f of s.fields) {
+          const o = this.opts[f.key];
+          if (f.type === 'select' && /branch/i.test(f.key) && o?.length === 1 && (this.v[f.key] === null || this.v[f.key] === '' || this.v[f.key] === undefined)) { this.v[f.key] = o[0].value; }
+        }
+      }
+    }
     this.loading = false;
     this.cd.detectChanges();
     setTimeout(() => (document.querySelector('[data-zform] .zf-body input, [data-zform] .zf-body select') as HTMLElement | null)?.focus(), 30);
   }
 
   private reset(): void {
+    this.eff = '';   // v1.67.12 (effective)
     const base = this.record ? (this.cfg.fromRecord ? this.cfg.fromRecord(this.record) : { ...this.record }) : { ...(this.cfg.initial || {}) };   // v1.62.10 (item 170)
     const v: any = { ...base };
     for (const s of this.cfg.sections) {
@@ -286,6 +341,7 @@ export class ZFormComponent implements OnInit {
 
   close(): void { if (!this.busy) { this.done(this.saved); } }
   pickFile(k: string, ev: any): void { const f = ev?.target?.files?.[0]; if (f) { this.v[k] = f; delete this.err[k]; } }   // v1.62.10 (item 168)
+  fileName(x: any): string { return x instanceof File ? x.name : ''; }   // v1.67.9 (screens)
   isUrl(x: any): boolean { return typeof x === 'string' && /^(https?:)?\/\//.test(x); }
   /** v1.62.10 (item 172): a 'datetime' value "YYYY-MM-DDTHH:MM" – its date (0) or time (1) part */
   dtPart(k: string, i: 0 | 1): string { const s = String(this.v[k] || ''); return i === 0 ? s.slice(0, 10) : s.slice(11, 16); }
@@ -317,12 +373,14 @@ export class ZFormComponent implements OnInit {
       // (New branch with no probation days was refused: "This field may not be null.")
       if (empty && !this.editing) { continue; }
       if (f.type === 'file' && !(this.v[f.key] instanceof File)) { continue; }   // v1.62.10 (item 168): only a newly chosen file is sent
+      if (f.readonly) { continue; }   // v1.67.6 (setup)
       body[f.key] = empty ? null : this.v[f.key];
     } } }
     const payload = this.cfg.toBody ? this.cfg.toBody({ ...this.v, ...body }, this.editing) : body;
     const id = this.record ? (this.cfg.idOf ? this.cfg.idOf(this.record) : this.record.id) : null;
     const ep = this.cfg.endpoint.endsWith('/') ? this.cfg.endpoint : this.cfg.endpoint + '/';
-    const r = await this.api(id ? 'PATCH' : 'POST', id ? `${ep}${id}/` : ep, payload);
+    const dated = this.cfg.effective ? zEffectiveParam(this.eff) : '';   // v1.67.12 (effective): ?effective_from=
+    const r = await this.api(id ? 'PATCH' : 'POST', (id ? `${ep}${id}/` : ep) + dated, payload);
     this.busy = false;
     const fail = r.ok && this.cfg.failIf ? this.cfg.failIf(r.data, (x, a) => this.t(x, a)) : null;   // v1.62.10 (item 170)
     if (fail) { this.err = { _: fail }; this.cd.detectChanges(); return; }

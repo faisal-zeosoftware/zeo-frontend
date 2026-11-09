@@ -14,6 +14,7 @@
                 </div>
             </div>
         </div>
+       <div class="um-msg" *ngIf="adminMsg" [class.um-msg-err]="adminErr" data-admin-msg role="status">{{ adminMsg }}</div>   <!-- v1.67.7 (admin) -->
        <div class="mt-3 um-table">
         <table class="table">
             <thead>
@@ -22,24 +23,33 @@
                     <th>E-mail</th>
                     <th>Branch</th>
                     <th>Type</th>
+                    <th>Administrator in this company</th>   <!-- v1.67.7 (admin) -->
                     <th>Last sign-in</th>
                     <th style="width:120px"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let u of filteredEmployees" class="um-row">
-                    <td (click)="showUserDetails(u.id)"><span class="um-av">{{ (u.username || '?').charAt(0).toUpperCase() }}</span> <a class="um-link">{{ u.username }}</a></td>
+                    <td (click)="showUserDetails(u.id)"><span class="um-av">{{ (u.username || '?').charAt(0).toUpperCase() }}</span> <a class="um-link">{{ u.username }}</a>
+                        <span class="um-owner" *ngIf="admins[u.id]?.owner || u.owner" data-owner-badge data-no-translate [attr.title]="ownerTitle()">{{ ownerLabel() }}</span></td>   <!-- v1.67.7 (admin) -->
                     <td>{{ u.email }}</td>
                     <td>{{ u.branch_names || 'All branches' }}</td>
                     <td>{{ userType(u) }}</td>
+                    <td>   <!-- v1.67.7 (admin): per company, changed by the owner or an administrator -->
+                        <label class="um-sw" [class.um-sw-off]="!adminCanChange" [attr.title]="adminCanChange ? null : 'Only the owner or an administrator of this company can change it.'">
+                            <input type="checkbox" [checked]="admins[u.id] ? admins[u.id].admin : u.company_admin" [disabled]="!adminCanChange || adminBusy === u.id"
+                                   (change)="toggleAdmin(u, $event)" data-admin-switch [attr.data-user]="u.id" [attr.aria-label]="'Administrator in this company'">
+                            <span class="um-sw-k"></span></label>
+                    </td>
                     <td>{{ u.last_login ? (u.last_login | date:'dd/MM/yyyy HH:mm') : never() }}</td>
                     <td class="text-end">
                         <button type="button" class="um-act" title="Edit" *ngIf="hasEditPermission" (click)="openEditEmpPopuss(u.id)"><mat-icon>edit</mat-icon></button>
+                        <button type="button" class="um-act" title="Employee" (click)="employeeOf(u)" data-user-emp><mat-icon>badge</mat-icon></button>   <!-- v1.67.6 (setup) item 9 -->
                         <button type="button" class="um-act" title="Details" (click)="showUserDetails(u.id)"><mat-icon>open_in_new</mat-icon></button>
                         <button type="button" class="um-act um-del" title="Delete" *ngIf="hasDeletePermission" (click)="deleteOne(u)"><mat-icon>delete_outline</mat-icon></button>
                     </td>
                 </tr>
-                <tr *ngIf="!filteredEmployees.length"><td colspan="6" class="text-center text-muted py-4">No users yet</td></tr>
+                 <tr *ngIf="!filteredEmployees.length"><td colspan="7" class="text-center text-muted py-4">No users yet</td></tr>
             </tbody>
         </table>
         </div>

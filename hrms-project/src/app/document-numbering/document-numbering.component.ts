@@ -12,8 +12,13 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { LeaveService } from '../leave-master/leave.service';
+import { appOn, ZEO_FLAGS } from '../shared-ui/zeo-flags';   // v1.67.8 (fixes) item 5
 
-import {combineLatest, Subscription } from 'rxjs';
+import {combineLatest, Subscription, firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';   // v1.67.6 (setup)
+import { zToast } from '../shared-ui/z-toast';
+import { i18nT } from '../shared-ui/i18n.service';
+import { httpErrorText } from '../shared-ui/z-http-error.interceptor';
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
 
 @Component({
@@ -36,6 +41,28 @@ export class DocumentNumberingComponent {
   /** v1.22.1: the document types offered on the form (same order as the list above) */
   docTypes = Object.entries(this.typeNames).map(([value, label]) => ({ value, label }));
   zLabel = (v: any): string => this.typeNames[String(v)] || statusLabel(v);
+  // v1.67.6 (setup) item 4: the types of the active apps from the server (Projects, CRM, Property, Maintenance, Asset Management,
+  // People, HSE besides HR / Payroll) and the series still missing
+  missingCount = 0;
+  async loadNumberingTypes(): Promise<void> {
+    try {
+      const sch = localStorage.getItem('selectedSchema') || '';
+      const r: any = await firstValueFrom(this.http.get(`${environment.apiBaseUrl}/zeo-apps/api/numbering/?schema=${encodeURIComponent(sch)}`));
+      for (const t of r.types || []) { this.typeNames[t.value] = t.company_wide ? `${t.app_title} · ${t.label} (${i18nT('company-wide')})` : t.label; }
+      this.docTypes = (r.types || []).map((t: any) => ({ value: t.value, label: this.typeNames[t.value] }));
+      this.missingCount = (r.missing || []).length;
+    } catch { /* the built-in list stays */ }
+  }
+  async addMissing(): Promise<void> {
+    if (!(await zConfirm(`Add the ${this.missingCount} missing numbering series of the active apps? Existing series are not changed; a new series continues after the last number the app gave.`))) { return; }
+    try {
+      const sch = localStorage.getItem('selectedSchema') || '';
+      const r: any = await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/zeo-apps/api/numbering/?schema=${encodeURIComponent(sch)}`, {}));
+      zToast(r.detail || 'Added.');
+      await this.loadNumberingTypes();
+      if (sch) { this.fetchEmployees(sch, JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')); }
+    } catch (e) { zToast(httpErrorText(e), 'err'); }
+  }
 
 
   
@@ -132,6 +159,7 @@ ngOnInit(): void {
 
 
   // this.loadDeparmentBranch();
+  this.loadNumberingTypes();   // v1.67.6 (setup) item 4
   this.loadCAtegory();
   this.loadUsers();
   // this.loaddocNumers();
@@ -520,13 +548,16 @@ mapBranchesNameToId() {
           }
         
 
+          appWait = 0;   // v1.67.8 (fixes)
           loadLeaveTypes(): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
             console.log('schemastore',selectedSchema )
             // Check if selectedSchema is available
-            if (selectedSchema) {
+            // v1.67.8 (fixes) item 5: leave types are HR's – not asked without HR (was 409); waits for the company's app list (≤ 6 s)
+            if (selectedSchema && ZEO_FLAGS.apps === null && (this.appWait = (this.appWait || 0) + 1) <= 20) { setTimeout(() => this.loadLeaveTypes(), 300); return; }
+            if (selectedSchema && appOn('hrms')) {
               this.leaveService.getLeaveType(selectedSchema).subscribe(
                 (result: any) => {
                   this.LeaveTypes = result;

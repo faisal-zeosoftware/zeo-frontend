@@ -40,6 +40,7 @@
           <div class="er-menu-wrap">
             <button type="button" class="er-btn" (click)="menu = menu === 'act' ? '' : 'act'; showMissing = false; $event.stopPropagation()" aria-haspopup="menu">Actions ▾</button>
             <div class="er-menu right" *ngIf="menu === 'act'" role="menu" (click)="$event.stopPropagation()">
+              <button type="button" (click)="menu = ''; loginOf()" data-er-login>Login</button>   <!-- v1.67.6 (setup) item 9 -->
               <button type="button" (click)="action('transfer')">Transfer</button>
               <button type="button" (click)="action('salary')">Salary revision</button>
               <button type="button" (click)="action('letter')">Issue HR letter</button>
@@ -225,6 +226,11 @@
           <ng-container *ngTemplateOutlet="single; context: { key: 'job', title: 'Job', fields: JOB_FIELDS }"></ng-container>
           <section class="er-card er-sec" id="card-employment" *ngIf="r.employment as em">
             <div class="er-sec-h"><h2>Employment and probation</h2></div>
+            <!-- v1.67.12 (effective, item 62): the confirmation date is asked for -->
+            <p class="er-warn" *ngIf="em.confirmation_missing" data-er-confirm-missing>
+              <ng-container *ngIf="!em.date_of_confirmation && !em.probation_status">No confirmation date: no probation period is set for this employee (employment type or branch). Confirm the employee with the confirmation date.</ng-container>
+              <ng-container *ngIf="em.probation_status === 'on_probation' || em.probation_status === 'extended'">The probation ended on {{ dmy(em.probation_end_date) }} without a decision – confirm the employee, extend the probation or record that it was not passed.</ng-container>
+            </p>
             <dl class="er-kv">
               <div><dt>Status</dt><dd>{{ em.status_label }}</dd></div><div><dt>Probation</dt><dd>{{ em.probation_status_label }}</dd></div>
               <div><dt>Probation ends</dt><dd>{{ dmy(em.probation_end_date) }}<span class="er-muted" *ngIf="em.days_left !== null"> · {{ t('{0} days left', [em.days_left]) }}</span></dd></div>
@@ -253,6 +259,23 @@
                 <input id="pb-r" *ngIf="probation.act === 'confirm'" [(ngModel)]="probation.note" name="note"><input id="pb-r" *ngIf="probation.act !== 'confirm'" [(ngModel)]="probation.reason" name="reason" required></div>
               <div class="er-form-act"><button type="button" class="er-btn" (click)="probation = null">Cancel</button>
                 <button type="submit" class="er-btn" [class.primary]="probation.act !== 'fail'" [class.danger]="probation.act === 'fail'">{{ probation.act === 'confirm' ? 'Confirm probation' : probation.act === 'extend' ? 'Extend probation' : 'End employment' }}</button></div>
+            </form>
+          </section>
+          <!-- v1.67.12 (effective, item 249): GPSSA first-insured date – old / new pension law -->
+          <section class="er-card er-sec" id="card-pension" *ngIf="pen && (pen.is_national || pen.first_insured)" data-er-pension>
+            <div class="er-sec-h"><h2>Pension (GPSSA)</h2></div>
+            <dl class="er-kv">
+              <div><dt>Pension law</dt><dd data-er-pension-law>{{ pen.law === 'old' ? 'Old law (Federal Law 7/1999)' : 'New law (Decree-Law 57/2023)' }}</dd></div>
+              <div><dt>Date first insured</dt><dd>{{ dmy(pen.first_insured) || '–' }}</dd></div>
+              <div class="wide"><dt>Why</dt><dd>{{ pen.law_basis === 'joined' ? 'Decided by the joining date ' + dmy(pen.law_from) : 'Decided by the date first insured ' + dmy(pen.law_from) }} (cut-off {{ dmy(pen.cut_off) }})</dd></div>
+            </dl>
+            <form class="er-form" *ngIf="pen.can_edit" (ngSubmit)="savePension()">
+              <div class="er-f"><label for="pn-d">Date first insured</label><input id="pn-d" type="date" [(ngModel)]="pf.first_insured" name="first_insured" data-er-pension-date></div>
+              <div class="er-f"><label for="pn-s">Scheme</label><select id="pn-s" [(ngModel)]="pf.scheme" name="scheme">
+                <option value="gpssa">GPSSA</option><option value="adpf">Abu Dhabi Pension Fund</option><option value="gcc">Another GCC pension scheme</option></select></div>
+              <div class="er-f wide er-muted">With GPSSA (or the Abu Dhabi Pension Fund / another GCC scheme) at any employer. Empty = the joining date decides.</div>
+              <div class="er-f wide er-muted" *ngIf="pf.scheme === 'gcc'">{{ pen.settings?.gcc_counts ? 'The company counts insurance in another GCC scheme (legal rule to confirm).' : 'Not counted by the company setting (legal rule to confirm): the joining date decides.' }}</div>
+              <div class="er-form-act"><button type="submit" class="er-btn primary" data-er-pension-save>Save pension details</button></div>
             </form>
           </section>
           <section class="er-card er-sec" *ngIf="r.org?.fields?.length">

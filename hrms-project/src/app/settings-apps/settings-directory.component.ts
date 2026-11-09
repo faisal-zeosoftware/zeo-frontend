@@ -1,5 +1,6 @@
 // v1.67.3 (apps) – Settings › Company › Employee directory: the company core's list of employees, there with or without HR.
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Component, EnvironmentInjector, OnInit, inject } from '@angular/core';
+import { openUserEmployee } from './user-employee.component';   // v1.67.6 (setup) item 9
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Routes } from '@angular/router';
@@ -66,7 +67,8 @@ export const DIRECTORY_FORM: ZFormConfig = {
         <tr *ngFor="let e of rows" [attr.data-emp]="e.emp_code">
           <td>{{ e.emp_code }}</td><td>{{ e.name }}</td><td>{{ e.branch }}</td><td>{{ e.department }}</td><td>{{ e.designation }}</td>
           <td>{{ e.emp_company_email }}</td><td>{{ e.emp_mobile_number_1 }}</td><td>{{ (e.status === 'active' ? 'Active' : 'Inactive') | t }}</td>
-          <td><button type="button" class="lp-btn" *ngIf="canChange" (click)="edit(e)">{{ 'Edit' | t }}</button></td>
+          <td style="white-space:nowrap"><button type="button" class="lp-btn" *ngIf="canChange" (click)="edit(e)">{{ 'Edit' | t }}</button>
+            <button type="button" class="lp-btn" (click)="login(e)" data-dir-login>{{ 'Login' | t }}</button></td>   <!-- v1.67.6 (setup) item 9 -->
         </tr>
       </tbody>
     </table>
@@ -95,6 +97,9 @@ export class SettingsDirectoryComponent implements OnInit {
   show(s: 'active' | 'inactive'): void { if (s !== this.status) { this.status = s; this.load(); } }
   async add(): Promise<void> { if (await openZForm(DIRECTORY_FORM)) { this.load(); } }
   async edit(e: any): Promise<void> { if (await openZForm(DIRECTORY_FORM, { ...e })) { this.load(); } }
+  // v1.67.6 (setup) item 9: the login of this employee – link one or make it
+  private zApp = inject(ApplicationRef); private zEnv = inject(EnvironmentInjector);
+  async login(e: any): Promise<void> { if (await openUserEmployee(this.zApp, this.zEnv, { employeeId: e.id })) { this.load(); } }
 }
 
 export const SETTINGS_DIRECTORY_ROUTES: Routes = [

@@ -8,7 +8,9 @@ import { style } from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';   // v1.67.6 (setup)
+import { sendSignInLocation } from '../shared-ui/z-admin-pages.component';   // v1.67.6 (setup) item 13
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
@@ -18,7 +20,8 @@ import { ZListService } from '../shared-ui/z-list.service';
 import { visibleGroups, suiteForUrl, appLanding } from '../shared-ui/z-module-menu.component';
 import { AppSuite, ZSuiteService } from '../shared-ui/z-suite.service';   // v1.20.0
 import { SUITES, MAIN_GROUPS } from '../shared-ui/menu-config';   // v1.67.3 (apps) MAIN_GROUPS
-import { appForUrl, dashKeep, isReportUrl, menuPicked, preferApp, takeMenuPicked } from '../shared-ui/menu-config';
+import { startSingleBranchFilters } from '../shared-ui/z-single-branch';   // v1.67.9 (screens)
+import { appForUrl, dashKeep, isReportUrl, menuPicked, preferApp, takeMenuPicked, urlSuites } from '../shared-ui/menu-config';
 import { APP_VERSION } from '../shared-ui/version';
 import { ZRecordService } from '../shared-ui/z-record.service';
 import { ElementRef, ViewChild } from '@angular/core';
@@ -98,6 +101,7 @@ export class MainSidebarComponent implements OnDestroy {
     this.suites.active$.subscribe(a => { if (a) { this.buildMenu(); this.keepActiveSuite(); } });
     window.addEventListener('zeo-reopen-page', this.reopenListener);   // v1.62.1
     startLegacyHeads();   // v1.62.1 card header with a description on the old registers
+    startSingleBranchFilters();   // v1.67.9 (screens) item 19: a screen's own branch filter is hidden for single-branch users
     // v1.23.0 ZEO Cloud: Subscription / Security for the account owner
     this.cloud.status$.subscribe(() => this.buildMenu());
     this.cloud.load();
@@ -113,8 +117,15 @@ export class MainSidebarComponent implements OnDestroy {
     // v1.62.0: also when the open PAGE belongs to an app the company does not have (after switching company the
     // remembered app could already be an active one while the page was still an HR page of the previous company)
     const urlSuite = suiteForUrl(this.router.url) as AppSuite | null;
-    const pageOff = !!urlSuite && urlSuite !== 'settings' && !this.suites.isActive(urlSuite);
+    // v1.67.9 (screens) item 19: a page several apps list (a business partner's record page) is off only when none of them
+    // is active – a Property-only company opening a partner was sent to Property home (the page "belonged" to Projects)
+    const owners = urlSuites(this.router.url);
+    const pageOff = !!urlSuite && urlSuite !== 'settings' && !this.suites.isActive(urlSuite)
+      && !owners.some(x => x === 'settings' || x === 'common' || this.suites.isActive(x as AppSuite));
     if (this.suites.isActive(this.suite) && !pageOff) { return; }
+    // v1.67.9 (screens): the remembered app is off but the open page belongs to an active one – stay on the page, show that app
+    const onOwner = owners.find(x => x !== 'settings' && x !== 'common' && this.suites.isActive(x as AppSuite));
+    if (!pageOff && urlSuite && onOwner) { this.suites.set(onOwner as AppSuite); return; }
     const next = this.suites.isActive(this.suite) && this.suite !== 'settings' ? this.suite
       : (SUITES.find(x => x.key !== 'settings' && this.suites.isActive(x.key))?.key || 'settings');
     this.suites.set(next);
@@ -351,7 +362,9 @@ export class MainSidebarComponent implements OnDestroy {
   // EXISTING CODE BELOW (UNCHANGED)
   // ============================================================
 
+  private zHttp = inject(HttpClient);   // v1.67.6 (setup) item 13
   ngOnInit(): void {
+    setTimeout(() => sendSignInLocation(this.zHttp, environment.apiBaseUrl), 3000);   // v1.67.6 (setup) item 13: only with the person's consent
     this.restoreFold();   // v1.15.1: per-user fold / unfold choice
     this.zlist.permissions().subscribe(a => { this.menuAccess = a; this.buildMenu(); });
     this.selectedBranchIds = JSON.parse(
@@ -415,6 +428,12 @@ export class MainSidebarComponent implements OnDestroy {
         (userData: any) => {
           this.userDetailss = userData;
           this.storeNarrow();   // v1.62.0 ui
+          try {   // v1.67.6 (setup) item 11: one branch → preselected in the pickers, no branch filter / choice that offers nothing
+            const cur = (userData || []).find((s: any) => s.schema_name === this.selectedSchema);
+            const br = cur?.branches || [];
+            if (br.length === 1) { localStorage.setItem('zeoSingleBranch', JSON.stringify({ schema: this.selectedSchema, id: br[0].id, name: br[0].branch_name })); }
+            else { localStorage.removeItem('zeoSingleBranch'); }
+          } catch { /* storage off */ }
           this.schemas = userData.map(
             (schema: any) => schema.schema_name
           );

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -33,7 +34,7 @@ import { LpApi } from './lp-api';
   <div class="lp-cal-list lp-card">
     <p class="lp-muted" *ngIf="!events.length">No sessions this month.</p>
     <div class="lp-mod" *ngFor="let e of events" (click)="sel = e" style="cursor:pointer">
-      <span class="lp-tag" [style.background]="e.color" style="color:#fff">{{ e.start_date | date:'dd MMM' }}</span>
+      <span class="lp-tag" [style.background]="e.color" style="color:#fff">{{ e.start_date | date:'dd/MM/yyyy' }}</span>
       <span class="t">{{ e.title }}<div class="lp-muted">{{ e.venue || '' }} {{ e.my_status ? '· you: ' + e.my_status : '' }}</div></span>
     </div>
   </div>

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { i18nT } from '../../shared-ui/i18n.service';   // v1.62.0 people
+import { EFFECTIVE_HINT } from '../../shared-ui/z-rule-history';   // v1.67.12 (effective)
 import { ZDateFieldComponent } from '../../shared-ui/z-date-field.component';   // v1.62.0 people: dates dd/mm/yyyy
 import { ZMoneyPipe } from '../../shared-ui/country-pack.service';   // v1.62.0 ui
 import { ZListDirective } from '../../shared-ui/z-list.directive';
@@ -242,7 +243,9 @@ export class CrudPageComponent implements OnInit {
 
   openEdit(row: any, ev?: Event): void {
     ev?.stopPropagation();
-    this.openForm(this.config.fields || [], this.config.endpoint, row.id, row, `Edit ${this.singular()}`, !!this.config.multipart, () => this.load());
+    // v1.67.12 (effective, item 64): a dated change – "Effective from" at the end of the edit form
+    const eff: FieldConfig[] = this.config.effective ? [{ key: '_effective_from', label: 'Effective from', type: 'date', editOnly: true, width: 6, help: EFFECTIVE_HINT }] : [];
+    this.openForm([...(this.config.fields || []), ...eff], this.config.endpoint, row.id, row, `Edit ${this.singular()}`, !!this.config.multipart, () => this.load());
   }
 
   singular(): string {
@@ -289,7 +292,13 @@ export class CrudPageComponent implements OnInit {
   loadFieldOptions(fields: FieldConfig[]): void {
     fields.forEach(f => {
       if (f.options) this.options[f.key] = f.options;
-      else if (f.lookup) this.api.lookup(f.lookup).subscribe(o => (this.options[f.key] = o));
+      else if (f.lookup) this.api.lookup(f.lookup).subscribe(o => {
+        this.options[f.key] = o;
+        // v1.67.6 (setup) item 11: one branch – a new record's branch picker takes it
+        if (!this.formEditId && f.type === 'select' && /branch/i.test(f.key) && (o || []).length === 1 && (this.formModel[f.key] === undefined || this.formModel[f.key] === null || this.formModel[f.key] === '')) {
+          this.formModel[f.key] = o[0].value;
+        }
+      });
     });
   }
 
@@ -395,7 +404,11 @@ export class CrudPageComponent implements OnInit {
   }
 
   private send(body: any): void {
-    const req = this.formEditId ? this.api.update(this.formEndpoint, this.formEditId, body) : this.api.create(this.formEndpoint, body);
+    // v1.67.12 (effective): the "Effective from" day goes in the query, not in the record
+    let extra: Record<string, any> | undefined;
+    if (body && !(body instanceof FormData) && '_effective_from' in body) { extra = body._effective_from ? { effective_from: body._effective_from } : undefined; body = { ...body }; delete body._effective_from; }
+    else if (body instanceof FormData && body.has('_effective_from')) { const d = body.get('_effective_from'); extra = d ? { effective_from: String(d) } : undefined; body.delete('_effective_from'); }
+    const req = this.formEditId ? this.api.update(this.formEndpoint, this.formEditId, body, extra) : this.api.create(this.formEndpoint, body);
     req.subscribe({
       next: () => {
         this.saving = false;

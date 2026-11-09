@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -53,6 +54,31 @@ export const ZAD_STYLES = `.zad { padding: 16px 20px; max-width: 1150px; } .zad 
   .zad-rules { margin: 4px 0 10px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
   .zad-rule { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }`;   // v1.62.11 (item 95)
 
+// v1.67.6 (setup) item 14: is the open sign-in an administrator's "view as another user"?
+export function isImpersonating(): boolean {
+  try {
+    const t = localStorage.getItem('auth_token') || '';
+    return !!JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).imp;
+  } catch { return false; }
+}
+
+// v1.67.6 (setup) item 13: the browser location of this sign-in, only after the person agreed in My account (the browser asks
+// again). Sent once per sign-in; nothing is sent without the consent (the server refuses it too).
+export async function sendSignInLocation(http: HttpClient, api: string, force = false): Promise<void> {
+  try {
+    if (isImpersonating() || !('geolocation' in navigator)) { return; }
+    const t = localStorage.getItem('auth_token') || '';
+    const sid = JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sid || '';
+    if (!sid || (!force && localStorage.getItem('zeo_loc_sent') === sid)) { return; }
+    const r: any = await firstValueFrom(http.get(`${api}/users/sign-ins/?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`));
+    if (!r?.share_location) { return; }
+    const pos: any = await new Promise((ok, no) => navigator.geolocation.getCurrentPosition(ok, no, { timeout: 15000, maximumAge: 600000 }));
+    await firstValueFrom(http.post(`${api}/users/sign-ins/?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`,
+      { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }));
+    localStorage.setItem('zeo_loc_sent', sid);
+  } catch { /* refused by the person, no position or no storage – the sign-in keeps the address only */ }
+}
+
 function schemaQ(): string { return `schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`; }
 
 export abstract class ZAdminBase {
@@ -85,8 +111,9 @@ export abstract class ZAdminBase {
   <p class="zad-warn" *ngIf="ask.includes('2fa')" data-ask-2fa>Your company asks you to switch on the authenticator app. Set it up below.</p>
   <p class="zad-warn" *ngIf="ask.includes('password')">Your password has expired under the company's rules. Change it from the user menu.</p>
   <p class="zad-msg" *ngIf="msg" [class.err]="err" role="status">{{ msg }}</p>
+  <p class="zad-warn" *ngIf="imp" data-imp-private>You are viewing as another user: their sign-ins, devices, alerts and authenticator app are private and not shown.</p>   <!-- v1.67.6 (setup) item 14 -->
 
-  <section class="zad-card" *ngIf="tf" data-2fa>
+  <section class="zad-card" *ngIf="tf && !imp" data-2fa>
     <h3><mat-icon>phonelink_lock</mat-icon>Authenticator app</h3>
     <ng-container *ngIf="!tf.on && !setup">
       <p class="zad-muted">{{ (tf.must_setup ? 'Off. With the authenticator app on, signing in needs your password and the 6-digit code from an app on your phone (Google Authenticator, Microsoft Authenticator or any TOTP app) – your company requires it.' : 'Off. With the authenticator app on, signing in needs your password and the 6-digit code from an app on your phone (Google Authenticator, Microsoft Authenticator or any TOTP app).') | t }}</p>
@@ -130,19 +157,36 @@ export abstract class ZAdminBase {
     <div class="zad-act" style="margin:0"><button type="button" class="zad-btn" (click)="clearHistory()" [disabled]="busy" data-clear-history-btn>Clear my history</button></div>
   </section>
 
-  <section class="zad-card" data-sessions>
+  <section class="zad-card" data-sessions *ngIf="!imp">
     <h3><mat-icon>devices</mat-icon>Where you are signed in</h3>
     <table class="zad-t" *ngIf="sessions.length; else noS">
       <tr><th>Device</th><th>IP</th><th>How</th><th>Signed in</th><th>Last used</th><th></th></tr>
       <tr *ngFor="let s of sessions"><td>{{ s.device }} <span class="zad-pill ok" *ngIf="s.current">this one</span><span class="zad-muted" *ngIf="s.impersonator"> (opened by {{ s.impersonator }})</span></td>
-        <td>{{ s.ip }}</td><td>{{ s.how }}</td><td>{{ s.created_at | date:'d MMM, HH:mm' }}</td><td>{{ s.last_seen | date:'d MMM, HH:mm' }}</td>
+        <td>{{ s.ip }}</td><td>{{ s.how }}</td><td>{{ s.created_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ s.last_seen | date:'dd/MM/yyyy HH:mm' }}</td>
         <td><button type="button" class="zad-btn sm" *ngIf="!s.current" (click)="endOne(s)">Sign out</button></td></tr>
     </table>
     <ng-template #noS><p class="zad-muted">No other sign-ins.</p></ng-template>
     <div class="zad-act"><button type="button" class="zad-btn" (click)="endOthers()" [disabled]="busy || sessions.length < 2" data-end-others>Sign out everywhere else</button></div>
   </section>
 
-  <section class="zad-card" data-my-alerts>   <!-- v1.61.0 -->
+  <section class="zad-card" data-signin-history *ngIf="!imp">   <!-- v1.67.6 (setup) item 13 -->
+    <h3><mat-icon>travel_explore</mat-icon>Sign-in history</h3>
+    <p class="zad-muted">Your sign-ins of the last 90 days: when, the address, the approximate place and the device. ZEO e-mails you when a sign-in comes from a new place, address or device.</p>
+    <label class="zad-chk" data-share-location><input type="checkbox" [(ngModel)]="shareLoc" (change)="saveShare()" [disabled]="busy">Add my device location to my sign-ins (the browser asks you first)</label>
+    <p class="zad-muted" *ngIf="!countryDb">The place comes from your browser when you allow it; the server has no country database.</p>
+    <table class="zad-t" *ngIf="hist.length; else noH">
+      <tr><th>When</th><th>Address</th><th>Place</th><th>Device</th><th>How</th><th>Companies</th><th>New</th></tr>
+      <tr *ngFor="let h of hist" [attr.data-signin]="h.id"><td>{{ h.created_at | date:'dd/MM/yyyy HH:mm' }} <span class="zad-pill ok" *ngIf="h.current">this one</span></td>
+        <td>{{ h.ip }}</td>
+        <td><a *ngIf="h.geo; else noGeo" [href]="'https://www.openstreetmap.org/?mlat=' + h.geo.lat + '&mlon=' + h.geo.lon + '#map=13/' + h.geo.lat + '/' + h.geo.lon" target="_blank" rel="noopener">{{ h.location }}</a>
+          <ng-template #noGeo>{{ h.location || '–' }}</ng-template></td>
+        <td>{{ h.device }}</td><td>{{ h.how | t }}</td><td>{{ (h.companies || []).join(', ') || '–' }}</td>
+        <td><span class="zad-pill warn" *ngIf="h.new">{{ h.new | t }}</span><span class="zad-muted" *ngIf="h.revoked_at"> {{ 'ended' | t }}</span></td></tr>
+    </table>
+    <ng-template #noH><p class="zad-muted">No sign-ins yet.</p></ng-template>
+  </section>
+
+  <section class="zad-card" data-my-alerts *ngIf="!imp">   <!-- v1.61.0 -->
     <h3><mat-icon>notification_important</mat-icon>Sign-in alerts <span class="zad-pill warn" *ngIf="alertsOpen">{{ alertsOpen }}</span></h3>
     <p class="zad-muted">ZEO writes here (and e-mails you) when your account is signed in to from a new network and a new device, when wrong passwords lock it, or when a sign-in is refused because of your company's networks.</p>
     <table class="zad-t" *ngIf="alerts.length; else noA">
@@ -201,7 +245,7 @@ export abstract class ZAdminBase {
         <td><button type="button" class="zad-btn sm" *ngIf="o.state === 'now' || o.state === 'planned'" (click)="endOoo(o)">{{ o.state === 'planned' ? 'Cancel' : 'I am back' }}</button></td></tr>
     </table>
     <p *ngIf="ooo?.for_me?.length" class="zad-muted" style="margin-top:10px" data-ooo-forme>You approve for:
-      <span *ngFor="let o of ooo.for_me; let l = last">{{ o.user }} ({{ o.start_date | date:'d MMM' }} – {{ o.end_date | date:'d MMM' }}){{ l ? '' : ', ' }}</span></p>
+      <span *ngFor="let o of ooo.for_me; let l = last">{{ o.user }} ({{ o.start_date | date:'dd/MM/yyyy' }} – {{ o.end_date | date:'dd/MM/yyyy' }}){{ l ? '' : ', ' }}</span></p>
   </section>
 </div>`,
 })
@@ -209,6 +253,7 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   @ViewChild('qr') qr?: ElementRef<HTMLDivElement>;
   tf: any = null; setup: any = null; code = ''; codes: string[] = []; sessions: any[] = []; ooo: any = null; ask: string[] = [];
   alerts: any[] = []; alertsOpen = 0;   // v1.61.0
+  hist: any[] = []; shareLoc = false; countryDb = false; imp = false;   // v1.67.6 (setup) items 13 / 14
   nf: any = this.blank();
   ruleErr = ''; warns: any[] = [];   // v1.62.11 (item 95)
   constructor(http: HttpClient, rec: ZRecordService, cd: ChangeDetectorRef) { super(http, rec, cd); }
@@ -226,7 +271,21 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
   stateText(s: string): string { return ({ now: 'Now', planned: 'Planned', ended: 'Ended', cancelled: 'Cancelled' } as any)[s] || s; }
   async ngOnInit(): Promise<void> {
     try { this.ask = (sessionStorage.getItem('zeo_security_ask') || '').split(',').filter(x => x); } catch { this.ask = []; }
-    await Promise.all([this.loadTf(), this.loadSessions(), this.loadOoo(), this.loadAlerts()]);
+    this.imp = isImpersonating();   // v1.67.6 (setup) item 14: another user's own security data is never asked for
+    if (this.imp) { await this.loadOoo(); return; }
+    await Promise.all([this.loadTf(), this.loadSessions(), this.loadOoo(), this.loadAlerts(), this.loadHist()]);
+  }
+  // v1.67.6 (setup) item 13: sign-in history and the browser location (with consent)
+  async loadHist(): Promise<void> {
+    try { const r = await this.get('/users/sign-ins/'); this.hist = r.rows || []; this.shareLoc = !!r.share_location; this.countryDb = !!r.country_db; } catch { this.hist = []; }
+    this.cd.markForCheck();
+  }
+  async saveShare(): Promise<void> {
+    const on = this.shareLoc;
+    if (await this.act(() => this.put('/users/sign-ins/', { share_location: on }), on ? 'Your device location is added to your sign-ins when the browser allows it.' : 'Switched off – the locations kept are removed.')) {
+      if (on) { try { localStorage.removeItem('zeo_loc_sent'); } catch { /* storage */ } await sendSignInLocation(this.http, this.rec.api, true); }
+      await this.loadHist();
+    }
   }
   async loadAlerts(): Promise<void> {
     try { const r = await this.get('/users/security/alerts/'); this.alerts = r.rows || []; this.alertsOpen = r.open || 0; } catch { this.alerts = []; }
@@ -347,16 +406,30 @@ export class ZMyAccountComponent extends ZAdminBase implements OnInit {
       <span class="zad-muted">Your own address must stay in the list. The server owner (superuser) is never refused.</span></div>
     <h3 style="margin-top:14px"><mat-icon>notification_important</mat-icon>Sign-in alerts</h3>
     <div style="display:flex;flex-wrap:wrap;gap:6px 18px">
-      <label class="zad-chk"><input type="checkbox" [(ngModel)]="p.alert_new_signin" data-alert-new> E-mail the user after a sign-in from a new network and a new device</label>
+      <label class="zad-chk"><input type="checkbox" [(ngModel)]="p.alert_new_signin" data-alert-new> E-mail the user after a new sign-in</label>
       <label class="zad-chk"><input type="checkbox" [(ngModel)]="p.alert_lock"> E-mail the user when wrong passwords lock the account</label>
+      <label class="zad-chk"><input type="checkbox" [(ngModel)]="p.alert_admin_signin" data-alert-admin> Also e-mail the administrators about a new sign-in to this company</label>   <!-- v1.67.6 (setup) item 13 -->
     </div>
+    <label class="zad-f" style="max-width:420px">A sign-in is new when it comes from   <!-- v1.67.6 (setup) item 13 -->
+      <select [(ngModel)]="p.alert_rule" data-alert-rule><option value="any">a new place, address or device</option><option value="both">a new network and a new device (fewer e-mails)</option></select></label>
+    <p class="zad-muted">The e-mails go through the company e-mail (Settings › E-mail). The place is the country from the server's free country database (when installed) or the browser location the user agreed to share.</p>
     <div class="zad-act"><button type="button" class="zad-btn" (click)="saveNet()" [disabled]="busy">Save</button></div>
     <table class="zad-t" *ngIf="alerts.length" style="margin-top:8px" data-company-alerts>
       <tr><th>When</th><th>User</th><th>What</th><th>Device</th><th>Address</th><th>Answer</th></tr>
-      <tr *ngFor="let a of alerts"><td>{{ a.created_at | date:'d MMM, HH:mm' }}</td><td>{{ a.user }}<div class="zad-muted">{{ a.email }}</div></td><td>{{ a.kind_text | t }}</td>
+      <tr *ngFor="let a of alerts"><td>{{ a.created_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ a.user }}<div class="zad-muted">{{ a.email }}</div></td><td>{{ a.kind_text | t }}</td>
         <td>{{ a.device }}</td><td>{{ a.ip }}</td><td><span class="zad-pill" [class.bad]="a.status === 'not_me'" [class.ok]="a.status === 'was_me'">{{ a.status === 'open' ? ('no answer yet' | t) : (a.status === 'was_me' ? ('it was me' | t) : ('not me' | t)) }}</span></td></tr>
     </table>
     <p class="zad-muted" *ngIf="!alerts.length">No sign-in alerts in the last 90 days.</p>
+    <h3 style="margin-top:14px"><mat-icon>travel_explore</mat-icon>Sign-in history</h3>   <!-- v1.67.6 (setup) item 13 -->
+    <p class="zad-muted">The sign-ins of the last 90 days that opened this company. Sign-ins of a user in other companies are not shown.</p>
+    <div class="zad-act"><select [(ngModel)]="histUser" (change)="loadHist()" aria-label="User" data-hist-user><option [ngValue]="''">All users</option>
+      <option *ngFor="let u of rows" [ngValue]="u.id">{{ u.name }}</option></select></div>
+    <table class="zad-t" *ngIf="hist.length; else noHist" style="margin-top:8px" data-company-history>
+      <tr><th>When</th><th>User</th><th>Address</th><th>Place</th><th>Device</th><th>How</th><th>New</th></tr>
+      <tr *ngFor="let h of hist"><td>{{ h.created_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ h.user }}<div class="zad-muted">{{ h.email }}</div></td><td>{{ h.ip }}</td>
+        <td>{{ h.location || '–' }}</td><td>{{ h.device }}</td><td>{{ h.how | t }}</td><td><span class="zad-pill warn" *ngIf="h.new">{{ h.new | t }}</span></td></tr>
+    </table>
+    <ng-template #noHist><p class="zad-muted">No sign-ins in the last 90 days.</p></ng-template>
   </section>
   <ng-container *ngIf="p">   <!-- v1.62.0 -->
   <section class="zad-card" data-sessions62>
@@ -459,11 +532,17 @@ export class ZSignInSecurityComponent extends ZAdminBase implements OnInit {
     if (await this.act(async () => { this.p = await this.put('/users/security/policy/', body); }, 'Saved.')) { this.defPw = ''; }
   }
   constructor(http: HttpClient, rec: ZRecordService, cd: ChangeDetectorRef) { super(http, rec, cd); }
-  async ngOnInit(): Promise<void> { await this.load(); await this.loadAlerts(); }
+  hist: any[] = []; histUser: any = '';   // v1.67.6 (setup) item 13
+  async ngOnInit(): Promise<void> { await this.load(); await Promise.all([this.loadAlerts(), this.loadHist()]); }
   async loadAlerts(): Promise<void> { try { this.alerts = (await this.get('/users/security/alerts/?company=1')).rows || []; } catch { this.alerts = []; } this.cd.markForCheck(); }
+  async loadHist(): Promise<void> {
+    try { this.hist = (await this.get(`/users/sign-ins/?company=1${this.histUser ? '&user=' + this.histUser : ''}`)).rows || []; } catch { this.hist = []; }
+    this.cd.markForCheck();
+  }
   async saveNet(): Promise<void> {
     await this.act(async () => {
-      this.p = await this.put('/users/security/policy/', { ip_scope: this.p.ip_scope, ip_allowlist: this.p.ip_allowlist, alert_new_signin: this.p.alert_new_signin, alert_lock: this.p.alert_lock });
+      this.p = await this.put('/users/security/policy/', { ip_scope: this.p.ip_scope, ip_allowlist: this.p.ip_allowlist, alert_new_signin: this.p.alert_new_signin, alert_lock: this.p.alert_lock,
+        alert_rule: this.p.alert_rule, alert_admin_signin: this.p.alert_admin_signin });   // v1.67.6 (setup) item 13
     }, 'Saved.');
   }
   async load(): Promise<void> {
@@ -588,7 +667,7 @@ export class ZImpBannerComponent implements OnInit {
     <section class="zad-card"><table class="zad-t"><tr><th>Name</th><th>Key</th><th>Acts as</th><th>Access</th><th>Last used</th><th>Uses</th><th></th></tr>
       <tr *ngFor="let k of keys"><td><b>{{ k.name }}</b><div class="zad-muted">by {{ k.created_by }}, {{ k.created_at | date:'dd/MM/yyyy' }}</div></td><td><code>{{ k.prefix }}</code></td><td>{{ k.user }}</td>
         <td>{{ k.read_only ? 'Read only' : 'Read and write' }}<div class="zad-muted" *ngIf="k.scopes?.length">v1: {{ k.scopes.join(', ') }}{{ k.v1_only ? ' · ' + ('API v1 only' | t) : '' }}</div><div class="zad-muted" *ngIf="k.allowed_ips?.length">{{ k.allowed_ips.join(', ') }}</div><div class="zad-muted" *ngIf="k.expires_at">until {{ k.expires_at | date:'dd/MM/yyyy' }}</div></td>
-        <td>{{ k.last_used ? (k.last_used | date:'d MMM, HH:mm') : 'never' }}<div class="zad-muted">{{ k.last_ip }}</div></td><td>{{ k.uses }}</td>
+        <td>{{ k.last_used ? (k.last_used | date:'dd/MM/yyyy HH:mm') : 'never' }}<div class="zad-muted">{{ k.last_ip }}</div></td><td>{{ k.uses }}</td>
         <td style="white-space:nowrap"><button type="button" class="zad-btn sm" (click)="toggleKey(k)">{{ k.active ? 'Switch off' : 'Switch on' }}</button>
           <button type="button" class="zad-btn sm danger" (click)="delKey(k)">Delete</button></td></tr>
       <tr *ngIf="!keys.length"><td colspan="7" class="zad-muted">No API keys yet.</td></tr></table></section>
@@ -613,12 +692,12 @@ export class ZImpBannerComponent implements OnInit {
       <ng-container *ngFor="let h of hooks"><tr><td><b>{{ h.name }}</b><div class="zad-muted">{{ h.url }}</div></td>
         <td>{{ labels(h) }}<div class="zad-muted">{{ h.events.join(', ') }}</div></td>
         <td><span class="zad-pill" [class.ok]="h.last_status?.startsWith('sent')" [class.bad]="h.last_status?.startsWith('failed')">{{ h.last_status || 'none yet' }}</span>
-          <div class="zad-muted">{{ h.last_at | date:'d MMM, HH:mm' }}{{ h.active ? '' : ' · switched off' }}{{ h.failures ? ' · ' + h.failures + ' failure(s)' : '' }}</div></td>
+          <div class="zad-muted">{{ h.last_at | date:'dd/MM/yyyy HH:mm' }}{{ h.active ? '' : ' · switched off' }}{{ h.failures ? ' · ' + h.failures + ' failure(s)' : '' }}</div></td>
         <td style="white-space:nowrap"><button type="button" class="zad-btn sm" (click)="testHook(h)" data-hook-test>Send a test</button>
           <button type="button" class="zad-btn sm" (click)="openLog(h)">Deliveries</button><button type="button" class="zad-btn sm" (click)="editHook(h)">Change</button>
           <button type="button" class="zad-btn sm" (click)="toggleHook(h)">{{ h.active ? 'Switch off' : 'Switch on' }}</button><button type="button" class="zad-btn sm danger" (click)="delHook(h)">Delete</button></td></tr>
         <tr *ngIf="log && log.webhook.id === h.id"><td colspan="4"><table class="zad-t"><tr><th>When</th><th>Event</th><th>Result</th><th>Tries</th><th></th></tr>
-          <tr *ngFor="let d of log.deliveries"><td>{{ d.at | date:'d MMM, HH:mm:ss' }}</td><td>{{ d.event }}</td>
+          <tr *ngFor="let d of log.deliveries"><td>{{ d.at | date:'dd/MM/yyyy HH:mm:ss' }}</td><td>{{ d.event }}</td>
             <td [class.zad-ok]="d.status === 'sent'" [class.zad-bad]="d.status === 'failed'">{{ d.status }} {{ d.code || '' }} <span class="zad-muted">{{ d.response | slice:0:80 }}</span></td>
             <td>{{ d.tries }}<div class="zad-muted" *ngIf="d.next_try && d.status !== 'sent'">next {{ d.next_try | date:'HH:mm' }}</div></td>
             <td><button type="button" class="zad-btn sm" *ngIf="d.status !== 'sent'" (click)="retry(h, d)">Try again</button></td></tr>
@@ -704,8 +783,8 @@ export class ZIntegrationsComponent extends ZAdminBase implements OnInit {
   <section class="zad-card"><table class="zad-t"><tr><th>Schedule</th><th>When</th><th>To</th><th>Last sent</th><th>Next</th><th></th></tr>
     <tr *ngFor="let s of rows" [attr.data-sch]="s.id"><td><b>{{ s.name }}</b><div class="zad-muted">{{ s.report_title }} · {{ period(s.period) }} · {{ s.fmt | uppercase }}{{ canAny ? ' · ' + s.owner : '' }}</div></td>
       <td>{{ when(s) }}</td><td>{{ s.recipients.join(', ') }}</td>
-      <td>{{ s.last_run ? (s.last_run | date:'d MMM, HH:mm') : '–' }}<div class="zad-muted" [class.zad-bad]="s.last_status?.startsWith('failed')">{{ s.last_status }}</div></td>
-      <td>{{ s.active ? (s.next_run | date:'d MMM, HH:mm') : 'paused' }}</td>
+      <td>{{ s.last_run ? (s.last_run | date:'dd/MM/yyyy HH:mm') : '–' }}<div class="zad-muted" [class.zad-bad]="s.last_status?.startsWith('failed')">{{ s.last_status }}</div></td>
+      <td>{{ s.active ? (s.next_run | date:'dd/MM/yyyy HH:mm') : 'paused' }}</td>
       <td style="white-space:nowrap"><button type="button" class="zad-btn sm" (click)="sendNow(s)" [disabled]="busy" data-sch-send>Send now</button>
         <button type="button" class="zad-btn sm" (click)="edit(s)">Change</button><button type="button" class="zad-btn sm" (click)="toggle(s)">{{ s.active ? 'Pause' : 'Resume' }}</button>
         <button type="button" class="zad-btn sm danger" (click)="remove(s)">Delete</button></td></tr>
@@ -793,7 +872,7 @@ export class ZImportHistoryComponent extends ZAdminBase implements OnInit {
   <p class="zad-msg" *ngIf="msg" [class.err]="err" role="status">{{ msg }}</p>
   <div class="zad-act" style="margin:0 0 12px"><button type="button" class="zad-btn" (click)="load()" [disabled]="busy">Check again</button>
     <button type="button" class="zad-btn" (click)="load(true)" [disabled]="busy" data-test-mail>Test e-mail</button>
-    <span class="zad-muted" *ngIf="h">Checked {{ h.checked_at | date:'d MMM, HH:mm:ss' }} ·
+    <span class="zad-muted" *ngIf="h">Checked {{ h.checked_at | date:'dd/MM/yyyy HH:mm:ss' }} ·
       <span [class.zad-ok]="h.state === 'ok'" [class.zad-bad]="h.state === 'bad'">{{ h.state === 'ok' ? 'All good' : h.state === 'warn' ? 'Needs a look' : 'Something is wrong' }}</span></span></div>
   <div class="zad-health" *ngIf="h">
     <div class="zad-h" *ngFor="let c of h.checks" [ngClass]="c.state" [attr.data-check]="c.key"><b>{{ c.label }}</b><div class="t">{{ c.text }}</div><div class="d" *ngIf="c.detail">{{ c.detail }}</div></div>

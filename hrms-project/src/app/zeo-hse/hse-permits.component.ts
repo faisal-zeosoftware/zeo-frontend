@@ -1,4 +1,5 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
+import { inject, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list
@@ -134,12 +135,13 @@ export class HsePermitFormComponent implements OnInit {
             <span class="hs-b" [ngClass]="cls(p.status)">{{ p.status_label }}</span> <span class="hs-b bad" *ngIf="p.overrun">Validity ended</span></div>
         </div>
         <div class="hs-scroll" *ngIf="view !== 'live'"><table class="hs-table zl-hse">
-          <tr><th>Permit</th><th>Type</th><th>Site / location</th><th>Branch</th><th>Valid</th><th>Applicant</th><th>Status</th></tr>
+          <tr><th>Permit</th><th>Type</th><th>Site / location</th><th>Branch</th><th>Valid</th><th>Applicant</th><th>Status</th><th></th></tr>
           <tr class="click" *ngFor="let p of rows" (click)="open(p.id)">
             <td><span class="hs-code" [style.background]="p.color + '22'" [style.color]="p.color">{{ p.number }}</span><div>{{ p.description }}</div></td>
             <td>{{ p.type_name }}</td><td>{{ p.site_name }}{{ p.area_name ? ' / ' + p.area_name : '' }}<div class="hs-muted">{{ p.location }}</div></td><td>{{ p.branch_name }}</td>
             <td class="hs-muted">{{ w(p.valid_from) }}<br>{{ w(p.valid_to) }}</td><td>{{ p.applicant?.name }}<div class="hs-muted">{{ p.contractor_name }}</div></td>
-            <td><span class="hs-b" [ngClass]="cls(p.status)">{{ p.status_label }}</span></td></tr></table></div>
+            <td><span class="hs-b" [ngClass]="cls(p.status)">{{ p.status_label }}</span></td>
+            <td><button type="button" class="ex-btn sm" *ngIf="canPrint.has('permit_to_work')" (click)="zprint.open('permit_to_work', p.id, $event)" data-print-row>Print</button></td></tr></table></div>   <!-- v1.67.7 (admin) -->
         <p class="hs-empty" *ngIf="!rows.length">No permits.</p>
       </div>
     </ng-container>
@@ -150,6 +152,7 @@ export class HsePermitFormComponent implements OnInit {
           <button type="button" class="ex-btn sm" (click)="back()" aria-label="Back">‹</button>
           <h2>{{ p.number }} · {{ p.type_name }}<div style="font-size:13px;font-weight:400;opacity:.9">{{ p.site_name }}{{ p.area_name ? ' / ' + p.area_name : '' }} {{ p.location }} · {{ w(p.valid_from) }} → {{ w(p.valid_to) }}</div></h2>
           <span class="hs-b" style="background:#fff;color:#1b1640">{{ p.status_label }}</span>
+          <button type="button" class="ex-btn sm" *ngIf="canPrint.has('permit_to_work')" (click)="zprint.open('permit_to_work', p.id)" data-print-design>Print</button>   <!-- v1.67.7 (admin) company design; the permit with its QR code stays -->
           <button type="button" class="ex-btn sm" (click)="pdf()">Print with QR</button>
         </div>
         <p class="hs-note ok" *ngIf="ok">{{ ok }}</p>
@@ -253,6 +256,9 @@ export class HsePermitFormComponent implements OnInit {
 </div>`,
 })
 export class HsePermitsComponent implements OnInit, OnDestroy {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   lk: any = { sites: [], permit_types: [], terms: {}, isolation_kinds: [] };
   rows: any[] = [];
   id: number | null = null;
@@ -281,6 +287,7 @@ export class HsePermitsComponent implements OnInit, OnDestroy {
   constructor(public api: HseApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     this.sub = this.route.paramMap.subscribe(async pm => {
       this.id = pm.get('id') ? Number(pm.get('id')) : null;
       this.msg = ''; this.ok = '';

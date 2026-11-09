@@ -141,7 +141,9 @@ export class SchemaSelectionComponent implements OnInit, OnDestroy {
   }
 
   meta(c: MyCompany): string {
-    return [c.industry ? i18nT(c.industry) : '', [c.city, c.country].filter(Boolean).join(', ')].filter(Boolean).join(' – ');
+    // v1.67.9 (screens) item 19: the country in the reader's language (Arabic showed "United Arab Emirates"); Arabic comma
+    const ar = /^ar/.test(localStorage.getItem('zeoLang') || '');
+    return [c.industry ? i18nT(c.industry) : '', [c.city, c.country ? i18nT(c.country) : ''].filter(Boolean).join(ar ? '، ' : ', ')].filter(Boolean).join(' – ');
   }
 
   initials(name: string): string {

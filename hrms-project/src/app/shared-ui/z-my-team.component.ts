@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 /**
  * v1.47.0 – "My team": the manager's one page. Who is in / late / on leave / not in yet today, every team member's next
@@ -47,15 +48,15 @@ import { ZCommandService } from './z-command.service';
               </div>
               <ul class="zmt-facts">
                 <li *ngIf="m.celebration"><mat-icon aria-hidden="true">{{ m.celebration.kind === 'bday' ? 'cake' : 'workspace_premium' }}</mat-icon>
-                  {{ (m.celebration.kind === 'bday' ? 'Birthday on {0}' : (m.celebration.years === 1 ? '1 year on {0}' : '{1} years on {0}')) | t:(m.celebration.date | date:'d MMM'):m.celebration.years }}</li>
-                <li *ngIf="m.next_leave"><mat-icon aria-hidden="true">beach_access</mat-icon>{{ m.next_leave.type }} {{ m.next_leave.from | date:'d MMM' }} – {{ m.next_leave.to | date:'d MMM' }}
+                  {{ (m.celebration.kind === 'bday' ? 'Birthday on {0}' : (m.celebration.years === 1 ? '1 year on {0}' : '{1} years on {0}')) | t:(m.celebration.date | date:'dd/MM/yyyy'):m.celebration.years }}</li>
+                <li *ngIf="m.next_leave"><mat-icon aria-hidden="true">beach_access</mat-icon>{{ m.next_leave.type }} {{ m.next_leave.from | date:'dd/MM/yyyy' }} – {{ m.next_leave.to | date:'dd/MM/yyyy' }}
                   <em *ngIf="m.next_leave.status !== 'approved'">({{ m.next_leave.status | t }})</em></li>
                 <li *ngFor="let doc of m.documents.slice(0, 2)" [class.bad]="doc.days < 0"><mat-icon aria-hidden="true">badge</mat-icon>
                   {{ doc.type }} {{ (doc.days < 0 ? 'expired {0} days ago' : 'expires in {0} days') | t:(doc.days < 0 ? -doc.days : doc.days) }}</li>
                 <li *ngIf="m.goals"><mat-icon aria-hidden="true">flag</mat-icon>{{ '{0} goals · {1}% done' | t:m.goals.n:m.goals.progress }}
                   <em *ngIf="m.goals.at_risk" class="bad"> · {{ '{0} at risk' | t:m.goals.at_risk }}</em></li>
-                <li><mat-icon aria-hidden="true">forum</mat-icon>{{ m.last_1on1 ? (('Last 1:1 {0}' | t:(m.last_1on1 | date:'d MMM'))) : ('No 1:1 yet' | t) }}
-                  <em *ngIf="m.next_1on1"> · {{ 'next {0}' | t:(m.next_1on1 | date:'d MMM') }}</em></li>
+                <li><mat-icon aria-hidden="true">forum</mat-icon>{{ m.last_1on1 ? (('Last 1:1 {0}' | t:(m.last_1on1 | date:'dd/MM/yyyy'))) : ('No 1:1 yet' | t) }}
+                  <em *ngIf="m.next_1on1"> · {{ 'next {0}' | t:(m.next_1on1 | date:'dd/MM/yyyy') }}</em></li>
               </ul>
               <div class="zmt-acts"><button type="button" class="zr-btn sm" data-oo (click)="openOO(m)"><mat-icon>forum</mat-icon>{{ '1:1' | t }}</button>
                 <button type="button" class="zr-btn sm" (click)="go(m.page)"><mat-icon>person</mat-icon>{{ 'Profile' | t }}</button></div>
@@ -70,10 +71,10 @@ import { ZCommandService } from './z-command.service';
               <div class="zmt-row" *ngFor="let x of d.documents.slice(0, 8)" [class.bad]="x.days < 0"><span>{{ x.employee }} · {{ x.type }}</span><small>{{ x.expiry | date:'dd/MM/yyyy' }}</small></div>
               <p class="zr-muted" *ngIf="!d.documents.length">{{ 'No document expires in the next 60 days.' | t }}</p></section>
             <section class="zmt-card" data-card="celebrations"><h3><mat-icon aria-hidden="true">celebration</mat-icon>{{ 'Birthdays and anniversaries' | t }}</h3>
-              <div class="zmt-row" *ngFor="let c of d.celebrations"><span>{{ c.employee }} · {{ (c.kind === 'bday' ? 'Birthday' : (c.years === 1 ? '1 year' : '{0} years')) | t:c.years }}</span><small>{{ c.date | date:'EEE d MMM' }}</small></div>
+              <div class="zmt-row" *ngFor="let c of d.celebrations"><span>{{ c.employee }} · {{ (c.kind === 'bday' ? 'Birthday' : (c.years === 1 ? '1 year' : '{0} years')) | t:c.years }}</span><small>{{ c.date | date:'dd/MM/yyyy' }}</small></div>
               <p class="zr-muted" *ngIf="!d.celebrations.length">{{ 'None in the next 30 days.' | t }}</p></section>
             <section class="zmt-card" data-card="leave"><h3><mat-icon aria-hidden="true">event_busy</mat-icon>{{ 'Leave in the next 14 days' | t }}</h3>
-              <div class="zmt-row" *ngFor="let l of d.upcoming_leave"><span>{{ l.employee }} · {{ l.type }}</span><small>{{ l.from | date:'d MMM' }} – {{ l.to | date:'d MMM' }}</small></div>
+              <div class="zmt-row" *ngFor="let l of d.upcoming_leave"><span>{{ l.employee }} · {{ l.type }}</span><small>{{ l.from | date:'dd/MM/yyyy' }} – {{ l.to | date:'dd/MM/yyyy' }}</small></div>
               <p class="zr-muted" *ngIf="!d.upcoming_leave.length">{{ 'Nobody is planning leave.' | t }}</p></section>
           </aside>
         </div>

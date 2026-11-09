@@ -10,6 +10,7 @@ import { ZRecordService } from '../shared-ui/z-record.service';
 import { ZListDirective } from '../shared-ui/z-list.directive';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { EFFECTIVE_HINT, openRuleHistory, zEffectiveParam } from '../shared-ui/z-rule-history';   // v1.67.12 (effective)
 
 interface Line { id?: number; leave_type_id: number; leave_type_name?: string; [k: string]: any; }
 
@@ -111,6 +112,11 @@ const BLANK_LINE = {
               </div>
             </div>
             <label class="wide" style="flex-direction:row;align-items:center;gap:8px;font-weight:400;color:#2b2f42"><input type="checkbox" style="height:auto" [(ngModel)]="edit.is_default"> Default policy for employees whose category has none</label>
+            <!-- v1.67.12 (effective, item 64): a change from a date – the months before it keep the policy as it was -->
+            <ng-container *ngIf="edit.id">
+              <label data-lp-effective>Effective from<z-date-field [(value)]="effFrom"></z-date-field><small class="lp-muted">{{ effHint }}</small></label>
+              <div><button type="button" class="lp-btn" (click)="history()" data-lp-history>History of changes</button></div>
+            </ng-container>
           </div>
 
           <div class="lp-scroll">
@@ -479,7 +485,7 @@ export class LeavePoliciesComponent implements OnInit {
     return this.types.filter(t => !used.has(t.id) && !copies.has(t.id) && !t.is_compensatory);
   }
 
-  pick(p: any): void { this.edit = JSON.parse(JSON.stringify(p)); this.msg = ''; this.stepLine = null; }
+  pick(p: any): void { this.edit = JSON.parse(JSON.stringify(p)); this.msg = ''; this.stepLine = null; this.effFrom = ''; }   // v1.67.12 (effective): effFrom
 
   // ---------------- v1.12.0 days by length of service
   openSteps(l: Line): void {
@@ -553,6 +559,10 @@ export class LeavePoliciesComponent implements OnInit {
     return out;
   }
 
+  effFrom = '';                 // v1.67.12 (effective): the day the change applies from ('' = a correction)
+  effHint = EFFECTIVE_HINT;
+  history(): void { if (this.edit?.id) { openRuleHistory('leave_policy', this.edit.id, this.edit.name); } }   // v1.67.12 (effective)
+
   async save(): Promise<void> {
     if (!this.edit.name || !this.edit.code) { this.say('Give the policy a name and a code.', true); return; }
     const bad = (this.edit.lines || []).find((l: Line) => this.stepProblem(l));
@@ -561,12 +571,13 @@ export class LeavePoliciesComponent implements OnInit {
     try {
       const body = this.clean(this.edit);
       const r = this.edit.id
-        ? await firstValueFrom(this.http.put<any>(this.url(`leave-policy/api/policies/${this.edit.id}/`), body))
+        ? await firstValueFrom(this.http.put<any>(this.url(`leave-policy/api/policies/${this.edit.id}/`, zEffectiveParam(this.effFrom, '&')), body))   // v1.67.12 (effective)
         : await firstValueFrom(this.http.post<any>(this.url('leave-policy/api/policies/'), body));
       const openType = this.stepLine?.leave_type_id;
       await this.reload(); this.edit = JSON.parse(JSON.stringify(this.policies.find(p => p.id === r.id) || r));
       this.stepLine = openType ? (this.edit.lines || []).find((l: Line) => l.leave_type_id === openType) || null : null;
-      this.say(`Policy ${r.name} saved.`);
+      this.say(this.effFrom ? `Policy ${r.name} saved – the change applies from ${this.effFrom.split('-').reverse().join('/')}.` : `Policy ${r.name} saved.`);
+      this.effFrom = '';
     } catch (e: any) { this.say(this.err(e), true); }
     this.busy = false; this.cd.detectChanges();
   }

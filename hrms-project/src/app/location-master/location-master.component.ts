@@ -1,3 +1,4 @@
+import { appOn } from '../shared-ui/zeo-flags';   // v1.67.6 (setup) item 1
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
@@ -10,6 +11,10 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SchemaCreationComponent } from '../schema-creation/schema-creation.component';
 import { MatDialog } from '@angular/material/dialog';
 import { zConfirm } from '../shared-ui/z-confirm';   // v1.62.10 (item 180) new-design confirm window
+import { COMPANY_FORM, zFormThenReload } from '../shared-ui/z-forms';   // v1.67.9 (screens) item 18
+import { i18nT } from '../shared-ui/i18n-core';
+import { Router } from '@angular/router';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-location-master',
@@ -49,6 +54,7 @@ schemas: string[] = [];
   Schemas:any[]=[];
 
   
+  appOn = appOn;   // v1.67.6 (setup) item 1
   constructor(
    
     private http: HttpClient,
@@ -873,6 +879,20 @@ onLogoSelected(event: any) {
 getFileName(fileUrl: string): string {
   return fileUrl?.split('/').pop() || 'Existing File';
 }
+
+  // v1.67.9 (screens) item 18: Edit in the new-design drawer (same fields and the same save as the old window)
+  private zRouter = inject(Router);
+  async zEditCompany(row: any): Promise<void> { await zFormThenReload(COMPANY_FORM, { id: row.id }); }
+  /** v1.67.9 (screens): a company is deleted on Choose a company (a backup is made first) – the row says so and goes there */
+  async zDeleteCompany(row: any): Promise<void> {
+    if (await zConfirm(i18nT('A company is deleted from Choose a company › ⋯ › Delete company (a backup is made first and it is kept 30 days). Open Choose a company?'))) {
+      this.zRouter.navigateByUrl('/schema-selection');
+    }
+  }
+  industryText(code: string): string {
+    return ({ IT: 'Information Technology', HC: 'Healthcare', FIN: 'Finance', EDU: 'Education', MFG: 'Manufacturing', CON: 'Construction and engineering',
+      OG: 'Oil and gas', RET: 'Retail', PM: 'Property management', OTH: 'General' } as Record<string, string>)[code] || code || '';
+  }
 
   /** v1.62.0 ui: Delete on the row – this row only, through the screen's own delete (its confirmation and API call) */
   zDeleteRow(row: any): void {

@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -142,7 +143,7 @@ export class ZActivateComponent implements OnInit {
     </div>
     <section class="zad-card" data-events><h3><mat-icon>report</mat-icon>Security events (30 days)</h3>
       <table class="zad-t" *ngIf="d.events.length; else noE"><tr><th>When</th><th>What</th><th>User</th><th>Detail</th><th>Address</th></tr>
-        <tr *ngFor="let e of d.events" [attr.data-event]="e.kind"><td>{{ e.at | date:'d MMM, HH:mm' }}</td><td>{{ e.kind_text | t }}<span class="zad-pill" *ngIf="e.emailed"> e-mailed</span></td>
+        <tr *ngFor="let e of d.events" [attr.data-event]="e.kind"><td>{{ e.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ e.kind_text | t }}<span class="zad-pill" *ngIf="e.emailed"> e-mailed</span></td>
           <td>{{ e.user }}<div class="zad-muted" *ngIf="e.by && e.by !== e.user">by {{ e.by }}</div></td><td>{{ e.detail }}</td><td>{{ e.ip }}</td></tr></table>
       <ng-template #noE><p class="zad-muted">Nothing in the last 30 days.</p></ng-template></section>
     <section class="zad-card"><h3><mat-icon>phonelink_lock</mat-icon>Staff users without the authenticator app</h3>
@@ -159,7 +160,7 @@ export class ZActivateComponent implements OnInit {
     <section class="zad-card"><h3><mat-icon>devices</mat-icon>Active sign-ins</h3>
       <table class="zad-t"><tr><th>User</th><th>Device</th><th>Address</th><th>Since</th><th>Last used</th></tr>
         <tr *ngFor="let s of d.sessions"><td>{{ s.user }} <span class="zad-pill" *ngIf="s.admin">admin</span></td><td>{{ s.device }}</td><td>{{ s.ip }} {{ s.country }}</td>
-          <td>{{ s.since | date:'d MMM, HH:mm' }}</td><td>{{ s.last_seen | date:'d MMM, HH:mm' }}</td></tr></table></section>
+          <td>{{ s.since | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ s.last_seen | date:'dd/MM/yyyy HH:mm' }}</td></tr></table></section>
     <section class="zad-card"><h3><mat-icon>vpn_key</mat-icon>API keys</h3>
       <table class="zad-t" *ngIf="d.api_keys.length; else noK"><tr><th>Name</th><th>Acts as</th><th>Access</th><th>Last used</th><th>Expires</th></tr>
         <tr *ngFor="let k of d.api_keys"><td>{{ k.name }} <span class="zad-pill" *ngIf="!k.active">off</span></td><td>{{ k.user }}</td><td>{{ k.read_only ? 'read only' : 'read and write' }}<div class="zad-muted">{{ (k.scopes || []).join(', ') }}</div></td>
@@ -167,7 +168,7 @@ export class ZActivateComponent implements OnInit {
       <ng-template #noK><p class="zad-muted">No API keys.</p></ng-template></section>
     <section class="zad-card" data-exports><h3><mat-icon>download</mat-icon>Exports (30 days)</h3>
       <table class="zad-t" *ngIf="d.exports.length; else noX"><tr><th>When</th><th>User</th><th>Screen</th><th>Kind</th><th>Rows</th><th></th></tr>
-        <tr *ngFor="let x of d.exports"><td>{{ x.at | date:'d MMM, HH:mm' }}</td><td>{{ x.user }}</td><td style="word-break:break-all">{{ x.path }}</td><td>{{ x.kind }}</td><td>{{ x.rows }}</td>
+        <tr *ngFor="let x of d.exports"><td>{{ x.at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ x.user }}</td><td style="word-break:break-all">{{ x.path }}</td><td>{{ x.kind }}</td><td>{{ x.rows }}</td>
           <td><span class="zad-pill bad" *ngIf="x.refused">refused – {{ x.refused }}</span></td></tr></table>
       <ng-template #noX><p class="zad-muted">No exports.</p></ng-template></section>
   </ng-container>
@@ -295,7 +296,7 @@ export class ZGiveAccessComponent extends ZAdminBase implements OnInit {
       <td><div *ngFor="let k of keys(c.old)">{{ k }}: {{ (c.old_full || c.old)[k] }}</div></td><td><div *ngFor="let k of keys(c.new)"><b>{{ k }}</b>: {{ (c.new_full || c.new)[k] }}</div></td>
       <td>{{ c.requested_by }}<div class="zad-muted">{{ c.requested_at | date:'dd/MM/yyyy HH:mm' }}</div></td>
       <td><span class="zad-pill" [class.warn]="c.state === 'pending'" [class.ok]="c.state === 'approved'" [class.bad]="c.state === 'rejected'">{{ c.state }}</span>
-        <div class="zad-muted" *ngIf="c.decided_by">{{ c.decided_by }} {{ c.decided_at | date:'d MMM' }} {{ c.note }}</div></td>
+        <div class="zad-muted" *ngIf="c.decided_by">{{ c.decided_by }} {{ c.decided_at | date:'dd/MM/yyyy' }} {{ c.note }}</div></td>
       <td style="white-space:nowrap"><ng-container *ngIf="c.can_decide"><button type="button" class="zad-btn sm primary" (click)="decide(c, 'approve')" data-approve>Approve</button>
         <button type="button" class="zad-btn sm danger" (click)="decide(c, 'reject')" data-reject>Reject</button></ng-container>
         <span class="zad-muted" *ngIf="c.state === 'pending' && !c.can_decide">{{ c.requested_by_id ? 'a second person decides' : '' }}</span></td></tr></table>

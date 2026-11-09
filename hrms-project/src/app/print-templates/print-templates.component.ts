@@ -201,7 +201,7 @@ export class PrintTemplatesComponent implements OnInit, OnDestroy {
     this.docType = q.get('doc') || 'payslip';
     this.tab = (q.get('tab') as any) || 'designs';
     this.api.meta().subscribe({
-      next: m => { this.meta = m; if (!m.doc_types.some(d => d.key === this.docType)) { this.docType = 'payslip'; } this.setTab(this.tab); },
+      next: m => { this.meta = m; if (!m.doc_types.some(d => d.key === this.docType)) { this.docType = m.doc_types[0]?.key || 'payslip'; } this.setTab(this.tab); },   // v1.67.6 (setup) item 7: the first document of the active apps
       error: e => this.fail(e),
     });
   }

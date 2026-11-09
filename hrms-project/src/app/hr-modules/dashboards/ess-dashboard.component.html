@@ -1,3 +1,4 @@
+<!-- v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm) -->
 <div class="zdash" [class.page]="!inPortal && !embedded" [class.in-home]="embedded">
   <p class="err" *ngIf="error">{{ error }}</p>
   <p class="muted" *ngIf="!d && !error">Loading your dashboard…</p>
@@ -10,7 +11,7 @@
         <div class="avatar">{{ initials(d.employee?.name) }}</div>
         <div>
           <h1>{{ greeting }}<span *ngIf="firstName">, {{ firstName }}</span></h1>
-          <p class="muted" *ngIf="d.employee">{{ d.employee.designation }}, {{ d.employee.department }} · {{ d.today | date:'EEEE d MMMM y' }}</p>
+          <p class="muted" *ngIf="d.employee">{{ d.employee.designation }}, {{ d.employee.department }} · {{ d.today | date:'dd/MM/yyyy' }}</p>
           <p class="muted" *ngIf="d.message">{{ d.message }}</p>
         </div>
       </div>

@@ -74,7 +74,7 @@ type Col = { key: string; label: string; on: boolean; sort?: (r: any) => any };
       <option value="added">{{ t('Newest first') }}</option><option value="name">{{ t('Name A–Z') }}</option>
       <option value="other" *ngIf="sortPick() === 'other'">{{ t('Column sort') }}</option>
     </select>
-    <select [(ngModel)]="f.branch" (ngModelChange)="load()" aria-label="Branch" [class.set]="f.branch"><option value="">Branch</option><option *ngFor="let o of look?.branches" [value]="o.value">{{ o.label }}</option></select>
+    <select *ngIf="(look?.branches?.length || 0) > 1" [(ngModel)]="f.branch" (ngModelChange)="load()" aria-label="Branch" [class.set]="f.branch"><!-- v1.67.9 (screens): one branch – no choice --><option value="">Branch</option><option *ngFor="let o of look?.branches" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.department" (ngModelChange)="load()" aria-label="Department" [class.set]="f.department"><option value="">Department</option><option *ngFor="let o of look?.departments" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.designation" (ngModelChange)="load()" aria-label="Designation" [class.set]="f.designation"><option value="">Designation</option><option *ngFor="let o of look?.designations" [value]="o.value">{{ o.label }}</option></select>
     <select [(ngModel)]="f.category" (ngModelChange)="load()" aria-label="Category" [class.set]="f.category"><option value="">Category</option><option *ngFor="let o of look?.categories" [value]="o.value">{{ o.label }}</option></select>

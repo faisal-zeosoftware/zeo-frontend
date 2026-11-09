@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ZPrintService } from '../shared-ui/z-print';   // v1.67.7 (admin) Print buttons
+import { inject, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ZListDirective } from '../shared-ui/z-list.directive';   // v1.22.0 HRMS list
@@ -37,13 +38,14 @@ import { HseActionViewComponent, HseNewActionComponent } from './hse-actions.com
       </div>
       <div class="com_list mt-4">
         <div class="hs-scroll"><table class="hs-table zl-hse">
-          <tr><th>Incident</th><th>Category</th><th>When</th><th>Site</th><th>Branch</th><th>Severity A / P</th><th>Treatment</th><th>Status</th></tr>
+          <tr><th>Incident</th><th>Category</th><th>When</th><th>Site</th><th>Branch</th><th>Severity A / P</th><th>Treatment</th><th>Status</th><th></th></tr>
           <tr class="click" *ngFor="let i of rows" (click)="open(i.id)">
             <td><span class="hs-code">{{ i.number }}</span> <span class="hs-b hipo" *ngIf="i.high_potential">HiPo</span><div style="font-weight:600;color:#1b1640">{{ i.title }}</div>
               <div class="hs-muted">{{ i.reported_by?.name }}</div></td>
             <td>{{ i.category_name || 'Not classified' }}</td><td>{{ w(i.occurred_at) }}</td><td>{{ i.site_name }}</td><td>{{ i.branch_name }}</td>
             <td>{{ i.actual_severity }} / {{ i.potential_severity }}</td><td>{{ i.treatment_label }}</td>
-            <td><span class="hs-b" [ngClass]="cls(i.status)">{{ i.status_label }}</span></td></tr>
+            <td><span class="hs-b" [ngClass]="cls(i.status)">{{ i.status_label }}</span></td>
+            <td><button type="button" class="ex-btn sm" *ngIf="canPrint.has('incident_report')" (click)="zprint.open('incident_report', i.id, $event)" data-print-row>Print</button></td></tr>   <!-- v1.67.7 (admin) -->
         </table></div>
         <p class="hs-empty" *ngIf="!rows.length">No incidents.</p>
       </div>
@@ -59,6 +61,7 @@ import { HseActionViewComponent, HseNewActionComponent } from './hse-actions.com
             <span class="hs-b hipo" *ngIf="i.high_potential" style="margin-left:4px">High potential</span></h1>
             <p class="ex-desc">{{ i.category_name || 'Not classified yet' }} · {{ w(i.occurred_at) }} · {{ i.site_name }}{{ i.area_name ? ' / ' + i.area_name : '' }} · reported by {{ i.reported_by?.name }}</p></div>
           <div class="ex-actions">
+            <button type="button" class="ex-btn" *ngIf="canPrint.has('incident_report')" (click)="zprint.open('incident_report', i.id)" data-print-design>Print</button>   <!-- v1.67.7 (admin) -->
             <button type="button" class="ex-btn" *ngIf="i.can?.actions" (click)="raising = true">+ Action</button>
             <button type="button" class="ex-btn primary" *ngIf="i.can?.close" (click)="close()">Request closure</button>
             <button type="button" class="ex-btn primary" *ngIf="i.can?.decide" (click)="decide(true)">Approve closure</button>
@@ -182,6 +185,9 @@ import { HseActionViewComponent, HseNewActionComponent } from './hse-actions.com
 <hse-action-view *ngIf="actionId" [id]="actionId" [staff]="!!lk.rights?.staff" (closed)="actionId = null; reload()"></hse-action-view>`,
 })
 export class HseIncidentsComponent implements OnInit, OnDestroy {
+  // v1.67.7 (admin): the Print button (company design) – only for documents the user may print here
+  zprint = inject(ZPrintService);
+  canPrint = new Set<string>();
   lk: any = { rights: {}, sites: [], categories: [], treatments: [], employees: [] };
   rows: any[] = [];
   id: number | null = null;
@@ -209,6 +215,7 @@ export class HseIncidentsComponent implements OnInit, OnDestroy {
   constructor(public api: HseApiService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    this.zprint.docs().then(d => this.canPrint = d);   // v1.67.7 (admin)
     this.sub = this.route.paramMap.subscribe(async pm => {
       this.id = pm.get('id') ? Number(pm.get('id')) : null;
       this.msg = ''; this.ok = '';

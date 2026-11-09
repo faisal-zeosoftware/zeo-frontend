@@ -1871,3 +1871,31 @@ body.sidebar-open {
 a.zm-me { color: inherit; text-decoration: none; cursor: pointer; transition: background .15s, border-color .15s; }
 a.zm-me:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.25); }
 a.zm-me:focus-visible { outline: 2px solid #A5B4FC; outline-offset: 2px; }
+
+/* ============================================================
+   v1.67.8 (fixes) item 12: phone top bar – the buttons no longer overlap (English and Arabic). The bar is one row: menu,
+   logo (shrinks first), the tools. Below 480 px the top-bar Logout gives way (Logout stays at the bottom of the phone menu)
+   and the buttons are 34 px; below 400 px the logo gives way too. Nothing is hidden that cannot be reached.
+   ============================================================ */
+@media (max-width: 991.98px) {
+  .mobview > .d-flex { gap: 8px; min-width: 0; flex-wrap: nowrap; }
+  .mobview .menu_mob { flex: none; }
+  .mobview .nav_mov { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+  .mobview .nav_mov .navbar-brand { display: block; min-width: 0; padding: 0; }
+  .mobview .nav_mov img { display: block; height: 28px; width: auto; max-width: 100%; object-fit: contain; }
+  .mobview > .d-flex > .d-flex { flex: 0 0 auto; min-width: 0; flex-wrap: nowrap; }
+  .mobview > .d-flex > .d-flex > * { flex: none; }
+  .mobview > .d-flex > .d-flex > li.nav-item { list-style: none; }
+}
+@media (max-width: 480px) {
+  .hrms-navbar .mobview { padding-left: 0; padding-right: 0; }
+  .mobview > .d-flex { gap: 6px; }
+  .mobview > .d-flex > .d-flex { gap: 4px !important; }
+  .mobview > .d-flex > .d-flex > .btn-logout-mobile { display: none; }
+  .mobview .menu_mob { width: 36px; height: 36px; font-size: 22px; }
+  .mobview .notiicon { width: 34px; height: 34px; }
+  .mobview .Company_pro { padding: 6px 6px; }
+}
+@media (max-width: 399.98px) {
+  .mobview .nav_mov { display: none; }
+}

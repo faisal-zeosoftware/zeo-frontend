@@ -1,3 +1,4 @@
+// v1.67.9 (screens) item 19: dates dd/MM/yyyy (date-times dd/MM/yyyy HH:mm)
 // v1.62.0 ui: dates dd/MM/yyyy
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -38,7 +39,7 @@ import { ProjectControlApiService, STATUS_LABEL, hrs } from './project-control-a
       <div class="pc-group" *ngFor="let g of groups">
         <header>
           <div class="who">{{ g.employee }}</div>
-          <div class="pc-muted">Week {{ g.week_start | date:'dd MMM' }} – {{ g.week_end | date:'dd/MM/yyyy' }} ·
+          <div class="pc-muted">Week {{ g.week_start | date:'dd/MM/yyyy' }} – {{ g.week_end | date:'dd/MM/yyyy' }} ·
             <b>{{ h(g.hours) }} h</b> ({{ h(g.billable_hours) }} billable)</div>
         </header>
         <div class="pc-rows">
@@ -46,7 +47,7 @@ import { ProjectControlApiService, STATUS_LABEL, hrs } from './project-control-a
             <input type="checkbox" *ngIf="status === 'submitted'" [(ngModel)]="sel[e.id]" [attr.aria-label]="'Select entry ' + e.id">
             <div class="main">
               <div class="t">{{ e.project_title }}<span *ngIf="e.task_title"> · {{ e.task_title }}</span></div>
-              <div class="s">{{ e.date | date:'EEE dd MMM' }} · {{ e.description }}<span *ngIf="e.corrections"> · corrected {{ e.corrections }}×</span>
+              <div class="s">{{ e.date | date:'dd/MM/yyyy' }} · {{ e.description }}<span *ngIf="e.corrections"> · corrected {{ e.corrections }}×</span>
                 <span *ngIf="e.rejection_reason"> · reason: {{ e.rejection_reason }}</span></div>
             </div>
             <div class="r">

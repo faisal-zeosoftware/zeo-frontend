@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeProfileService, STATUS_LABEL } from './employee-profile.service';
 import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.0
+import { HttpClient } from '@angular/common/http';   // v1.67.12 (effective)
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 /**
  * v1.13.0 – "Employment" tab: one employment status (active, on probation, on notice, left, terminated, absconded,
@@ -19,6 +22,11 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
 <div class="ep" *ngIf="d">
   <div class="ep-note err" *ngIf="error">{{ error }}</div>
   <div class="ep-note" *ngIf="warning">{{ warning }}</div>
+  <!-- v1.67.12 (effective, item 62): the confirmation date is asked for -->
+  <div class="ep-note warn" *ngIf="d.confirmation_missing" data-ep-confirm-missing>
+    <ng-container *ngIf="!d.date_of_confirmation && !d.probation_status">No confirmation date: no probation period is set for this employee (employment type or branch). Confirm the employee with the confirmation date.</ng-container>
+    <ng-container *ngIf="d.probation_status === 'on_probation' || d.probation_status === 'extended'">The probation ended on {{ fmt(d.probation_end_date) }} without a decision – confirm the employee, extend the probation or record that it was not passed.</ng-container>
+  </div>
   <div class="ep-kpis">
     <div class="ep-kpi"><small>Employment status</small><span class="ep-tag" [ngClass]="statusClass(d.status)">{{ d.status_label }}</span></div>
     <div class="ep-kpi"><small>Joining date</small><b>{{ fmt(d.joined_date) }}</b></div>
@@ -72,6 +80,26 @@ import { COUNTRY_PACK_UI } from '../shared-ui/country-pack.service';   // v1.14.
     </div>
   </div>
 
+  <!-- v1.67.12 (effective, item 249): GPSSA first-insured date – old / new pension law -->
+  <div class="ep-sec" style="margin-top:14px" *ngIf="pen && (pen.is_national || pen.first_insured)" data-ep-pension>
+    <h3>Pension (GPSSA)</h3>
+    <div class="ep-kpis">
+      <div class="ep-kpi"><small>Pension law</small><b data-ep-pension-law>{{ pen.law === 'old' ? 'Old law (Federal Law 7/1999)' : 'New law (Decree-Law 57/2023)' }}</b>
+        <div class="lp-muted">{{ pen.law_basis === 'joined' ? 'Decided by the joining date ' + fmt(pen.law_from) : 'Decided by the date first insured ' + fmt(pen.law_from) }} (cut-off {{ fmt(pen.cut_off) }})</div></div>
+    </div>
+    <div class="ep-grid" *ngIf="canPen && !readonly">
+      <label class="ep-f" [class.bad]="pferr['first_insured']"><span>Date first insured</span><z-date-field [(value)]="pf.first_insured"></z-date-field>
+        <small class="hint">With GPSSA (or the Abu Dhabi Pension Fund / another GCC scheme) at any employer. Empty = the joining date decides.</small>
+        <small class="err" *ngIf="pferr['first_insured']">{{ pferr['first_insured'] }}</small></label>
+      <label class="ep-f"><span>Scheme</span><select [(ngModel)]="pf.scheme" data-ep-pension-scheme>
+        <option value="gpssa">GPSSA</option><option value="adpf">Abu Dhabi Pension Fund</option><option value="gcc">Another GCC pension scheme</option></select>
+        <small class="hint" *ngIf="pf.scheme === 'gcc'">{{ pen.settings?.gcc_counts ? 'The company counts insurance in another GCC scheme (legal rule to confirm).' : 'Not counted by the company setting (legal rule to confirm): the joining date decides.' }}</small></label>
+      <label class="ep-f"><span>Note (optional)</span><input type="text" [(ngModel)]="pf.note" maxlength="255"></label>
+    </div>
+    <div class="ep-actions" *ngIf="canPen && !readonly"><button type="button" class="lp-btn primary" [disabled]="penSaving" (click)="savePension()" data-ep-pension-save>{{ penSaving ? 'Saving…' : 'Save pension details' }}</button>
+      <span class="lp-muted" *ngIf="penMsg">{{ penMsg }}</span></div>
+  </div>
+
   <div class="ep-sec" style="margin-top:14px" *ngIf="d.extensions?.length || d.decision_note">
     <h3>Probation decisions</h3>
     <table class="ep-table" zPlain>
@@ -101,7 +129,42 @@ export class ZEmpEmploymentComponent implements OnChanges {
   saving = false;
   statuses = Object.entries(STATUS_LABEL).map(([v, l]) => ({ v, l }));
 
-  constructor(private svc: EmployeeProfileService, private cd: ChangeDetectorRef) {}
+  // v1.67.12 (effective, item 249): GPSSA first-insured date
+  pen: any = null;
+  pf: any = { first_insured: '', scheme: 'gpssa', note: '' };
+  pferr: Record<string, string> = {};
+  canPen = false;
+  penSaving = false;
+  penMsg = '';
+
+  constructor(private svc: EmployeeProfileService, private cd: ChangeDetectorRef, private http: HttpClient) {}
+
+  private penUrl(): string {
+    return `${environment.apiBaseUrl}/payroll-plus/api/pension/${this.employeeId}/?schema=${encodeURIComponent(localStorage.getItem('selectedSchema') || '')}`;
+  }
+
+  async loadPension(): Promise<void> {
+    try {
+      this.pen = await firstValueFrom(this.http.get<any>(this.penUrl()));
+      this.canPen = !!this.pen?.can_edit;
+      this.pf = { first_insured: this.pen.first_insured || '', scheme: this.pen.scheme || 'gpssa', note: this.pen.note || '' };
+    } catch { this.pen = null; }
+    this.cd.markForCheck();
+  }
+
+  async savePension(): Promise<void> {
+    this.penSaving = true; this.pferr = {}; this.penMsg = '';
+    try {
+      this.pen = await firstValueFrom(this.http.put<any>(this.penUrl(), { first_insured: this.pf.first_insured || null, scheme: this.pf.scheme, note: this.pf.note || '' }));
+      this.penMsg = 'Pension details saved.';
+    } catch (e: any) {
+      const x = e?.error || {};
+      for (const k of Object.keys(x)) { this.pferr[k] = Array.isArray(x[k]) ? x[k].join(' ') : String(x[k]); }
+      if (!Object.keys(this.pferr).length) { this.pferr['first_insured'] = 'Not saved – try again.'; }
+    }
+    this.penSaving = false;
+    this.cd.markForCheck();
+  }
 
   ngOnChanges(ch: SimpleChanges): void { if (ch['employeeId'] && this.employeeId) { this.load(); } }
 
@@ -110,6 +173,7 @@ export class ZEmpEmploymentComponent implements OnChanges {
       const p = await this.svc.profile(this.employeeId!, fresh);
       this.d = p.employment;
       this.canEdit = !!p.can_edit;
+      this.loadPension();   // v1.67.12 (effective, item 249)
     } catch (e: any) { this.denied = e?.status === 403 ? 'You do not have access to these details.' : 'The employment details could not be loaded.'; }
     this.cd.markForCheck();
   }
