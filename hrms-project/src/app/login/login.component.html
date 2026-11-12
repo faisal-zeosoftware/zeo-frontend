@@ -135,6 +135,8 @@
         <button type="button" class="zl-link" (click)="backToStart()">{{ 'Use another user' | t }}</button>
       </form>
 
+      <!-- <test?></test> -->
+
       <!-- v1.62.0 STEP 13: a password someone else knows (generated, typed by HR, start password) – the own password first -->
       <form *ngIf="step === 13" (ngSubmit)="saveOwnPassword()" novalidate data-own-password>
         <h1>{{ 'Choose your own password' | t }}</h1>
